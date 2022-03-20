@@ -172,6 +172,19 @@ public class ArgumentBuilder {
         return this;
     }
 
+    public ArgumentBuilder unparsedArgument(String name) {
+        return unparsedArgument(name, null);
+    }
+
+    public ArgumentBuilder unparsedArgument(String name, SuggestionAction suggestionAction) {
+        return unparsedArgument(name, suggestionAction, null);
+    }
+
+    public ArgumentBuilder unparsedArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction) {
+        arguments.add(new UnparsedArgument(name, suggestionAction, contextAction));
+        return this;
+    }
+
     List<Argument<?>> build() {
         return arguments;
     }
