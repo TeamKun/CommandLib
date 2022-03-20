@@ -44,14 +44,12 @@ public abstract class Argument<T> {
             }
         });
 
-        builder.executes(ctx -> {
-            if (contextAction == null) {
-                return 0;
-            }
-
-            contextAction.accept(new net.kunmc.lab.commandlib.CommandContext(ctx.getSource(), ctx.getInput(), argsParser.apply(ctx)));
-            return 1;
-        });
+        if (contextAction != null) {
+            builder.executes(ctx -> {
+                contextAction.accept(new net.kunmc.lab.commandlib.CommandContext(ctx.getSource(), ctx.getInput(), argsParser.apply(ctx)));
+                return 1;
+            });
+        }
 
         return builder;
     }
