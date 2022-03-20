@@ -5,7 +5,6 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.kunmc.lab.commandlib.annotation.NotNull;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.util.text.StringTextComponent;
@@ -119,7 +118,7 @@ public abstract class Command {
                 cmdBuilder.then(argNodes.get(0));
             }
         }
-       
+
         return cmdBuilder.build();
     }
 
