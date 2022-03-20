@@ -172,6 +172,19 @@ public class ArgumentBuilder {
         return this;
     }
 
+    public ArgumentBuilder teamArgument(String name) {
+        return teamArgument(name, null);
+    }
+
+    public ArgumentBuilder teamArgument(String name, SuggestionAction suggestionAction) {
+        return teamArgument(name, suggestionAction, null);
+    }
+
+    public ArgumentBuilder teamArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction) {
+        arguments.add(new TeamArgument(name, suggestionAction, contextAction));
+        return this;
+    }
+
     public ArgumentBuilder unparsedArgument(String name) {
         return unparsedArgument(name, null);
     }
