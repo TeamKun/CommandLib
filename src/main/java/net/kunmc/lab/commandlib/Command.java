@@ -22,7 +22,7 @@ public abstract class Command {
     private int permissionLevel = 4;
     private final List<Command> children = new ArrayList<>();
     private final List<String> aliases = new ArrayList<>();
-    private final ArgumentBuilder argumentBuilder = new ArgumentBuilder();
+    private final List<ArgumentBuilder> argumentBuilderList = new ArrayList<>();
 
     public Command(@NotNull String name) {
         this.name = name;
@@ -43,45 +43,15 @@ public abstract class Command {
     }
 
     protected void argument(Consumer<ArgumentBuilder> buildArguments) {
-        buildArguments.accept(argumentBuilder);
+        ArgumentBuilder builder = new ArgumentBuilder();
+        buildArguments.accept(builder);
+        argumentBuilderList.add(builder);
     }
 
     final List<LiteralCommandNode<CommandSource>> toCommandNodes() {
         List<LiteralCommandNode<CommandSource>> cmds = new ArrayList<>();
-        List<Argument<?>> arguments = argumentBuilder.build();
-        Function<com.mojang.brigadier.context.CommandContext<CommandSource>, List<Object>> argsParser = ctx -> arguments.stream()
-                .map(a -> a.parse(ctx))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
 
-        LiteralArgumentBuilder<CommandSource> cmdBuilder = Commands.literal(name)
-                .requires(cs -> cs.hasPermissionLevel(permissionLevel));
-
-        if (arguments.isEmpty()) {
-            cmdBuilder.executes(ctx -> {
-                execute(new CommandContext(ctx.getSource(), ctx.getInput(), argsParser.apply(ctx)));
-                return 1;
-            });
-        } else {
-            List<RequiredArgumentBuilder<CommandSource, ?>> requiredArgumentBuilderList = arguments.stream()
-                    .map(a -> a.toBuilder(argsParser))
-                    .collect(Collectors.toList());
-            requiredArgumentBuilderList.get(requiredArgumentBuilderList.size() - 1).executes(ctx -> {
-                execute(new CommandContext(ctx.getSource(), ctx.getInput(), argsParser.apply(ctx)));
-                return 1;
-            });
-            List<ArgumentCommandNode<CommandSource, ?>> argNodes = requiredArgumentBuilderList.stream()
-                    .map(RequiredArgumentBuilder::build)
-                    .collect(Collectors.toList());
-
-            for (int i = 0; i < argNodes.size() - 1; i++) {
-                argNodes.get(i).addChild(argNodes.get(i + 1));
-            }
-
-            cmdBuilder.then(argNodes.get(0));
-        }
-
-        LiteralCommandNode<CommandSource> cmd = cmdBuilder.build();
+        LiteralCommandNode<CommandSource> cmd = toCommandNode();
         cmds.add(cmd);
 
         children.forEach(c -> {
@@ -91,6 +61,50 @@ public abstract class Command {
         cmds.addAll(createAliasCommands(cmd));
 
         return cmds;
+    }
+
+    private LiteralCommandNode<CommandSource> toCommandNode() {
+        LiteralArgumentBuilder<CommandSource> cmdBuilder = Commands.literal(name)
+                .requires(cs -> cs.hasPermissionLevel(permissionLevel));
+
+        for (ArgumentBuilder argumentBuilder : argumentBuilderList) {
+            List<Argument<?>> arguments = argumentBuilder.build();
+            Function<com.mojang.brigadier.context.CommandContext<CommandSource>, List<Object>> argsParser = ctx -> arguments.stream()
+                    .map(a -> {
+                        try {
+                            return a.parse(ctx);
+                        } catch (Exception e) {
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+            if (arguments.isEmpty()) {
+                cmdBuilder.executes(ctx -> {
+                    execute(new CommandContext(ctx.getSource(), ctx.getInput(), argsParser.apply(ctx)));
+                    return 1;
+                });
+            } else {
+                List<RequiredArgumentBuilder<CommandSource, ?>> requiredArgumentBuilderList = arguments.stream()
+                        .map(a -> a.toBuilder(argsParser))
+                        .collect(Collectors.toList());
+                requiredArgumentBuilderList.get(requiredArgumentBuilderList.size() - 1).executes(ctx -> {
+                    execute(new CommandContext(ctx.getSource(), ctx.getInput(), argsParser.apply(ctx)));
+                    return 1;
+                });
+                List<ArgumentCommandNode<CommandSource, ?>> argNodes = requiredArgumentBuilderList.stream()
+                        .map(RequiredArgumentBuilder::build)
+                        .collect(Collectors.toList());
+
+                for (int i = 0; i < argNodes.size() - 1; i++) {
+                    argNodes.get(i).addChild(argNodes.get(i + 1));
+                }
+
+                cmdBuilder.then(argNodes.get(0));
+            }
+        }
+        return cmdBuilder.build();
     }
 
     private List<LiteralCommandNode<CommandSource>> createAliasCommands(CommandNode<CommandSource> target) {
