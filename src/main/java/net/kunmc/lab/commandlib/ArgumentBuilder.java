@@ -8,6 +8,19 @@ import java.util.List;
 public class ArgumentBuilder {
     private final List<Argument<?>> arguments = new ArrayList<>();
 
+    public ArgumentBuilder blockPosArgument(String name) {
+        return blockPosArgument(name, null);
+    }
+
+    public ArgumentBuilder blockPosArgument(String name, SuggestionAction suggestionAction) {
+        return blockPosArgument(name, suggestionAction, null);
+    }
+
+    public ArgumentBuilder blockPosArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction) {
+        arguments.add(new BlockPosArgument(name, suggestionAction, contextAction));
+        return this;
+    }
+
     public ArgumentBuilder boolArgument(String name) {
         return boolArgument(name, null);
     }
