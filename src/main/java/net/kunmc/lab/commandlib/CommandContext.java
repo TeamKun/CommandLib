@@ -16,7 +16,7 @@ public class CommandContext {
     public CommandContext(@NotNull CommandSource sender, @NotNull String input, @NotNull List<Object> parsedArgs) {
         this.args = ImmutableList.copyOf(input.replaceFirst("^/", "").split(" "));
         this.sender = sender;
-        this.parsedArgs = ImmutableList.copyOf(parsedArgs);
+        this.parsedArgs = parsedArgs;
     }
 
     public List<String> getArgs() {

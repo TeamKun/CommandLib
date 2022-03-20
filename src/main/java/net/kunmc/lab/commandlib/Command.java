@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -71,42 +70,37 @@ public abstract class Command {
 
         for (ArgumentBuilder argumentBuilder : argumentBuilderList) {
             List<Argument<?>> arguments = argumentBuilder.build();
-            Function<com.mojang.brigadier.context.CommandContext<CommandSource>, List<Object>> argsParser = ctx -> arguments.stream()
-                    .map(a -> {
-                        try {
-                            return a.parse(ctx);
-                        } catch (Exception e) {
-                            return null;
-                        }
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+            Function<com.mojang.brigadier.context.CommandContext<CommandSource>, List<Object>> argsParser = ctx -> {
+                List<Object> parsedArgs = new ArrayList<>();
+
+                for (Argument<?> argument : arguments) {
+                    try {
+                        parsedArgs.add(argument.parse(ctx));
+                    } catch (Exception ignored) {
+                        parsedArgs.add(null);
+                    }
+                }
+
+                return parsedArgs;
+            };
 
             if (arguments.isEmpty()) {
                 cmdBuilder.executes(ctx -> {
-                    execute(new CommandContext(ctx.getSource(), ctx.getInput(), argsParser.apply(ctx)));
-                    return 1;
+                    return exec(new CommandContext(ctx.getSource(), ctx.getInput(), argsParser.apply(ctx)));
                 });
             } else {
-                cmdBuilder.executes(ctx -> {
-                    sendHelp(ctx, arguments);
-                    return 1;
-                });
+                cmdBuilder.executes(ctx -> sendHelp(ctx, arguments));
 
                 List<RequiredArgumentBuilder<CommandSource, ?>> requiredArgumentBuilderList = arguments.stream()
                         .map(a -> a.toBuilder(argsParser))
                         .peek(a -> {
                             if (a.getCommand() == null) {
-                                a.executes(ctx -> {
-                                    sendHelp(ctx, arguments);
-                                    return 1;
-                                });
+                                a.executes(ctx -> sendHelp(ctx, arguments));
                             }
                         })
                         .collect(Collectors.toList());
                 requiredArgumentBuilderList.get(requiredArgumentBuilderList.size() - 1).executes(ctx -> {
-                    execute(new CommandContext(ctx.getSource(), ctx.getInput(), argsParser.apply(ctx)));
-                    return 1;
+                    return exec(new CommandContext(ctx.getSource(), ctx.getInput(), argsParser.apply(ctx)));
                 });
                 List<ArgumentCommandNode<CommandSource, ?>> argNodes = requiredArgumentBuilderList.stream()
                         .map(RequiredArgumentBuilder::build)
@@ -137,7 +131,7 @@ public abstract class Command {
                 .collect(Collectors.toList());
     }
 
-    private void sendHelp(com.mojang.brigadier.context.CommandContext<CommandSource> ctx, List<Argument<?>> arguments) {
+    private int sendHelp(com.mojang.brigadier.context.CommandContext<CommandSource> ctx, List<Argument<?>> arguments) {
         ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.RED + "Usage:"), false);
         String padding = "  ";
 
@@ -159,6 +153,20 @@ public abstract class Command {
                     .collect(Collectors.joining(" "));
 
             ctx.getSource().sendFeedback(new StringTextComponent(msg), false);
+        }
+
+        return 1;
+    }
+
+    private int exec(CommandContext ctx) {
+        try {
+            execute(ctx);
+            return 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+            ctx.sendFailure("An unexpected error occurred trying to execute that command.");
+            ctx.sendFailure("Check the console for details.");
+            return 0;
         }
     }
 
