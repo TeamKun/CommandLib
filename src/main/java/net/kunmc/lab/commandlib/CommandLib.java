@@ -5,6 +5,7 @@ import net.minecraft.command.CommandSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +14,7 @@ import java.util.List;
 public class CommandLib {
     private final List<Command> cmds;
 
-    public static void register(Command cmd, Command... cmds) {
+    public static void register(@NotNull Command cmd, @NotNull Command... cmds) {
         List<Command> list = new ArrayList<Command>() {{
             add(cmd);
             addAll(Arrays.asList(cmds));

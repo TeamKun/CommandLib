@@ -9,6 +9,7 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,17 +34,17 @@ public abstract class Command {
         this.permissionLevel = level;
     }
 
-    protected void addChildren(Command child, Command... children) {
+    protected void addChildren(@NotNull Command child, @NotNull Command... children) {
         this.children.add(child);
         this.children.addAll(Arrays.asList(children));
     }
 
-    protected void addAliases(String alias, String... aliases) {
+    protected void addAliases(@NotNull String alias, @NotNull String... aliases) {
         this.aliases.add(alias);
         this.aliases.addAll(Arrays.asList(aliases));
     }
 
-    protected void argument(Consumer<ArgumentBuilder> buildArguments) {
+    protected void argument(@NotNull Consumer<ArgumentBuilder> buildArguments) {
         ArgumentBuilder builder = new ArgumentBuilder();
         buildArguments.accept(builder);
         argumentBuilderList.add(builder);
@@ -161,5 +162,5 @@ public abstract class Command {
         }
     }
 
-    protected abstract void execute(CommandContext ctx);
+    protected abstract void execute(@NotNull CommandContext ctx);
 }

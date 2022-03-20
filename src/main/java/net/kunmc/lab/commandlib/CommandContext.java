@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.command.CommandSource;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class CommandContext {
     private final CommandSource sender;
     private final List<Object> parsedArgs;
 
-    public CommandContext(CommandSource sender, String input, List<Object> parsedArgs) {
+    public CommandContext(@NotNull CommandSource sender, @NotNull String input, @NotNull List<Object> parsedArgs) {
         this.args = ImmutableList.copyOf(input.replaceFirst("^/", "").split(" "));
         this.sender = sender;
         this.parsedArgs = ImmutableList.copyOf(parsedArgs);
