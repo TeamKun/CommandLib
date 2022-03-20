@@ -32,7 +32,12 @@ public class CommandContext {
     }
 
     public <T> T getParsedArg(int index, Class<T> clazz) {
-        return clazz.cast(parsedArgs.get(index));
+        Object parsedArg = getParsedArg(index);
+        if (parsedArg == null) {
+            return null;
+        }
+
+        return clazz.cast(parsedArg);
     }
 
     public CommandSource getSender() {
