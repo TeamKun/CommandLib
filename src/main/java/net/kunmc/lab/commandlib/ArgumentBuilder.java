@@ -134,6 +134,31 @@ public class ArgumentBuilder {
         return this;
     }
 
+    public ArgumentBuilder stringArgument(String name) {
+        return stringArgument(name, ((SuggestionAction) null));
+    }
+
+    public ArgumentBuilder stringArgument(String name, StringArgument.Type type) {
+        return stringArgument(name, type, null);
+    }
+
+    public ArgumentBuilder stringArgument(String name, SuggestionAction suggestionAction) {
+        return stringArgument(name, suggestionAction, null);
+    }
+
+    public ArgumentBuilder stringArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction) {
+        return stringArgument(name, StringArgument.Type.PHRASE, suggestionAction, contextAction);
+    }
+
+    public ArgumentBuilder stringArgument(String name, StringArgument.Type type, SuggestionAction suggestionAction) {
+        return stringArgument(name, type, suggestionAction, null);
+    }
+
+    public ArgumentBuilder stringArgument(String name, StringArgument.Type type, SuggestionAction suggestionAction, ContextAction contextAction) {
+        arguments.add(new StringArgument(name, suggestionAction, contextAction, type));
+        return this;
+    }
+
     List<Argument<?>> build() {
         return arguments;
     }
