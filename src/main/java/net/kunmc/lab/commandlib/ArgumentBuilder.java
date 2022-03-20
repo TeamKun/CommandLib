@@ -1,9 +1,6 @@
 package net.kunmc.lab.commandlib;
 
-import net.kunmc.lab.commandlib.argument.BooleanArgument;
-import net.kunmc.lab.commandlib.argument.DoubleArgument;
-import net.kunmc.lab.commandlib.argument.FloatArgument;
-import net.kunmc.lab.commandlib.argument.IntegerArgument;
+import net.kunmc.lab.commandlib.argument.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +43,31 @@ public class ArgumentBuilder {
 
     public ArgumentBuilder doubleArgument(String name, Double min, Double max, SuggestionAction suggestionAction, ContextAction contextAction) {
         arguments.add(new DoubleArgument(name, suggestionAction, contextAction, min, max));
+        return this;
+    }
+
+    public ArgumentBuilder entityArgument(String name) {
+        return entityArgument(name, null);
+    }
+
+    public ArgumentBuilder entityArgument(String name, boolean enableEntities, boolean single) {
+        return entityArgument(name, enableEntities, single, null);
+    }
+
+    public ArgumentBuilder entityArgument(String name, SuggestionAction suggestionAction) {
+        return entityArgument(name, suggestionAction, null);
+    }
+
+    public ArgumentBuilder entityArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction) {
+        return entityArgument(name, true, false, suggestionAction, contextAction);
+    }
+
+    public ArgumentBuilder entityArgument(String name, boolean enableEntities, boolean single, SuggestionAction suggestionAction) {
+        return entityArgument(name, enableEntities, single, suggestionAction, null);
+    }
+
+    public ArgumentBuilder entityArgument(String name, boolean enableEntities, boolean single, SuggestionAction suggestionAction, ContextAction contextAction) {
+        arguments.add(new EntityArgument(name, suggestionAction, contextAction, enableEntities, single));
         return this;
     }
 
