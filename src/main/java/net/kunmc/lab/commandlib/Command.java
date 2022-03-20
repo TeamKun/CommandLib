@@ -8,6 +8,8 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.kunmc.lab.commandlib.annotation.NotNull;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,8 +88,21 @@ public abstract class Command {
                     return 1;
                 });
             } else {
+                cmdBuilder.executes(ctx -> {
+                    sendHelp(ctx, arguments);
+                    return 1;
+                });
+
                 List<RequiredArgumentBuilder<CommandSource, ?>> requiredArgumentBuilderList = arguments.stream()
                         .map(a -> a.toBuilder(argsParser))
+                        .peek(a -> {
+                            if (a.getCommand() == null) {
+                                a.executes(ctx -> {
+                                    sendHelp(ctx, arguments);
+                                    return 1;
+                                });
+                            }
+                        })
                         .collect(Collectors.toList());
                 requiredArgumentBuilderList.get(requiredArgumentBuilderList.size() - 1).executes(ctx -> {
                     execute(new CommandContext(ctx.getSource(), ctx.getInput(), argsParser.apply(ctx)));
@@ -104,6 +119,7 @@ public abstract class Command {
                 cmdBuilder.then(argNodes.get(0));
             }
         }
+       
         return cmdBuilder.build();
     }
 
@@ -111,9 +127,39 @@ public abstract class Command {
         return aliases.stream()
                 .map(s -> Commands.literal(s)
                         .requires(cs -> cs.hasPermissionLevel(permissionLevel))
-                        .redirect(target)
-                        .build())
+                        .redirect(target))
+                .peek(b -> {
+                    if (!target.getChildren().isEmpty()) {
+                        b.executes(ctx -> target.getCommand().run(ctx));
+                    }
+                })
+                .map(LiteralArgumentBuilder::build)
                 .collect(Collectors.toList());
+    }
+
+    private void sendHelp(com.mojang.brigadier.context.CommandContext<CommandSource> ctx, List<Argument<?>> arguments) {
+        ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.RED + "Usage:"), false);
+        String padding = "  ";
+
+        if (!children.isEmpty()) {
+            ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.BLUE + padding + "/" + name), false);
+
+            children.forEach(c -> {
+                ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.YELLOW + padding + padding + c.name), false);
+            });
+
+            ctx.getSource().sendFeedback(new StringTextComponent(""), false);
+        }
+
+        if (!arguments.isEmpty()) {
+            String msg = TextFormatting.BLUE + padding + "/" + name + " ";
+            msg += arguments.stream()
+                    .map(a -> a.name)
+                    .map(s -> String.format(TextFormatting.GRAY + "<" + TextFormatting.YELLOW + "%s" + TextFormatting.GRAY + ">", s))
+                    .collect(Collectors.joining(" "));
+
+            ctx.getSource().sendFeedback(new StringTextComponent(msg), false);
+        }
     }
 
     protected abstract void execute(CommandContext ctx);
