@@ -1,6 +1,6 @@
 ## Getting Started
 
-### Gradle
+### Gradle Settings
 
 ```groovy
 plugins {
@@ -11,9 +11,13 @@ configurations {
     adder
 }
 
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
 dependencies {
-    compileOnly ""
-    adder ""
+    compileOnly "com.github.TeamKun:CommandLib:latest.release"
+    adder "com.github.TeamKun:CommandLib:latest.release"
 }
 
 shadowJar {
