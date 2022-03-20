@@ -34,6 +34,19 @@ public class ArgumentBuilder {
         return this;
     }
 
+    public ArgumentBuilder blockStateArgument(String name) {
+        return blockStateArgument(name, null);
+    }
+
+    public ArgumentBuilder blockStateArgument(String name, SuggestionAction suggestionAction) {
+        return blockStateArgument(name, suggestionAction, null);
+    }
+
+    public ArgumentBuilder blockStateArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction) {
+        arguments.add(new BlockStateArgument(name, suggestionAction, contextAction));
+        return this;
+    }
+
     public ArgumentBuilder doubleArgument(String name) {
         return doubleArgument(name, null);
     }
