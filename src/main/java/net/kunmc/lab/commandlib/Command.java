@@ -67,6 +67,11 @@ public abstract class Command {
     private LiteralCommandNode<CommandSource> toCommandNode() {
         LiteralArgumentBuilder<CommandSource> cmdBuilder = Commands.literal(name)
                 .requires(cs -> cs.hasPermissionLevel(permissionLevel));
+        if (argumentBuilderList.isEmpty()) {
+            cmdBuilder.executes(ctx -> {
+                return exec(new CommandContext(ctx.getSource(), ctx.getInput(), new ArrayList<>()));
+            });
+        }
 
         for (ArgumentBuilder argumentBuilder : argumentBuilderList) {
             List<Argument<?>> arguments = argumentBuilder.build();
@@ -84,34 +89,28 @@ public abstract class Command {
                 return parsedArgs;
             };
 
-            if (arguments.isEmpty()) {
-                cmdBuilder.executes(ctx -> {
-                    return exec(new CommandContext(ctx.getSource(), ctx.getInput(), argsParser.apply(ctx)));
-                });
-            } else {
-                cmdBuilder.executes(ctx -> sendHelp(ctx, arguments));
+            cmdBuilder.executes(ctx -> sendHelp(ctx, arguments));
 
-                List<RequiredArgumentBuilder<CommandSource, ?>> requiredArgumentBuilderList = arguments.stream()
-                        .map(a -> a.toBuilder(argsParser))
-                        .peek(a -> {
-                            if (a.getCommand() == null) {
-                                a.executes(ctx -> sendHelp(ctx, arguments));
-                            }
-                        })
-                        .collect(Collectors.toList());
-                requiredArgumentBuilderList.get(requiredArgumentBuilderList.size() - 1).executes(ctx -> {
-                    return exec(new CommandContext(ctx.getSource(), ctx.getInput(), argsParser.apply(ctx)));
-                });
-                List<ArgumentCommandNode<CommandSource, ?>> argNodes = requiredArgumentBuilderList.stream()
-                        .map(RequiredArgumentBuilder::build)
-                        .collect(Collectors.toList());
+            List<RequiredArgumentBuilder<CommandSource, ?>> requiredArgumentBuilderList = arguments.stream()
+                    .map(a -> a.toBuilder(argsParser))
+                    .peek(a -> {
+                        if (a.getCommand() == null) {
+                            a.executes(ctx -> sendHelp(ctx, arguments));
+                        }
+                    })
+                    .collect(Collectors.toList());
+            requiredArgumentBuilderList.get(requiredArgumentBuilderList.size() - 1).executes(ctx -> {
+                return exec(new CommandContext(ctx.getSource(), ctx.getInput(), argsParser.apply(ctx)));
+            });
+            List<ArgumentCommandNode<CommandSource, ?>> argNodes = requiredArgumentBuilderList.stream()
+                    .map(RequiredArgumentBuilder::build)
+                    .collect(Collectors.toList());
 
-                for (int i = 0; i < argNodes.size() - 1; i++) {
-                    argNodes.get(i).addChild(argNodes.get(i + 1));
-                }
-
-                cmdBuilder.then(argNodes.get(0));
+            for (int i = 0; i < argNodes.size() - 1; i++) {
+                argNodes.get(i).addChild(argNodes.get(i + 1));
             }
+
+            cmdBuilder.then(argNodes.get(0));
         }
 
         return cmdBuilder.build();
