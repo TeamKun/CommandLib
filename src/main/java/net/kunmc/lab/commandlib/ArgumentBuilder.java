@@ -9,6 +9,7 @@ import java.util.List;
 
 public class ArgumentBuilder {
     private final List<Argument<?>> arguments = new ArrayList<>();
+    private ContextAction contextAction = null;
 
     public ArgumentBuilder blockPosArgument(@NotNull String name) {
         return blockPosArgument(name, null);
@@ -200,7 +201,16 @@ public class ArgumentBuilder {
         return this;
     }
 
+    public ArgumentBuilder execute(@NotNull ContextAction contextAction) {
+        this.contextAction = contextAction;
+        return this;
+    }
+
     List<Argument<?>> build() {
+        if (!arguments.isEmpty()) {
+            arguments.get(arguments.size() - 1).setContextAction(contextAction);
+        }
+
         return arguments;
     }
 }

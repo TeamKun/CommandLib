@@ -12,7 +12,7 @@ import java.util.function.Function;
 public abstract class Argument<T> {
     protected final String name;
     private final SuggestionAction suggestionAction;
-    private final ContextAction contextAction;
+    private ContextAction contextAction;
     private final ArgumentType<?> type;
 
     public Argument(String name, SuggestionAction suggestionAction, ContextAction contextAction, ArgumentType<?> type) {
@@ -20,6 +20,10 @@ public abstract class Argument<T> {
         this.suggestionAction = suggestionAction;
         this.contextAction = contextAction;
         this.type = type;
+    }
+
+    void setContextAction(ContextAction contextAction) {
+        this.contextAction = contextAction;
     }
 
     final RequiredArgumentBuilder<CommandSource, ?> toBuilder(Function<CommandContext<CommandSource>, List<Object>> argsParser) {
@@ -46,7 +50,7 @@ public abstract class Argument<T> {
 
         if (contextAction != null) {
             builder.executes(ctx -> {
-                contextAction.accept(new net.kunmc.lab.commandlib.CommandContext(ctx.getSource(), ctx.getInput(), argsParser.apply(ctx)));
+                contextAction.accept(new net.kunmc.lab.commandlib.CommandContext(ctx, argsParser.apply(ctx)));
                 return 1;
             });
         }
