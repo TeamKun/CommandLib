@@ -1,5 +1,6 @@
 package net.kunmc.lab.commandlib;
 
+import com.google.common.collect.Lists;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
@@ -16,11 +17,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public abstract class Command {
     private final String name;
     private int permissionLevel = 4;
+    private Command parent = null;
     private final List<Command> children = new ArrayList<>();
     private final List<String> aliases = new ArrayList<>();
     private final List<ArgumentBuilder> argumentBuilderList = new ArrayList<>();
@@ -34,8 +37,10 @@ public abstract class Command {
     }
 
     protected void addChildren(@NotNull Command child, @NotNull Command... children) {
-        this.children.add(child);
-        this.children.addAll(Arrays.asList(children));
+        for (Command c : Lists.asList(child, children)) {
+            c.parent = this;
+            this.children.add(c);
+        }
     }
 
     protected void addAliases(@NotNull String alias, @NotNull String... aliases) {
@@ -134,8 +139,19 @@ public abstract class Command {
         ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.RED + "Usage:"), false);
         String padding = "  ";
 
+        String literalConcatName = ((Supplier<String>) () -> {
+            StringBuilder s = new StringBuilder(name);
+            Command parent = this.parent;
+            while (parent != null) {
+                s.insert(0, parent.name + " ");
+                parent = parent.parent;
+            }
+
+            return s.toString();
+        }).get();
+
         if (!children.isEmpty()) {
-            ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.BLUE + padding + "/" + name), false);
+            ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.BLUE + padding + "/" + literalConcatName), false);
 
             children.forEach(c -> {
                 ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.YELLOW + padding + padding + c.name), false);
@@ -145,7 +161,7 @@ public abstract class Command {
         }
 
         if (!arguments.isEmpty()) {
-            String msg = TextFormatting.BLUE + padding + "/" + name + " ";
+            String msg = TextFormatting.BLUE + padding + "/" + literalConcatName + " ";
             msg += arguments.stream()
                     .map(a -> a.name)
                     .map(s -> String.format(TextFormatting.GRAY + "<" + TextFormatting.YELLOW + "%s" + TextFormatting.GRAY + ">", s))
