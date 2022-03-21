@@ -86,8 +86,10 @@ public abstract class Command {
                 for (Argument<?> argument : arguments) {
                     try {
                         parsedArgs.add(argument.parse(ctx));
-                    } catch (Exception ignored) {
-                        parsedArgs.add(null);
+                    } catch (IllegalArgumentException ignored) {
+                        // 通常は発生しないが, argument追加時にContextActionを指定した場合は
+                        // com.mojang.brigadier.context.CommandContext#getArgument内で例外が発生する可能性があるため
+                        // 例外を無視している.
                     }
                 }
 
