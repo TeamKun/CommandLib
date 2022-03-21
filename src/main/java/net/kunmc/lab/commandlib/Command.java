@@ -13,7 +13,6 @@ import net.minecraft.util.text.TextFormatting;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -32,23 +31,31 @@ public abstract class Command {
         this.name = name;
     }
 
-    protected void setPermissionLevel(int level) {
+    public void setPermissionLevel(int level) {
         this.permissionLevel = level;
     }
 
-    protected void addChildren(@NotNull Command child, @NotNull Command... children) {
-        for (Command c : Lists.asList(child, children)) {
-            c.parent = this;
-            this.children.add(c);
+    public void addChildren(@NotNull Command child, @NotNull Command... children) {
+        addChildren(Lists.asList(child, children));
+    }
+
+    public void addChildren(@NotNull List<Command> children) {
+        this.children.addAll(children);
+
+        for (Command child : children) {
+            child.parent = this;
         }
     }
 
-    protected void addAliases(@NotNull String alias, @NotNull String... aliases) {
-        this.aliases.add(alias);
-        this.aliases.addAll(Arrays.asList(aliases));
+    public void addAliases(@NotNull String alias, @NotNull String... aliases) {
+        addAliases(Lists.asList(alias, aliases));
     }
 
-    protected void argument(@NotNull Consumer<ArgumentBuilder> buildArguments) {
+    public void addAliases(@NotNull List<String> aliases) {
+        this.aliases.addAll(aliases);
+    }
+
+    public void argument(@NotNull Consumer<ArgumentBuilder> buildArguments) {
         ArgumentBuilder builder = new ArgumentBuilder();
         buildArguments.accept(builder);
         argumentBuilderList.add(builder);
