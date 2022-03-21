@@ -26,14 +26,13 @@ public abstract class Argument<T> {
         this.contextAction = contextAction;
     }
 
-    final RequiredArgumentBuilder<CommandSource, ?> toBuilder(Function<CommandContext<CommandSource>, List<Object>> argsParser) {
+    final RequiredArgumentBuilder<CommandSource, ?> toBuilder(Command parent, Function<CommandContext<CommandSource>, List<Object>> argsParser) {
         RequiredArgumentBuilder<CommandSource, ?> builder = RequiredArgumentBuilder.argument(name, type);
 
         builder.suggests((ctx, sb) -> {
             if (suggestionAction != null) {
                 SuggestionBuilder suggestionBuilder = new SuggestionBuilder();
                 suggestionAction.accept(suggestionBuilder);
-
                 suggestionBuilder.build().forEach(s -> {
                     if (s.tooltip != null) {
                         sb.suggest(s.text, new LiteralMessage(s.tooltip));
@@ -48,12 +47,12 @@ public abstract class Argument<T> {
             }
         });
 
-        if (contextAction != null) {
-            builder.executes(ctx -> {
-                contextAction.accept(new net.kunmc.lab.commandlib.CommandContext(ctx, argsParser.apply(ctx)));
-                return 1;
-            });
+        if (contextAction == null) {
+            contextAction = parent::execute;
         }
+        builder.executes(ctx -> {
+            return CommandLib.executeWithStackTrace(new net.kunmc.lab.commandlib.CommandContext(parent, ctx, argsParser.apply(ctx)), contextAction);
+        });
 
         return builder;
     }

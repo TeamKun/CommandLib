@@ -23,6 +23,18 @@ public class CommandLib {
         new CommandLib(list);
     }
 
+    static int executeWithStackTrace(CommandContext ctx, ContextAction contextAction) {
+        try {
+            contextAction.accept(ctx);
+            return 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+            ctx.sendFailure("An unexpected error occurred trying to execute that command.");
+            ctx.sendFailure("Check the console for details.");
+            return 0;
+        }
+    }
+
     private CommandLib(List<Command> cmds) {
         this.cmds = cmds;
 

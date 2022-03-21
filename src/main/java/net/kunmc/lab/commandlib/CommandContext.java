@@ -4,19 +4,26 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.command.CommandSource;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public class CommandContext {
+    private final Command command;
+    private final com.mojang.brigadier.context.CommandContext<CommandSource> handle;
     private final List<String> args;
     private final CommandSource sender;
     private final List<Object> parsedArgs;
 
-    public CommandContext(@NotNull CommandSource sender, @NotNull String input, @NotNull List<Object> parsedArgs) {
-        this.args = ImmutableList.copyOf(input.replaceFirst("^/", "").split(" "));
-        this.sender = sender;
+    public CommandContext(Command command, com.mojang.brigadier.context.CommandContext<CommandSource> ctx, List<Object> parsedArgs) {
+        this.command = command;
+        this.handle = ctx;
+        this.args = ImmutableList.copyOf(ctx.getInput().replaceFirst("^/", "").split(" "));
+        this.sender = ctx.getSource();
         this.parsedArgs = parsedArgs;
+    }
+
+    public com.mojang.brigadier.context.CommandContext<CommandSource> getHandle() {
+        return handle;
     }
 
     public List<String> getArgs() {
@@ -42,6 +49,10 @@ public class CommandContext {
 
     public CommandSource getSender() {
         return sender;
+    }
+
+    public void sendHelp() {
+        command.sendHelp(handle);
     }
 
     public void sendMessage(String message) {

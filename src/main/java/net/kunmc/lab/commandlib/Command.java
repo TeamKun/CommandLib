@@ -19,13 +19,15 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static net.kunmc.lab.commandlib.CommandLib.executeWithStackTrace;
+
 public abstract class Command {
     private final String name;
     private int permissionLevel = 4;
     private Command parent = null;
     private final List<Command> children = new ArrayList<>();
     private final List<String> aliases = new ArrayList<>();
-    private final List<ArgumentBuilder> argumentBuilderList = new ArrayList<>();
+    private final List<List<Argument<?>>> argumentsList = new ArrayList<>();
 
     public Command(@NotNull String name) {
         this.name = name;
@@ -58,10 +60,10 @@ public abstract class Command {
     public void argument(@NotNull Consumer<ArgumentBuilder> buildArguments) {
         ArgumentBuilder builder = new ArgumentBuilder();
         buildArguments.accept(builder);
-        argumentBuilderList.add(builder);
+        argumentsList.add(builder.build());
     }
 
-    final List<LiteralCommandNode<CommandSource>> toCommandNodes() {
+    public final List<LiteralCommandNode<CommandSource>> toCommandNodes() {
         List<LiteralCommandNode<CommandSource>> cmds = new ArrayList<>();
 
         LiteralCommandNode<CommandSource> cmd = toCommandNode();
@@ -79,14 +81,15 @@ public abstract class Command {
     private LiteralCommandNode<CommandSource> toCommandNode() {
         LiteralArgumentBuilder<CommandSource> cmdBuilder = Commands.literal(name)
                 .requires(cs -> cs.hasPermissionLevel(permissionLevel));
-        if (argumentBuilderList.isEmpty()) {
+        if (argumentsList.isEmpty()) {
             cmdBuilder.executes(ctx -> {
-                return exec(new CommandContext(ctx.getSource(), ctx.getInput(), new ArrayList<>()));
+                return executeWithStackTrace(new CommandContext(this, ctx, new ArrayList<>()), this::execute);
             });
+
+            return cmdBuilder.build();
         }
 
-        for (ArgumentBuilder argumentBuilder : argumentBuilderList) {
-            List<Argument<?>> arguments = argumentBuilder.build();
+        for (List<Argument<?>> arguments : argumentsList) {
             Function<com.mojang.brigadier.context.CommandContext<CommandSource>, List<Object>> argsParser = ctx -> {
                 List<Object> parsedArgs = new ArrayList<>();
 
@@ -94,7 +97,7 @@ public abstract class Command {
                     try {
                         parsedArgs.add(argument.parse(ctx));
                     } catch (IllegalArgumentException ignored) {
-                        // 通常は発生しないが, argument追加時にContextActionを指定した場合は
+                        // 通常は発生しないが, argument追加時にContextActionを設定した場合やexecuteをOverrideした場合は
                         // com.mojang.brigadier.context.CommandContext#getArgument内で例外が発生する可能性があるため
                         // 例外を無視している.
                     }
@@ -103,23 +106,14 @@ public abstract class Command {
                 return parsedArgs;
             };
 
-            cmdBuilder.executes(ctx -> sendHelp(ctx, arguments));
-
-            List<RequiredArgumentBuilder<CommandSource, ?>> requiredArgumentBuilderList = arguments.stream()
-                    .map(a -> a.toBuilder(argsParser))
-                    .peek(a -> {
-                        if (a.getCommand() == null) {
-                            a.executes(ctx -> sendHelp(ctx, arguments));
-                        }
-                    })
-                    .collect(Collectors.toList());
-            requiredArgumentBuilderList.get(requiredArgumentBuilderList.size() - 1).executes(ctx -> {
-                return exec(new CommandContext(ctx.getSource(), ctx.getInput(), argsParser.apply(ctx)));
+            cmdBuilder.executes(ctx -> {
+                return executeWithStackTrace(new CommandContext(this, ctx, argsParser.apply(ctx)), this::execute);
             });
-            List<ArgumentCommandNode<CommandSource, ?>> argNodes = requiredArgumentBuilderList.stream()
+
+            List<ArgumentCommandNode<CommandSource, ?>> argNodes = arguments.stream()
+                    .map(a -> a.toBuilder(this, argsParser))
                     .map(RequiredArgumentBuilder::build)
                     .collect(Collectors.toList());
-
             for (int i = 0; i < argNodes.size() - 1; i++) {
                 argNodes.get(i).addChild(argNodes.get(i + 1));
             }
@@ -144,7 +138,7 @@ public abstract class Command {
                 .collect(Collectors.toList());
     }
 
-    private int sendHelp(com.mojang.brigadier.context.CommandContext<CommandSource> ctx, List<Argument<?>> arguments) {
+    public void sendHelp(com.mojang.brigadier.context.CommandContext<CommandSource> ctx) {
         ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.RED + "Usage:"), false);
         String padding = "  ";
 
@@ -169,7 +163,11 @@ public abstract class Command {
             ctx.getSource().sendFeedback(new StringTextComponent(""), false);
         }
 
-        if (!arguments.isEmpty()) {
+        for (List<Argument<?>> arguments : argumentsList) {
+            if (arguments.isEmpty()) {
+                continue;
+            }
+
             String msg = TextFormatting.BLUE + padding + "/" + literalConcatName + " ";
             msg += arguments.stream()
                     .map(a -> a.name)
@@ -178,21 +176,9 @@ public abstract class Command {
 
             ctx.getSource().sendFeedback(new StringTextComponent(msg), false);
         }
-
-        return 1;
     }
 
-    private int exec(CommandContext ctx) {
-        try {
-            execute(ctx);
-            return 1;
-        } catch (Exception e) {
-            e.printStackTrace();
-            ctx.sendFailure("An unexpected error occurred trying to execute that command.");
-            ctx.sendFailure("Check the console for details.");
-            return 0;
-        }
+    protected void execute(@NotNull CommandContext ctx) {
+        sendHelp(ctx.getHandle());
     }
-
-    protected abstract void execute(@NotNull CommandContext ctx);
 }
