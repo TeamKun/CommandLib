@@ -1,6 +1,7 @@
 package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.SuggestionAction;
@@ -16,7 +17,7 @@ public class TeamArgument extends Argument<ScorePlayerTeam> {
     public ScorePlayerTeam parse(CommandContext<CommandSource> ctx) {
         try {
             return net.minecraft.command.arguments.TeamArgument.getTeam(ctx, name);
-        } catch (Exception e) {
+        } catch (CommandSyntaxException e) {
             return null;
         }
     }
