@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.command.CommandSource;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
 import java.util.function.Function;
@@ -55,6 +56,10 @@ public abstract class Argument<T> {
         });
 
         return builder;
+    }
+
+    String generateHelpMessageTag() {
+        return String.format(TextFormatting.GRAY + "<" + TextFormatting.YELLOW + "%s" + TextFormatting.GRAY + ">", name);
     }
 
     public abstract T parse(CommandContext<CommandSource> ctx);

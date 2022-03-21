@@ -2,7 +2,6 @@ package net.kunmc.lab.commandlib;
 
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -15,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -27,7 +25,7 @@ public abstract class Command {
     private Command parent = null;
     private final List<Command> children = new ArrayList<>();
     private final List<String> aliases = new ArrayList<>();
-    private final List<List<Argument<?>>> argumentsList = new ArrayList<>();
+    private final List<Arguments> argumentsList = new ArrayList<>();
 
     public Command(@NotNull String name) {
         this.name = name;
@@ -60,7 +58,7 @@ public abstract class Command {
     public void argument(@NotNull Consumer<ArgumentBuilder> buildArguments) {
         ArgumentBuilder builder = new ArgumentBuilder();
         buildArguments.accept(builder);
-        argumentsList.add(builder.build());
+        argumentsList.add(new Arguments(builder.build()));
     }
 
     public final List<LiteralCommandNode<CommandSource>> toCommandNodes() {
@@ -89,31 +87,12 @@ public abstract class Command {
             return cmdBuilder.build();
         }
 
-        for (List<Argument<?>> arguments : argumentsList) {
-            Function<com.mojang.brigadier.context.CommandContext<CommandSource>, List<Object>> argsParser = ctx -> {
-                List<Object> parsedArgs = new ArrayList<>();
-
-                for (Argument<?> argument : arguments) {
-                    try {
-                        parsedArgs.add(argument.parse(ctx));
-                    } catch (IllegalArgumentException ignored) {
-                        // 通常は発生しないが, argument追加時にContextActionを設定した場合やexecuteをOverrideした場合は
-                        // com.mojang.brigadier.context.CommandContext#getArgument内で例外が発生する可能性があるため
-                        // 例外を無視している.
-                    }
-                }
-
-                return parsedArgs;
-            };
-
+        for (Arguments arguments : argumentsList) {
             cmdBuilder.executes(ctx -> {
-                return executeWithStackTrace(new CommandContext(this, ctx, argsParser.apply(ctx)), this::execute);
+                return executeWithStackTrace(new CommandContext(this, ctx, arguments.parse(ctx)), this::execute);
             });
 
-            List<ArgumentCommandNode<CommandSource, ?>> argNodes = arguments.stream()
-                    .map(a -> a.toBuilder(this, argsParser))
-                    .map(RequiredArgumentBuilder::build)
-                    .collect(Collectors.toList());
+            List<ArgumentCommandNode<CommandSource, ?>> argNodes = arguments.toCommandNodes(this);
             for (int i = 0; i < argNodes.size() - 1; i++) {
                 argNodes.get(i).addChild(argNodes.get(i + 1));
             }
@@ -163,18 +142,11 @@ public abstract class Command {
             ctx.getSource().sendFeedback(new StringTextComponent(""), false);
         }
 
-        for (List<Argument<?>> arguments : argumentsList) {
-            if (arguments.isEmpty()) {
-                continue;
+        for (Arguments arguments : argumentsList) {
+            String msg = arguments.generateHelpMessage(literalConcatName);
+            if (!msg.isEmpty()) {
+                ctx.getSource().sendFeedback(new StringTextComponent(padding + msg), false);
             }
-
-            String msg = TextFormatting.BLUE + padding + "/" + literalConcatName + " ";
-            msg += arguments.stream()
-                    .map(a -> a.name)
-                    .map(s -> String.format(TextFormatting.GRAY + "<" + TextFormatting.YELLOW + "%s" + TextFormatting.GRAY + ">", s))
-                    .collect(Collectors.joining(" "));
-
-            ctx.getSource().sendFeedback(new StringTextComponent(msg), false);
         }
     }
 
