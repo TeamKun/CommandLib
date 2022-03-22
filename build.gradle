@@ -21,7 +21,7 @@ subprojects {
 
     publishing {
         publications {
-            mavenJava(MavenPublication) {
+            maven(MavenPublication) {
                 groupId = project.group
                 artifactId = project.name
                 version = project.version
