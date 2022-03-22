@@ -33,7 +33,7 @@ dependencies {
 }
 
 shadowJar {
-    archiveFileName = "${rootProject.name}-${version}.jar"
+    archiveFileName = "${rootProject.name}-forge-${version}.jar"
     configurations = [project.configurations.adder]
 }
 tasks.build.dependsOn tasks.shadowJar

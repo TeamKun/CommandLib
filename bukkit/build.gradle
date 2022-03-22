@@ -36,7 +36,7 @@ java {
 }
 
 shadowJar {
-    archiveFileName = "${rootProject.name}-${version}.jar"
+    archiveFileName = "${rootProject.name}-bukkit-${version}.jar"
     exclude "net/minecraft"
     exclude "org/bukkit"
     exclude "com/mojang"
