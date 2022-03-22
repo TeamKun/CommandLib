@@ -1,0 +1,48 @@
+buildscript {
+    repositories {
+        maven { url = 'https://files.minecraftforge.net/maven' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+    }
+}
+
+plugins {
+    id "com.github.johnrengelman.shadow" version "6.1.0"
+}
+
+apply plugin: 'net.minecraftforge.gradle'
+
+
+repositories {
+}
+
+minecraft {
+    mappings channel: 'snapshot', version: '20210309-1.16.5'
+}
+
+configurations {
+    adder
+}
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.16.5-36.2.31'
+    compileOnly "org.jetbrains:annotations:16.0.2"
+    adder "org.jetbrains:annotations:16.0.2"
+}
+
+shadowJar {
+    archiveFileName = "${rootProject.name}-${version}.jar"
+    configurations = [project.configurations.adder]
+}
+tasks.build.dependsOn tasks.shadowJar
+jar.finalizedBy("shadowJar")
+
+publishing {
+    repositories {
+        maven {
+            url "file:///${project.projectDir}/mcmodsrepo"
+        }
+    }
+}
