@@ -1,69 +1,34 @@
-buildscript {
-    repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-    }
+allprojects {
+    group 'net.kunmc.lab'
+    version '0.1.0'
 }
 
-plugins {
-    id "java"
-    id "maven-publish"
-    id "idea"
-    id "com.github.johnrengelman.shadow" version "6.1.0"
-}
+subprojects {
+    apply plugin: "java"
+    apply plugin: "maven-publish"
+    apply plugin: "idea"
 
-apply plugin: 'net.minecraftforge.gradle'
-
-group 'net.kunmc.lab'
-version '0.1.0'
-
-idea {
-    module {
-        downloadJavadoc = true
-        downloadSources = true
-    }
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = "UTF-8"
-}
-
-repositories {
-}
-
-minecraft {
-    mappings channel: 'snapshot', version: '20210309-1.16.5'
-}
-
-configurations {
-    adder
-}
-
-dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.5-36.2.31'
-    compileOnly "org.jetbrains:annotations:16.0.2"
-    adder "org.jetbrains:annotations:16.0.2"
-}
-
-shadowJar {
-    archiveFileName = "${rootProject.name}-${version}.jar"
-    configurations = [project.configurations.adder]
-}
-tasks.build.dependsOn tasks.shadowJar
-jar.finalizedBy("shadowJar")
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact jar
+    idea {
+        module {
+            downloadJavadoc = true
+            downloadSources = true
         }
     }
-    repositories {
-        maven {
-            url "file:///${project.projectDir}/mcmodsrepo"
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId = project.group
+                artifactId = project.name
+                version = project.version
+
+                from components.java
+            }
         }
     }
 }
+
