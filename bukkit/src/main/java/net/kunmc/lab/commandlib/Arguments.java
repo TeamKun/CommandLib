@@ -37,7 +37,7 @@ class Arguments {
             return "";
         }
 
-        String msg = ChatColor.BLUE + "/" + literalConcatName + " ";
+        String msg = ChatColor.AQUA + "/" + literalConcatName + " ";
         msg += argumentList.stream()
                 .map(Argument::generateHelpMessageTag)
                 .collect(Collectors.joining(" "));

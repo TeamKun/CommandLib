@@ -120,6 +120,9 @@ public abstract class Command {
 
     public void sendHelp(com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx) {
         CommandSender sender = ctx.getSource().getBukkitSender();
+
+        sender.sendMessage(ChatColor.GRAY + "--------------------------------------------------");
+
         sender.sendMessage(ChatColor.RED + "Usage:");
         String padding = "  ";
 
@@ -135,7 +138,7 @@ public abstract class Command {
         }).get();
 
         if (!children.isEmpty()) {
-            sender.sendMessage(ChatColor.BLUE + padding + "/" + literalConcatName);
+            sender.sendMessage(ChatColor.AQUA + padding + "/" + literalConcatName);
 
             children.forEach(c -> {
                 sender.sendMessage(ChatColor.YELLOW + padding + padding + c.name);
@@ -150,6 +153,8 @@ public abstract class Command {
                 sender.sendMessage(padding + msg);
             }
         }
+       
+        sender.sendMessage(ChatColor.GRAY + "--------------------------------------------------");
     }
 
     protected void execute(@NotNull CommandContext ctx) {

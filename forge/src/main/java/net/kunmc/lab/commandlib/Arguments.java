@@ -37,7 +37,7 @@ class Arguments {
             return "";
         }
 
-        String msg = TextFormatting.BLUE + "/" + literalConcatName + " ";
+        String msg = TextFormatting.AQUA + "/" + literalConcatName + " ";
         msg += argumentList.stream()
                 .map(Argument::generateHelpMessageTag)
                 .collect(Collectors.joining(" "));

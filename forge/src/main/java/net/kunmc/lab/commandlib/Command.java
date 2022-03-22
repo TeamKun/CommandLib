@@ -119,6 +119,9 @@ public abstract class Command {
 
     public void sendHelp(com.mojang.brigadier.context.CommandContext<CommandSource> ctx) {
         ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.RED + "Usage:"), false);
+
+        ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.GRAY + "--------------------------------------------------"), false);
+
         String padding = "  ";
 
         String literalConcatName = ((Supplier<String>) () -> {
@@ -133,7 +136,7 @@ public abstract class Command {
         }).get();
 
         if (!children.isEmpty()) {
-            ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.BLUE + padding + "/" + literalConcatName), false);
+            ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.AQUA + padding + "/" + literalConcatName), false);
 
             children.forEach(c -> {
                 ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.YELLOW + padding + padding + c.name), false);
@@ -148,6 +151,8 @@ public abstract class Command {
                 ctx.getSource().sendFeedback(new StringTextComponent(padding + msg), false);
             }
         }
+
+        ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.GRAY + "--------------------------------------------------"), false);
     }
 
     protected void execute(@NotNull CommandContext ctx) {
