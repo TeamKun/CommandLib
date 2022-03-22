@@ -22,8 +22,7 @@ repositories {
 
 dependencies {
     compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
-    compileOnly "com.mojang:brigadier:1.0.18"
-    compileOnly fileTree(dir: "./libs/", include: "patched*.jar")
+    //compileOnly fileTree(dir: "./libs/", include: "patched*.jar")
 }
 
 def targetJavaVersion = 8
@@ -40,6 +39,7 @@ shadowJar {
     archiveFileName = "${rootProject.name}-${version}.jar"
     exclude "net/minecraft"
     exclude "org/bukkit"
+    exclude "com/mojang"
 }
 tasks.build.dependsOn tasks.shadowJar
 jar.finalizedBy("shadowJar")
@@ -47,9 +47,11 @@ jar.finalizedBy("shadowJar")
 jar {
     exclude "net/minecraft"
     exclude "org/bukkit"
+    exclude "com/mojang"
 }
 
 javadoc {
     exclude "net/minecraft"
     exclude "org/bukkit"
+    exclude "com/mojang"
 }

@@ -2,7 +2,7 @@ package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.tree.ArgumentCommandNode;
+import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.ChatColor;
 
@@ -45,7 +45,7 @@ class Arguments {
         return msg;
     }
 
-    List<ArgumentCommandNode<CommandListenerWrapper, ?>> toCommandNodes(Command parent) {
+    List<CommandNode<CommandListenerWrapper>> toCommandNodes(Command parent) {
         return argumentList.stream()
                 .map(a -> a.toBuilder(parent, this::parse))
                 .map(RequiredArgumentBuilder::build)

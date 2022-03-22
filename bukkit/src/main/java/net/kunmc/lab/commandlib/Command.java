@@ -2,9 +2,7 @@ package net.kunmc.lab.commandlib;
 
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -60,10 +58,10 @@ public abstract class Command {
         argumentsList.add(new Arguments(builder.build()));
     }
 
-    public final List<LiteralCommandNode<CommandListenerWrapper>> toCommandNodes() {
-        List<LiteralCommandNode<CommandListenerWrapper>> cmds = new ArrayList<>();
+    public final List<CommandNode<CommandListenerWrapper>> toCommandNodes() {
+        List<CommandNode<CommandListenerWrapper>> cmds = new ArrayList<>();
 
-        LiteralCommandNode<CommandListenerWrapper> cmd = toCommandNode();
+        CommandNode<CommandListenerWrapper> cmd = toCommandNode();
         cmds.add(cmd);
 
         children.forEach(c -> {
@@ -75,7 +73,7 @@ public abstract class Command {
         return cmds;
     }
 
-    private LiteralCommandNode<CommandListenerWrapper> toCommandNode() {
+    private CommandNode<CommandListenerWrapper> toCommandNode() {
         LiteralArgumentBuilder<CommandListenerWrapper> cmdBuilder = LiteralArgumentBuilder.literal(name);
         cmdBuilder.requires(cs -> cs.hasPermission(permissionLevel));
         if (argumentsList.isEmpty()) {
@@ -91,7 +89,7 @@ public abstract class Command {
                 return executeWithStackTrace(new CommandContext(this, ctx, arguments.parse(ctx)), this::execute);
             });
 
-            List<ArgumentCommandNode<CommandListenerWrapper, ?>> argNodes = arguments.toCommandNodes(this);
+            List<CommandNode<CommandListenerWrapper>> argNodes = arguments.toCommandNodes(this);
             for (int i = 0; i < argNodes.size() - 1; i++) {
                 argNodes.get(i).addChild(argNodes.get(i + 1));
             }
@@ -102,7 +100,7 @@ public abstract class Command {
         return cmdBuilder.build();
     }
 
-    private List<LiteralCommandNode<CommandListenerWrapper>> createAliasCommands(CommandNode<CommandListenerWrapper> target) {
+    private List<CommandNode<CommandListenerWrapper>> createAliasCommands(CommandNode<CommandListenerWrapper> target) {
         return aliases.stream()
                 .map(s -> {
                     LiteralArgumentBuilder<CommandListenerWrapper> builder = LiteralArgumentBuilder.literal(s);
@@ -153,7 +151,7 @@ public abstract class Command {
                 sender.sendMessage(padding + msg);
             }
         }
-       
+
         sender.sendMessage(ChatColor.GRAY + "--------------------------------------------------");
     }
 
