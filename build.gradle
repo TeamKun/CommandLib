@@ -1,3 +1,12 @@
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath "com.github.jengelman.gradle.plugins:shadow:6.1.0"
+    }
+}
+
 allprojects {
     group 'net.kunmc.lab'
     version '0.1.0'
@@ -7,6 +16,7 @@ subprojects {
     apply plugin: "java"
     apply plugin: "maven-publish"
     apply plugin: "idea"
+    apply plugin: "com.github.johnrengelman.shadow"
 
     idea {
         module {
@@ -30,5 +40,10 @@ subprojects {
             }
         }
     }
+
+    shadowJar {
+        archiveFileName = "${project.name}-${project.version}.jar"
+    }
+    tasks.build.dependsOn tasks.shadowJar
 }
 

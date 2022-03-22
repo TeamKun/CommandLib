@@ -8,12 +8,7 @@ buildscript {
     }
 }
 
-plugins {
-    id "com.github.johnrengelman.shadow" version "6.1.0"
-}
-
 apply plugin: 'net.minecraftforge.gradle'
-
 
 repositories {
 }
@@ -33,8 +28,6 @@ dependencies {
 }
 
 shadowJar {
-    archiveFileName = "${rootProject.name}-forge-${version}.jar"
     configurations = [project.configurations.adder]
 }
-tasks.build.dependsOn tasks.shadowJar
 jar.finalizedBy("shadowJar")

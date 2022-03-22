@@ -1,14 +1,3 @@
-buildscript {
-    repositories {
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath "com.github.jengelman.gradle.plugins:shadow:6.1.0"
-    }
-}
-
-apply plugin: "com.github.johnrengelman.shadow"
-
 repositories {
     mavenCentral()
     maven {
@@ -36,12 +25,10 @@ java {
 }
 
 shadowJar {
-    archiveFileName = "${rootProject.name}-bukkit-${version}.jar"
     exclude "net/minecraft"
     exclude "org/bukkit"
     exclude "com/mojang"
 }
-tasks.build.dependsOn tasks.shadowJar
 jar.finalizedBy("shadowJar")
 
 jar {
