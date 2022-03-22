@@ -137,6 +137,19 @@ public class ArgumentBuilder {
         return this;
     }
 
+    public ArgumentBuilder itemStackArgument(@NotNull String name) {
+        return itemStackArgument(name, null);
+    }
+
+    public ArgumentBuilder itemStackArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction) {
+        return itemStackArgument(name, suggestionAction, null);
+    }
+
+    public ArgumentBuilder itemStackArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
+        arguments.add(new ItemStackArgument(name, suggestionAction, contextAction));
+        return this;
+    }
+   
     public ArgumentBuilder locationArgument(@NotNull String name) {
         return locationArgument(name, null);
     }
