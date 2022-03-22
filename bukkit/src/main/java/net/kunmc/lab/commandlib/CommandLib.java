@@ -62,7 +62,7 @@ public class CommandLib implements Listener {
                     return x;
                 }));
 
-        CommandDispatcher dispatcher = ((CraftServer) plugin.getServer()).getServer().vanillaCommandDispatcher;
+        CommandDispatcher dispatcher = ((CraftServer) plugin.getServer()).getServer().getCommandDispatcher();
         RootCommandNode<CommandListenerWrapper> root = dispatcher.a().getRoot();
         registeredCommands.forEach(c -> {
             root.addChild(c);
@@ -80,7 +80,7 @@ public class CommandLib implements Listener {
     }
 
     public void unregister() {
-        RootCommandNode<CommandListenerWrapper> root = ((CraftServer) plugin.getServer()).getServer().vanillaCommandDispatcher.dispatcher().getRoot();
+        RootCommandNode<CommandListenerWrapper> root = ((CraftServer) plugin.getServer()).getServer().getCommandDispatcher().dispatcher().getRoot();
         Map<String, org.bukkit.command.Command> knownCommands = Bukkit.getCommandMap().getKnownCommands();
         registeredCommands.stream()
                 .map(CommandNode::getName)
