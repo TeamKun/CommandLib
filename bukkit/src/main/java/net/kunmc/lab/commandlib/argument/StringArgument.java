@@ -5,7 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.SuggestionAction;
-import net.minecraft.command.CommandSource;
+import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 
 public class StringArgument extends Argument<String> {
     public StringArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction, Type type) {
@@ -13,7 +13,7 @@ public class StringArgument extends Argument<String> {
     }
 
     @Override
-    public String parse(CommandContext<CommandSource> ctx) {
+    public String parse(CommandContext<CommandListenerWrapper> ctx) {
         return StringArgumentType.getString(ctx, name);
     }
 

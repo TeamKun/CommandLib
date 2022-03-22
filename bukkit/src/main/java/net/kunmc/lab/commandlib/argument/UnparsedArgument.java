@@ -5,8 +5,8 @@ import com.mojang.brigadier.context.ParsedCommandNode;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.SuggestionAction;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.arguments.GameProfileArgument;
+import net.minecraft.server.v1_16_R3.ArgumentProfile;
+import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -20,14 +20,14 @@ public class UnparsedArgument extends Argument<String> {
             }
 
             return suggestionAction;
-        }).get(), contextAction, GameProfileArgument.gameProfile());
+        }).get(), contextAction, ArgumentProfile.a());
     }
 
     @Override
-    public String parse(CommandContext<CommandSource> ctx) {
+    public String parse(CommandContext<CommandListenerWrapper> ctx) {
         String input = ctx.getInput();
 
-        Optional<ParsedCommandNode<CommandSource>> node = ctx.getNodes().stream()
+        Optional<ParsedCommandNode<CommandListenerWrapper>> node = ctx.getNodes().stream()
                 .filter(x -> x.getNode().getName().equals(name))
                 .findFirst();
 

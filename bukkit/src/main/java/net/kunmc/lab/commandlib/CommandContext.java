@@ -1,28 +1,28 @@
 package net.kunmc.lab.commandlib;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.command.CommandSource;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
 public class CommandContext {
     private final Command command;
-    private final com.mojang.brigadier.context.CommandContext<CommandSource> handle;
+    private final com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> handle;
     private final List<String> args;
-    private final CommandSource sender;
+    private final CommandSender sender;
     private final List<Object> parsedArgs;
 
-    public CommandContext(Command command, com.mojang.brigadier.context.CommandContext<CommandSource> ctx, List<Object> parsedArgs) {
+    public CommandContext(Command command, com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx, List<Object> parsedArgs) {
         this.command = command;
         this.handle = ctx;
         this.args = ImmutableList.copyOf(ctx.getInput().replaceFirst("^/", "").split(" "));
-        this.sender = ctx.getSource();
+        this.sender = ctx.getSource().getBukkitSender();
         this.parsedArgs = parsedArgs;
     }
 
-    public com.mojang.brigadier.context.CommandContext<CommandSource> getHandle() {
+    public com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> getHandle() {
         return handle;
     }
 
@@ -47,7 +47,7 @@ public class CommandContext {
         return clazz.cast(parsedArg);
     }
 
-    public CommandSource getSender() {
+    public CommandSender getSender() {
         return sender;
     }
 
@@ -56,34 +56,18 @@ public class CommandContext {
     }
 
     public void sendMessage(String message) {
-        sendMessage(message, false);
-    }
-
-    public void sendMessage(String message, boolean allowLogging) {
-        sender.sendFeedback(new StringTextComponent(message), allowLogging);
+        sender.sendMessage(message);
     }
 
     public void sendSuccess(String message) {
-        sendSuccess(message, false);
-    }
-
-    public void sendSuccess(String message, boolean allowLogging) {
-        sendMessage(TextFormatting.GREEN + message, allowLogging);
+        sendMessage(ChatColor.GREEN + message);
     }
 
     public void sendWarn(String message) {
-        sendWarn(message, false);
-    }
-
-    public void sendWarn(String message, boolean allowLogging) {
-        sendMessage(TextFormatting.YELLOW + message, allowLogging);
+        sendMessage(ChatColor.YELLOW + message);
     }
 
     public void sendFailure(String message) {
-        sendFailure(message, false);
-    }
-
-    public void sendFailure(String message, boolean allowLogging) {
-        sendMessage(TextFormatting.RED + message, allowLogging);
+        sendMessage(ChatColor.RED + message);
     }
 }

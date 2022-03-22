@@ -5,18 +5,20 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.SuggestionAction;
-import net.minecraft.command.CommandSource;
-import net.minecraft.scoreboard.ScorePlayerTeam;
+import net.minecraft.server.v1_16_R3.ArgumentScoreboardTeam;
+import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
+import org.bukkit.Bukkit;
+import org.bukkit.scoreboard.Team;
 
-public class TeamArgument extends Argument<ScorePlayerTeam> {
+public class TeamArgument extends Argument<Team> {
     public TeamArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction) {
-        super(name, suggestionAction, contextAction, net.minecraft.command.arguments.TeamArgument.team());
+        super(name, suggestionAction, contextAction, ArgumentScoreboardTeam.a());
     }
 
     @Override
-    public ScorePlayerTeam parse(CommandContext<CommandSource> ctx) {
+    public Team parse(CommandContext<CommandListenerWrapper> ctx) {
         try {
-            return net.minecraft.command.arguments.TeamArgument.getTeam(ctx, name);
+            return Bukkit.getScoreboardManager().getMainScoreboard().getTeam(ArgumentScoreboardTeam.a(ctx, name).getName());
         } catch (CommandSyntaxException e) {
             return null;
         }

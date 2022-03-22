@@ -5,10 +5,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -61,10 +60,10 @@ public abstract class Command {
         argumentsList.add(new Arguments(builder.build()));
     }
 
-    public final List<LiteralCommandNode<CommandSource>> toCommandNodes() {
-        List<LiteralCommandNode<CommandSource>> cmds = new ArrayList<>();
+    public final List<LiteralCommandNode<CommandListenerWrapper>> toCommandNodes() {
+        List<LiteralCommandNode<CommandListenerWrapper>> cmds = new ArrayList<>();
 
-        LiteralCommandNode<CommandSource> cmd = toCommandNode();
+        LiteralCommandNode<CommandListenerWrapper> cmd = toCommandNode();
         cmds.add(cmd);
 
         children.forEach(c -> {
@@ -76,9 +75,9 @@ public abstract class Command {
         return cmds;
     }
 
-    private LiteralCommandNode<CommandSource> toCommandNode() {
-        LiteralArgumentBuilder<CommandSource> cmdBuilder = Commands.literal(name)
-                .requires(cs -> cs.hasPermissionLevel(permissionLevel));
+    private LiteralCommandNode<CommandListenerWrapper> toCommandNode() {
+        LiteralArgumentBuilder<CommandListenerWrapper> cmdBuilder = LiteralArgumentBuilder.literal(name);
+        cmdBuilder.requires(cs -> cs.hasPermission(permissionLevel));
         if (argumentsList.isEmpty()) {
             cmdBuilder.executes(ctx -> {
                 return executeWithStackTrace(new CommandContext(this, ctx, new ArrayList<>()), this::execute);
@@ -92,7 +91,7 @@ public abstract class Command {
                 return executeWithStackTrace(new CommandContext(this, ctx, arguments.parse(ctx)), this::execute);
             });
 
-            List<ArgumentCommandNode<CommandSource, ?>> argNodes = arguments.toCommandNodes(this);
+            List<ArgumentCommandNode<CommandListenerWrapper, ?>> argNodes = arguments.toCommandNodes(this);
             for (int i = 0; i < argNodes.size() - 1; i++) {
                 argNodes.get(i).addChild(argNodes.get(i + 1));
             }
@@ -103,11 +102,13 @@ public abstract class Command {
         return cmdBuilder.build();
     }
 
-    private List<LiteralCommandNode<CommandSource>> createAliasCommands(CommandNode<CommandSource> target) {
+    private List<LiteralCommandNode<CommandListenerWrapper>> createAliasCommands(CommandNode<CommandListenerWrapper> target) {
         return aliases.stream()
-                .map(s -> Commands.literal(s)
-                        .requires(cs -> cs.hasPermissionLevel(permissionLevel))
-                        .redirect(target))
+                .map(s -> {
+                    LiteralArgumentBuilder<CommandListenerWrapper> builder = LiteralArgumentBuilder.literal(s);
+                    return builder.requires(cs -> cs.hasPermission(permissionLevel))
+                            .redirect(target);
+                })
                 .peek(b -> {
                     if (!target.getChildren().isEmpty()) {
                         b.executes(ctx -> target.getCommand().run(ctx));
@@ -117,8 +118,9 @@ public abstract class Command {
                 .collect(Collectors.toList());
     }
 
-    public void sendHelp(com.mojang.brigadier.context.CommandContext<CommandSource> ctx) {
-        ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.RED + "Usage:"), false);
+    public void sendHelp(com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx) {
+        CommandSender sender = ctx.getSource().getBukkitSender();
+        sender.sendMessage(ChatColor.RED + "Usage:");
         String padding = "  ";
 
         String literalConcatName = ((Supplier<String>) () -> {
@@ -133,19 +135,19 @@ public abstract class Command {
         }).get();
 
         if (!children.isEmpty()) {
-            ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.BLUE + padding + "/" + literalConcatName), false);
+            sender.sendMessage(ChatColor.BLUE + padding + "/" + literalConcatName);
 
             children.forEach(c -> {
-                ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.YELLOW + padding + padding + c.name), false);
+                sender.sendMessage(ChatColor.YELLOW + padding + padding + c.name);
             });
 
-            ctx.getSource().sendFeedback(new StringTextComponent(""), false);
+            sender.sendMessage("");
         }
 
         for (Arguments arguments : argumentsList) {
             String msg = arguments.generateHelpMessage(literalConcatName);
             if (!msg.isEmpty()) {
-                ctx.getSource().sendFeedback(new StringTextComponent(padding + msg), false);
+                sender.sendMessage(padding + msg);
             }
         }
     }

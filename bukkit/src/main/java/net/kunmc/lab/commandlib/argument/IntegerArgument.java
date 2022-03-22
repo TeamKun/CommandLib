@@ -5,7 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.SuggestionAction;
-import net.minecraft.command.CommandSource;
+import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 
 public class IntegerArgument extends Argument<Integer> {
     public IntegerArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction, Integer min, Integer max) {
@@ -13,7 +13,7 @@ public class IntegerArgument extends Argument<Integer> {
     }
 
     @Override
-    public Integer parse(CommandContext<CommandSource> ctx) {
+    public Integer parse(CommandContext<CommandListenerWrapper> ctx) {
         return IntegerArgumentType.getInteger(ctx, name);
     }
 }

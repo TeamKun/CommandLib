@@ -5,31 +5,33 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.SuggestionAction;
-import net.minecraft.command.CommandSource;
-import net.minecraft.entity.Entity;
+import net.minecraft.server.v1_16_R3.ArgumentEntity;
+import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
+import org.bukkit.entity.Entity;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class EntityArgument extends Argument<List<Entity>> {
     private final boolean enableEntities;
     private final boolean single;
 
     public EntityArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction, boolean enableEntities, boolean single) {
-        super(name, suggestionAction, contextAction, ((Supplier<net.minecraft.command.arguments.EntityArgument>) () -> {
+        super(name, suggestionAction, contextAction, ((Supplier<ArgumentEntity>) () -> {
             if (enableEntities) {
                 if (single) {
-                    return net.minecraft.command.arguments.EntityArgument.entity();
+                    return ArgumentEntity.a();
                 } else {
-                    return net.minecraft.command.arguments.EntityArgument.entities();
+                    return ArgumentEntity.multipleEntities();
                 }
             } else {
                 if (single) {
-                    return net.minecraft.command.arguments.EntityArgument.player();
+                    return ArgumentEntity.c();
                 } else {
-                    return net.minecraft.command.arguments.EntityArgument.players();
+                    return ArgumentEntity.d();
                 }
             }
         }).get());
@@ -39,19 +41,23 @@ public class EntityArgument extends Argument<List<Entity>> {
     }
 
     @Override
-    public List<Entity> parse(CommandContext<CommandSource> ctx) {
+    public List<Entity> parse(CommandContext<CommandListenerWrapper> ctx) {
         try {
             if (enableEntities) {
                 if (single) {
-                    return Collections.singletonList(net.minecraft.command.arguments.EntityArgument.getEntity(ctx, name));
+                    return Collections.singletonList(ArgumentEntity.a(ctx, name).getBukkitEntity());
                 } else {
-                    return new ArrayList<>(net.minecraft.command.arguments.EntityArgument.getEntities(ctx, name));
+                    return ArgumentEntity.b(ctx, name).stream()
+                            .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)
+                            .collect(Collectors.toList());
                 }
             } else {
                 if (single) {
-                    return Collections.singletonList(net.minecraft.command.arguments.EntityArgument.getPlayer(ctx, name));
+                    return Collections.singletonList(ArgumentEntity.e(ctx, name).getBukkitEntity());
                 } else {
-                    return new ArrayList<>(net.minecraft.command.arguments.EntityArgument.getPlayers(ctx, name));
+                    return ArgumentEntity.f(ctx, name).stream()
+                            .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)
+                            .collect(Collectors.toList());
                 }
             }
         } catch (CommandSyntaxException e) {

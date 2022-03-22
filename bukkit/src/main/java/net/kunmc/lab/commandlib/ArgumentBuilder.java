@@ -11,16 +11,16 @@ public class ArgumentBuilder {
     private final List<Argument<?>> arguments = new ArrayList<>();
     private ContextAction contextAction = null;
 
-    public ArgumentBuilder blockPosArgument(@NotNull String name) {
-        return blockPosArgument(name, null);
+    public ArgumentBuilder blockDataArgument(@NotNull String name) {
+        return blockDataArgument(name, null);
     }
 
-    public ArgumentBuilder blockPosArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction) {
-        return blockPosArgument(name, suggestionAction, null);
+    public ArgumentBuilder blockDataArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction) {
+        return blockDataArgument(name, suggestionAction, null);
     }
 
-    public ArgumentBuilder blockPosArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new BlockPosArgument(name, suggestionAction, contextAction));
+    public ArgumentBuilder blockDataArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
+        arguments.add(new BlockDataArgument(name, suggestionAction, contextAction));
         return this;
     }
 
@@ -34,19 +34,6 @@ public class ArgumentBuilder {
 
     public ArgumentBuilder boolArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
         arguments.add(new BooleanArgument(name, suggestionAction, contextAction));
-        return this;
-    }
-
-    public ArgumentBuilder blockStateArgument(@NotNull String name) {
-        return blockStateArgument(name, null);
-    }
-
-    public ArgumentBuilder blockStateArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction) {
-        return blockStateArgument(name, suggestionAction, null);
-    }
-
-    public ArgumentBuilder blockStateArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new BlockStateArgument(name, suggestionAction, contextAction));
         return this;
     }
 
@@ -149,6 +136,20 @@ public class ArgumentBuilder {
         arguments.add(new IntegerArgument(name, suggestionAction, contextAction, min, max));
         return this;
     }
+
+    public ArgumentBuilder locationArgument(@NotNull String name) {
+        return locationArgument(name, null);
+    }
+
+    public ArgumentBuilder locationArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction) {
+        return locationArgument(name, suggestionAction, null);
+    }
+
+    public ArgumentBuilder locationArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
+        arguments.add(new LocationArgument(name, suggestionAction, contextAction));
+        return this;
+    }
+
 
     public ArgumentBuilder stringArgument(@NotNull String name) {
         return stringArgument(name, ((@Nullable SuggestionAction) null));

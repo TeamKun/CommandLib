@@ -3,8 +3,8 @@ package net.kunmc.lab.commandlib;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
-import net.minecraft.command.CommandSource;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
+import org.bukkit.ChatColor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ class Arguments {
         this.argumentList = argumentList;
     }
 
-    List<Object> parse(CommandContext<CommandSource> ctx) {
+    List<Object> parse(CommandContext<CommandListenerWrapper> ctx) {
         List<Object> parsedArgs = new ArrayList<>();
         argumentList.forEach(a -> {
             try {
@@ -37,7 +37,7 @@ class Arguments {
             return "";
         }
 
-        String msg = TextFormatting.BLUE + "/" + literalConcatName + " ";
+        String msg = ChatColor.BLUE + "/" + literalConcatName + " ";
         msg += argumentList.stream()
                 .map(Argument::generateHelpMessageTag)
                 .collect(Collectors.joining(" "));
@@ -45,7 +45,7 @@ class Arguments {
         return msg;
     }
 
-    List<ArgumentCommandNode<CommandSource, ?>> toCommandNodes(Command parent) {
+    List<ArgumentCommandNode<CommandListenerWrapper, ?>> toCommandNodes(Command parent) {
         return argumentList.stream()
                 .map(a -> a.toBuilder(parent, this::parse))
                 .map(RequiredArgumentBuilder::build)
