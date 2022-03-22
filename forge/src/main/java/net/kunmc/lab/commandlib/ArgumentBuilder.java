@@ -150,6 +150,19 @@ public class ArgumentBuilder {
         return this;
     }
 
+    public ArgumentBuilder itemArgument(@NotNull String name) {
+        return itemArgument(name, null);
+    }
+
+    public ArgumentBuilder itemArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction) {
+        return itemArgument(name, suggestionAction, null);
+    }
+
+    public ArgumentBuilder itemArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
+        arguments.add(new ItemArgument(name, suggestionAction, contextAction));
+        return this;
+    }
+
     public ArgumentBuilder stringArgument(@NotNull String name) {
         return stringArgument(name, ((@Nullable SuggestionAction) null));
     }
