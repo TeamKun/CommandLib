@@ -22,7 +22,7 @@ configurations {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.5-36.2.31'
+    minecraft 'net.minecraftforge:forge:1.16.5-36.2.20'
     compileOnly "org.jetbrains:annotations:16.0.2"
     adder "org.jetbrains:annotations:16.0.2"
 }
