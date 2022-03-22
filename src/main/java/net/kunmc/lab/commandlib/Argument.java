@@ -30,8 +30,8 @@ public abstract class Argument<T> {
     final RequiredArgumentBuilder<CommandSource, ?> toBuilder(Command parent, Function<CommandContext<CommandSource>, List<Object>> argsParser) {
         RequiredArgumentBuilder<CommandSource, ?> builder = RequiredArgumentBuilder.argument(name, type);
 
-        builder.suggests((ctx, sb) -> {
-            if (suggestionAction != null) {
+        if (suggestionAction != null) {
+            builder.suggests((ctx, sb) -> {
                 SuggestionBuilder suggestionBuilder = new SuggestionBuilder();
                 suggestionAction.accept(suggestionBuilder);
                 suggestionBuilder.build().forEach(s -> {
@@ -43,10 +43,8 @@ public abstract class Argument<T> {
                 });
 
                 return sb.buildFuture();
-            } else {
-                return type.listSuggestions(ctx, sb);
-            }
-        });
+            });
+        }
 
         if (contextAction == null) {
             contextAction = parent::execute;
