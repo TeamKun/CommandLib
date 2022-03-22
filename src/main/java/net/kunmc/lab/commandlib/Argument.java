@@ -1,6 +1,5 @@
 package net.kunmc.lab.commandlib;
 
-import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -35,11 +34,7 @@ public abstract class Argument<T> {
                 SuggestionBuilder suggestionBuilder = new SuggestionBuilder();
                 suggestionAction.accept(suggestionBuilder);
                 suggestionBuilder.build().forEach(s -> {
-                    if (s.tooltip != null) {
-                        sb.suggest(s.text, new LiteralMessage(s.tooltip));
-                    } else {
-                        sb.suggest(s.text);
-                    }
+                    s.suggest(sb);
                 });
 
                 return sb.buildFuture();
