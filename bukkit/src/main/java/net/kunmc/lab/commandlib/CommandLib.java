@@ -68,6 +68,8 @@ public class CommandLib implements Listener {
             root.addChild(c);
             Bukkit.getCommandMap().getKnownCommands().put(c.getName(), new VanillaCommandWrapper(dispatcher, c));
         });
+
+        Bukkit.getOnlinePlayers().forEach(Player::updateCommands);
     }
 
     @EventHandler
