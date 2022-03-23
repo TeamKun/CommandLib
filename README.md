@@ -1,6 +1,6 @@
 ## Getting Started
 
-### Installation
+### Installation(Gradle Settings)
 
 <details>
 <summary>Bukkit</summary>
