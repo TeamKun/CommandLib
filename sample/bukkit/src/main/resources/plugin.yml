@@ -1,0 +1,4 @@
+name: SamplePlugin
+version: '${version}'
+main: net.kunmc.lab.sampleplugin.SamplePlugin
+api-version: 1.16
