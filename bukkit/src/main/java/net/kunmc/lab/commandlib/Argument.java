@@ -31,7 +31,7 @@ public abstract class Argument<T> {
 
         if (suggestionAction != null) {
             builder.suggests((ctx, sb) -> {
-                SuggestionBuilder suggestionBuilder = new SuggestionBuilder();
+                SuggestionBuilder suggestionBuilder = new SuggestionBuilder(ctx, argsParser);
                 suggestionAction.accept(suggestionBuilder);
                 suggestionBuilder.build().forEach(s -> {
                     s.suggest(sb);
