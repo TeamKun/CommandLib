@@ -75,6 +75,19 @@ public class ArgumentBuilder {
         return this;
     }
 
+    public ArgumentBuilder enchantmentArgument(@NotNull String name) {
+        return enchantmentArgument(name, null);
+    }
+
+    public ArgumentBuilder enchantmentArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction) {
+        return enchantmentArgument(name, suggestionAction, null);
+    }
+
+    public ArgumentBuilder enchantmentArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, ContextAction contextAction) {
+        arguments.add(new EnchantmentArgument(name, suggestionAction, contextAction));
+        return this;
+    }
+   
     public ArgumentBuilder entityArgument(@NotNull String name) {
         return entityArgument(name, null);
     }

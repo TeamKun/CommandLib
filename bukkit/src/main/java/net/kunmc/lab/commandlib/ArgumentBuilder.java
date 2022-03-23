@@ -61,6 +61,19 @@ public class ArgumentBuilder {
         arguments.add(new DoubleArgument(name, suggestionAction, contextAction, min, max));
         return this;
     }
+   
+    public ArgumentBuilder enchantmentArgument(@NotNull String name) {
+        return enchantmentArgument(name, null);
+    }
+
+    public ArgumentBuilder enchantmentArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction) {
+        return enchantmentArgument(name, suggestionAction, null);
+    }
+
+    public ArgumentBuilder enchantmentArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, ContextAction contextAction) {
+        arguments.add(new EnchantmentArgument(name, suggestionAction, contextAction));
+        return this;
+    }
 
     public ArgumentBuilder entityArgument(@NotNull String name) {
         return entityArgument(name, null);
@@ -149,7 +162,7 @@ public class ArgumentBuilder {
         arguments.add(new ItemStackArgument(name, suggestionAction, contextAction));
         return this;
     }
-   
+
     public ArgumentBuilder locationArgument(@NotNull String name) {
         return locationArgument(name, null);
     }
