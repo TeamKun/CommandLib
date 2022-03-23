@@ -163,6 +163,19 @@ public class ArgumentBuilder {
         return this;
     }
 
+    public ArgumentBuilder locationArgument(@NotNull String name) {
+        return locationArgument(name, null);
+    }
+
+    public ArgumentBuilder locationArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction) {
+        return locationArgument(name, suggestionAction, null);
+    }
+
+    public ArgumentBuilder locationArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
+        arguments.add(new LocationArgument(name, suggestionAction, contextAction));
+        return this;
+    }
+
     public ArgumentBuilder stringArgument(@NotNull String name) {
         return stringArgument(name, ((@Nullable SuggestionAction) null));
     }
