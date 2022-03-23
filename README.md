@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/TeamKun/CommandLib.svg)](https://jitpack.io/#TeamKun/CommandLib)
+
 ## Getting Started
 
 ### Installation(Gradle Settings)
