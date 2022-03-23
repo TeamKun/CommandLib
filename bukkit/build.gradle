@@ -11,7 +11,7 @@ repositories {
 
 dependencies {
     compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
-    compileOnly fileTree(dir: "./libs/", include: "patched*.jar")
+    //compileOnly fileTree(dir: "./libs/", include: "patched*.jar")
 }
 
 def targetJavaVersion = 8
