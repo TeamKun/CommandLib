@@ -62,5 +62,5 @@ reobf {
 
 ### Sample Code
 
-[Bukkit](/bukkit/src/main/java/net/kunmc/lab/sampleplugin)
-[Forge](/forge/src/main/java/net/kunmc/lab/samplemod)
+[Bukkit](/sample/bukkit/src/main/java/net/kunmc/lab/sampleplugin)  
+[Forge](/sample/forge/src/main/java/net/kunmc/lab/samplemod)
