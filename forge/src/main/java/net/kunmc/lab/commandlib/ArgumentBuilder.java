@@ -87,7 +87,7 @@ public class ArgumentBuilder {
         arguments.add(new EnchantmentArgument(name, suggestionAction, contextAction));
         return this;
     }
-   
+
     public ArgumentBuilder entityArgument(@NotNull String name) {
         return entityArgument(name, null);
     }
@@ -186,6 +186,19 @@ public class ArgumentBuilder {
 
     public ArgumentBuilder locationArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
         arguments.add(new LocationArgument(name, suggestionAction, contextAction));
+        return this;
+    }
+   
+    public ArgumentBuilder particleArgument(@NotNull String name) {
+        return particleArgument(name, null);
+    }
+
+    public ArgumentBuilder particleArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction) {
+        return particleArgument(name, suggestionAction, null);
+    }
+
+    public ArgumentBuilder particleArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
+        arguments.add(new ParticleArgument(name, suggestionAction, contextAction));
         return this;
     }
 
