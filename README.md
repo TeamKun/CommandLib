@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.TeamKun.CommandLib:bukkit:latest.release"
+    implementation "com.github.TeamKun.CommandLib:bukkit:0.2.2"
 }
 
 shadowJar {
@@ -42,7 +42,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.TeamKun.CommandLib:forge:latest.release"
+    implementation "com.github.TeamKun.CommandLib:forge:0.2.2"
 }
 
 shadowJar {
