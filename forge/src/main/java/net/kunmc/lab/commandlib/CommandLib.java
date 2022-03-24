@@ -2,9 +2,11 @@ package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.tree.RootCommandNode;
 import net.minecraft.command.CommandSource;
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -38,12 +40,21 @@ public class CommandLib {
     private CommandLib(List<Command> cmds) {
         this.cmds = cmds;
 
-        MinecraftForge.EVENT_BUS.register(this);
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server == null) {
+            MinecraftForge.EVENT_BUS.register(this);
+        } else {
+            register();
+        }
     }
 
     @SubscribeEvent
-    public void onRegisterCommands(RegisterCommandsEvent e) {
-        RootCommandNode<CommandSource> root = e.getDispatcher().getRoot();
+    public void onRegisterCommands(FMLServerStartedEvent e) {
+        register();
+    }
+
+    private void register() {
+        RootCommandNode<CommandSource> root = ServerLifecycleHooks.getCurrentServer().getCommandManager().getDispatcher().getRoot();
 
         cmds.stream()
                 .map(Command::toCommandNodes)
