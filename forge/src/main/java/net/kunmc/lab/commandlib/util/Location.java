@@ -2,6 +2,7 @@ package net.kunmc.lab.commandlib.util;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
@@ -71,7 +72,7 @@ public class Location implements Cloneable {
     }
 
     public int getBlockX() {
-        return ((int) getX());
+        return MathHelper.floor(getX());
     }
 
     public Location setY(double y) {
@@ -84,7 +85,7 @@ public class Location implements Cloneable {
     }
 
     public int getBlockY() {
-        return ((int) y);
+        return MathHelper.floor(getY());
     }
 
     public Location setZ(double z) {
@@ -97,7 +98,7 @@ public class Location implements Cloneable {
     }
 
     public int getBlockZ() {
-        return ((int) z);
+        return MathHelper.floor(getZ());
     }
 
     public Location setYaw(float yaw) {
