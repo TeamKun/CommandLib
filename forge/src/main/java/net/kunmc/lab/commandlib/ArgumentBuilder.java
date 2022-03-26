@@ -113,6 +113,15 @@ public class ArgumentBuilder {
         return this;
     }
 
+    public <T extends Enum<T>> ArgumentBuilder enumArgument(@NotNull String name, @NotNull Class<T> clazz) {
+        return enumArgument(name, clazz, null);
+    }
+
+    public <T extends Enum<T>> ArgumentBuilder enumArgument(@NotNull String name, @NotNull Class<T> clazz, @Nullable ContextAction contextAction) {
+        arguments.add(new EnumArgument<>(name, clazz, contextAction));
+        return this;
+    }
+
     public ArgumentBuilder floatArgument(@NotNull String name) {
         return floatArgument(name, null);
     }
@@ -188,7 +197,7 @@ public class ArgumentBuilder {
         arguments.add(new LocationArgument(name, suggestionAction, contextAction));
         return this;
     }
-   
+
     public ArgumentBuilder particleArgument(@NotNull String name) {
         return particleArgument(name, null);
     }
