@@ -3,6 +3,7 @@ package net.kunmc.lab.commandlib;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
+import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -86,7 +87,15 @@ public abstract class Command {
 
         for (Arguments arguments : argumentsList) {
             cmdBuilder.executes(ctx -> {
-                return executeWithStackTrace(new CommandContext(this, ctx, arguments.parse(ctx)), this::execute);
+                List<Object> parsedArguments = new ArrayList<>();
+                try {
+                    arguments.parse(parsedArguments, ctx);
+                } catch (IncorrectArgumentInputException e) {
+                    e.sendMessage(ctx.getSource().getBukkitSender());
+                    return 1;
+                }
+
+                return executeWithStackTrace(new CommandContext(this, ctx, parsedArguments), this::execute);
             });
 
             List<CommandNode<CommandListenerWrapper>> argNodes = arguments.toCommandNodes(this);

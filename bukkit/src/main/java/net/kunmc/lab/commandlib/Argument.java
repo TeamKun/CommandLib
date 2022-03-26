@@ -3,11 +3,12 @@ package net.kunmc.lab.commandlib;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.ChatColor;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 public abstract class Argument<T> {
     protected final String name;
@@ -26,7 +27,7 @@ public abstract class Argument<T> {
         this.contextAction = contextAction;
     }
 
-    final RequiredArgumentBuilder<CommandListenerWrapper, ?> toBuilder(Command parent, Function<CommandContext<CommandListenerWrapper>, List<Object>> argsParser) {
+    final RequiredArgumentBuilder<CommandListenerWrapper, ?> toBuilder(Command parent, ArgumentsParser argsParser) {
         RequiredArgumentBuilder<CommandListenerWrapper, ?> builder = RequiredArgumentBuilder.argument(name, type);
 
         if (suggestionAction != null) {
@@ -45,7 +46,14 @@ public abstract class Argument<T> {
             contextAction = parent::execute;
         }
         builder.executes(ctx -> {
-            return CommandLib.executeWithStackTrace(new net.kunmc.lab.commandlib.CommandContext(parent, ctx, argsParser.apply(ctx)), contextAction);
+            List<Object> parsedArgs = new ArrayList<>();
+            try {
+                argsParser.parse(parsedArgs, ctx);
+            } catch (IncorrectArgumentInputException e) {
+                e.sendMessage(ctx.getSource().getBukkitSender());
+                return 1;
+            }
+            return CommandLib.executeWithStackTrace(new net.kunmc.lab.commandlib.CommandContext(parent, ctx, parsedArgs), contextAction);
         });
 
         return builder;
@@ -55,5 +63,5 @@ public abstract class Argument<T> {
         return String.format(ChatColor.GRAY + "<" + ChatColor.YELLOW + "%s" + ChatColor.GRAY + ">", name);
     }
 
-    public abstract T parse(CommandContext<CommandListenerWrapper> ctx);
+    public abstract T parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException;
 }

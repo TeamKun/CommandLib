@@ -2,6 +2,7 @@ package net.kunmc.lab.commandlib;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.context.CommandContext;
+import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -10,16 +11,19 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 public class SuggestionBuilder {
     private final List<Suggestion> suggestions = new ArrayList<>();
     private final CommandContext<CommandListenerWrapper> ctx;
-    private final List<Object> parsedArgs;
+    private final List<Object> parsedArgs = new ArrayList<>();
 
-    public SuggestionBuilder(CommandContext<CommandListenerWrapper> ctx, Function<CommandContext<CommandListenerWrapper>, List<Object>> argsParser) {
+    public SuggestionBuilder(CommandContext<CommandListenerWrapper> ctx, ArgumentsParser argsParser) {
         this.ctx = ctx;
-        this.parsedArgs = argsParser.apply(ctx);
+
+        try {
+            argsParser.parse(parsedArgs, ctx);
+        } catch (IncorrectArgumentInputException ignored) {
+        }
     }
 
     public List<String> getArgs() {
