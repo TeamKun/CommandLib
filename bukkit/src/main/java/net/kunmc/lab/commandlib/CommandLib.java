@@ -96,10 +96,6 @@ public class CommandLib implements Listener {
         registeredCommands.clear();
         HandlerList.unregisterAll(this);
 
-        Bukkit.getPluginManager().getPermissions().forEach(p -> {
-            System.out.println(p.getName());
-        });
-
         Bukkit.getOnlinePlayers().forEach(Player::updateCommands);
     }
 }
