@@ -20,4 +20,8 @@ public class CommandContext<S> {
     public List<ParsedCommandNode<S>> getNodes() {
         return null;
     }
+
+    public <T> T getArgument(String name, Class<T> clazz) {
+        return null;
+    }
 }

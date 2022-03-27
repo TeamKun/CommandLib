@@ -4,8 +4,8 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-public class ArgumentScoreboardTeam {
-    public static ArgumentType<?> a() {
+public class ArgumentScoreboardTeam implements ArgumentType {
+    public static ArgumentScoreboardTeam a() {
         return null;
     }
 
