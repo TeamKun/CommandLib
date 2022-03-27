@@ -7,4 +7,8 @@ public class CraftItemStack extends ItemStack {
     public static CraftItemStack asNewCraftStack(Item item) {
         return null;
     }
+
+    public static CraftItemStack asCraftMirror(net.minecraft.server.v1_16_R3.ItemStack original) {
+        return null;
+    }
 }

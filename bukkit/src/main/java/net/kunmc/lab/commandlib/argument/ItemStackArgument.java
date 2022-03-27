@@ -1,6 +1,7 @@
 package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.SuggestionAction;
@@ -16,6 +17,10 @@ public class ItemStackArgument extends Argument<ItemStack> {
 
     @Override
     public ItemStack parse(CommandContext<CommandListenerWrapper> ctx) {
-        return CraftItemStack.asNewCraftStack(ArgumentItemStack.a(ctx, name).a());
+        try {
+            return CraftItemStack.asCraftMirror(ArgumentItemStack.a(ctx, name).a(1, false));
+        } catch (CommandSyntaxException ignored) {
+            return null;
+        }
     }
 }
