@@ -172,15 +172,15 @@ public class ArgumentBuilder {
         return this;
     }
 
-    public ArgumentBuilder itemArgument(@NotNull String name) {
-        return itemArgument(name, null);
+    public ArgumentBuilder itemStackArgument(@NotNull String name) {
+        return itemStackArgument(name, null);
     }
 
-    public ArgumentBuilder itemArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction) {
-        return itemArgument(name, suggestionAction, null);
+    public ArgumentBuilder itemStackArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction) {
+        return itemStackArgument(name, suggestionAction, null);
     }
 
-    public ArgumentBuilder itemArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
+    public ArgumentBuilder itemStackArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
         arguments.add(new ItemStackArgument(name, suggestionAction, contextAction));
         return this;
     }
