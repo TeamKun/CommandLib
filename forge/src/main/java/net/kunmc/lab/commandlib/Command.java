@@ -127,9 +127,8 @@ public abstract class Command {
     }
 
     public void sendHelp(com.mojang.brigadier.context.CommandContext<CommandSource> ctx) {
-        ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.RED + "Usage:"), false);
-
         ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.GRAY + "--------------------------------------------------"), false);
+        ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.RED + "Usage:"), false);
 
         String padding = "  ";
 

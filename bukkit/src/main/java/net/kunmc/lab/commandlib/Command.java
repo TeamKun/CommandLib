@@ -129,10 +129,9 @@ public abstract class Command {
         CommandSender sender = ctx.getSource().getBukkitSender();
 
         sender.sendMessage(ChatColor.GRAY + "--------------------------------------------------");
-
         sender.sendMessage(ChatColor.RED + "Usage:");
+       
         String padding = "  ";
-
         String literalConcatName = ((Supplier<String>) () -> {
             StringBuilder s = new StringBuilder(name);
             Command parent = this.parent;
