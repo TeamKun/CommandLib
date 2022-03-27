@@ -181,7 +181,7 @@ public class ArgumentBuilder {
     }
 
     public ArgumentBuilder itemArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new ItemArgument(name, suggestionAction, contextAction));
+        arguments.add(new ItemStackArgument(name, suggestionAction, contextAction));
         return this;
     }
 

@@ -8,8 +8,8 @@ import net.kunmc.lab.commandlib.SuggestionAction;
 import net.minecraft.command.CommandSource;
 import net.minecraft.item.ItemStack;
 
-public class ItemArgument extends Argument<ItemStack> {
-    public ItemArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction) {
+public class ItemStackArgument extends Argument<ItemStack> {
+    public ItemStackArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction) {
         super(name, suggestionAction, contextAction, net.minecraft.command.arguments.ItemArgument.item());
     }
 
