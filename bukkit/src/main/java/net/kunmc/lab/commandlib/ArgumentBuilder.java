@@ -203,6 +203,19 @@ public class ArgumentBuilder {
         return this;
     }
 
+    public ArgumentBuilder potionEffectArgument(@NotNull String name) {
+        return potionEffectArgument(name, null);
+    }
+
+    public ArgumentBuilder potionEffectArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction) {
+        return potionEffectArgument(name, suggestionAction, null);
+    }
+
+    public ArgumentBuilder potionEffectArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
+        arguments.add(new PotionEffectArgument(name, suggestionAction, contextAction));
+        return this;
+    }
+
     public ArgumentBuilder stringArgument(@NotNull String name) {
         return stringArgument(name, ((@Nullable SuggestionAction) null));
     }
