@@ -19,7 +19,20 @@ public class LiteralArgument extends Argument<String> {
     private final List<String> literals;
 
     public LiteralArgument(String name, List<String> literals, ContextAction contextAction) {
-        super(name, sb -> literals.forEach(sb::suggest), contextAction, StringArgumentType.string());
+        super(name, sb -> {
+            List<String> inputs = sb.getArgs();
+            String input = inputs.get(inputs.size() - 1);
+           
+            literals.stream()
+                    .filter(s -> {
+                        if (input.isEmpty()) {
+                            return true;
+                        }
+
+                        return s.startsWith(input);
+                    })
+                    .forEach(sb::suggest);
+        }, contextAction, StringArgumentType.string());
 
         this.literals = literals;
     }
