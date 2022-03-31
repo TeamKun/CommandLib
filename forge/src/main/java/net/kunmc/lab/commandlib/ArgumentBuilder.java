@@ -291,7 +291,10 @@ public class ArgumentBuilder {
 
     List<Argument<?>> build() {
         if (!arguments.isEmpty()) {
-            arguments.get(arguments.size() - 1).setContextAction(contextAction);
+            Argument<?> last = arguments.get(arguments.size() - 1);
+            if (!last.hasContextAction()) {
+                last.setContextAction(contextAction);
+            }
         }
 
         return arguments;

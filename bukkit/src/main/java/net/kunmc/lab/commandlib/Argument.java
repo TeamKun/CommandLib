@@ -27,6 +27,10 @@ public abstract class Argument<T> {
         this.contextAction = contextAction;
     }
 
+    boolean hasContextAction() {
+        return contextAction != null;
+    }
+
     final RequiredArgumentBuilder<CommandListenerWrapper, ?> toBuilder(Command parent, ArgumentsParser argsParser) {
         RequiredArgumentBuilder<CommandListenerWrapper, ?> builder = RequiredArgumentBuilder.argument(name, type);
 
