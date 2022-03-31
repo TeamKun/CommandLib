@@ -33,7 +33,7 @@ public class CommandContext {
         return args;
     }
 
-    public List<Object> getParsedArgList() {
+    public List<Object> getParsedArgs() {
         return parsedArgList;
     }
 
