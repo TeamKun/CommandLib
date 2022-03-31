@@ -33,7 +33,7 @@ public class SuggestionBuilder {
         return ImmutableList.copyOf(ctx.getInput().replaceFirst("^/", "").split(" "));
     }
 
-    public List<Object> getParsedArgList() {
+    public List<Object> getParsedArgs() {
         return parsedArgList;
     }
 
