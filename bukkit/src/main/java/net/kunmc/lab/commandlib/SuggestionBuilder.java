@@ -1,6 +1,7 @@
 package net.kunmc.lab.commandlib;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
@@ -30,7 +31,12 @@ public class SuggestionBuilder {
     }
 
     public List<String> getArgs() {
-        return ImmutableList.copyOf(ctx.getInput().replaceFirst("^/", "").split(" "));
+        List<String> list = Lists.newArrayList(ctx.getInput().replaceFirst("^/", "").split(" "));
+        if (ctx.getInput().endsWith(" ")) {
+            list.add("");
+        }
+
+        return ImmutableList.copyOf(list);
     }
 
     public List<Object> getParsedArgs() {
