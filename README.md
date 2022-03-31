@@ -42,7 +42,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.TeamKun.CommandLib:forge:0.3.0"
+    implementation "com.github.TeamKun.CommandLib:forge:0.3.1"
 }
 
 shadowJar {
