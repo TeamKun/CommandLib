@@ -177,6 +177,15 @@ public class ArgumentBuilder {
         return this;
     }
 
+    public ArgumentBuilder literalArgument(@NotNull String name, @NotNull List<String> literals) {
+        return literalArgument(name, literals, null);
+    }
+
+    public ArgumentBuilder literalArgument(@NotNull String name, @NotNull List<String> literals, @Nullable ContextAction contextAction) {
+        arguments.add(new LiteralArgument(name, literals, contextAction));
+        return this;
+    }
+
     public ArgumentBuilder locationArgument(@NotNull String name) {
         return locationArgument(name, null);
     }
