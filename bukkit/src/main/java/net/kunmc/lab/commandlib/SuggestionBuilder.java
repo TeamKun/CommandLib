@@ -41,8 +41,21 @@ public class SuggestionBuilder {
         return parsedArgList.get(index);
     }
 
+    public Object getParsedArg(String name) {
+        return parsedArgMap.get(name);
+    }
+
     public <T> T getParsedArg(int index, Class<T> clazz) {
         Object parsedArg = getParsedArg(index);
+        if (parsedArg == null) {
+            return null;
+        }
+
+        return clazz.cast(parsedArg);
+    }
+
+    public <T> T getParsedArg(String name, Class<T> clazz) {
+        Object parsedArg = getParsedArg(name);
         if (parsedArg == null) {
             return null;
         }
