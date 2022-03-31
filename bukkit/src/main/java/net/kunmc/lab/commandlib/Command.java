@@ -29,15 +29,15 @@ public abstract class Command {
         this.name = name;
     }
 
-    public void setPermissionLevel(int level) {
+    public final void setPermissionLevel(int level) {
         this.permissionLevel = level;
     }
 
-    public void addChildren(@NotNull Command child, @NotNull Command... children) {
+    public final void addChildren(@NotNull Command child, @NotNull Command... children) {
         addChildren(Lists.asList(child, children));
     }
 
-    public void addChildren(@NotNull List<Command> children) {
+    public final void addChildren(@NotNull List<Command> children) {
         this.children.addAll(children);
 
         for (Command child : children) {
@@ -45,21 +45,21 @@ public abstract class Command {
         }
     }
 
-    public void addAliases(@NotNull String alias, @NotNull String... aliases) {
+    public final void addAliases(@NotNull String alias, @NotNull String... aliases) {
         addAliases(Lists.asList(alias, aliases));
     }
 
-    public void addAliases(@NotNull List<String> aliases) {
+    public final void addAliases(@NotNull List<String> aliases) {
         this.aliases.addAll(aliases);
     }
 
-    public void argument(@NotNull Consumer<ArgumentBuilder> buildArguments) {
+    public final void argument(@NotNull Consumer<ArgumentBuilder> buildArguments) {
         ArgumentBuilder builder = new ArgumentBuilder();
         buildArguments.accept(builder);
         argumentsList.add(new Arguments(builder.build()));
     }
 
-    public final List<CommandNode<CommandListenerWrapper>> toCommandNodes() {
+    final List<CommandNode<CommandListenerWrapper>> toCommandNodes() {
         List<CommandNode<CommandListenerWrapper>> cmds = new ArrayList<>();
 
         CommandNode<CommandListenerWrapper> cmd = toCommandNode();
@@ -125,12 +125,12 @@ public abstract class Command {
                 .collect(Collectors.toList());
     }
 
-    public void sendHelp(com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx) {
+    final void sendHelp(com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx) {
         CommandSender sender = ctx.getSource().getBukkitSender();
 
         sender.sendMessage(ChatColor.GRAY + "--------------------------------------------------");
         sender.sendMessage(ChatColor.RED + "Usage:");
-       
+
         String padding = "  ";
         String literalConcatName = ((Supplier<String>) () -> {
             StringBuilder s = new StringBuilder(name);
