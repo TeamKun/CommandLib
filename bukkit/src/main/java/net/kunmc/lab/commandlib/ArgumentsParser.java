@@ -5,7 +5,8 @@ import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 
 import java.util.List;
+import java.util.Map;
 
 interface ArgumentsParser {
-    void parse(List<Object> dst, CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException;
+    void parse(List<Object> dstList, Map<String, Object> dstMap, CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException;
 }

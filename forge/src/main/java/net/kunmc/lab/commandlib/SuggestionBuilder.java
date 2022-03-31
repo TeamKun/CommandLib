@@ -10,18 +10,21 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SuggestionBuilder {
     private final List<Suggestion> suggestions = new ArrayList<>();
-    private final List<Object> parsedArgs = new ArrayList<>();
+    private final List<Object> parsedArgList = new ArrayList<>();
+    private final Map<String, Object> parsedArgMap = new HashMap<>();
     private final CommandContext<CommandSource> ctx;
 
     public SuggestionBuilder(CommandContext<CommandSource> ctx, ArgumentsParser argsParser) {
         this.ctx = ctx;
 
         try {
-            argsParser.parse(parsedArgs, ctx);
+            argsParser.parse(parsedArgList, parsedArgMap, ctx);
         } catch (IncorrectArgumentInputException ignored) {
         }
     }
@@ -30,12 +33,12 @@ public class SuggestionBuilder {
         return ImmutableList.copyOf(ctx.getInput().replaceFirst("^/", "").split(" "));
     }
 
-    public List<Object> getParsedArgs() {
-        return parsedArgs;
+    public List<Object> getParsedArgList() {
+        return parsedArgList;
     }
 
     public Object getParsedArg(int index) {
-        return parsedArgs.get(index);
+        return parsedArgList.get(index);
     }
 
     public <T> T getParsedArg(int index, Class<T> clazz) {

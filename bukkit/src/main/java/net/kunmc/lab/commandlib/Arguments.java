@@ -8,6 +8,7 @@ import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.ChatColor;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 class Arguments {
@@ -17,10 +18,12 @@ class Arguments {
         this.argumentList = argumentList;
     }
 
-    void parse(List<Object> dst, CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
+    void parse(List<Object> dstList, Map<String, Object> dstMap, CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
         for (Argument<?> argument : argumentList) {
             try {
-                dst.add(argument.parse(ctx));
+                Object parsedArg = argument.parse(ctx);
+                dstList.add(parsedArg);
+                dstMap.put(argument.name, parsedArg);
             } catch (IllegalArgumentException ignored) {
                 // 通常は発生しないが, argument追加時にContextActionを設定した場合やexecuteをOverrideした場合は
                 // com.mojang.brigadier.context.CommandContext#getArgument内で例外が発生する可能性があるため

@@ -10,7 +10,9 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -79,7 +81,7 @@ public abstract class Command {
         cmdBuilder.requires(cs -> cs.hasPermission(permissionLevel));
         if (argumentsList.isEmpty()) {
             cmdBuilder.executes(ctx -> {
-                return executeWithStackTrace(new CommandContext(this, ctx, new ArrayList<>()), this::execute);
+                return executeWithStackTrace(new CommandContext(this, ctx, new ArrayList<>(), new HashMap<>()), this::execute);
             });
 
             return cmdBuilder.build();
@@ -87,15 +89,16 @@ public abstract class Command {
 
         for (Arguments arguments : argumentsList) {
             cmdBuilder.executes(ctx -> {
-                List<Object> parsedArguments = new ArrayList<>();
+                List<Object> parsedArgList = new ArrayList<>();
+                Map<String, Object> parsedArgMap = new HashMap<>();
                 try {
-                    arguments.parse(parsedArguments, ctx);
+                    arguments.parse(parsedArgList, parsedArgMap, ctx);
                 } catch (IncorrectArgumentInputException e) {
                     e.sendMessage(ctx.getSource().getBukkitSender());
                     return 1;
                 }
 
-                return executeWithStackTrace(new CommandContext(this, ctx, parsedArguments), this::execute);
+                return executeWithStackTrace(new CommandContext(this, ctx, parsedArgList, parsedArgMap), this::execute);
             });
 
             List<CommandNode<CommandListenerWrapper>> argNodes = arguments.toCommandNodes(this);

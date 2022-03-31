@@ -8,7 +8,9 @@ import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.ChatColor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class Argument<T> {
     protected final String name;
@@ -50,14 +52,15 @@ public abstract class Argument<T> {
             contextAction = parent::execute;
         }
         builder.executes(ctx -> {
-            List<Object> parsedArgs = new ArrayList<>();
+            List<Object> parsedArgList = new ArrayList<>();
+            Map<String, Object> parsedArgMap = new HashMap<>();
             try {
-                argsParser.parse(parsedArgs, ctx);
+                argsParser.parse(parsedArgList, parsedArgMap, ctx);
             } catch (IncorrectArgumentInputException e) {
                 e.sendMessage(ctx.getSource().getBukkitSender());
                 return 1;
             }
-            return CommandLib.executeWithStackTrace(new net.kunmc.lab.commandlib.CommandContext(parent, ctx, parsedArgs), contextAction);
+            return CommandLib.executeWithStackTrace(new net.kunmc.lab.commandlib.CommandContext(parent, ctx, parsedArgList, parsedArgMap), contextAction);
         });
 
         return builder;

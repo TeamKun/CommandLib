@@ -6,20 +6,23 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
+import java.util.Map;
 
 public class CommandContext {
     private final Command command;
     private final com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> handle;
     private final List<String> args;
     private final CommandSender sender;
-    private final List<Object> parsedArgs;
+    private final List<Object> parsedArgList;
+    private final Map<String, Object> parsedArgMap;
 
-    public CommandContext(Command command, com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx, List<Object> parsedArgs) {
+    public CommandContext(Command command, com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx, List<Object> parsedArgList, Map<String, Object> parsedArgMap) {
         this.command = command;
         this.handle = ctx;
         this.args = ImmutableList.copyOf(ctx.getInput().replaceFirst("^/", "").split(" "));
         this.sender = ctx.getSource().getBukkitSender();
-        this.parsedArgs = parsedArgs;
+        this.parsedArgList = parsedArgList;
+        this.parsedArgMap = parsedArgMap;
     }
 
     public com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> getHandle() {
@@ -31,11 +34,11 @@ public class CommandContext {
     }
 
     public List<Object> getParsedArgs() {
-        return parsedArgs;
+        return parsedArgList;
     }
 
     public Object getParsedArg(int index) {
-        return parsedArgs.get(index);
+        return parsedArgList.get(index);
     }
 
     public <T> T getParsedArg(int index, Class<T> clazz) {
