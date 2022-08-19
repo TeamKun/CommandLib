@@ -33,6 +33,10 @@ public class CommandContext {
         return args;
     }
 
+    public String getArg(int index) {
+        return args.get(index);
+    }
+
     public List<Object> getParsedArgs() {
         return parsedArgList;
     }

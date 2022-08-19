@@ -39,6 +39,10 @@ public class SuggestionBuilder {
         return ImmutableList.copyOf(list);
     }
 
+    public String getArg(int index) {
+        return getArgs().get(index);
+    }
+
     public List<Object> getParsedArgs() {
         return parsedArgList;
     }
