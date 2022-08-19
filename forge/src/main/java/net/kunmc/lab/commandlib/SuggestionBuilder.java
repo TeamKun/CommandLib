@@ -60,6 +60,7 @@ public class SuggestionBuilder {
     }
 
     public List<String> getArgs() {
+        // TODO 明らかに間違ったロジックなので直すか消すかしたい
         List<String> list = Lists.newArrayList(ctx.getInput().replaceFirst("^/", "").split(" "));
         if (ctx.getInput().endsWith(" ")) {
             list.add("");

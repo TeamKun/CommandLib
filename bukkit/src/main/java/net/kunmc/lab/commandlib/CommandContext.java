@@ -19,6 +19,7 @@ public class CommandContext {
     public CommandContext(Command command, com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx, List<Object> parsedArgList, Map<String, Object> parsedArgMap) {
         this.command = command;
         this.handle = ctx;
+        // TODO 明らかに間違ったロジックなので直すか消すかしたい
         this.args = ImmutableList.copyOf(ctx.getInput().replaceFirst("^/", "").split(" "));
         this.sender = ctx.getSource().getBukkitSender();
         this.parsedArgList = parsedArgList;
