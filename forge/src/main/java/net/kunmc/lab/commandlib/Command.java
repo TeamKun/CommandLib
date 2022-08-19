@@ -65,33 +65,33 @@ public abstract class Command {
     }
 
     final List<LiteralCommandNode<CommandSource>> toCommandNodes() {
-        List<LiteralCommandNode<CommandSource>> cmds = new ArrayList<>();
+        List<LiteralCommandNode<CommandSource>> nodes = new ArrayList<>();
 
-        LiteralCommandNode<CommandSource> cmd = toCommandNode();
-        cmds.add(cmd);
+        LiteralCommandNode<CommandSource> node = toCommandNode();
+        nodes.add(node);
 
         children.forEach(c -> {
-            c.toCommandNodes().forEach(cmd::addChild);
+            c.toCommandNodes().forEach(node::addChild);
         });
 
-        cmds.addAll(createAliasCommands(cmd));
+        nodes.addAll(createAliasCommands(node));
 
-        return cmds;
+        return nodes;
     }
 
     private LiteralCommandNode<CommandSource> toCommandNode() {
-        LiteralArgumentBuilder<CommandSource> cmdBuilder = Commands.literal(name)
+        LiteralArgumentBuilder<CommandSource> builder = Commands.literal(name)
                 .requires(cs -> cs.hasPermissionLevel(permissionLevel));
         if (argumentsList.isEmpty()) {
-            cmdBuilder.executes(ctx -> {
+            builder.executes(ctx -> {
                 return executeWithStackTrace(new CommandContext(this, ctx, new ArrayList<>(), new HashMap<>()), this::execute);
             });
 
-            return cmdBuilder.build();
+            return builder.build();
         }
 
         for (Arguments arguments : argumentsList) {
-            cmdBuilder.executes(ctx -> {
+            builder.executes(ctx -> {
                 List<Object> parsedArgList = new ArrayList<>();
                 Map<String, Object> parsedArgMap = new HashMap<>();
                 try {
@@ -104,15 +104,15 @@ public abstract class Command {
                 return executeWithStackTrace(new CommandContext(this, ctx, parsedArgList, parsedArgMap), this::execute);
             });
 
-            List<ArgumentCommandNode<CommandSource, ?>> argNodes = arguments.toCommandNodes(this);
-            for (int i = 0; i < argNodes.size() - 1; i++) {
-                argNodes.get(i).addChild(argNodes.get(i + 1));
+            List<ArgumentCommandNode<CommandSource, ?>> nodes = arguments.toCommandNodes(this);
+            for (int i = 0; i < nodes.size() - 1; i++) {
+                nodes.get(i).addChild(nodes.get(i + 1));
             }
 
-            cmdBuilder.then(argNodes.get(0));
+            builder.then(nodes.get(0));
         }
 
-        return cmdBuilder.build();
+        return builder.build();
     }
 
     private List<LiteralCommandNode<CommandSource>> createAliasCommands(CommandNode<CommandSource> target) {

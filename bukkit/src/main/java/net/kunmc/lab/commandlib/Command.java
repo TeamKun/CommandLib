@@ -62,33 +62,33 @@ public abstract class Command {
     }
 
     final List<CommandNode<CommandListenerWrapper>> toCommandNodes() {
-        List<CommandNode<CommandListenerWrapper>> cmds = new ArrayList<>();
+        List<CommandNode<CommandListenerWrapper>> nodes = new ArrayList<>();
 
-        CommandNode<CommandListenerWrapper> cmd = toCommandNode();
-        cmds.add(cmd);
+        CommandNode<CommandListenerWrapper> node = toCommandNode();
+        nodes.add(node);
 
         children.forEach(c -> {
-            c.toCommandNodes().forEach(cmd::addChild);
+            c.toCommandNodes().forEach(node::addChild);
         });
 
-        cmds.addAll(createAliasCommands(cmd));
+        nodes.addAll(createAliasCommands(node));
 
-        return cmds;
+        return nodes;
     }
 
     private CommandNode<CommandListenerWrapper> toCommandNode() {
-        LiteralArgumentBuilder<CommandListenerWrapper> cmdBuilder = LiteralArgumentBuilder.literal(name);
-        cmdBuilder.requires(cs -> cs.hasPermission(permissionLevel));
+        LiteralArgumentBuilder<CommandListenerWrapper> builder = LiteralArgumentBuilder.literal(name);
+        builder.requires(cs -> cs.hasPermission(permissionLevel));
         if (argumentsList.isEmpty()) {
-            cmdBuilder.executes(ctx -> {
+            builder.executes(ctx -> {
                 return executeWithStackTrace(new CommandContext(this, ctx, new ArrayList<>(), new HashMap<>()), this::execute);
             });
 
-            return cmdBuilder.build();
+            return builder.build();
         }
 
         for (Arguments arguments : argumentsList) {
-            cmdBuilder.executes(ctx -> {
+            builder.executes(ctx -> {
                 List<Object> parsedArgList = new ArrayList<>();
                 Map<String, Object> parsedArgMap = new HashMap<>();
                 try {
@@ -101,15 +101,15 @@ public abstract class Command {
                 return executeWithStackTrace(new CommandContext(this, ctx, parsedArgList, parsedArgMap), this::execute);
             });
 
-            List<CommandNode<CommandListenerWrapper>> argNodes = arguments.toCommandNodes(this);
-            for (int i = 0; i < argNodes.size() - 1; i++) {
-                argNodes.get(i).addChild(argNodes.get(i + 1));
+            List<CommandNode<CommandListenerWrapper>> nodes = arguments.toCommandNodes(this);
+            for (int i = 0; i < nodes.size() - 1; i++) {
+                nodes.get(i).addChild(nodes.get(i + 1));
             }
 
-            cmdBuilder.then(argNodes.get(0));
+            builder.then(nodes.get(0));
         }
 
-        return cmdBuilder.build();
+        return builder.build();
     }
 
     private List<CommandNode<CommandListenerWrapper>> createAliasCommands(CommandNode<CommandListenerWrapper> target) {

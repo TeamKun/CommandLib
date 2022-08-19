@@ -23,13 +23,7 @@ public class EnumArgument<T extends Enum<T>> extends Argument<T> {
     public EnumArgument(String name, Class<T> clazz, Predicate<T> filter, ContextAction contextAction) {
         super(name, sb -> {
             Arrays.stream(clazz.getEnumConstants())
-                    .filter(t -> {
-                        if (filter != null) {
-                            return filter.test(t);
-                        }
-
-                        return true;
-                    })
+                    .filter(x -> filter == null || filter.test(x))
                     .map(Enum::name)
                     .map(String::toLowerCase)
                     .filter(x -> sb.getLatestInput().isEmpty() || x.contains(sb.getLatestInput()))
@@ -44,13 +38,7 @@ public class EnumArgument<T extends Enum<T>> extends Argument<T> {
     public T parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx, name);
         return Arrays.stream(clazz.getEnumConstants())
-                .filter(t -> {
-                    if (filter != null) {
-                        return filter.test(t);
-                    }
-
-                    return true;
-                })
+                .filter(x -> filter == null || filter.test(x))
                 .filter(x -> x.name().equalsIgnoreCase(s))
                 .findFirst()
                 .orElseThrow(() -> createException(ctx, s));

@@ -22,13 +22,13 @@ import java.util.Map;
 
 public class CommandLib implements Listener {
     private final Plugin plugin;
-    private final List<Command> cmds;
+    private final List<Command> commands;
     private final List<CommandNode<CommandListenerWrapper>> registeredCommands = new ArrayList<>();
 
-    public static CommandLib register(@NotNull Plugin plugin, @NotNull Command cmd, @NotNull Command... cmds) {
+    public static CommandLib register(@NotNull Plugin plugin, @NotNull Command command, @NotNull Command... commands) {
         List<Command> list = new ArrayList<Command>() {{
-            add(cmd);
-            addAll(Arrays.asList(cmds));
+            add(command);
+            addAll(Arrays.asList(commands));
         }};
 
         return new CommandLib(plugin, list);
@@ -46,16 +46,16 @@ public class CommandLib implements Listener {
         }
     }
 
-    private CommandLib(Plugin plugin, List<Command> cmds) {
+    private CommandLib(Plugin plugin, List<Command> commands) {
         this.plugin = plugin;
-        this.cmds = cmds;
+        this.commands = commands;
 
         enable();
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     private void enable() {
-        registeredCommands.addAll(cmds.stream()
+        registeredCommands.addAll(commands.stream()
                 .map(Command::toCommandNodes)
                 .reduce(new ArrayList<>(), (x, y) -> {
                     x.addAll(y);

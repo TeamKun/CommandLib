@@ -14,12 +14,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CommandLib {
-    private final List<Command> cmds;
+    private final List<Command> commands;
 
-    public static void register(@NotNull Command cmd, @NotNull Command... cmds) {
+    public static void register(@NotNull Command command, @NotNull Command... commands) {
         List<Command> list = new ArrayList<Command>() {{
-            add(cmd);
-            addAll(Arrays.asList(cmds));
+            add(command);
+            addAll(Arrays.asList(commands));
         }};
 
         new CommandLib(list);
@@ -37,8 +37,8 @@ public class CommandLib {
         }
     }
 
-    private CommandLib(List<Command> cmds) {
-        this.cmds = cmds;
+    private CommandLib(List<Command> commands) {
+        this.commands = commands;
 
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (server == null) {
@@ -56,7 +56,7 @@ public class CommandLib {
     private void register() {
         RootCommandNode<CommandSource> root = ServerLifecycleHooks.getCurrentServer().getCommandManager().getDispatcher().getRoot();
 
-        cmds.stream()
+        commands.stream()
                 .map(Command::toCommandNodes)
                 .reduce(new ArrayList<>(), (x, y) -> {
                     x.addAll(y);
