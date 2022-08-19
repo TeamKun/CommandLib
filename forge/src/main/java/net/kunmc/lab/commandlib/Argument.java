@@ -51,16 +51,17 @@ public abstract class Argument<T> {
         if (contextAction == null) {
             contextAction = parent::execute;
         }
+
         builder.executes(ctx -> {
-            List<Object> parsedArgList = new ArrayList<>();
+            List<Object> parsedArgs = new ArrayList<>();
             Map<String, Object> parsedArgMap = new HashMap<>();
             try {
-                argsParser.parse(parsedArgList, parsedArgMap, ctx);
+                argsParser.parse(parsedArgs, parsedArgMap, ctx);
             } catch (IncorrectArgumentInputException e) {
                 e.sendMessage(ctx.getSource());
                 return 1;
             }
-            return CommandLib.executeWithStackTrace(new net.kunmc.lab.commandlib.CommandContext(parent, ctx, parsedArgList, parsedArgMap), contextAction);
+            return CommandLib.executeWithStackTrace(new net.kunmc.lab.commandlib.CommandContext(parent, ctx, parsedArgs, parsedArgMap), contextAction);
         });
 
         return builder;

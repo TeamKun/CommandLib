@@ -51,6 +51,7 @@ public abstract class Argument<T> {
         if (contextAction == null) {
             contextAction = parent::execute;
         }
+       
         builder.executes(ctx -> {
             List<Object> parsedArgList = new ArrayList<>();
             Map<String, Object> parsedArgMap = new HashMap<>();

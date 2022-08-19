@@ -31,10 +31,6 @@ public class UnparsedArgument extends Argument<String> {
                 .filter(x -> x.getNode().getName().equals(name))
                 .findFirst();
 
-        if (node.isPresent()) {
-            return node.get().getRange().get(input);
-        } else {
-            return "";
-        }
+        return node.map(x -> x.getRange().get(input)).orElse("");
     }
 }

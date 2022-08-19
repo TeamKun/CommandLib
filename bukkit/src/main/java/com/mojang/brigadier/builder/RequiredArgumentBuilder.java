@@ -13,7 +13,6 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
         return this;
     }
 
-    @Override
     public CommandNode<S> build() {
         return null;
     }
