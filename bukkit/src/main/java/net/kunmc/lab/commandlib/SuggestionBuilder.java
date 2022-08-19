@@ -3,6 +3,7 @@ package net.kunmc.lab.commandlib;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.context.ParsedCommandNode;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.ChatColor;
@@ -28,6 +29,34 @@ public class SuggestionBuilder {
             argsParser.parse(parsedArgList, parsedArgMap, ctx);
         } catch (IncorrectArgumentInputException ignored) {
         }
+    }
+
+    public String getInput() {
+        return ctx.getInput();
+    }
+
+    public String getLatestInput() {
+        if (!isWaitingQuote() && getInput().endsWith(" ")) {
+            return "";
+        }
+
+        List<ParsedCommandNode<CommandListenerWrapper>> nodes = ctx.getNodes();
+        if (nodes.size() == 0) {
+            return "";
+        }
+        ParsedCommandNode<CommandListenerWrapper> last = nodes.get(nodes.size() - 1);
+        return last.getRange().get(getInput());
+    }
+
+    private boolean isWaitingQuote() {
+        int count = 0;
+        String input = getInput();
+        for (int i = 1; i < input.length(); i++) {
+            if (input.charAt(i) == '"' && input.charAt(i - 1) != '\\') {
+                count++;
+            }
+        }
+        return count % 2 != 0;
     }
 
     public List<String> getArgs() {

@@ -22,7 +22,7 @@ public class LiteralArgument extends Argument<String> {
         super(name, sb -> {
             List<String> inputs = sb.getArgs();
             String input = inputs.get(inputs.size() - 1);
-           
+
             literals.stream()
                     .filter(s -> {
                         if (input.isEmpty()) {

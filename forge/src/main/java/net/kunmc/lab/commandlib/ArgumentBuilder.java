@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class ArgumentBuilder {
     private final List<Argument<?>> arguments = new ArrayList<>();
@@ -130,8 +131,12 @@ public class ArgumentBuilder {
         return enumArgument(name, clazz, null);
     }
 
-    public <T extends Enum<T>> ArgumentBuilder enumArgument(@NotNull String name, @NotNull Class<T> clazz, @Nullable ContextAction contextAction) {
-        arguments.add(new EnumArgument<>(name, clazz, contextAction));
+    public <T extends Enum<T>> ArgumentBuilder enumArgument(@NotNull String name, @NotNull Class<T> clazz, @Nullable Predicate<T> filter) {
+        return enumArgument(name, clazz, filter, null);
+    }
+
+    public <T extends Enum<T>> ArgumentBuilder enumArgument(@NotNull String name, @NotNull Class<T> clazz, @Nullable Predicate<T> filter, @Nullable ContextAction contextAction) {
+        arguments.add(new EnumArgument<>(name, clazz, filter, contextAction));
         return this;
     }
 

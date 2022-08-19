@@ -32,6 +32,7 @@ public class EnumArgument<T extends Enum<T>> extends Argument<T> {
                     })
                     .map(Enum::name)
                     .map(String::toLowerCase)
+                    .filter(x -> sb.getLatestInput().isEmpty() || x.contains(sb.getLatestInput()))
                     .forEach(sb::suggest);
         }, contextAction, StringArgumentType.string());
 
