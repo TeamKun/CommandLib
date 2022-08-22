@@ -132,11 +132,11 @@ public class ArgumentBuilder {
         return enumArgument(name, clazz, null);
     }
 
-    public <T extends Enum<T>> ArgumentBuilder enumArgument(@NotNull String name, @NotNull Class<T> clazz, @Nullable Predicate<T> filter) {
+    public <T extends Enum<T>> ArgumentBuilder enumArgument(@NotNull String name, @NotNull Class<T> clazz, @Nullable Predicate<? super T> filter) {
         return enumArgument(name, clazz, filter, null);
     }
 
-    public <T extends Enum<T>> ArgumentBuilder enumArgument(@NotNull String name, @NotNull Class<T> clazz, @Nullable Predicate<T> filter, @Nullable ContextAction contextAction) {
+    public <T extends Enum<T>> ArgumentBuilder enumArgument(@NotNull String name, @NotNull Class<T> clazz, @Nullable Predicate<? super T> filter, @Nullable ContextAction contextAction) {
         arguments.add(new EnumArgument<>(name, clazz, filter, contextAction));
         return this;
     }
@@ -204,11 +204,11 @@ public class ArgumentBuilder {
         return this;
     }
 
-    public ArgumentBuilder literalArgument(@NotNull String name, @NotNull List<String> literals) {
+    public ArgumentBuilder literalArgument(@NotNull String name, @NotNull Collection<String> literals) {
         return literalArgument(name, literals, null);
     }
 
-    public ArgumentBuilder literalArgument(@NotNull String name, @NotNull List<String> literals, @Nullable ContextAction contextAction) {
+    public ArgumentBuilder literalArgument(@NotNull String name, @NotNull Collection<String> literals, @Nullable ContextAction contextAction) {
         arguments.add(new LiteralArgument(name, literals, contextAction));
         return this;
     }

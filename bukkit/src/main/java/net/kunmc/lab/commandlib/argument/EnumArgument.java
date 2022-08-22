@@ -12,9 +12,9 @@ import java.util.function.Predicate;
 
 public class EnumArgument<T extends Enum<T>> extends Argument<T> {
     private final Class<T> clazz;
-    private final Predicate<T> filter;
+    private final Predicate<? super T> filter;
 
-    public EnumArgument(String name, Class<T> clazz, Predicate<T> filter, ContextAction contextAction) {
+    public EnumArgument(String name, Class<T> clazz, Predicate<? super T> filter, ContextAction contextAction) {
         super(name, sb -> {
             Arrays.stream(clazz.getEnumConstants())
                     .filter(x -> filter == null || filter.test(x))
