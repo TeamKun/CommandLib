@@ -2,15 +2,10 @@ package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.context.StringRange;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.ContextAction;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.command.CommandSource;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Arrays;
 import java.util.function.Predicate;
@@ -40,25 +35,6 @@ public class EnumArgument<T extends Enum<T>> extends Argument<T> {
                 .filter(x -> filter == null || filter.test(x))
                 .filter(x -> x.name().equalsIgnoreCase(s))
                 .findFirst()
-                .orElseThrow(() -> createException(ctx, s));
-    }
-
-    private IncorrectArgumentInputException createException(CommandContext<CommandSource> ctx, String incorrectInput) {
-        String input = ctx.getInput();
-        ITextComponent unknownArgumentMsg = new TranslationTextComponent("command.unknown.argument", incorrectInput).mergeStyle(TextFormatting.RED);
-
-        StringRange range = ctx.getNodes().stream()
-                .filter(n -> n.getNode().getName().equals(name))
-                .findFirst()
-                .get()
-                .getRange();
-        String s = input.substring(1, range.getStart());
-        if (s.length() > 10) {
-            s = "..." + s.substring(s.length() - 10);
-        }
-        ITextComponent hereMsg = new StringTextComponent(TextFormatting.GRAY + s + TextFormatting.RED + TextFormatting.UNDERLINE + incorrectInput + TextFormatting.RESET)
-                .appendSibling(new TranslationTextComponent("command.context.here").mergeStyle(TextFormatting.ITALIC, TextFormatting.RED));
-
-        return new IncorrectArgumentInputException(unknownArgumentMsg, hereMsg);
+                .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
     }
 }

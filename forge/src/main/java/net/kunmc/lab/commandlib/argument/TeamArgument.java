@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.SuggestionAction;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.util.text.TranslationTextComponent;

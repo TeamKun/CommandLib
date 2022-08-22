@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.SuggestionAction;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.ArgumentMobEffect;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.craftbukkit.v1_16_R3.potion.CraftPotionEffectType;

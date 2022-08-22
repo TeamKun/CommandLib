@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.util.text.TextFormatting;
 
@@ -23,6 +23,10 @@ public abstract class Argument<T> {
         this.suggestionAction = suggestionAction;
         this.contextAction = contextAction;
         this.type = type;
+    }
+
+    public String name() {
+        return name;
     }
 
     void setContextAction(ContextAction contextAction) {

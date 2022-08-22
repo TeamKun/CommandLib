@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.CommandNode;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.ChatColor;
 
