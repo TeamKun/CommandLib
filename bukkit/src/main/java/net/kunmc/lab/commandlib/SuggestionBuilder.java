@@ -59,6 +59,7 @@ public class SuggestionBuilder {
         return count % 2 != 0;
     }
 
+    @Deprecated
     public List<String> getArgs() {
         // TODO 明らかに間違ったロジックなので直すか消すかしたい
         List<String> list = Lists.newArrayList(ctx.getInput().replaceFirst("^/", "").split(" "));
