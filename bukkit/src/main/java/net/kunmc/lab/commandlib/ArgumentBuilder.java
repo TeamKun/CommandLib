@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -196,6 +197,19 @@ public class ArgumentBuilder {
 
     public ArgumentBuilder locationArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
         arguments.add(new LocationArgument(name, suggestionAction, contextAction));
+        return this;
+    }
+
+    public <T extends Nameable> ArgumentBuilder objectArgument(@NotNull String name, @NotNull Collection<? extends T> candidates) {
+        return objectArgument(name, candidates, null);
+    }
+
+    public <T extends Nameable> ArgumentBuilder objectArgument(@NotNull String name, @NotNull Collection<? extends T> candidates, @Nullable Predicate<? super T> filter) {
+        return objectArgument(name, candidates, null, null);
+    }
+
+    public <T extends Nameable> ArgumentBuilder objectArgument(@NotNull String name, @NotNull Collection<? extends T> candidates, @Nullable Predicate<? super T> filter, @Nullable ContextAction contextAction) {
+        arguments.add(new ObjectArgument<>(name, candidates, filter, contextAction));
         return this;
     }
 
