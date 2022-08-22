@@ -353,7 +353,7 @@ public class ArgumentBuilder {
      * It is only possible to include an object specified by {@code candidates}
      */
     public <T extends Nameable> ArgumentBuilder objectArgument(@NotNull String name, @NotNull Collection<? extends T> candidates, @Nullable Predicate<? super T> filter) {
-        return objectArgument(name, candidates, null, null);
+        return objectArgument(name, candidates, filter, null);
     }
 
     /**
