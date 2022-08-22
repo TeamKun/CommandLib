@@ -9,7 +9,7 @@ buildscript {
 
 allprojects {
     group 'net.kunmc.lab'
-    version '0.4.0'
+    version '0.4.1'
 }
 
 subprojects {
