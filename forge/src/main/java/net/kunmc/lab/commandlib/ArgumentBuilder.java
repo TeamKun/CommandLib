@@ -80,6 +80,14 @@ public class ArgumentBuilder {
     }
 
     /**
+     * Add argument for {@link net.kunmc.lab.commandlib.Argument} Object implemented by you.
+     */
+    public ArgumentBuilder customArgument(@NotNull Argument<?> argument) {
+        arguments.add(argument);
+        return this;
+    }
+   
+    /**
      * Add argument for {@link java.lang.Double}.
      */
     public ArgumentBuilder doubleArgument(@NotNull String name) {
