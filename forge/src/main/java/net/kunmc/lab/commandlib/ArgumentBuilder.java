@@ -224,6 +224,28 @@ public class ArgumentBuilder {
     }
 
     /**
+     * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Entity}.
+     */
+    public ArgumentBuilder entitiesArgument(@NotNull String name) {
+        return entitiesArgument(name, null);
+    }
+
+    /**
+     * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Entity}.
+     */
+    public ArgumentBuilder entitiesArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction) {
+        return entitiesArgument(name, suggestionAction, null);
+    }
+
+    /**
+     * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Entity}.
+     */
+    public ArgumentBuilder entitiesArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
+        arguments.add(new EntitiesArgument(name, suggestionAction, contextAction));
+        return this;
+    }
+
+    /**
      * Add argument for T extends {@link java.lang.Enum}.
      */
     public <T extends Enum<T>> ArgumentBuilder enumArgument(@NotNull String name, @NotNull Class<T> clazz) {
