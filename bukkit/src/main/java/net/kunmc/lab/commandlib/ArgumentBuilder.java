@@ -175,7 +175,7 @@ public class ArgumentBuilder {
      * If {@code single} is true, then includes only one Entity, else there is possibility to include two or more Entity.
      */
     public ArgumentBuilder entityArgument(@NotNull String name, boolean enableEntities, boolean single, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new EntityArgument(name, suggestionAction, contextAction, enableEntities, single));
+        arguments.add(new LegacyEntityArgument(name, suggestionAction, contextAction, enableEntities, single));
         return this;
     }
 

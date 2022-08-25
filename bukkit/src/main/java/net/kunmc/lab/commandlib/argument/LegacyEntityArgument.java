@@ -15,11 +15,11 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class EntityArgument extends Argument<List<Entity>> {
+public class LegacyEntityArgument extends Argument<List<Entity>> {
     private final boolean enableEntities;
     private final boolean single;
 
-    public EntityArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction, boolean enableEntities, boolean single) {
+    public LegacyEntityArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction, boolean enableEntities, boolean single) {
         super(name, suggestionAction, contextAction, ((Supplier<ArgumentEntity>) () -> {
             if (enableEntities) {
                 if (single) {
