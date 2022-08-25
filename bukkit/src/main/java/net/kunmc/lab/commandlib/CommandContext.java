@@ -30,10 +30,12 @@ public class CommandContext {
         return handle;
     }
 
+    @Deprecated
     public List<String> getArgs() {
         return args;
     }
 
+    @Deprecated
     public String getArg(int index) {
         return args.get(index);
     }

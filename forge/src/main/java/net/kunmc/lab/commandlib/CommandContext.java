@@ -30,6 +30,7 @@ public class CommandContext {
         return handle;
     }
 
+    @Deprecated
     public List<String> getArgs() {
         return args;
     }

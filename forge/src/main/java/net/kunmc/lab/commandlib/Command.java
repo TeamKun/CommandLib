@@ -12,10 +12,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -42,7 +39,7 @@ public abstract class Command {
         addChildren(Lists.asList(child, children));
     }
 
-    public final void addChildren(@NotNull List<Command> children) {
+    public final void addChildren(@NotNull Collection<? extends Command> children) {
         this.children.addAll(children);
 
         for (Command child : children) {
@@ -54,7 +51,7 @@ public abstract class Command {
         addAliases(Lists.asList(alias, aliases));
     }
 
-    public final void addAliases(@NotNull List<String> aliases) {
+    public final void addAliases(@NotNull Collection<String> aliases) {
         this.aliases.addAll(aliases);
     }
 

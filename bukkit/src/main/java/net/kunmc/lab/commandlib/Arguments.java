@@ -7,6 +7,8 @@ import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputExcepti
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.ChatColor;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,11 +25,13 @@ class Arguments {
             try {
                 Object parsedArg = argument.parse(ctx);
                 dstList.add(parsedArg);
-                dstMap.put(argument.name, parsedArg);
+                dstMap.put(argument.name(), parsedArg);
             } catch (IllegalArgumentException ignored) {
-                // 通常は発生しないが, argument追加時にContextActionを設定した場合やexecuteをOverrideした場合は
-                // com.mojang.brigadier.context.CommandContext#getArgument内で例外が発生する可能性があるため
-                // 例外を無視している.
+                /*
+                通常は発生しないが, argument追加時にContextActionを設定した場合やexecuteをOverrideした場合は
+                com.mojang.brigadier.context.CommandContext#getArgument内で例外が発生する可能性があるため
+                例外を無視している.
+                 */
             }
         }
     }
@@ -45,9 +49,50 @@ class Arguments {
         return msg;
     }
 
+    private RequiredArgumentBuilder<CommandListenerWrapper, ?> buildArgument(Argument<?> argument, Command parent) {
+        RequiredArgumentBuilder<CommandListenerWrapper, ?> builder = RequiredArgumentBuilder.argument(argument.name(), argument.type());
+
+        if (argument.suggestionAction() != null) {
+            builder.suggests((ctx, sb) -> {
+                List<Object> parsedArgList = new ArrayList<>();
+                Map<String, Object> parsedArgMap = new HashMap<>();
+                try {
+                    parse(parsedArgList, parsedArgMap, ctx);
+                } catch (IncorrectArgumentInputException ignored) {
+                }
+
+                SuggestionBuilder suggestionBuilder = new SuggestionBuilder(ctx, parsedArgList, parsedArgMap);
+                argument.suggestionAction().accept(suggestionBuilder);
+                suggestionBuilder.build().forEach(s -> {
+                    s.suggest(sb);
+                });
+
+                return sb.buildFuture();
+            });
+        }
+
+        if (!argument.hasContextAction()) {
+            argument.setContextAction(parent::execute);
+        }
+
+        builder.executes(ctx -> {
+            List<Object> parsedArgList = new ArrayList<>();
+            Map<String, Object> parsedArgMap = new HashMap<>();
+            try {
+                parse(parsedArgList, parsedArgMap, ctx);
+            } catch (IncorrectArgumentInputException e) {
+                e.sendMessage(ctx.getSource().getBukkitSender());
+                return 1;
+            }
+            return CommandLib.executeWithStackTrace(new net.kunmc.lab.commandlib.CommandContext(parent, ctx, parsedArgList, parsedArgMap), argument.contextAction());
+        });
+
+        return builder;
+    }
+
     List<CommandNode<CommandListenerWrapper>> toCommandNodes(Command parent) {
         return argumentList.stream()
-                .map(a -> a.toBuilder(parent, this::parse))
+                .map(x -> buildArgument(x, parent))
                 .map(RequiredArgumentBuilder::build)
                 .collect(Collectors.toList());
     }

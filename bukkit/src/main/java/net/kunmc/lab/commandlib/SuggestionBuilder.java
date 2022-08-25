@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.ParsedCommandNode;
-import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -12,23 +11,19 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class SuggestionBuilder {
     private final List<Suggestion> suggestions = new ArrayList<>();
     private final CommandContext<CommandListenerWrapper> ctx;
-    private final List<Object> parsedArgList = new ArrayList<>();
-    private final Map<String, Object> parsedArgMap = new HashMap<>();
+    private final List<Object> parsedArgList;
+    private final Map<String, Object> parsedArgMap;
 
-    public SuggestionBuilder(CommandContext<CommandListenerWrapper> ctx, ArgumentsParser argsParser) {
+    public SuggestionBuilder(CommandContext<CommandListenerWrapper> ctx, List<Object> parsedArgList, Map<String, Object> parsedArgMap) {
         this.ctx = ctx;
-
-        try {
-            argsParser.parse(parsedArgList, parsedArgMap, ctx);
-        } catch (IncorrectArgumentInputException ignored) {
-        }
+        this.parsedArgList = parsedArgList;
+        this.parsedArgMap = parsedArgMap;
     }
 
     public String getInput() {

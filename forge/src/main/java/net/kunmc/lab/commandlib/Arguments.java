@@ -7,6 +7,8 @@ import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputExcepti
 import net.minecraft.command.CommandSource;
 import net.minecraft.util.text.TextFormatting;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -45,9 +47,51 @@ class Arguments {
         return msg;
     }
 
+    private RequiredArgumentBuilder<CommandSource, ?> buildArgument(Argument<?> argument, Command parent) {
+        RequiredArgumentBuilder<CommandSource, ?> builder = RequiredArgumentBuilder.argument(argument.name(), argument.type());
+
+        if (argument.suggestionAction() != null) {
+            builder.suggests((ctx, sb) -> {
+                List<Object> parsedArgList = new ArrayList<>();
+                Map<String, Object> parsedArgMap = new HashMap<>();
+                try {
+                    parse(parsedArgList, parsedArgMap, ctx);
+                } catch (IncorrectArgumentInputException ignored) {
+                }
+
+                SuggestionBuilder suggestionBuilder = new SuggestionBuilder(ctx, parsedArgList, parsedArgMap);
+                argument.suggestionAction().accept(suggestionBuilder);
+                suggestionBuilder.build().forEach(s -> {
+                    s.suggest(sb);
+                });
+
+                return sb.buildFuture();
+            });
+        }
+
+        if (!argument.hasContextAction()) {
+            argument.setContextAction(parent::execute);
+        }
+
+        builder.executes(ctx -> {
+            List<Object> parsedArgs = new ArrayList<>();
+            Map<String, Object> parsedArgMap = new HashMap<>();
+            try {
+                parse(parsedArgs, parsedArgMap, ctx);
+            } catch (IncorrectArgumentInputException e) {
+                e.sendMessage(ctx.getSource());
+                return 1;
+            }
+            return CommandLib.executeWithStackTrace(new net.kunmc.lab.commandlib.CommandContext(parent, ctx, parsedArgs, parsedArgMap), argument.contextAction());
+        });
+
+        return builder;
+    }
+
+
     List<ArgumentCommandNode<CommandSource, ?>> toCommandNodes(Command parent) {
         return argumentList.stream()
-                .map(a -> a.toBuilder(parent, this::parse))
+                .map(x -> buildArgument(x, parent))
                 .map(RequiredArgumentBuilder::build)
                 .collect(Collectors.toList());
     }

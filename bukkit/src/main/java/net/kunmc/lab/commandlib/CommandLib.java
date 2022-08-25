@@ -1,5 +1,6 @@
 package net.kunmc.lab.commandlib;
 
+import com.google.common.collect.Lists;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import net.minecraft.server.v1_16_R3.CommandDispatcher;
@@ -16,22 +17,21 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public class CommandLib implements Listener {
     private final Plugin plugin;
-    private final List<Command> commands;
+    private final Collection<? extends Command> commands;
     private final List<CommandNode<CommandListenerWrapper>> registeredCommands = new ArrayList<>();
 
     public static CommandLib register(@NotNull Plugin plugin, @NotNull Command command, @NotNull Command... commands) {
-        List<Command> list = new ArrayList<Command>() {{
-            add(command);
-            addAll(Arrays.asList(commands));
-        }};
+        return register(plugin, Lists.asList(command, commands));
+    }
 
-        return new CommandLib(plugin, list);
+    public static CommandLib register(@NotNull Plugin plugin, @NotNull Collection<? extends Command> commands) {
+        return new CommandLib(plugin, commands);
     }
 
     static int executeWithStackTrace(CommandContext ctx, ContextAction contextAction) {
@@ -46,7 +46,7 @@ public class CommandLib implements Listener {
         }
     }
 
-    private CommandLib(Plugin plugin, List<Command> commands) {
+    private CommandLib(Plugin plugin, Collection<? extends Command> commands) {
         this.plugin = plugin;
         this.commands = commands;
 
@@ -64,9 +64,9 @@ public class CommandLib implements Listener {
 
         CommandDispatcher dispatcher = ((CraftServer) plugin.getServer()).getServer().getCommandDispatcher();
         RootCommandNode<CommandListenerWrapper> root = dispatcher.a().getRoot();
-        registeredCommands.forEach(c -> {
-            root.addChild(c);
-            Bukkit.getCommandMap().getKnownCommands().put(c.getName(), new VanillaCommandWrapper(dispatcher, c));
+        registeredCommands.forEach(x -> {
+            root.addChild(x);
+            Bukkit.getCommandMap().getKnownCommands().put(x.getName(), new VanillaCommandWrapper(dispatcher, x));
         });
 
         Bukkit.getOnlinePlayers().forEach(Player::updateCommands);
