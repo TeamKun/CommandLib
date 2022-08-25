@@ -131,51 +131,24 @@ public class ArgumentBuilder {
     }
 
     /**
-     * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Entity}.
+     * Add argument for {@link org.bukkit.entity.Entity}.
      */
     public ArgumentBuilder entityArgument(@NotNull String name) {
         return entityArgument(name, null);
     }
 
     /**
-     * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Entity}.<br>
-     * If {@code enableEntities} is true, then includes Entity({@link org.bukkit.entity.Player}, {@link org.bukkit.entity.Mob}...), else only includes {@link org.bukkit.entity.Player}.<br>
-     * If {@code single} is true, then includes only one Entity, else there is possibility to include two or more Entity.
-     */
-    public ArgumentBuilder entityArgument(@NotNull String name, boolean enableEntities, boolean single) {
-        return entityArgument(name, enableEntities, single, null);
-    }
-
-    /**
-     * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Entity}.
+     * Add argument for {@link org.bukkit.entity.Entity}.
      */
     public ArgumentBuilder entityArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction) {
         return entityArgument(name, suggestionAction, null);
     }
 
     /**
-     * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Entity}.
+     * Add argument for {@link org.bukkit.entity.Entity}.
      */
     public ArgumentBuilder entityArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        return entityArgument(name, true, false, suggestionAction, contextAction);
-    }
-
-    /**
-     * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Entity}.<br>
-     * If {@code enableEntities} is true, then includes Entity({@link org.bukkit.entity.Player}, {@link org.bukkit.entity.Mob}...), else only includes {@link org.bukkit.entity.Player}.<br>
-     * If {@code single} is true, then includes only one Entity, else there is possibility to include two or more Entity.
-     */
-    public ArgumentBuilder entityArgument(@NotNull String name, boolean enableEntities, boolean single, @Nullable SuggestionAction suggestionAction) {
-        return entityArgument(name, enableEntities, single, suggestionAction, null);
-    }
-
-    /**
-     * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Entity}.<br>
-     * If {@code enableEntities} is true, then includes Entity({@link org.bukkit.entity.Player}, {@link org.bukkit.entity.Mob}...), else only includes {@link org.bukkit.entity.Player}.<br>
-     * If {@code single} is true, then includes only one Entity, else there is possibility to include two or more Entity.
-     */
-    public ArgumentBuilder entityArgument(@NotNull String name, boolean enableEntities, boolean single, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new LegacyEntityArgument(name, suggestionAction, contextAction, enableEntities, single));
+        arguments.add(new EntityArgument(name, suggestionAction, contextAction));
         return this;
     }
 
