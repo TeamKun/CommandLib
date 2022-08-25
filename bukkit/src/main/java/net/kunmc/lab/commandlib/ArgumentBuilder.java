@@ -396,6 +396,50 @@ public class ArgumentBuilder {
     }
 
     /**
+     * Add argument for {@link org.bukkit.entity.Player}.
+     */
+    public ArgumentBuilder playerArgument(@NotNull String name) {
+        return playerArgument(name, null);
+    }
+
+    /**
+     * Add argument for {@link org.bukkit.entity.Player}.
+     */
+    public ArgumentBuilder playerArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction) {
+        return playerArgument(name, suggestionAction, null);
+    }
+
+    /**
+     * Add argument for {@link org.bukkit.entity.Player}.
+     */
+    public ArgumentBuilder playerArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
+        arguments.add(new PlayerArgument(name, suggestionAction, contextAction));
+        return this;
+    }
+
+    /**
+     * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Player}.
+     */
+    public ArgumentBuilder playersArgument(@NotNull String name) {
+        return playersArgument(name, null);
+    }
+
+    /**
+     * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Player}.
+     */
+    public ArgumentBuilder playersArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction) {
+        return playersArgument(name, suggestionAction, null);
+    }
+
+    /**
+     * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Player}.
+     */
+    public ArgumentBuilder playersArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
+        arguments.add(new PlayersArgument(name, suggestionAction, contextAction));
+        return this;
+    }
+
+    /**
      * Add argument for {@link org.bukkit.potion.PotionEffect}.
      */
     public ArgumentBuilder potionEffectArgument(@NotNull String name) {
