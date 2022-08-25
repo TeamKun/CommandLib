@@ -224,21 +224,21 @@ public class ArgumentBuilder {
     }
 
     /**
-     * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Entity}.
+     * Add argument for {@link java.util.List} of {@link net.minecraft.entity.player.PlayerEntity}.
      */
     public ArgumentBuilder entitiesArgument(@NotNull String name) {
         return entitiesArgument(name, null);
     }
 
     /**
-     * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Entity}.
+     * Add argument for {@link java.util.List} of {@link net.minecraft.entity.player.PlayerEntity}.
      */
     public ArgumentBuilder entitiesArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction) {
         return entitiesArgument(name, suggestionAction, null);
     }
 
     /**
-     * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Entity}.
+     * Add argument for {@link java.util.List} of {@link net.minecraft.entity.player.PlayerEntity}.
      */
     public ArgumentBuilder entitiesArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
         arguments.add(new EntitiesArgument(name, suggestionAction, contextAction));
