@@ -8,18 +8,14 @@ import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputExcepti
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 
 import java.util.Collection;
-import java.util.List;
 
 public class LiteralArgument extends Argument<String> {
     private final Collection<String> literals;
 
     public LiteralArgument(String name, Collection<String> literals, ContextAction contextAction) {
         super(name, sb -> {
-            List<String> inputs = sb.getArgs();
-            String input = inputs.get(inputs.size() - 1);
-
             literals.stream()
-                    .filter(s -> input.isEmpty() || s.startsWith(input))
+                    .filter(x -> sb.getLatestInput().isEmpty() || x.contains(sb.getLatestInput()))
                     .forEach(sb::suggest);
         }, contextAction, StringArgumentType.string());
 

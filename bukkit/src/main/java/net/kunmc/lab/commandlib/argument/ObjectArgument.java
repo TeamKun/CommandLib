@@ -20,6 +20,7 @@ public class ObjectArgument<T extends Nameable> extends Argument<T> {
             candidates.stream()
                     .filter(x -> filter == null || filter.test(x))
                     .map(Nameable::tabCompleteName)
+                    .filter(x -> sb.getLatestInput().isEmpty() || x.contains(sb.getLatestInput()))
                     .forEach(sb::suggest);
         }, contextAction, StringArgumentType.string());
 
