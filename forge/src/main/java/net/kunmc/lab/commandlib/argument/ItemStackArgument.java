@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.SuggestionAction;
+import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.item.ItemStack;
 
@@ -14,11 +15,11 @@ public class ItemStackArgument extends Argument<ItemStack> {
     }
 
     @Override
-    public ItemStack parse(CommandContext<CommandSource> ctx) {
+    public ItemStack parse(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException {
         try {
             return net.minecraft.command.arguments.ItemArgument.getItem(ctx, name).createStack(1, false);
-        } catch (CommandSyntaxException ignored) {
-            return null;
+        } catch (CommandSyntaxException e) {
+            throw convertSyntaxException(e);
         }
     }
 }

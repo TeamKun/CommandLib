@@ -20,8 +20,8 @@ public class PotionEffectArgument extends Argument<PotionEffect> {
     public PotionEffect parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
         try {
             return new CraftPotionEffectType(ArgumentMobEffect.a(ctx, name)).createEffect(1, 0);
-        } catch (CommandSyntaxException ignored) {
-            return null;
+        } catch (CommandSyntaxException e) {
+            throw convertSyntaxException(e);
         }
     }
 }

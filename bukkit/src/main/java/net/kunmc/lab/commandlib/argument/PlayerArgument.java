@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.SuggestionAction;
+import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.ArgumentEntity;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.entity.Player;
@@ -15,12 +16,11 @@ public class PlayerArgument extends Argument<Player> {
     }
 
     @Override
-    public Player parse(CommandContext<CommandListenerWrapper> ctx) {
+    public Player parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
         try {
             return ((Player) ArgumentEntity.e(ctx, name).getBukkitEntity());
         } catch (CommandSyntaxException e) {
-            e.printStackTrace();
-            return null;
+            throw convertSyntaxException(e);
         }
     }
 }

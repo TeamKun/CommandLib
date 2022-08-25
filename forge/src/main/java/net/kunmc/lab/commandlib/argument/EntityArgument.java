@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.SuggestionAction;
+import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 
@@ -39,7 +40,7 @@ public class EntityArgument extends Argument<List<Entity>> {
     }
 
     @Override
-    public List<Entity> parse(CommandContext<CommandSource> ctx) {
+    public List<Entity> parse(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException {
         try {
             if (enableEntities) {
                 if (single) {
@@ -55,8 +56,7 @@ public class EntityArgument extends Argument<List<Entity>> {
                 }
             }
         } catch (CommandSyntaxException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
+            throw convertSyntaxException(e);
         }
     }
 }

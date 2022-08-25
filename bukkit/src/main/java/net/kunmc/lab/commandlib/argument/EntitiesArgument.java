@@ -6,9 +6,7 @@ import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.SuggestionAction;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
-import net.kyori.adventure.text.Component;
 import net.minecraft.server.v1_16_R3.ArgumentEntity;
-import net.minecraft.server.v1_16_R3.ChatMessage;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.entity.Entity;
 
@@ -27,8 +25,7 @@ public class EntitiesArgument extends Argument<List<Entity>> {
                     .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)
                     .collect(Collectors.toList());
         } catch (CommandSyntaxException e) {
-            System.out.println(((ChatMessage) e.getRawMessage()).getKey());
-            throw new IncorrectArgumentInputException(Component.translatable(((ChatMessage) e.getRawMessage()).getKey()));
+            throw convertSyntaxException(e);
         }
     }
 }

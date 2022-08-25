@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.SuggestionAction;
+import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.ArgumentVec3;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import net.minecraft.server.v1_16_R3.Vec3D;
@@ -16,12 +17,12 @@ public class LocationArgument extends Argument<Location> {
     }
 
     @Override
-    public Location parse(CommandContext<CommandListenerWrapper> ctx) {
+    public Location parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
         try {
             Vec3D vec = ArgumentVec3.a(ctx, name);
             return new Location(ctx.getSource().getBukkitWorld(), vec.x, vec.y, vec.z);
         } catch (CommandSyntaxException e) {
-            return null;
+            throw convertSyntaxException(e);
         }
     }
 }

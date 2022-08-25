@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.SuggestionAction;
+import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,12 +16,11 @@ public class PlayerArgument extends Argument<PlayerEntity> {
     }
 
     @Override
-    public PlayerEntity parse(CommandContext<CommandSource> ctx) {
+    public PlayerEntity parse(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException {
         try {
             return net.minecraft.command.arguments.EntityArgument.getPlayer(ctx, name);
         } catch (CommandSyntaxException e) {
-            e.printStackTrace();
-            return null;
+            throw convertSyntaxException(e);
         }
     }
 }

@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.SuggestionAction;
+import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.arguments.PotionArgument;
 import net.minecraft.potion.Effect;
@@ -15,11 +16,11 @@ public class EffectArgument extends Argument<Effect> {
     }
 
     @Override
-    public Effect parse(CommandContext<CommandSource> ctx) {
+    public Effect parse(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException {
         try {
             return PotionArgument.getMobEffect(ctx, name);
-        } catch (CommandSyntaxException ignored) {
-            return null;
+        } catch (CommandSyntaxException e) {
+            throw convertSyntaxException(e);
         }
     }
 }

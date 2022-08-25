@@ -6,12 +6,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.SuggestionAction;
+import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.player.PlayerEntity;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class PlayersArgument extends Argument<List<PlayerEntity>> {
@@ -20,12 +20,11 @@ public class PlayersArgument extends Argument<List<PlayerEntity>> {
     }
 
     @Override
-    public List<PlayerEntity> parse(CommandContext<CommandSource> ctx) {
+    public List<PlayerEntity> parse(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException {
         try {
             return new ArrayList<>(EntityArgument.getPlayers(ctx, name));
         } catch (CommandSyntaxException e) {
-            e.printStackTrace();
-            return Collections.emptyList();
+            throw convertSyntaxException(e);
         }
     }
 }

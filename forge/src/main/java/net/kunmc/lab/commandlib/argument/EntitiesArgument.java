@@ -9,7 +9,6 @@ import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputExcepti
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,7 @@ public class EntitiesArgument extends Argument<List<Entity>> {
         try {
             return new ArrayList<>(EntityArgument.getEntities(ctx, name));
         } catch (CommandSyntaxException e) {
-            throw new IncorrectArgumentInputException(((ITextComponent) e.getRawMessage()));
+            throw convertSyntaxException(e);
         }
     }
 }

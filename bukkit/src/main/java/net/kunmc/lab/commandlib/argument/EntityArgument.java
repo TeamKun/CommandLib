@@ -5,11 +5,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.SuggestionAction;
+import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.ArgumentEntity;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.entity.Entity;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
@@ -41,7 +41,7 @@ public class EntityArgument extends Argument<List<Entity>> {
     }
 
     @Override
-    public List<Entity> parse(CommandContext<CommandListenerWrapper> ctx) {
+    public List<Entity> parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
         try {
             if (enableEntities) {
                 if (single) {
@@ -61,8 +61,7 @@ public class EntityArgument extends Argument<List<Entity>> {
                 }
             }
         } catch (CommandSyntaxException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
+            throw convertSyntaxException(e);
         }
     }
 }
