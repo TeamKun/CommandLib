@@ -8,24 +8,25 @@ import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputExcepti
 import net.minecraft.command.CommandSource;
 
 import java.util.Collection;
+import java.util.function.Supplier;
 
 public class LiteralArgument extends Argument<String> {
-    private final Collection<String> literals;
+    private final Supplier<Collection<String>> literalsSupplier;
 
-    public LiteralArgument(String name, Collection<String> literals, ContextAction contextAction) {
+    public LiteralArgument(String name, Supplier<Collection<String>> literalsSupplier, ContextAction contextAction) {
         super(name, sb -> {
-            literals.stream()
+            literalsSupplier.get().stream()
                     .filter(x -> sb.getLatestInput().isEmpty() || x.contains(sb.getLatestInput()))
                     .forEach(sb::suggest);
         }, contextAction, StringArgumentType.string());
 
-        this.literals = literals;
+        this.literalsSupplier = literalsSupplier;
     }
 
     @Override
     public String parse(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx, name);
-        return literals.stream()
+        return literalsSupplier.get().stream()
                 .filter(s::equals)
                 .findFirst()
                 .orElseThrow(() -> new IncorrectArgumentInputException(LiteralArgument.this, ctx, s));

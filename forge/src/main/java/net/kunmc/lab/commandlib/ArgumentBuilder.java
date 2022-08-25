@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class ArgumentBuilder {
     private final List<Argument<?>> arguments = new ArrayList<>();
@@ -361,7 +362,23 @@ public class ArgumentBuilder {
      * It is only possible to include a string specified by {@code literals}
      */
     public ArgumentBuilder literalArgument(@NotNull String name, @NotNull Collection<String> literals, @Nullable ContextAction contextAction) {
-        arguments.add(new LiteralArgument(name, literals, contextAction));
+        return literalArgument(name, () -> literals, contextAction);
+    }
+
+    /**
+     * Add argument for {@link java.lang.String}.<br>
+     * It is only possible to include a string specified by {@code literals}
+     */
+    public ArgumentBuilder literalArgument(@NotNull String name, @NotNull Supplier<Collection<String>> literalsSupplier) {
+        return literalArgument(name, literalsSupplier, null);
+    }
+
+    /**
+     * Add argument for {@link java.lang.String}.<br>
+     * It is only possible to include a string specified by {@code literals}
+     */
+    public ArgumentBuilder literalArgument(@NotNull String name, @NotNull Supplier<Collection<String>> literalsSupplier, @Nullable ContextAction contextAction) {
+        arguments.add(new LiteralArgument(name, literalsSupplier, contextAction));
         return this;
     }
 
