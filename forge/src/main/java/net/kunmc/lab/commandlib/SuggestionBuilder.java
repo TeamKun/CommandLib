@@ -26,6 +26,10 @@ public class SuggestionBuilder {
         this.parsedArgMap = parsedArgMap;
     }
 
+    public CommandContext<CommandSource> getHandle() {
+        return ctx;
+    }
+
     public String getInput() {
         return ctx.getInput();
     }

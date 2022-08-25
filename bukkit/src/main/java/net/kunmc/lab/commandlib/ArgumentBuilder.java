@@ -1,6 +1,7 @@
 package net.kunmc.lab.commandlib;
 
 import net.kunmc.lab.commandlib.argument.*;
+import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -382,6 +383,28 @@ public class ArgumentBuilder {
      */
     public <T extends Nameable> ArgumentBuilder objectArgument(@NotNull String name, @NotNull Collection<? extends T> candidates, @Nullable Predicate<? super T> filter, @Nullable ContextAction contextAction) {
         arguments.add(new ObjectArgument<>(name, candidates, filter, contextAction));
+        return this;
+    }
+
+    /**
+     * Add argument for {@link org.bukkit.OfflinePlayer}.
+     */
+    public ArgumentBuilder offlinePlayerArgument(@NotNull String name) {
+        return offlinePlayerArgument(name, null);
+    }
+
+    /**
+     * Add argument for {@link org.bukkit.OfflinePlayer}.
+     */
+    public ArgumentBuilder offlinePlayerArgument(@NotNull String name, @Nullable Predicate<? super OfflinePlayer> filter) {
+        return offlinePlayerArgument(name, filter, null);
+    }
+
+    /**
+     * Add argument for {@link org.bukkit.OfflinePlayer}.
+     */
+    public ArgumentBuilder offlinePlayerArgument(@NotNull String name, @Nullable Predicate<? super OfflinePlayer> filter, @Nullable ContextAction contextAction) {
+        arguments.add(new OfflinePlayerArgument(name, filter, contextAction));
         return this;
     }
 

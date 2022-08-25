@@ -1,5 +1,6 @@
 package net.kunmc.lab.commandlib;
 
+import com.mojang.authlib.GameProfile;
 import net.kunmc.lab.commandlib.argument.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -281,6 +282,28 @@ public class ArgumentBuilder {
      */
     public ArgumentBuilder floatArgument(@NotNull String name, Float min, Float max, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
         arguments.add(new FloatArgument(name, suggestionAction, contextAction, min, max));
+        return this;
+    }
+
+    /**
+     * Add argument for {@link com.mojang.authlib.GameProfile}.
+     */
+    public ArgumentBuilder gameProfileArgument(@NotNull String name) {
+        return gameProfileArgument(name, null);
+    }
+
+    /**
+     * Add argument for {@link com.mojang.authlib.GameProfile}.
+     */
+    public ArgumentBuilder gameProfileArgument(@NotNull String name, @Nullable Predicate<? super GameProfile> filter) {
+        return gameProfileArgument(name, filter, null);
+    }
+
+    /**
+     * Add argument for {@link com.mojang.authlib.GameProfile}.
+     */
+    public ArgumentBuilder gameProfileArgument(@NotNull String name, @Nullable Predicate<? super GameProfile> filter, @Nullable ContextAction contextAction) {
+        arguments.add(new GameProfileArgument(name, filter, contextAction));
         return this;
     }
 
