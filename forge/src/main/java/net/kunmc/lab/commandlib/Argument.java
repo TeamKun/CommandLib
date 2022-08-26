@@ -2,17 +2,26 @@ package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
+import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
 public abstract class Argument<T> {
     protected final String name;
     private final ArgumentType<?> type;
     private SuggestionAction suggestionAction;
     private ContextAction contextAction;
+    private Predicate<? super T> filter;
+    private Function<? super T, ? extends T> shaper;
+    private Function<CommandContext<CommandSource>, IncorrectArgumentInputException> inputExceptionByFilterGenerator;
 
     public Argument(String name, ArgumentType<?> type) {
         this.name = name;
@@ -54,6 +63,18 @@ public abstract class Argument<T> {
         return contextAction != null;
     }
 
+    protected void setFilter(Predicate<? super T> filter) {
+        this.filter = filter;
+    }
+
+    protected void setSharper(Function<? super T, ? extends T> shaper) {
+        this.shaper = shaper;
+    }
+
+    protected void setInputExceptionByFilterGenerator(Function<CommandContext<CommandSource>, IncorrectArgumentInputException> inputExceptionByFilterGenerator) {
+        this.inputExceptionByFilterGenerator = inputExceptionByFilterGenerator;
+    }
+
     String generateHelpMessageTag() {
         return String.format(TextFormatting.GRAY + "<" + TextFormatting.YELLOW + "%s" + TextFormatting.GRAY + ">", name);
     }
@@ -62,5 +83,37 @@ public abstract class Argument<T> {
         return new IncorrectArgumentInputException(((ITextComponent) e.getRawMessage()));
     }
 
-    public abstract T parse(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException;
+    protected static String getInputString(CommandContext<CommandSource> ctx, String name) {
+        try {
+            Field f = ctx.getClass().getDeclaredField("arguments");
+            f.setAccessible(true);
+            ParsedArgument<CommandSource, ?> argument = ((Map<String, ParsedArgument<CommandSource, ?>>) f.get(ctx)).get(name);
+            return argument.getRange().get(ctx.getInput());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    final T parseInternal(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException {
+        T t;
+        try {
+            t = parse(ctx);
+        } catch (CommandSyntaxException e) {
+            throw convertSyntaxException(e);
+        }
+       
+        if (filter != null && !filter.test(t)) {
+            if (inputExceptionByFilterGenerator == null) {
+                throw new IncorrectArgumentInputException(this, ctx, getInputString(ctx, name));
+            }
+            throw inputExceptionByFilterGenerator.apply(ctx);
+        }
+
+        if (shaper == null) {
+            return t;
+        }
+        return shaper.apply(t);
+    }
+
+    public abstract T parse(CommandContext<CommandSource> ctx) throws CommandSyntaxException, IncorrectArgumentInputException;
 }

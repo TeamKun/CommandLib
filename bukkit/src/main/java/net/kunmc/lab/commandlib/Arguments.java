@@ -23,7 +23,7 @@ class Arguments {
     void parse(List<Object> dstList, Map<String, Object> dstMap, CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
         for (Argument<?> argument : argumentList) {
             try {
-                Object parsedArg = argument.parse(ctx);
+                Object parsedArg = argument.parseInternal(ctx);
                 dstList.add(parsedArg);
                 dstMap.put(argument.name(), parsedArg);
             } catch (IllegalArgumentException ignored) {

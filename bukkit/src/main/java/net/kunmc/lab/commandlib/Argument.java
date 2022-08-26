@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import lombok.experimental.Accessors;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
@@ -15,6 +16,9 @@ import org.bukkit.ChatColor;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public abstract class Argument<T> {
@@ -22,6 +26,9 @@ public abstract class Argument<T> {
     private SuggestionAction suggestionAction;
     private ContextAction contextAction;
     private final ArgumentType<?> type;
+    private Predicate<? super T> filter;
+    private Function<? super T, ? extends T> shaper;
+    private Function<CommandContext<CommandListenerWrapper>, IncorrectArgumentInputException> inputExceptionByFilterGenerator;
 
     public Argument(String name, ArgumentType<?> type) {
         this.name = name;
@@ -63,6 +70,34 @@ public abstract class Argument<T> {
         return contextAction != null;
     }
 
+    protected void setFilter(Predicate<? super T> filter) {
+        this.filter = filter;
+    }
+
+    protected void setShaper(Function<? super T, ? extends T> shaper) {
+        this.shaper = shaper;
+    }
+
+    protected void setOptions(Consumer<Option<T>> options) {
+        if (options == null) {
+            return;
+        }
+        Option<T> option = new Option<>();
+        options.accept(option);
+        setOption(option);
+    }
+
+    protected void setOption(Option<T> option) {
+        setSuggestionAction(option.suggestionAction);
+        setContextAction(option.contextAction);
+        setFilter(option.filter);
+        setShaper(option.shaper);
+    }
+
+    protected void setInputExceptionByFilterGenerator(Function<CommandContext<CommandListenerWrapper>, IncorrectArgumentInputException> inputExceptionByFilterGenerator) {
+        this.inputExceptionByFilterGenerator = inputExceptionByFilterGenerator;
+    }
+
     String generateHelpMessageTag() {
         return String.format(ChatColor.GRAY + "<" + ChatColor.YELLOW + "%s" + ChatColor.GRAY + ">", name);
     }
@@ -92,5 +127,34 @@ public abstract class Argument<T> {
         }
     }
 
-    public abstract T parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException;
+    final T parseInternal(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
+        T t;
+        try {
+            t = parse(ctx);
+        } catch (CommandSyntaxException e) {
+            throw convertSyntaxException(e);
+        }
+       
+        if (filter != null && !filter.test(t)) {
+            if (inputExceptionByFilterGenerator == null) {
+                throw new IncorrectArgumentInputException(this, ctx, getInputString(ctx, name));
+            }
+            throw inputExceptionByFilterGenerator.apply(ctx);
+        }
+
+        if (shaper == null) {
+            return t;
+        }
+        return shaper.apply(t);
+    }
+
+    public abstract T parse(CommandContext<CommandListenerWrapper> ctx) throws CommandSyntaxException, IncorrectArgumentInputException;
+
+    @Accessors(chain = true, fluent = true)
+    public static class Option<T> {
+        SuggestionAction suggestionAction;
+        Predicate<? super T> filter;
+        Function<? super T, ? extends T> shaper;
+        ContextAction contextAction;
+    }
 }
