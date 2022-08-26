@@ -11,16 +11,25 @@ import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import net.minecraft.server.v1_16_R3.Vec3D;
 import org.bukkit.Location;
 
+import java.util.function.Predicate;
+
 public class LocationArgument extends Argument<Location> {
-    public LocationArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction) {
+    private final Predicate<? super Location> filter;
+
+    public LocationArgument(String name, SuggestionAction suggestionAction, Predicate<? super Location> filter, ContextAction contextAction) {
         super(name, suggestionAction, contextAction, ArgumentVec3.a());
+        this.filter = filter;
     }
 
     @Override
     public Location parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
         try {
             Vec3D vec = ArgumentVec3.a(ctx, name);
-            return new Location(ctx.getSource().getBukkitWorld(), vec.x, vec.y, vec.z);
+            Location location = new Location(ctx.getSource().getBukkitWorld(), vec.x, vec.y, vec.z);
+            if (filter == null || filter.test(location)) {
+                return location;
+            }
+            throw new IncorrectArgumentInputException(this, ctx, getInputString(ctx, name));
         } catch (CommandSyntaxException e) {
             throw convertSyntaxException(e);
         }

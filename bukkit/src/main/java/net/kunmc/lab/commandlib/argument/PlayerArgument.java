@@ -10,15 +10,24 @@ import net.minecraft.server.v1_16_R3.ArgumentEntity;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.entity.Player;
 
+import java.util.function.Predicate;
+
 public class PlayerArgument extends Argument<Player> {
-    public PlayerArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction) {
+    private final Predicate<? super Player> filter;
+
+    public PlayerArgument(String name, SuggestionAction suggestionAction, Predicate<? super Player> filter, ContextAction contextAction) {
         super(name, suggestionAction, contextAction, ArgumentEntity.c());
+        this.filter = filter;
     }
 
     @Override
     public Player parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
         try {
-            return ((Player) ArgumentEntity.e(ctx, name).getBukkitEntity());
+            Player p = ((Player) ArgumentEntity.e(ctx, name).getBukkitEntity());
+            if (filter == null || filter.test(p)) {
+                return p;
+            }
+            throw new IncorrectArgumentInputException(this, ctx, getInputString(ctx, name));
         } catch (CommandSyntaxException e) {
             throw convertSyntaxException(e);
         }

@@ -10,9 +10,14 @@ import net.minecraft.util.text.TextFormatting;
 
 public abstract class Argument<T> {
     protected final String name;
-    private final SuggestionAction suggestionAction;
-    private ContextAction contextAction;
     private final ArgumentType<?> type;
+    private SuggestionAction suggestionAction;
+    private ContextAction contextAction;
+
+    public Argument(String name, ArgumentType<?> type) {
+        this.name = name;
+        this.type = type;
+    }
 
     public Argument(String name, SuggestionAction suggestionAction, ContextAction contextAction, ArgumentType<?> type) {
         this.name = name;
@@ -29,16 +34,20 @@ public abstract class Argument<T> {
         return suggestionAction;
     }
 
+    protected void setSuggestionAction(SuggestionAction suggestionAction) {
+        this.suggestionAction = suggestionAction;
+    }
+
     public ContextAction contextAction() {
         return contextAction;
     }
 
-    public ArgumentType<?> type() {
-        return type;
+    protected void setContextAction(ContextAction contextAction) {
+        this.contextAction = contextAction;
     }
 
-    void setContextAction(ContextAction contextAction) {
-        this.contextAction = contextAction;
+    public ArgumentType<?> type() {
+        return type;
     }
 
     boolean hasContextAction() {

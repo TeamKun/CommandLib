@@ -11,19 +11,27 @@ import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.entity.Entity;
 
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class EntitiesArgument extends Argument<List<Entity>> {
-    public EntitiesArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction) {
+    private final Predicate<? super List<Entity>> filter;
+
+    public EntitiesArgument(String name, SuggestionAction suggestionAction, Predicate<? super List<Entity>> filter, ContextAction contextAction) {
         super(name, suggestionAction, contextAction, ArgumentEntity.multipleEntities());
+        this.filter = filter;
     }
 
     @Override
     public List<Entity> parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
         try {
-            return ArgumentEntity.b(ctx, name).stream()
+            List<Entity> list = ArgumentEntity.b(ctx, name).stream()
                     .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)
                     .collect(Collectors.toList());
+            if (filter == null || filter.test(list)) {
+                return list;
+            }
+            throw new IncorrectArgumentInputException(this, ctx, name);
         } catch (CommandSyntaxException e) {
             throw convertSyntaxException(e);
         }

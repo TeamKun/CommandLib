@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -19,7 +20,7 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.block.data.BlockData}.
      */
     public ArgumentBuilder blockDataArgument(@NotNull String name) {
-        return blockDataArgument(name, null);
+        return blockDataArgument(name, null, null);
     }
 
     /**
@@ -33,7 +34,17 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.block.data.BlockData}.
      */
     public ArgumentBuilder blockDataArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new BlockDataArgument(name, suggestionAction, contextAction));
+        return blockDataArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for {@link org.bukkit.block.data.BlockData}.
+     */
+    public ArgumentBuilder blockDataArgumentWith(@NotNull String name, @NotNull Consumer<BlockDataArgument.Option> options) {
+        arguments.add(new BlockDataArgument(name, options));
         return this;
     }
 
@@ -114,7 +125,7 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.enchantments.Enchantment}.
      */
     public ArgumentBuilder enchantmentArgument(@NotNull String name) {
-        return enchantmentArgument(name, null);
+        return enchantmentArgument(name, null, null);
     }
 
     /**
@@ -127,8 +138,8 @@ public class ArgumentBuilder {
     /**
      * Add argument for {@link org.bukkit.enchantments.Enchantment}.
      */
-    public ArgumentBuilder enchantmentArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, ContextAction contextAction) {
-        arguments.add(new EnchantmentArgument(name, suggestionAction, contextAction));
+    public ArgumentBuilder enchantmentArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
+        arguments.add(new EnchantmentArgument(name, suggestionAction, null, contextAction));
         return this;
     }
 
@@ -136,7 +147,7 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.entity.Entity}.
      */
     public ArgumentBuilder entityArgument(@NotNull String name) {
-        return entityArgument(name, null);
+        return entityArgument(name, null, null);
     }
 
     /**
@@ -150,7 +161,7 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.entity.Entity}.
      */
     public ArgumentBuilder entityArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new EntityArgument(name, suggestionAction, contextAction));
+        arguments.add(new EntityArgument(name, suggestionAction, null, contextAction));
         return this;
     }
 
@@ -158,7 +169,7 @@ public class ArgumentBuilder {
      * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Entity}.
      */
     public ArgumentBuilder entitiesArgument(@NotNull String name) {
-        return entitiesArgument(name, null);
+        return entitiesArgument(name, null, null);
     }
 
     /**
@@ -172,7 +183,7 @@ public class ArgumentBuilder {
      * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Entity}.
      */
     public ArgumentBuilder entitiesArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new EntitiesArgument(name, suggestionAction, contextAction));
+        arguments.add(new EntitiesArgument(name, suggestionAction, null, contextAction));
         return this;
     }
 
@@ -302,7 +313,7 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.inventory.ItemStack}.
      */
     public ArgumentBuilder itemStackArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new ItemStackArgument(name, suggestionAction, contextAction));
+        arguments.add(new ItemStackArgument(name, suggestionAction, null, contextAction));
         return this;
     }
 
@@ -357,7 +368,7 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.Location}.
      */
     public ArgumentBuilder locationArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new LocationArgument(name, suggestionAction, contextAction));
+        arguments.add(new LocationArgument(name, suggestionAction, null, contextAction));
         return this;
     }
 
@@ -426,7 +437,7 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.Particle}.
      */
     public ArgumentBuilder particleArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new ParticleArgument(name, suggestionAction, contextAction));
+        arguments.add(new ParticleArgument(name, suggestionAction, null, contextAction));
         return this;
     }
 
@@ -448,7 +459,7 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.entity.Player}.
      */
     public ArgumentBuilder playerArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new PlayerArgument(name, suggestionAction, contextAction));
+        arguments.add(new PlayerArgument(name, suggestionAction, null, contextAction));
         return this;
     }
 
@@ -470,7 +481,7 @@ public class ArgumentBuilder {
      * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Player}.
      */
     public ArgumentBuilder playersArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new PlayersArgument(name, suggestionAction, contextAction));
+        arguments.add(new PlayersArgument(name, suggestionAction, null, contextAction));
         return this;
     }
 
@@ -492,7 +503,7 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.potion.PotionEffect}.
      */
     public ArgumentBuilder potionEffectArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new PotionEffectArgument(name, suggestionAction, contextAction));
+        arguments.add(new PotionEffectArgument(name, suggestionAction, null, contextAction));
         return this;
     }
 
@@ -557,7 +568,7 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.scoreboard.Team}.
      */
     public ArgumentBuilder teamArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new TeamArgument(name, suggestionAction, contextAction));
+        arguments.add(new TeamArgument(name, suggestionAction, null, contextAction));
         return this;
     }
 
@@ -582,7 +593,7 @@ public class ArgumentBuilder {
      * By using this, you can get raw string like @r.
      */
     public ArgumentBuilder unparsedArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new UnparsedArgument(name, suggestionAction, contextAction));
+        arguments.add(new UnparsedArgument(name, suggestionAction, null, contextAction));
         return this;
     }
 

@@ -11,15 +11,24 @@ import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.Team;
 
+import java.util.function.Predicate;
+
 public class TeamArgument extends Argument<Team> {
-    public TeamArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction) {
+    private final Predicate<? super Team> filter;
+
+    public TeamArgument(String name, SuggestionAction suggestionAction, Predicate<? super Team> filter, ContextAction contextAction) {
         super(name, suggestionAction, contextAction, ArgumentScoreboardTeam.a());
+        this.filter = filter;
     }
 
     @Override
     public Team parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
         try {
-            return Bukkit.getScoreboardManager().getMainScoreboard().getTeam(ArgumentScoreboardTeam.a(ctx, name).getName());
+            Team team = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(ArgumentScoreboardTeam.a(ctx, name).getName());
+            if (filter == null || filter.test(team)) {
+                return team;
+            }
+            throw new IncorrectArgumentInputException(this, ctx, getInputString(ctx, name));
         } catch (CommandSyntaxException e) {
             throw convertSyntaxException(e);
         }
