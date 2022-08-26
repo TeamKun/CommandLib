@@ -3,13 +3,18 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.Argument;
-import net.kunmc.lab.commandlib.ContextAction;
-import net.kunmc.lab.commandlib.SuggestionAction;
 import net.minecraft.command.CommandSource;
 
+import java.util.function.Consumer;
+
 public class StringArgument extends Argument<String> {
-    public StringArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction, Type type) {
-        super(name, suggestionAction, contextAction, type.type);
+    public StringArgument(String name, Consumer<Option<String>> options) {
+        this(name, options, Type.PHRASE_QUOTED);
+    }
+
+    public StringArgument(String name, Consumer<Option<String>> options, Type type) {
+        super(name, type.type);
+        setOptions(options);
     }
 
     @Override

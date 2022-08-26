@@ -3,13 +3,18 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.Argument;
-import net.kunmc.lab.commandlib.ContextAction;
-import net.kunmc.lab.commandlib.SuggestionAction;
 import net.minecraft.command.CommandSource;
 
+import java.util.function.Consumer;
+
 public class IntegerArgument extends Argument<Integer> {
-    public IntegerArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction, Integer min, Integer max) {
-        super(name, suggestionAction, contextAction, IntegerArgumentType.integer(min, max));
+    public IntegerArgument(String name, Consumer<Option<Integer>> options) {
+        super(name, IntegerArgumentType.integer(Integer.MIN_VALUE, Integer.MAX_VALUE));
+    }
+
+    public IntegerArgument(String name, Consumer<Option<Integer>> options, Integer min, Integer max) {
+        super(name, IntegerArgumentType.integer(min, max));
+        setOptions(options);
     }
 
     @Override

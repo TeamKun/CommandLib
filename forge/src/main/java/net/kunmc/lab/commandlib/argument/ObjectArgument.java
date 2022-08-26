@@ -3,30 +3,29 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.Argument;
-import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.Nameable;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.command.CommandSource;
 
 import java.util.Collection;
-import java.util.function.Predicate;
+import java.util.function.Consumer;
 
 public class ObjectArgument<T extends Nameable> extends Argument<T> {
     private final Collection<? extends T> candidates;
-    private final Predicate<? super T> filter;
 
-    public ObjectArgument(String name, Collection<? extends T> candidates, Predicate<? super T> filter, ContextAction contextAction) {
-        super(name, sb -> {
+    public ObjectArgument(String name, Collection<? extends T> candidates, Consumer<Option<T>> options) {
+        super(name, StringArgumentType.string());
+        checkPreconditions(candidates);
+        this.candidates = candidates;
+
+        setSuggestionAction(sb -> {
             candidates.stream()
-                    .filter(x -> filter == null || filter.test(x))
+                    .filter(x -> filter() == null || filter().test(x))
                     .map(Nameable::tabCompleteName)
                     .filter(x -> sb.getLatestInput().isEmpty() || x.contains(sb.getLatestInput()))
                     .forEach(sb::suggest);
-        }, contextAction, StringArgumentType.string());
-
-        checkPreconditions(candidates);
-        this.candidates = candidates;
-        this.filter = filter;
+        });
+        setOptions(options);
     }
 
     private static void checkPreconditions(Collection<? extends Nameable> candidates) {
@@ -46,7 +45,6 @@ public class ObjectArgument<T extends Nameable> extends Argument<T> {
     public T parse(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx, name);
         return candidates.stream()
-                .filter(x -> filter == null || filter.test(x))
                 .filter(x -> x.tabCompleteName().equals(s))
                 .findFirst()
                 .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));

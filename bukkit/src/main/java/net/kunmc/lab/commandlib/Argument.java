@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.kyori.adventure.text.Component;
@@ -16,6 +17,7 @@ import org.bukkit.ChatColor;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -70,6 +72,10 @@ public abstract class Argument<T> {
         return contextAction != null;
     }
 
+    protected Predicate<? super T> filter() {
+        return filter;
+    }
+
     protected void setFilter(Predicate<? super T> filter) {
         this.filter = filter;
     }
@@ -88,10 +94,10 @@ public abstract class Argument<T> {
     }
 
     protected void setOption(Option<T> option) {
-        setSuggestionAction(option.suggestionAction);
-        setContextAction(option.contextAction);
-        setFilter(option.filter);
-        setShaper(option.shaper);
+        option.suggestionAction().ifPresent(this::setSuggestionAction);
+        option.contextAction().ifPresent(this::setContextAction);
+        option.filter().ifPresent(this::setFilter);
+        option.shaper().ifPresent(this::setShaper);
     }
 
     protected void setInputExceptionByFilterGenerator(Function<CommandContext<CommandListenerWrapper>, IncorrectArgumentInputException> inputExceptionByFilterGenerator) {
@@ -134,7 +140,7 @@ public abstract class Argument<T> {
         } catch (CommandSyntaxException e) {
             throw convertSyntaxException(e);
         }
-       
+
         if (filter != null && !filter.test(t)) {
             if (inputExceptionByFilterGenerator == null) {
                 throw new IncorrectArgumentInputException(this, ctx, getInputString(ctx, name));
@@ -151,10 +157,27 @@ public abstract class Argument<T> {
     public abstract T parse(CommandContext<CommandListenerWrapper> ctx) throws CommandSyntaxException, IncorrectArgumentInputException;
 
     @Accessors(chain = true, fluent = true)
+    @Setter
     public static class Option<T> {
-        SuggestionAction suggestionAction;
-        Predicate<? super T> filter;
-        Function<? super T, ? extends T> shaper;
-        ContextAction contextAction;
+        protected SuggestionAction suggestionAction;
+        protected Predicate<? super T> filter;
+        protected Function<? super T, ? extends T> shaper;
+        protected ContextAction contextAction;
+
+        protected Optional<SuggestionAction> suggestionAction() {
+            return Optional.ofNullable(suggestionAction);
+        }
+
+        protected Optional<Predicate<? super T>> filter() {
+            return Optional.ofNullable(filter);
+        }
+
+        protected Optional<Function<? super T, ? extends T>> shaper() {
+            return Optional.ofNullable(shaper);
+        }
+
+        protected Optional<ContextAction> contextAction() {
+            return Optional.ofNullable(contextAction);
+        }
     }
 }

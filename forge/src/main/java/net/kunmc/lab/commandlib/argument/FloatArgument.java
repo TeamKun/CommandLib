@@ -3,13 +3,19 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.Argument;
-import net.kunmc.lab.commandlib.ContextAction;
-import net.kunmc.lab.commandlib.SuggestionAction;
 import net.minecraft.command.CommandSource;
 
+import java.util.function.Consumer;
+
 public class FloatArgument extends Argument<Float> {
-    public FloatArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction, Float min, Float max) {
-        super(name, suggestionAction, contextAction, FloatArgumentType.floatArg(min, max));
+    public FloatArgument(String name, Consumer<Option<Float>> options) {
+        super(name, FloatArgumentType.floatArg(-Float.MAX_VALUE, Float.MAX_VALUE));
+        setOptions(options);
+    }
+
+    public FloatArgument(String name, Consumer<Option<Float>> options, Float min, Float max) {
+        super(name, FloatArgumentType.floatArg(min, max));
+        setOptions(options);
     }
 
     @Override

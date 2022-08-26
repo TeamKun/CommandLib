@@ -1,7 +1,16 @@
 package net.kunmc.lab.commandlib;
 
 import net.kunmc.lab.commandlib.argument.*;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Particle;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,7 +52,7 @@ public class ArgumentBuilder {
     /**
      * Add argument for {@link org.bukkit.block.data.BlockData}.
      */
-    public ArgumentBuilder blockDataArgumentWith(@NotNull String name, @NotNull Consumer<BlockDataArgument.Option> options) {
+    public ArgumentBuilder blockDataArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<BlockData>> options) {
         arguments.add(new BlockDataArgument(name, options));
         return this;
     }
@@ -52,7 +61,7 @@ public class ArgumentBuilder {
      * Add argument for {@link java.lang.Boolean}.
      */
     public ArgumentBuilder boolArgument(@NotNull String name) {
-        return boolArgument(name, null);
+        return boolArgument(name, null, null);
     }
 
     /**
@@ -66,7 +75,17 @@ public class ArgumentBuilder {
      * Add argument for {@link java.lang.Boolean}.
      */
     public ArgumentBuilder boolArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new BooleanArgument(name, suggestionAction, contextAction));
+        return boolArgumentWith(name, options -> {
+            options.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for {@link java.lang.Boolean}.
+     */
+    public ArgumentBuilder boolArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<Boolean>> options) {
+        arguments.add(new BooleanArgument(name, options));
         return this;
     }
 
@@ -103,7 +122,10 @@ public class ArgumentBuilder {
      * Add argument for {@link java.lang.Double}.
      */
     public ArgumentBuilder doubleArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        return doubleArgument(name, -Double.MAX_VALUE, Double.MAX_VALUE, suggestionAction, contextAction);
+        return doubleArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        });
     }
 
     /**
@@ -117,7 +139,25 @@ public class ArgumentBuilder {
      * Add argument for {@link java.lang.Double}.
      */
     public ArgumentBuilder doubleArgument(@NotNull String name, Double min, Double max, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new DoubleArgument(name, suggestionAction, contextAction, min, max));
+        return doubleArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        }, min, max);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Double}.
+     */
+    public ArgumentBuilder doubleArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<Double>> options) {
+        arguments.add(new DoubleArgument(name, options));
+        return this;
+    }
+
+    /**
+     * Add argument for {@link java.lang.Double}.
+     */
+    public ArgumentBuilder doubleArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<Double>> options, Double min, Double max) {
+        arguments.add(new DoubleArgument(name, options, min, max));
         return this;
     }
 
@@ -139,7 +179,17 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.enchantments.Enchantment}.
      */
     public ArgumentBuilder enchantmentArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new EnchantmentArgument(name, suggestionAction, null, contextAction));
+        return enchantmentArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for {@link org.bukkit.enchantments.Enchantment}.
+     */
+    public ArgumentBuilder enchantmentArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<Enchantment>> options) {
+        arguments.add(new EnchantmentArgument(name, options));
         return this;
     }
 
@@ -161,7 +211,17 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.entity.Entity}.
      */
     public ArgumentBuilder entityArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new EntityArgument(name, suggestionAction, null, contextAction));
+        return entityArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for {@link org.bukkit.entity.Entity}.
+     */
+    public ArgumentBuilder entityArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<Entity>> options) {
+        arguments.add(new EntityArgument(name, options));
         return this;
     }
 
@@ -183,7 +243,17 @@ public class ArgumentBuilder {
      * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Entity}.
      */
     public ArgumentBuilder entitiesArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new EntitiesArgument(name, suggestionAction, null, contextAction));
+        return entitiesArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Entity}.
+     */
+    public ArgumentBuilder entitiesArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<List<Entity>>> options) {
+        arguments.add(new EntitiesArgument(name, options));
         return this;
     }
 
@@ -205,7 +275,17 @@ public class ArgumentBuilder {
      * Add argument for T extends {@link java.lang.Enum}.
      */
     public <T extends Enum<T>> ArgumentBuilder enumArgument(@NotNull String name, @NotNull Class<T> clazz, @Nullable Predicate<? super T> filter, @Nullable ContextAction contextAction) {
-        arguments.add(new EnumArgument<>(name, clazz, filter, contextAction));
+        return enumArgumentWith(name, clazz, option -> {
+            option.filter(filter)
+                    .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for T extends {@link java.lang.Enum}.
+     */
+    public <T extends Enum<T>> ArgumentBuilder enumArgumentWith(@NotNull String name, @NotNull Class<T> clazz, @Nullable Consumer<Argument.Option<T>> options) {
+        arguments.add(new EnumArgument<>(name, clazz, options));
         return this;
     }
 
@@ -234,7 +314,10 @@ public class ArgumentBuilder {
      * Add argument for {@link java.lang.Float}.
      */
     public ArgumentBuilder floatArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        return floatArgument(name, -Float.MAX_VALUE, Float.MAX_VALUE, suggestionAction, contextAction);
+        return floatArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        });
     }
 
     /**
@@ -248,7 +331,25 @@ public class ArgumentBuilder {
      * Add argument for {@link java.lang.Float}.
      */
     public ArgumentBuilder floatArgument(@NotNull String name, Float min, Float max, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new FloatArgument(name, suggestionAction, contextAction, min, max));
+        return floatArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        }, min, max);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Float}.
+     */
+    public ArgumentBuilder floatArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<Float>> options) {
+        arguments.add(new FloatArgument(name, options));
+        return this;
+    }
+
+    /**
+     * Add argument for {@link java.lang.Float}.
+     */
+    public ArgumentBuilder floatArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<Float>> options, Float min, Float max) {
+        arguments.add(new FloatArgument(name, options, min, max));
         return this;
     }
 
@@ -277,7 +378,10 @@ public class ArgumentBuilder {
      * Add argument for {@link java.lang.Integer}.
      */
     public ArgumentBuilder integerArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        return integerArgument(name, Integer.MIN_VALUE, Integer.MAX_VALUE, suggestionAction, contextAction);
+        return integerArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        });
     }
 
     /**
@@ -291,7 +395,25 @@ public class ArgumentBuilder {
      * Add argument for {@link java.lang.Integer}.
      */
     public ArgumentBuilder integerArgument(@NotNull String name, Integer min, Integer max, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new IntegerArgument(name, suggestionAction, contextAction, min, max));
+        return integerArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        }, min, max);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Integer}.
+     */
+    public ArgumentBuilder integerArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<Integer>> options) {
+        arguments.add(new IntegerArgument(name, options));
+        return this;
+    }
+
+    /**
+     * Add argument for {@link java.lang.Integer}.
+     */
+    public ArgumentBuilder integerArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<Integer>> options, Integer min, Integer max) {
+        arguments.add(new IntegerArgument(name, options, min, max));
         return this;
     }
 
@@ -313,7 +435,17 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.inventory.ItemStack}.
      */
     public ArgumentBuilder itemStackArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new ItemStackArgument(name, suggestionAction, null, contextAction));
+        return itemStackArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for {@link org.bukkit.inventory.ItemStack}.
+     */
+    public ArgumentBuilder itemStackArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<ItemStack>> options) {
+        arguments.add(new ItemStackArgument(name, options));
         return this;
     }
 
@@ -368,7 +500,17 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.Location}.
      */
     public ArgumentBuilder locationArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new LocationArgument(name, suggestionAction, null, contextAction));
+        return locationArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for {@link org.bukkit.Location}.
+     */
+    public ArgumentBuilder locationArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<Location>> options) {
+        arguments.add(new LocationArgument(name, options));
         return this;
     }
 
@@ -393,7 +535,18 @@ public class ArgumentBuilder {
      * It is only possible to include an object specified by {@code candidates}
      */
     public <T extends Nameable> ArgumentBuilder objectArgument(@NotNull String name, @NotNull Collection<? extends T> candidates, @Nullable Predicate<? super T> filter, @Nullable ContextAction contextAction) {
-        arguments.add(new ObjectArgument<>(name, candidates, filter, contextAction));
+        return objectArgumentWith(name, candidates, option -> {
+            option.filter(filter)
+                    .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for object that implements {@link net.kunmc.lab.commandlib.Nameable}.<br>
+     * It is only possible to include an object specified by {@code candidates}
+     */
+    public <T extends Nameable> ArgumentBuilder objectArgumentWith(@NotNull String name, @NotNull Collection<? extends T> candidates, @Nullable Consumer<ObjectArgument.Option<T>> options) {
+        arguments.add(new ObjectArgument<>(name, candidates, options));
         return this;
     }
 
@@ -415,7 +568,17 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.OfflinePlayer}.
      */
     public ArgumentBuilder offlinePlayerArgument(@NotNull String name, @Nullable Predicate<? super OfflinePlayer> filter, @Nullable ContextAction contextAction) {
-        arguments.add(new OfflinePlayerArgument(name, filter, contextAction));
+        return offlinePlayerArgumentWith(name, option -> {
+            option.filter(filter)
+                    .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for {@link org.bukkit.OfflinePlayer}.
+     */
+    public ArgumentBuilder offlinePlayerArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<OfflinePlayer>> options) {
+        arguments.add(new OfflinePlayerArgument(name, options));
         return this;
     }
 
@@ -437,7 +600,17 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.Particle}.
      */
     public ArgumentBuilder particleArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new ParticleArgument(name, suggestionAction, null, contextAction));
+        return particleArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for {@link org.bukkit.Particle}.
+     */
+    public ArgumentBuilder particleArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<Particle>> options) {
+        arguments.add(new ParticleArgument(name, options));
         return this;
     }
 
@@ -459,7 +632,17 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.entity.Player}.
      */
     public ArgumentBuilder playerArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new PlayerArgument(name, suggestionAction, null, contextAction));
+        return playerArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for {@link org.bukkit.entity.Player}.
+     */
+    public ArgumentBuilder playerArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<Player>> options) {
+        arguments.add(new PlayerArgument(name, options));
         return this;
     }
 
@@ -481,7 +664,17 @@ public class ArgumentBuilder {
      * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Player}.
      */
     public ArgumentBuilder playersArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new PlayersArgument(name, suggestionAction, null, contextAction));
+        return playersArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Player}.
+     */
+    public ArgumentBuilder playersArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<List<Player>>> options) {
+        arguments.add(new PlayersArgument(name, options));
         return this;
     }
 
@@ -503,7 +696,17 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.potion.PotionEffect}.
      */
     public ArgumentBuilder potionEffectArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new PotionEffectArgument(name, suggestionAction, null, contextAction));
+        return potionEffectArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for {@link org.bukkit.potion.PotionEffect}.
+     */
+    public ArgumentBuilder potionEffectArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<PotionEffect>> options) {
+        arguments.add(new PotionEffectArgument(name, options));
         return this;
     }
 
@@ -517,7 +720,7 @@ public class ArgumentBuilder {
     /**
      * Add argument for {@link java.lang.String}.
      */
-    public ArgumentBuilder stringArgument(@NotNull String name, StringArgument.Type type) {
+    public ArgumentBuilder stringArgument(@NotNull String name, @NotNull StringArgument.Type type) {
         return stringArgument(name, type, null);
     }
 
@@ -532,21 +735,42 @@ public class ArgumentBuilder {
      * Add argument for {@link java.lang.String}.
      */
     public ArgumentBuilder stringArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        return stringArgument(name, StringArgument.Type.PHRASE, suggestionAction, contextAction);
+        return stringArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        });
     }
 
     /**
      * Add argument for {@link java.lang.String}.
      */
-    public ArgumentBuilder stringArgument(@NotNull String name, StringArgument.Type type, @Nullable SuggestionAction suggestionAction) {
+    public ArgumentBuilder stringArgument(@NotNull String name, @NotNull StringArgument.Type type, @Nullable SuggestionAction suggestionAction) {
         return stringArgument(name, type, suggestionAction, null);
     }
 
     /**
      * Add argument for {@link java.lang.String}.
      */
-    public ArgumentBuilder stringArgument(@NotNull String name, StringArgument.Type type, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new StringArgument(name, suggestionAction, contextAction, type));
+    public ArgumentBuilder stringArgument(@NotNull String name, @NotNull StringArgument.Type type, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
+        return stringArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        }, type);
+    }
+
+    /**
+     * Add argument for {@link java.lang.String}.
+     */
+    public ArgumentBuilder stringArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<String>> options) {
+        arguments.add(new StringArgument(name, options));
+        return this;
+    }
+
+    /**
+     * Add argument for {@link java.lang.String}.
+     */
+    public ArgumentBuilder stringArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<String>> options, @NotNull StringArgument.Type type) {
+        arguments.add(new StringArgument(name, options, type));
         return this;
     }
 
@@ -568,7 +792,17 @@ public class ArgumentBuilder {
      * Add argument for {@link org.bukkit.scoreboard.Team}.
      */
     public ArgumentBuilder teamArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new TeamArgument(name, suggestionAction, null, contextAction));
+        return teamArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for {@link org.bukkit.scoreboard.Team}.
+     */
+    public ArgumentBuilder teamArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<Team>> options) {
+        arguments.add(new TeamArgument(name, options));
         return this;
     }
 
@@ -593,7 +827,18 @@ public class ArgumentBuilder {
      * By using this, you can get raw string like @r.
      */
     public ArgumentBuilder unparsedArgument(@NotNull String name, @Nullable SuggestionAction suggestionAction, @Nullable ContextAction contextAction) {
-        arguments.add(new UnparsedArgument(name, suggestionAction, null, contextAction));
+        return unparsedArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                    .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for {@link java.lang.String}.<br>
+     * By using this, you can get raw string like @r.
+     */
+    public ArgumentBuilder unparsedArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<String>> options) {
+        arguments.add(new UnparsedArgument(name, options));
         return this;
     }
 
