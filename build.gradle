@@ -40,6 +40,16 @@ subprojects {
             }
         }
     }
+   
+    jar {
+        doFirst {
+            copy {
+                from project.rootDir.toPath().toAbsolutePath()
+                into buildDir.name + '/resources/main/'
+                include 'LICENSE*'
+            }
+        }
+    }
 
     shadowJar {
         archiveFileName = "${project.name}-${project.version}.jar"
