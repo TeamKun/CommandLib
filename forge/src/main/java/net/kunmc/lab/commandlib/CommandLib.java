@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class CommandLib {
+public final class CommandLib {
     private final Collection<? extends Command> commands;
 
     public static void register(@NotNull Command command, @NotNull Command... commands) {

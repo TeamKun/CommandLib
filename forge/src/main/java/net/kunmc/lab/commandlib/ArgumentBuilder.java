@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class ArgumentBuilder {
+public final class ArgumentBuilder {
     private final List<Argument<?>> arguments = new ArrayList<>();
     private ContextAction contextAction = null;
 

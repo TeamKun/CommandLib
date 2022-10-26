@@ -11,10 +11,19 @@ import org.bukkit.craftbukkit.v1_16_R3.CraftParticle;
 import java.util.function.Consumer;
 
 public class ParticleArgument extends Argument<Particle> {
+    public ParticleArgument(String name) {
+        this(name, option -> {
+        });
+    }
 
     public ParticleArgument(String name, Consumer<Option<Particle>> options) {
         super(name, ArgumentParticle.a());
         setOptions(options);
+    }
+
+    @Override
+    protected Particle cast(Object parsedArgument) {
+        return ((Particle) parsedArgument);
     }
 
     @Override

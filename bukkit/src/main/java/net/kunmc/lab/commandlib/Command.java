@@ -4,12 +4,14 @@ import com.google.common.collect.Lists;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.util.fucntion.*;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -58,6 +60,144 @@ public abstract class Command {
         argumentsList.add(new Arguments(builder.build()));
     }
 
+    public final <T> void argument(@NotNull Argument<T> argument, @NotNull BiConsumer<T, CommandContext> execute) {
+        argument(builder -> {
+            builder.customArgument(argument)
+                    .execute(ctx -> {
+                        execute.accept(argument.cast(ctx.getParsedArg(argument.name)), ctx);
+                    });
+        });
+    }
+
+    public final <T1, T2> void argument(@NotNull Argument<T1> argument1,
+                                        @NotNull Argument<T2> argument2,
+                                        @NotNull TriConsumer<T1, T2, CommandContext> execute) {
+        argument(builder -> {
+            builder.customArgument(argument1)
+                    .customArgument(argument2)
+                    .execute(ctx -> {
+                        execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
+                                argument2.cast(ctx.getParsedArg(argument2.name)),
+                                ctx);
+                    });
+        });
+    }
+
+    public final <T1, T2, T3> void argument(@NotNull Argument<T1> argument1,
+                                            @NotNull Argument<T2> argument2,
+                                            @NotNull Argument<T3> argument3,
+                                            @NotNull TetraConsumer<T1, T2, T3, CommandContext> execute) {
+        argument(builder -> {
+            builder.customArgument(argument1)
+                    .customArgument(argument2)
+                    .customArgument(argument3)
+                    .execute(ctx -> {
+                        execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
+                                argument2.cast(ctx.getParsedArg(argument2.name)),
+                                argument3.cast(ctx.getParsedArg(argument3.name)),
+                                ctx);
+                    });
+        });
+    }
+
+    public final <T1, T2, T3, T4> void argument(@NotNull Argument<T1> argument1,
+                                                @NotNull Argument<T2> argument2,
+                                                @NotNull Argument<T3> argument3,
+                                                @NotNull Argument<T4> argument4,
+                                                @NotNull QuintConsumer<T1, T2, T3, T4, CommandContext> execute) {
+        argument(builder -> {
+            builder.customArgument(argument1)
+                    .customArgument(argument2)
+                    .customArgument(argument3)
+                    .customArgument(argument4)
+                    .execute(ctx -> {
+                        execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
+                                argument2.cast(ctx.getParsedArg(argument2.name)),
+                                argument3.cast(ctx.getParsedArg(argument3.name)),
+                                argument4.cast(ctx.getParsedArg(argument4.name)),
+                                ctx);
+                    });
+        });
+    }
+
+    public final <T1, T2, T3, T4, T5> void argument(@NotNull Argument<T1> argument1,
+                                                    @NotNull Argument<T2> argument2,
+                                                    @NotNull Argument<T3> argument3,
+                                                    @NotNull Argument<T4> argument4,
+                                                    @NotNull Argument<T5> argument5,
+                                                    @NotNull HexaConsumer<T1, T2, T3, T4, T5, CommandContext> execute) {
+        argument(builder -> {
+            builder.customArgument(argument1)
+                    .customArgument(argument2)
+                    .customArgument(argument3)
+                    .customArgument(argument4)
+                    .customArgument(argument5)
+                    .execute(ctx -> {
+                        execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
+                                argument2.cast(ctx.getParsedArg(argument2.name)),
+                                argument3.cast(ctx.getParsedArg(argument3.name)),
+                                argument4.cast(ctx.getParsedArg(argument4.name)),
+                                argument5.cast(ctx.getParsedArg(argument5.name)),
+                                ctx);
+                    });
+        });
+    }
+
+    public final <T1, T2, T3, T4, T5, T6> void argument(@NotNull Argument<T1> argument1,
+                                                        @NotNull Argument<T2> argument2,
+                                                        @NotNull Argument<T3> argument3,
+                                                        @NotNull Argument<T4> argument4,
+                                                        @NotNull Argument<T5> argument5,
+                                                        @NotNull Argument<T6> argument6,
+                                                        @NotNull HeptConsumer<T1, T2, T3, T4, T5, T6, CommandContext> execute) {
+        argument(builder -> {
+            builder.customArgument(argument1)
+                    .customArgument(argument2)
+                    .customArgument(argument3)
+                    .customArgument(argument4)
+                    .customArgument(argument5)
+                    .customArgument(argument6)
+                    .execute(ctx -> {
+                        execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
+                                argument2.cast(ctx.getParsedArg(argument2.name)),
+                                argument3.cast(ctx.getParsedArg(argument3.name)),
+                                argument4.cast(ctx.getParsedArg(argument4.name)),
+                                argument5.cast(ctx.getParsedArg(argument5.name)),
+                                argument6.cast(ctx.getParsedArg(argument6.name)),
+                                ctx);
+                    });
+        });
+    }
+
+    public final <T1, T2, T3, T4, T5, T6, T7> void argument(@NotNull Argument<T1> argument1,
+                                                            @NotNull Argument<T2> argument2,
+                                                            @NotNull Argument<T3> argument3,
+                                                            @NotNull Argument<T4> argument4,
+                                                            @NotNull Argument<T5> argument5,
+                                                            @NotNull Argument<T6> argument6,
+                                                            @NotNull Argument<T7> argument7,
+                                                            @NotNull OctoConsumer<T1, T2, T3, T4, T5, T6, T7, CommandContext> execute) {
+        argument(builder -> {
+            builder.customArgument(argument1)
+                    .customArgument(argument2)
+                    .customArgument(argument3)
+                    .customArgument(argument4)
+                    .customArgument(argument5)
+                    .customArgument(argument6)
+                    .customArgument(argument7)
+                    .execute(ctx -> {
+                        execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
+                                argument2.cast(ctx.getParsedArg(argument2.name)),
+                                argument3.cast(ctx.getParsedArg(argument3.name)),
+                                argument4.cast(ctx.getParsedArg(argument4.name)),
+                                argument5.cast(ctx.getParsedArg(argument5.name)),
+                                argument6.cast(ctx.getParsedArg(argument6.name)),
+                                argument7.cast(ctx.getParsedArg(argument7.name)),
+                                ctx);
+                    });
+        });
+    }
+   
     final List<CommandNode<CommandListenerWrapper>> toCommandNodes() {
         List<CommandNode<CommandListenerWrapper>> nodes = new ArrayList<>();
 
@@ -83,6 +223,9 @@ public abstract class Command {
 
             return builder.build();
         }
+
+        // 可変長引数のコマンドに対応させる
+        argumentsList.sort((x, y) -> Integer.compare(y.size(), x.size()));
 
         for (Arguments arguments : argumentsList) {
             builder.executes(ctx -> {

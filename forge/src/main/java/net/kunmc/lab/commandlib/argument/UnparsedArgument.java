@@ -10,6 +10,11 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class UnparsedArgument extends Argument<String> {
+    public UnparsedArgument(String name) {
+        this(name, option -> {
+        });
+    }
+
     public UnparsedArgument(String name, Consumer<Option<String>> options) {
         super(name, GameProfileArgument.gameProfile());
         setOptions(options);
@@ -20,6 +25,11 @@ public class UnparsedArgument extends Argument<String> {
             }
             return suggestionAction();
         }).get());
+    }
+
+    @Override
+    protected String cast(Object parsedArgument) {
+        return ((String) parsedArgument);
     }
 
     @Override

@@ -12,9 +12,19 @@ import org.bukkit.potion.PotionEffect;
 import java.util.function.Consumer;
 
 public class PotionEffectArgument extends Argument<PotionEffect> {
+    public PotionEffectArgument(String name) {
+        this(name, option -> {
+        });
+    }
+   
     public PotionEffectArgument(String name, Consumer<Option<PotionEffect>> options) {
         super(name, ArgumentMobEffect.a());
         setOptions(options);
+    }
+
+    @Override
+    protected PotionEffect cast(Object parsedArgument) {
+        return ((PotionEffect) parsedArgument);
     }
 
     @Override

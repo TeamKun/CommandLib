@@ -41,6 +41,11 @@ public class LegacyEntityArgument extends Argument<List<Entity>> {
     }
 
     @Override
+    protected List<Entity> cast(Object parsedArgument) {
+        return ((List<Entity>) parsedArgument);
+    }
+
+    @Override
     public List<Entity> parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
         try {
             if (enableEntities) {

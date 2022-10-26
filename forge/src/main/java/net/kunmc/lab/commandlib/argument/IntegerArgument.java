@@ -8,13 +8,28 @@ import net.minecraft.command.CommandSource;
 import java.util.function.Consumer;
 
 public class IntegerArgument extends Argument<Integer> {
+    public IntegerArgument(String name) {
+        this(name, option -> {
+        });
+    }
+
     public IntegerArgument(String name, Consumer<Option<Integer>> options) {
         super(name, IntegerArgumentType.integer(Integer.MIN_VALUE, Integer.MAX_VALUE));
+    }
+
+    public IntegerArgument(String name, Integer min, Integer max) {
+        this(name, option -> {
+        }, min, max);
     }
 
     public IntegerArgument(String name, Consumer<Option<Integer>> options, Integer min, Integer max) {
         super(name, IntegerArgumentType.integer(min, max));
         setOptions(options);
+    }
+
+    @Override
+    protected Integer cast(Object parsedArgument) {
+        return ((Integer) parsedArgument);
     }
 
     @Override

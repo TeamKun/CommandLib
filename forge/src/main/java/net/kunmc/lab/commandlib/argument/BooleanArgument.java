@@ -8,9 +8,19 @@ import net.minecraft.command.CommandSource;
 import java.util.function.Consumer;
 
 public class BooleanArgument extends Argument<Boolean> {
+    public BooleanArgument(String name) {
+        this(name, option -> {
+        });
+    }
+
     public BooleanArgument(String name, Consumer<Option<Boolean>> options) {
         super(name, BoolArgumentType.bool());
         setOptions(options);
+    }
+
+    @Override
+    protected Boolean cast(Object parsedArgument) {
+        return ((Boolean) parsedArgument);
     }
 
     @Override

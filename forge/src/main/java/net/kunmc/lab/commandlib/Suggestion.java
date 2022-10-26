@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib;
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
-public class Suggestion {
+public final class Suggestion {
     private final String text;
     private final String tooltip;
 

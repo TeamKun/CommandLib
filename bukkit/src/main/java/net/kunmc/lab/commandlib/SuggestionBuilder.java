@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SuggestionBuilder {
+public final class SuggestionBuilder {
     private final List<Suggestion> suggestions = new ArrayList<>();
     private final CommandContext<CommandListenerWrapper> ctx;
     private final List<Object> parsedArgList;

@@ -10,9 +10,19 @@ import net.minecraft.item.ItemStack;
 import java.util.function.Consumer;
 
 public class ItemStackArgument extends Argument<ItemStack> {
+    public ItemStackArgument(String name) {
+        this(name, option -> {
+        });
+    }
+
     public ItemStackArgument(String name, Consumer<Option<ItemStack>> options) {
         super(name, net.minecraft.command.arguments.ItemArgument.item());
         setOptions(options);
+    }
+
+    @Override
+    protected ItemStack cast(Object parsedArgument) {
+        return ((ItemStack) parsedArgument);
     }
 
     @Override

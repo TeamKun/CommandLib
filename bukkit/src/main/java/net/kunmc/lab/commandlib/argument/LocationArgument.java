@@ -12,9 +12,19 @@ import org.bukkit.Location;
 import java.util.function.Consumer;
 
 public class LocationArgument extends Argument<Location> {
+    public LocationArgument(String name) {
+        this(name, option -> {
+        });
+    }
+
     public LocationArgument(String name, Consumer<Option<Location>> options) {
         super(name, ArgumentVec3.a());
         setOptions(options);
+    }
+
+    @Override
+    protected Location cast(Object parsedArgument) {
+        return ((Location) parsedArgument);
     }
 
     @Override

@@ -63,6 +63,8 @@ public abstract class Argument<T> {
         return type;
     }
 
+    protected abstract T cast(Object parsedArgument);
+
     boolean hasContextAction() {
         return contextAction != null;
     }

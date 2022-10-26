@@ -11,9 +11,19 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import java.util.function.Consumer;
 
 public class PlayerArgument extends Argument<ServerPlayerEntity> {
+    public PlayerArgument(String name) {
+        this(name, option -> {
+        });
+    }
+
     public PlayerArgument(String name, Consumer<Option<ServerPlayerEntity>> options) {
         super(name, EntityArgument.player());
         setOptions(options);
+    }
+
+    @Override
+    protected ServerPlayerEntity cast(Object parsedArgument) {
+        return ((ServerPlayerEntity) parsedArgument);
     }
 
     @Override

@@ -14,7 +14,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-public class IncorrectArgumentInputException extends Exception {
+public final class IncorrectArgumentInputException extends Exception {
     private final List<Component> components;
 
     public IncorrectArgumentInputException(Argument<?> argument, CommandContext<CommandListenerWrapper> ctx, String incorrectInput) {

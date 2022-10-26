@@ -10,9 +10,19 @@ import net.minecraft.scoreboard.ScorePlayerTeam;
 import java.util.function.Consumer;
 
 public class TeamArgument extends Argument<ScorePlayerTeam> {
+    public TeamArgument(String name) {
+        this(name, option -> {
+        });
+    }
+
     public TeamArgument(String name, Consumer<Option<ScorePlayerTeam>> options) {
         super(name, net.minecraft.command.arguments.TeamArgument.team());
         setOptions(options);
+    }
+
+    @Override
+    protected ScorePlayerTeam cast(Object parsedArgument) {
+        return ((ScorePlayerTeam) parsedArgument);
     }
 
     @Override

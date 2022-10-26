@@ -13,6 +13,11 @@ import java.util.function.Consumer;
 public class ObjectArgument<T extends Nameable> extends Argument<T> {
     private final Collection<? extends T> candidates;
 
+    public ObjectArgument(String name, Collection<? extends T> candidates) {
+        this(name, candidates, option -> {
+        });
+    }
+
     public ObjectArgument(String name, Collection<? extends T> candidates, Consumer<Option<T>> options) {
         super(name, StringArgumentType.string());
         checkPreconditions(candidates);
@@ -40,6 +45,11 @@ public class ObjectArgument<T extends Nameable> extends Argument<T> {
                 .count() != candidates.size()) {
             throw new IllegalArgumentException("candidates has duplicate name elements.");
         }
+    }
+
+    @Override
+    protected T cast(Object parsedArgument) {
+        return ((T) parsedArgument);
     }
 
     @Override

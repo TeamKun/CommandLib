@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SuggestionBuilder {
+public final class SuggestionBuilder {
     private final List<Suggestion> suggestions = new ArrayList<>();
     private final List<Object> parsedArgList;
     private final Map<String, Object> parsedArgMap;

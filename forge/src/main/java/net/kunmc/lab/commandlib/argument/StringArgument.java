@@ -8,13 +8,28 @@ import net.minecraft.command.CommandSource;
 import java.util.function.Consumer;
 
 public class StringArgument extends Argument<String> {
+    public StringArgument(String name) {
+        this(name, option -> {
+        });
+    }
+
     public StringArgument(String name, Consumer<Option<String>> options) {
         this(name, options, Type.PHRASE_QUOTED);
+    }
+
+    public StringArgument(String name, Type type) {
+        this(name, option -> {
+        }, type);
     }
 
     public StringArgument(String name, Consumer<Option<String>> options, Type type) {
         super(name, type.type);
         setOptions(options);
+    }
+
+    @Override
+    protected String cast(Object parsedArgument) {
+        return ((String) parsedArgument);
     }
 
     @Override

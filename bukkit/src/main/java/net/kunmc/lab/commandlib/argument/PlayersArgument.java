@@ -14,9 +14,19 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class PlayersArgument extends Argument<List<Player>> {
+    public PlayersArgument(String name) {
+        this(name, option -> {
+        });
+    }
+
     public PlayersArgument(String name, Consumer<Option<List<Player>>> options) {
         super(name, ArgumentEntity.d());
         setOptions(options);
+    }
+
+    @Override
+    protected List<Player> cast(Object parsedArgument) {
+        return ((List<Player>) parsedArgument);
     }
 
     @Override

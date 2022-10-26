@@ -10,9 +10,19 @@ import net.minecraft.entity.Entity;
 import java.util.function.Consumer;
 
 public class EntityArgument extends Argument<Entity> {
+    public EntityArgument(String name) {
+        this(name, option -> {
+        });
+    }
+
     public EntityArgument(String name, Consumer<Option<Entity>> options) {
         super(name, net.minecraft.command.arguments.EntityArgument.entity());
         setOptions(options);
+    }
+
+    @Override
+    protected Entity cast(Object parsedArgument) {
+        return ((Entity) parsedArgument);
     }
 
     @Override

@@ -11,9 +11,19 @@ import org.bukkit.entity.Player;
 import java.util.function.Consumer;
 
 public class PlayerArgument extends Argument<Player> {
+    public PlayerArgument(String name) {
+        this(name, option -> {
+        });
+    }
+   
     public PlayerArgument(String name, Consumer<Option<Player>> options) {
         super(name, ArgumentEntity.c());
         setOptions(options);
+    }
+
+    @Override
+    protected Player cast(Object parsedArgument) {
+        return ((Player) parsedArgument);
     }
 
     @Override

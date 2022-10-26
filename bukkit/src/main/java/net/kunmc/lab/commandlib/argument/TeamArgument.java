@@ -12,9 +12,19 @@ import org.bukkit.scoreboard.Team;
 import java.util.function.Consumer;
 
 public class TeamArgument extends Argument<Team> {
+    public TeamArgument(String name) {
+        this(name, option -> {
+        });
+    }
+
     public TeamArgument(String name, Consumer<Option<Team>> options) {
         super(name, ArgumentScoreboardTeam.a());
         setOptions(options);
+    }
+
+    @Override
+    protected Team cast(Object parsedArgument) {
+        return ((Team) parsedArgument);
     }
 
     @Override

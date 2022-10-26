@@ -13,9 +13,19 @@ import net.minecraft.util.math.vector.Vector3d;
 import java.util.function.Consumer;
 
 public class LocationArgument extends Argument<Location> {
+    public LocationArgument(String name) {
+        this(name, option -> {
+        });
+    }
+
     public LocationArgument(String name, Consumer<Option<Location>> options) {
         super(name, Vec3Argument.vec3());
         setOptions(options);
+    }
+
+    @Override
+    protected Location cast(Object parsedArgument) {
+        return ((Location) parsedArgument);
     }
 
     @Override

@@ -8,7 +8,7 @@ import net.minecraft.util.text.TextFormatting;
 import java.util.List;
 import java.util.Map;
 
-public class CommandContext {
+public final class CommandContext {
     private final Command command;
     private final com.mojang.brigadier.context.CommandContext<CommandSource> handle;
     private final List<String> args;

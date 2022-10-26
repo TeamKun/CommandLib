@@ -11,9 +11,19 @@ import net.minecraft.potion.Effect;
 import java.util.function.Consumer;
 
 public class EffectArgument extends Argument<Effect> {
+    public EffectArgument(String name) {
+        this(name, option -> {
+        });
+    }
+
     public EffectArgument(String name, Consumer<Option<Effect>> options) {
         super(name, PotionArgument.mobEffect());
         setOptions(options);
+    }
+
+    @Override
+    protected Effect cast(Object parsedArgument) {
+        return ((Effect) parsedArgument);
     }
 
     @Override

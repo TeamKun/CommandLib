@@ -13,6 +13,11 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class OfflinePlayerArgument extends Argument<OfflinePlayer> {
+    public OfflinePlayerArgument(String name) {
+        this(name, option -> {
+        });
+    }
+
     public OfflinePlayerArgument(String name, Consumer<Option<OfflinePlayer>> options) {
         super(name, StringArgumentType.string());
         setSuggestionAction(sb -> {
@@ -24,6 +29,11 @@ public class OfflinePlayerArgument extends Argument<OfflinePlayer> {
                     .forEach(sb::suggest);
         });
         setOptions(options);
+    }
+
+    @Override
+    protected OfflinePlayer cast(Object parsedArgument) {
+        return ((OfflinePlayer) parsedArgument);
     }
 
     @Override

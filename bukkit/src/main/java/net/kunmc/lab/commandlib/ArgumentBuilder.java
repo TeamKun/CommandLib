@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class ArgumentBuilder {
+public final class ArgumentBuilder {
     private final List<Argument<?>> arguments = new ArrayList<>();
     private ContextAction contextAction = null;
 
@@ -94,6 +94,15 @@ public class ArgumentBuilder {
      */
     public ArgumentBuilder customArgument(@NotNull Argument<?> argument) {
         arguments.add(argument);
+        return this;
+    }
+
+    /**
+     * Add argument for {@link net.kunmc.lab.commandlib.Argument} Object implemented by you.
+     */
+    public ArgumentBuilder customArgument(@NotNull Argument<?> argument, @Nullable ContextAction contextAction) {
+        arguments.add(argument);
+        argument.setContextAction(contextAction);
         return this;
     }
 

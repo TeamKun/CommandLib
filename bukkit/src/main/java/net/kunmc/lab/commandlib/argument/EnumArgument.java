@@ -12,6 +12,11 @@ import java.util.function.Consumer;
 public class EnumArgument<T extends Enum<T>> extends Argument<T> {
     private final Class<T> clazz;
 
+    public EnumArgument(String name, Class<T> clazz) {
+        this(name, clazz, option -> {
+        });
+    }
+
     public EnumArgument(String name, Class<T> clazz, Consumer<Option<T>> options) {
         super(name, StringArgumentType.string());
 
@@ -25,6 +30,11 @@ public class EnumArgument<T extends Enum<T>> extends Argument<T> {
                     .forEach(sb::suggest);
         });
         setOptions(options);
+    }
+
+    @Override
+    protected T cast(Object parsedArgument) {
+        return clazz.cast(parsedArgument);
     }
 
     @Override

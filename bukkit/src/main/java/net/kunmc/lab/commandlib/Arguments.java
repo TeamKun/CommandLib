@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-class Arguments {
+final class Arguments {
     private final List<Argument<?>> argumentList;
 
     Arguments(List<Argument<?>> argumentList) {
@@ -88,6 +88,10 @@ class Arguments {
         });
 
         return builder;
+    }
+
+    int size() {
+        return argumentList.size();
     }
 
     List<CommandNode<CommandListenerWrapper>> toCommandNodes(Command parent) {

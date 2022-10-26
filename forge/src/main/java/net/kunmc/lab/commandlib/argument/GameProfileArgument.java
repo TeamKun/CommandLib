@@ -13,6 +13,11 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class GameProfileArgument extends Argument<GameProfile> {
+    public GameProfileArgument(String name) {
+        this(name, option -> {
+        });
+    }
+
     public GameProfileArgument(String name, Consumer<Option<GameProfile>> options) {
         super(name, StringArgumentType.string());
 
@@ -27,6 +32,11 @@ public class GameProfileArgument extends Argument<GameProfile> {
                     .forEach(sb::suggest);
         });
         setOptions(options);
+    }
+
+    @Override
+    protected GameProfile cast(Object parsedArgument) {
+        return ((GameProfile) parsedArgument);
     }
 
     @Override

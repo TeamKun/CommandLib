@@ -11,13 +11,23 @@ import org.bukkit.craftbukkit.v1_16_R3.block.data.CraftBlockData;
 import java.util.function.Consumer;
 
 public class BlockDataArgument extends Argument<BlockData> {
+    public BlockDataArgument(String name) {
+        this(name, option -> {
+        });
+    }
+
     public BlockDataArgument(String name, Consumer<Option<BlockData>> options) {
         super(name, ArgumentTile.a());
         setOptions(options);
     }
 
     @Override
+    protected BlockData cast(Object parsedArgument) {
+        return ((BlockData) parsedArgument);
+    }
+
+    @Override
     public BlockData parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
-        return CraftBlockData.createData(ArgumentTile.a(ctx, name).a());
+        return CraftBlockData.createData(ArgumentTile.a(ctx, name()).a());
     }
 }

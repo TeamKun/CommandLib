@@ -12,7 +12,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.List;
 
-public class IncorrectArgumentInputException extends Exception {
+public final class IncorrectArgumentInputException extends Exception {
     private final List<ITextComponent> components;
 
     public IncorrectArgumentInputException(Argument<?> argument, CommandContext<CommandSource> ctx, String incorrectInput) {
