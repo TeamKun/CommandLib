@@ -25,6 +25,7 @@ public abstract class Command {
     private final List<Command> children = new ArrayList<>();
     private final List<String> aliases = new ArrayList<>();
     private final List<Arguments> argumentsList = new ArrayList<>();
+    private Consumer<CommandContext> execute = this::sendHelp;
 
     public Command(@NotNull String name) {
         this.name = name;
@@ -197,7 +198,11 @@ public abstract class Command {
                     });
         });
     }
-   
+
+    public final void execute(@NotNull Consumer<CommandContext> execute) {
+        this.execute = execute;
+    }
+
     final List<CommandNode<CommandListenerWrapper>> toCommandNodes() {
         List<CommandNode<CommandListenerWrapper>> nodes = new ArrayList<>();
 
@@ -268,8 +273,8 @@ public abstract class Command {
                 .collect(Collectors.toList());
     }
 
-    final void sendHelp(com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx) {
-        CommandSender sender = ctx.getSource().getBukkitSender();
+    final void sendHelp(CommandContext ctx) {
+        CommandSender sender = ctx.getSender();
 
         sender.sendMessage(ChatColor.GRAY + "--------------------------------------------------");
         sender.sendMessage(ChatColor.RED + "Usage:");
@@ -307,6 +312,6 @@ public abstract class Command {
     }
 
     protected void execute(@NotNull CommandContext ctx) {
-        sendHelp(ctx.getHandle());
+        execute.accept(ctx);
     }
 }

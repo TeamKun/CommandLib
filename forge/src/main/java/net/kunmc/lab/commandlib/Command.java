@@ -28,6 +28,7 @@ public abstract class Command {
     private final List<Command> children = new ArrayList<>();
     private final List<String> aliases = new ArrayList<>();
     private final List<Arguments> argumentsList = new ArrayList<>();
+    private Consumer<CommandContext> execute = this::sendHelp;
 
     public Command(@NotNull String name) {
         this.name = name;
@@ -201,6 +202,10 @@ public abstract class Command {
         });
     }
 
+    public final void execute(@NotNull Consumer<CommandContext> execute) {
+        this.execute = execute;
+    }
+
     final List<LiteralCommandNode<CommandSource>> toCommandNodes() {
         List<LiteralCommandNode<CommandSource>> nodes = new ArrayList<>();
 
@@ -269,9 +274,9 @@ public abstract class Command {
                 .collect(Collectors.toList());
     }
 
-    final void sendHelp(com.mojang.brigadier.context.CommandContext<CommandSource> ctx) {
-        ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.GRAY + "--------------------------------------------------"), false);
-        ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.RED + "Usage:"), false);
+    final void sendHelp(CommandContext ctx) {
+        ctx.sendMessage(new StringTextComponent(TextFormatting.GRAY + "--------------------------------------------------"));
+        ctx.sendMessage(new StringTextComponent(TextFormatting.RED + "Usage:"));
 
         String padding = "  ";
 
@@ -287,26 +292,26 @@ public abstract class Command {
         }).get();
 
         if (!children.isEmpty()) {
-            ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.AQUA + padding + "/" + literalConcatName), false);
+            ctx.sendMessage(new StringTextComponent(TextFormatting.AQUA + padding + "/" + literalConcatName));
 
             children.forEach(c -> {
-                ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.YELLOW + padding + padding + c.name), false);
+                ctx.sendMessage(new StringTextComponent(TextFormatting.YELLOW + padding + padding + c.name));
             });
 
-            ctx.getSource().sendFeedback(new StringTextComponent(""), false);
+            ctx.sendMessage(new StringTextComponent(""));
         }
 
         for (Arguments arguments : argumentsList) {
             String msg = arguments.generateHelpMessage(literalConcatName);
             if (!msg.isEmpty()) {
-                ctx.getSource().sendFeedback(new StringTextComponent(padding + msg), false);
+                ctx.sendMessage(new StringTextComponent(padding + msg));
             }
         }
 
-        ctx.getSource().sendFeedback(new StringTextComponent(TextFormatting.GRAY + "--------------------------------------------------"), false);
+        ctx.sendMessage(new StringTextComponent(TextFormatting.GRAY + "--------------------------------------------------"));
     }
 
     protected void execute(@NotNull CommandContext ctx) {
-        sendHelp(ctx.getHandle());
+        execute.accept(ctx);
     }
 }

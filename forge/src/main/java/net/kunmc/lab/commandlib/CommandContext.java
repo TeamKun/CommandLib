@@ -2,11 +2,14 @@ package net.kunmc.lab.commandlib;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.command.CommandSource;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public final class CommandContext {
     private final Command command;
@@ -70,7 +73,11 @@ public final class CommandContext {
     }
 
     public void sendHelp() {
-        command.sendHelp(handle);
+        command.sendHelp(this);
+    }
+
+    public void sendMessage(@Nullable Object obj) {
+        sendMessage(Objects.toString(obj));
     }
 
     public void sendMessage(String message) {
@@ -79,6 +86,14 @@ public final class CommandContext {
 
     public void sendMessage(String message, boolean allowLogging) {
         sender.sendFeedback(new StringTextComponent(message), allowLogging);
+    }
+
+    public void sendMessage(ITextComponent component) {
+        sendMessage(component, false);
+    }
+
+    public void sendMessage(ITextComponent component, boolean allowLogging) {
+        sender.sendFeedback(component, allowLogging);
     }
 
     public void sendSuccess(String message) {

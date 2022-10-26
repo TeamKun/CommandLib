@@ -1,12 +1,15 @@
 package net.kunmc.lab.commandlib;
 
 import com.google.common.collect.ImmutableList;
+import net.kyori.adventure.text.Component;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public final class CommandContext {
     private final Command command;
@@ -75,11 +78,19 @@ public final class CommandContext {
     }
 
     public void sendHelp() {
-        command.sendHelp(handle);
+        command.sendHelp(this);
+    }
+
+    public void sendMessage(@Nullable Object obj) {
+        sendMessage(Objects.toString(obj));
     }
 
     public void sendMessage(String message) {
         sender.sendMessage(message);
+    }
+
+    public void sendMessage(Component component) {
+        sender.sendMessage(component);
     }
 
     public void sendSuccess(String message) {
