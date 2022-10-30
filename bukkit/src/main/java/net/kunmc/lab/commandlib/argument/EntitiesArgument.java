@@ -24,7 +24,7 @@ public class EntitiesArgument extends Argument<List<Entity>> {
     }
 
     @Override
-    protected List<Entity> cast(Object parsedArgument) {
+    public List<Entity> cast(Object parsedArgument) {
         return ((List<Entity>) parsedArgument);
     }
 

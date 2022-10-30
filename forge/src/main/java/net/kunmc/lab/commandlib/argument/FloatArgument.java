@@ -29,7 +29,7 @@ public class FloatArgument extends Argument<Float> {
     }
 
     @Override
-    protected Float cast(Object parsedArgument) {
+    public Float cast(Object parsedArgument) {
         return ((Float) parsedArgument);
     }
 

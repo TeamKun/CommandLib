@@ -64,7 +64,7 @@ public abstract class Argument<T> {
         return type;
     }
 
-    protected abstract T cast(Object parsedArgument);
+    public abstract T cast(Object parsedArgument);
 
     protected void setContextAction(ContextAction contextAction) {
         this.contextAction = contextAction;

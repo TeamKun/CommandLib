@@ -29,7 +29,7 @@ public class DoubleArgument extends Argument<Double> {
     }
 
     @Override
-    protected Double cast(Object parsedArgument) {
+    public Double cast(Object parsedArgument) {
         return ((Double) parsedArgument);
     }
 

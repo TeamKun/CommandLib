@@ -48,7 +48,7 @@ public class ObjectArgument<T extends Nameable> extends Argument<T> {
     }
 
     @Override
-    protected T cast(Object parsedArgument) {
+    public T cast(Object parsedArgument) {
         return ((T) parsedArgument);
     }
 

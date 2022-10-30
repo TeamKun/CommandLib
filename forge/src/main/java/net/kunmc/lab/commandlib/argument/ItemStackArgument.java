@@ -21,7 +21,7 @@ public class ItemStackArgument extends Argument<ItemStack> {
     }
 
     @Override
-    protected ItemStack cast(Object parsedArgument) {
+    public ItemStack cast(Object parsedArgument) {
         return ((ItemStack) parsedArgument);
     }
 

@@ -22,7 +22,7 @@ public class EffectArgument extends Argument<Effect> {
     }
 
     @Override
-    protected Effect cast(Object parsedArgument) {
+    public Effect cast(Object parsedArgument) {
         return ((Effect) parsedArgument);
     }
 

@@ -25,7 +25,7 @@ public class PlayersArgument extends Argument<List<Player>> {
     }
 
     @Override
-    protected List<Player> cast(Object parsedArgument) {
+    public List<Player> cast(Object parsedArgument) {
         return ((List<Player>) parsedArgument);
     }
 

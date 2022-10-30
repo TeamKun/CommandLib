@@ -22,7 +22,7 @@ public class EnchantmentArgument extends Argument<Enchantment> {
     }
 
     @Override
-    protected Enchantment cast(Object parsedArgument) {
+    public Enchantment cast(Object parsedArgument) {
         return ((Enchantment) parsedArgument);
     }
 

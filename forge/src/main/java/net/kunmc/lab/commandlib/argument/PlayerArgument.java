@@ -22,7 +22,7 @@ public class PlayerArgument extends Argument<ServerPlayerEntity> {
     }
 
     @Override
-    protected ServerPlayerEntity cast(Object parsedArgument) {
+    public ServerPlayerEntity cast(Object parsedArgument) {
         return ((ServerPlayerEntity) parsedArgument);
     }
 

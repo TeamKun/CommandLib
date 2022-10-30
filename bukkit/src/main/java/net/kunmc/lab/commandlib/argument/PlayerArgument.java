@@ -15,14 +15,14 @@ public class PlayerArgument extends Argument<Player> {
         this(name, option -> {
         });
     }
-   
+
     public PlayerArgument(String name, Consumer<Option<Player>> options) {
         super(name, ArgumentEntity.c());
         setOptions(options);
     }
 
     @Override
-    protected Player cast(Object parsedArgument) {
+    public Player cast(Object parsedArgument) {
         return ((Player) parsedArgument);
     }
 

@@ -20,7 +20,7 @@ public class BlockStateArgument extends Argument<BlockStateInput> {
     }
 
     @Override
-    protected BlockStateInput cast(Object parsedArgument) {
+    public BlockStateInput cast(Object parsedArgument) {
         return ((BlockStateInput) parsedArgument);
     }
 

@@ -23,7 +23,7 @@ public class LocationArgument extends Argument<Location> {
     }
 
     @Override
-    protected Location cast(Object parsedArgument) {
+    public Location cast(Object parsedArgument) {
         return ((Location) parsedArgument);
     }
 

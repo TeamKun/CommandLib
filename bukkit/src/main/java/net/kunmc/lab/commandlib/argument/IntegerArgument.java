@@ -29,7 +29,7 @@ public class IntegerArgument extends Argument<Integer> {
     }
 
     @Override
-    protected Integer cast(Object parsedArgument) {
+    public Integer cast(Object parsedArgument) {
         return ((Integer) parsedArgument);
     }
 

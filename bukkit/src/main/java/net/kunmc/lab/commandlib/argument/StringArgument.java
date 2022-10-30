@@ -28,7 +28,7 @@ public class StringArgument extends Argument<String> {
     }
 
     @Override
-    protected String cast(Object parsedArgument) {
+    public String cast(Object parsedArgument) {
         return ((String) parsedArgument);
     }
 

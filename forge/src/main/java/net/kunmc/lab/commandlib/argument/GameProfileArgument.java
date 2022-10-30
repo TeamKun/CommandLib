@@ -35,7 +35,7 @@ public class GameProfileArgument extends Argument<GameProfile> {
     }
 
     @Override
-    protected GameProfile cast(Object parsedArgument) {
+    public GameProfile cast(Object parsedArgument) {
         return ((GameProfile) parsedArgument);
     }
 

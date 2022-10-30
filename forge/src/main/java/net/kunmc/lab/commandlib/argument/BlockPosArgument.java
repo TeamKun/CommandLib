@@ -21,7 +21,7 @@ public class BlockPosArgument extends Argument<BlockPos> {
     }
 
     @Override
-    protected BlockPos cast(Object parsedArgument) {
+    public BlockPos cast(Object parsedArgument) {
         return ((BlockPos) parsedArgument);
     }
 

@@ -22,7 +22,7 @@ public class ParticleArgument extends Argument<Particle> {
     }
 
     @Override
-    protected Particle cast(Object parsedArgument) {
+    public Particle cast(Object parsedArgument) {
         return ((Particle) parsedArgument);
     }
 

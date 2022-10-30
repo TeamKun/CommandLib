@@ -19,7 +19,7 @@ public class BooleanArgument extends Argument<Boolean> {
     }
 
     @Override
-    protected Boolean cast(Object parsedArgument) {
+    public Boolean cast(Object parsedArgument) {
         return ((Boolean) parsedArgument);
     }
 

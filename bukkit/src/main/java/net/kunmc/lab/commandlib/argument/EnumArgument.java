@@ -33,7 +33,7 @@ public class EnumArgument<T extends Enum<T>> extends Argument<T> {
     }
 
     @Override
-    protected T cast(Object parsedArgument) {
+    public T cast(Object parsedArgument) {
         return clazz.cast(parsedArgument);
     }
 

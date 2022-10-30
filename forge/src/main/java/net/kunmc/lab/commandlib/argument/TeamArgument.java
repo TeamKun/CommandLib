@@ -21,7 +21,7 @@ public class TeamArgument extends Argument<ScorePlayerTeam> {
     }
 
     @Override
-    protected ScorePlayerTeam cast(Object parsedArgument) {
+    public ScorePlayerTeam cast(Object parsedArgument) {
         return ((ScorePlayerTeam) parsedArgument);
     }
 

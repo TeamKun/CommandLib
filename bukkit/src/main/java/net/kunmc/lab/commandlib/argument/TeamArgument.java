@@ -23,7 +23,7 @@ public class TeamArgument extends Argument<Team> {
     }
 
     @Override
-    protected Team cast(Object parsedArgument) {
+    public Team cast(Object parsedArgument) {
         return ((Team) parsedArgument);
     }
 

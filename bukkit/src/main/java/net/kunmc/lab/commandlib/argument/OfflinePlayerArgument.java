@@ -32,7 +32,7 @@ public class OfflinePlayerArgument extends Argument<OfflinePlayer> {
     }
 
     @Override
-    protected OfflinePlayer cast(Object parsedArgument) {
+    public OfflinePlayer cast(Object parsedArgument) {
         return ((OfflinePlayer) parsedArgument);
     }
 

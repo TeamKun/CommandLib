@@ -22,7 +22,7 @@ public class BlockDataArgument extends Argument<BlockData> {
     }
 
     @Override
-    protected BlockData cast(Object parsedArgument) {
+    public BlockData cast(Object parsedArgument) {
         return ((BlockData) parsedArgument);
     }
 

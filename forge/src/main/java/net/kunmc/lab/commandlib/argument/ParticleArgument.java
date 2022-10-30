@@ -20,7 +20,7 @@ public class ParticleArgument extends Argument<IParticleData> {
     }
 
     @Override
-    protected IParticleData cast(Object parsedArgument) {
+    public IParticleData cast(Object parsedArgument) {
         return ((IParticleData) parsedArgument);
     }
 

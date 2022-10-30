@@ -16,14 +16,14 @@ public class PotionEffectArgument extends Argument<PotionEffect> {
         this(name, option -> {
         });
     }
-   
+
     public PotionEffectArgument(String name, Consumer<Option<PotionEffect>> options) {
         super(name, ArgumentMobEffect.a());
         setOptions(options);
     }
 
     @Override
-    protected PotionEffect cast(Object parsedArgument) {
+    public PotionEffect cast(Object parsedArgument) {
         return ((PotionEffect) parsedArgument);
     }
 
