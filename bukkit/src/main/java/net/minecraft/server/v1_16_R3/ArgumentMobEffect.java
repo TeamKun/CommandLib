@@ -1,5 +1,6 @@
 package net.minecraft.server.v1_16_R3;
 
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -10,6 +11,11 @@ public class ArgumentMobEffect implements ArgumentType {
     }
 
     public static MobEffectList a(CommandContext<CommandListenerWrapper> ctx, String s) throws CommandSyntaxException {
+        return null;
+    }
+
+    @Override
+    public Object parse(StringReader reader) throws CommandSyntaxException {
         return null;
     }
 }

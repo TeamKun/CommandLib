@@ -6,8 +6,11 @@ import com.mojang.brigadier.tree.CommandNode;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.fucntion.*;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -20,7 +23,7 @@ import static net.kunmc.lab.commandlib.CommandLib.executeWithStackTrace;
 
 public abstract class Command {
     private final String name;
-    private int permissionLevel = 4;
+    private PermissionDefault defaultPermission = PermissionDefault.OP;
     private Command parent = null;
     private final List<Command> children = new ArrayList<>();
     private final List<String> aliases = new ArrayList<>();
@@ -31,8 +34,8 @@ public abstract class Command {
         this.name = name;
     }
 
-    public final void setPermissionLevel(int level) {
-        this.permissionLevel = level;
+    public final void setPermission(PermissionDefault defaultPermission) {
+        this.defaultPermission = defaultPermission;
     }
 
     public final void addChildren(@NotNull Command child, @NotNull Command... children) {
@@ -203,14 +206,25 @@ public abstract class Command {
         this.execute = execute;
     }
 
+    public final String permissionName() {
+        return "minecraft.command." + permissionNameWithoutPrefix();
+    }
+
+    private String permissionNameWithoutPrefix() {
+        if (parent == null) {
+            return name;
+        }
+        return parent.permissionNameWithoutPrefix() + "." + name;
+    }
+
     final List<CommandNode<CommandListenerWrapper>> toCommandNodes() {
         List<CommandNode<CommandListenerWrapper>> nodes = new ArrayList<>();
 
         CommandNode<CommandListenerWrapper> node = toCommandNode();
         nodes.add(node);
 
-        children.forEach(c -> {
-            c.toCommandNodes().forEach(node::addChild);
+        children.forEach(x -> {
+            x.toCommandNodes().forEach(node::addChild);
         });
 
         nodes.addAll(createAliasCommands(node));
@@ -219,8 +233,10 @@ public abstract class Command {
     }
 
     private CommandNode<CommandListenerWrapper> toCommandNode() {
+        Bukkit.getPluginManager().addPermission(new Permission(permissionName(), defaultPermission));
+
         LiteralArgumentBuilder<CommandListenerWrapper> builder = LiteralArgumentBuilder.literal(name);
-        builder.requires(cs -> cs.hasPermission(permissionLevel));
+        builder.requires(cs -> cs.getBukkitSender().hasPermission(permissionName()));
         if (argumentsList.isEmpty()) {
             builder.executes(ctx -> {
                 return executeWithStackTrace(new CommandContext(this, ctx, new ArrayList<>(), new HashMap<>()), this::execute);
@@ -261,7 +277,7 @@ public abstract class Command {
         return aliases.stream()
                 .map(s -> {
                     LiteralArgumentBuilder<CommandListenerWrapper> builder = LiteralArgumentBuilder.literal(s);
-                    return builder.requires(cs -> cs.hasPermission(permissionLevel))
+                    return builder.requires(x -> x.getBukkitSender().hasPermission(permissionName()))
                             .redirect(target);
                 })
                 .peek(b -> {
@@ -294,9 +310,11 @@ public abstract class Command {
         if (!children.isEmpty()) {
             sender.sendMessage(ChatColor.AQUA + padding + "/" + literalConcatName);
 
-            children.forEach(c -> {
-                sender.sendMessage(ChatColor.YELLOW + padding + padding + c.name);
-            });
+            children.stream()
+                    .filter(x -> sender.hasPermission(x.permissionName()))
+                    .forEach(x -> {
+                        sender.sendMessage(ChatColor.YELLOW + padding + padding + x.name);
+                    });
 
             sender.sendMessage("");
         }

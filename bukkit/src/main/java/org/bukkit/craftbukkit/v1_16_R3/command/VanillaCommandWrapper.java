@@ -16,4 +16,8 @@ public class VanillaCommandWrapper extends BukkitCommand {
     public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
         return false;
     }
+
+    public static CommandListenerWrapper getListener(CommandSender sender) {
+        return null;
+    }
 }
