@@ -18,7 +18,7 @@ public final class CommandContext {
     private final CommandSender sender;
     private final List<Object> parsedArgList;
     private final Map<String, Object> parsedArgMap;
-
+   
     public CommandContext(Command command, com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx, List<Object> parsedArgList, Map<String, Object> parsedArgMap) {
         this.command = command;
         this.handle = ctx;

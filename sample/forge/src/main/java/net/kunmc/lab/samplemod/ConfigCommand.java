@@ -1,8 +1,7 @@
 package net.kunmc.lab.samplemod;
 
 import net.kunmc.lab.commandlib.Command;
-import net.kunmc.lab.commandlib.CommandContext;
-import org.jetbrains.annotations.NotNull;
+import net.kunmc.lab.commandlib.argument.IntegerArgument;
 
 /**
  * By registering this, you can use the command below.
@@ -17,20 +16,14 @@ public class ConfigCommand extends Command {
 
         addChildren(new Command("intValue") {
             {
-                argument(builder ->
-                        builder.integerArgument("integer")
-                );
-            }
-
-            @Override
-            protected void execute(@NotNull CommandContext ctx) {
-                if (ctx.getParsedArgs().isEmpty()) {
+                execute(ctx -> {
                     ctx.sendSuccess("Current value is " + intValue);
-                    return;
-                }
+                });
 
-                intValue = ctx.getParsedArg(0, Integer.class);
-                ctx.sendSuccess("Change intValue to " + intValue);
+                argument(new IntegerArgument("number"), (number, ctx) -> {
+                    intValue = number;
+                    ctx.sendSuccess("Change intValue to " + intValue);
+                });
             }
         });
     }

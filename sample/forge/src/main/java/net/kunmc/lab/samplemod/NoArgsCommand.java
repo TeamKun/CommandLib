@@ -1,7 +1,6 @@
 package net.kunmc.lab.samplemod;
 
 import net.kunmc.lab.commandlib.Command;
-import net.kunmc.lab.commandlib.CommandContext;
 
 /**
  * By registering this, you can use the command below.
@@ -13,10 +12,9 @@ import net.kunmc.lab.commandlib.CommandContext;
 public class NoArgsCommand extends Command {
     public NoArgsCommand() {
         super("noargs");
-    }
 
-    @Override
-    protected void execute(CommandContext ctx) {
-        ctx.sendSuccess("This is NoArgs Command's Message!");
+        execute(ctx -> {
+            ctx.sendSuccess("This is NoArgs Command's Message!");
+        });
     }
 }
