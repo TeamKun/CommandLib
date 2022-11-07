@@ -2,9 +2,11 @@ package net.kunmc.lab.commandlib;
 
 import com.google.common.collect.ImmutableList;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -18,7 +20,7 @@ public final class CommandContext {
     private final CommandSender sender;
     private final List<Object> parsedArgList;
     private final Map<String, Object> parsedArgMap;
-   
+
     public CommandContext(Command command, com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx, List<Object> parsedArgList, Map<String, Object> parsedArgMap) {
         this.command = command;
         this.handle = ctx;
@@ -85,23 +87,47 @@ public final class CommandContext {
         sendMessage(Objects.toString(obj));
     }
 
-    public void sendMessage(String message) {
-        sender.sendMessage(message);
+    public void sendMessage(@Nullable String message) {
+        sender.sendMessage(Objects.toString((message)));
     }
 
-    public void sendMessage(Component component) {
+    public void sendMessage(@NotNull Component component) {
         sender.sendMessage(component);
     }
 
-    public void sendSuccess(String message) {
+    public void sendSuccess(@Nullable Object obj) {
+        sendSuccess(Objects.toString(obj));
+    }
+
+    public void sendSuccess(@Nullable String message) {
         sendMessage(ChatColor.GREEN + message);
     }
 
-    public void sendWarn(String message) {
+    public void sendSuccess(@NotNull Component component) {
+        sendMessage(component.color(TextColor.color(ChatColor.GREEN.asBungee().getColor().getRGB())));
+    }
+
+    public void sendWarn(@Nullable Object obj) {
+        sendWarn(Objects.toString(obj));
+    }
+
+    public void sendWarn(@Nullable String message) {
         sendMessage(ChatColor.YELLOW + message);
     }
 
-    public void sendFailure(String message) {
+    public void sendWarn(@NotNull Component component) {
+        sendMessage(component.color(TextColor.color(ChatColor.YELLOW.asBungee().getColor().getRGB())));
+    }
+
+    public void sendFailure(@Nullable Object obj) {
+        sendFailure(Objects.toString(obj));
+    }
+
+    public void sendFailure(@Nullable String message) {
         sendMessage(ChatColor.RED + message);
+    }
+
+    public void sendFailure(@NotNull Component component) {
+        sendMessage(component.color(TextColor.color(ChatColor.RED.asBungee().getColor().getRGB())));
     }
 }

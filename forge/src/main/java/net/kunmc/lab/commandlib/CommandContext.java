@@ -96,6 +96,10 @@ public final class CommandContext {
         sender.sendFeedback(component, allowLogging);
     }
 
+    public void sendSuccess(@Nullable Object obj) {
+        sendSuccess(Objects.toString(obj));
+    }
+
     public void sendSuccess(String message) {
         sendSuccess(message, false);
     }
@@ -104,12 +108,20 @@ public final class CommandContext {
         sendMessage(TextFormatting.GREEN + message, allowLogging);
     }
 
+    public void sendWarn(@Nullable Object obj) {
+        sendWarn(Objects.toString(obj));
+    }
+
     public void sendWarn(String message) {
         sendWarn(message, false);
     }
 
     public void sendWarn(String message, boolean allowLogging) {
         sendMessage(TextFormatting.YELLOW + message, allowLogging);
+    }
+
+    public void sendFailure(@Nullable Object obj) {
+        sendFailure(Objects.toString(obj));
     }
 
     public void sendFailure(String message) {
