@@ -25,10 +25,11 @@ public class ObjectArgument<T extends Nameable> extends Argument<T> {
 
         setSuggestionAction(sb -> {
             candidates.stream()
-                    .filter(x -> filter() == null || filter().test(x))
-                    .map(Nameable::tabCompleteName)
-                    .filter(x -> sb.getLatestInput().isEmpty() || x.contains(sb.getLatestInput()))
-                    .forEach(sb::suggest);
+                      .filter(x -> filter() == null || filter().test(x))
+                      .map(Nameable::tabCompleteName)
+                      .filter(x -> sb.getLatestInput()
+                                     .isEmpty() || x.contains(sb.getLatestInput()))
+                      .forEach(sb::suggest);
         });
         setOptions(options);
 
@@ -40,9 +41,9 @@ public class ObjectArgument<T extends Nameable> extends Argument<T> {
         }
 
         if (candidates.stream()
-                .map(Nameable::tabCompleteName)
-                .distinct()
-                .count() != candidates.size()) {
+                      .map(Nameable::tabCompleteName)
+                      .distinct()
+                      .count() != candidates.size()) {
             throw new IllegalArgumentException("candidates has duplicate name elements.");
         }
     }
@@ -56,8 +57,9 @@ public class ObjectArgument<T extends Nameable> extends Argument<T> {
     public T parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx, name);
         return candidates.stream()
-                .filter(x -> x.tabCompleteName().equals(s))
-                .findFirst()
-                .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
+                         .filter(x -> x.tabCompleteName()
+                                       .equals(s))
+                         .findFirst()
+                         .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
     }
 }

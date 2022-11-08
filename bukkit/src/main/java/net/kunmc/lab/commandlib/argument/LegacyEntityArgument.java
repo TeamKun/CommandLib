@@ -19,7 +19,11 @@ public class LegacyEntityArgument extends Argument<List<Entity>> {
     private final boolean enableEntities;
     private final boolean single;
 
-    public LegacyEntityArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction, boolean enableEntities, boolean single) {
+    public LegacyEntityArgument(String name,
+                                SuggestionAction suggestionAction,
+                                ContextAction contextAction,
+                                boolean enableEntities,
+                                boolean single) {
         super(name, suggestionAction, contextAction, ((Supplier<ArgumentEntity>) () -> {
             if (enableEntities) {
                 if (single) {
@@ -50,19 +54,23 @@ public class LegacyEntityArgument extends Argument<List<Entity>> {
         try {
             if (enableEntities) {
                 if (single) {
-                    return Collections.singletonList(ArgumentEntity.a(ctx, name).getBukkitEntity());
+                    return Collections.singletonList(ArgumentEntity.a(ctx, name)
+                                                                   .getBukkitEntity());
                 } else {
-                    return ArgumentEntity.b(ctx, name).stream()
-                            .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)
-                            .collect(Collectors.toList());
+                    return ArgumentEntity.b(ctx, name)
+                                         .stream()
+                                         .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)
+                                         .collect(Collectors.toList());
                 }
             } else {
                 if (single) {
-                    return Collections.singletonList(ArgumentEntity.e(ctx, name).getBukkitEntity());
+                    return Collections.singletonList(ArgumentEntity.e(ctx, name)
+                                                                   .getBukkitEntity());
                 } else {
-                    return ArgumentEntity.f(ctx, name).stream()
-                            .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)
-                            .collect(Collectors.toList());
+                    return ArgumentEntity.f(ctx, name)
+                                         .stream()
+                                         .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)
+                                         .collect(Collectors.toList());
                 }
             }
         } catch (CommandSyntaxException e) {

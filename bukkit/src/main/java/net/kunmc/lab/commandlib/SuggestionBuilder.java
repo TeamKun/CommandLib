@@ -20,7 +20,9 @@ public final class SuggestionBuilder {
     private final List<Object> parsedArgList;
     private final Map<String, Object> parsedArgMap;
 
-    public SuggestionBuilder(CommandContext<CommandListenerWrapper> ctx, List<Object> parsedArgList, Map<String, Object> parsedArgMap) {
+    public SuggestionBuilder(CommandContext<CommandListenerWrapper> ctx,
+                             List<Object> parsedArgList,
+                             Map<String, Object> parsedArgMap) {
         this.ctx = ctx;
         this.parsedArgList = parsedArgList;
         this.parsedArgMap = parsedArgMap;
@@ -44,7 +46,8 @@ public final class SuggestionBuilder {
             return "";
         }
         ParsedCommandNode<CommandListenerWrapper> last = nodes.get(nodes.size() - 1);
-        return last.getRange().get(getInput());
+        return last.getRange()
+                   .get(getInput());
     }
 
     private boolean isWaitingQuote() {
@@ -61,8 +64,11 @@ public final class SuggestionBuilder {
     @Deprecated
     public List<String> getArgs() {
         // TODO 明らかに間違ったロジックなので直すか消すかしたい
-        List<String> list = Lists.newArrayList(ctx.getInput().replaceFirst("^/", "").split(" "));
-        if (ctx.getInput().endsWith(" ")) {
+        List<String> list = Lists.newArrayList(ctx.getInput()
+                                                  .replaceFirst("^/", "")
+                                                  .split(" "));
+        if (ctx.getInput()
+               .endsWith(" ")) {
             list.add("");
         }
 
@@ -104,7 +110,8 @@ public final class SuggestionBuilder {
     }
 
     public CommandSender getSender() {
-        return ctx.getSource().getBukkitSender();
+        return ctx.getSource()
+                  .getBukkitSender();
     }
 
     public void sendMessage(String message) {

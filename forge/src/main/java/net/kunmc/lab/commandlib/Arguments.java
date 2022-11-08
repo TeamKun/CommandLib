@@ -20,7 +20,9 @@ final class Arguments {
         this.argumentList = argumentList;
     }
 
-    void parse(List<Object> dstList, Map<String, Object> dstMap, CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException {
+    void parse(List<Object> dstList,
+               Map<String, Object> dstMap,
+               CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException {
         for (Argument<?> argument : argumentList) {
             try {
                 Object parsedArg = argument.parseInternal(ctx);
@@ -41,14 +43,15 @@ final class Arguments {
 
         String msg = TextFormatting.AQUA + "/" + literalConcatName + " ";
         msg += argumentList.stream()
-                .map(Argument::generateHelpMessageTag)
-                .collect(Collectors.joining(" "));
+                           .map(Argument::generateHelpMessageTag)
+                           .collect(Collectors.joining(" "));
 
         return msg;
     }
 
     private RequiredArgumentBuilder<CommandSource, ?> buildArgument(Argument<?> argument, Command parent) {
-        RequiredArgumentBuilder<CommandSource, ?> builder = RequiredArgumentBuilder.argument(argument.name(), argument.type());
+        RequiredArgumentBuilder<CommandSource, ?> builder = RequiredArgumentBuilder.argument(argument.name(),
+                                                                                             argument.type());
 
         if (argument.suggestionAction() != null) {
             builder.suggests((ctx, sb) -> {
@@ -60,10 +63,12 @@ final class Arguments {
                 }
 
                 SuggestionBuilder suggestionBuilder = new SuggestionBuilder(ctx, parsedArgList, parsedArgMap);
-                argument.suggestionAction().accept(suggestionBuilder);
-                suggestionBuilder.build().forEach(s -> {
-                    s.suggest(sb);
-                });
+                argument.suggestionAction()
+                        .accept(suggestionBuilder);
+                suggestionBuilder.build()
+                                 .forEach(s -> {
+                                     s.suggest(sb);
+                                 });
 
                 return sb.buildFuture();
             });
@@ -82,7 +87,11 @@ final class Arguments {
                 e.sendMessage(ctx.getSource());
                 return 1;
             }
-            return CommandLib.executeWithStackTrace(new net.kunmc.lab.commandlib.CommandContext(parent, ctx, parsedArgs, parsedArgMap), argument.contextAction());
+            return CommandLib.executeWithStackTrace(new net.kunmc.lab.commandlib.CommandContext(parent,
+                                                                                                ctx,
+                                                                                                parsedArgs,
+                                                                                                parsedArgMap),
+                                                    argument.contextAction());
         });
 
         return builder;
@@ -94,8 +103,8 @@ final class Arguments {
 
     List<ArgumentCommandNode<CommandSource, ?>> toCommandNodes(Command parent) {
         return argumentList.stream()
-                .map(x -> buildArgument(x, parent))
-                .map(RequiredArgumentBuilder::build)
-                .collect(Collectors.toList());
+                           .map(x -> buildArgument(x, parent))
+                           .map(RequiredArgumentBuilder::build)
+                           .collect(Collectors.toList());
     }
 }

@@ -33,7 +33,11 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         this.arguments.remove(name);
     }
 
-    protected CommandNode(Command<S> command, Predicate<S> requirement, CommandNode<S> redirect, RedirectModifier<S> modifier, boolean forks) {
+    protected CommandNode(Command<S> command,
+                          Predicate<S> requirement,
+                          CommandNode<S> redirect,
+                          RedirectModifier<S> modifier,
+                          boolean forks) {
         this.command = command;
         this.requirement = requirement;
         this.redirect = redirect;
@@ -91,7 +95,8 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
     public abstract void parse(StringReader var1, CommandContextBuilder<S> var2) throws CommandSyntaxException;
 
-    public abstract CompletableFuture<Suggestions> listSuggestions(CommandContext<S> var1, SuggestionsBuilder var2) throws CommandSyntaxException;
+    public abstract CompletableFuture<Suggestions> listSuggestions(CommandContext<S> var1,
+                                                                   SuggestionsBuilder var2) throws CommandSyntaxException;
 
     public abstract ArgumentBuilder<S, ?> createBuilder();
 

@@ -22,14 +22,18 @@ public class GameProfileArgument extends Argument<GameProfile> {
         super(name, StringArgumentType.string());
 
         setSuggestionAction(sb -> {
-            sb.getHandle().getSource().getPlayerNames().stream()
-                    .map(getPlayerProfileCache()::getGameProfileForUsername)
-                    .filter(Objects::nonNull)
-                    .filter(x -> Objects.nonNull(x.getName()))
-                    .filter(x -> filter() == null || filter().test(x))
-                    .map(GameProfile::getName)
-                    .filter(x -> sb.getLatestInput().isEmpty() || x.contains(sb.getLatestInput()))
-                    .forEach(sb::suggest);
+            sb.getHandle()
+              .getSource()
+              .getPlayerNames()
+              .stream()
+              .map(getPlayerProfileCache()::getGameProfileForUsername)
+              .filter(Objects::nonNull)
+              .filter(x -> Objects.nonNull(x.getName()))
+              .filter(x -> filter() == null || filter().test(x))
+              .map(GameProfile::getName)
+              .filter(x -> sb.getLatestInput()
+                             .isEmpty() || x.contains(sb.getLatestInput()))
+              .forEach(sb::suggest);
         });
         setOptions(options);
     }
@@ -42,15 +46,19 @@ public class GameProfileArgument extends Argument<GameProfile> {
     @Override
     public GameProfile parse(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx, name);
-        return ctx.getSource().getPlayerNames().stream()
-                .map(getPlayerProfileCache()::getGameProfileForUsername)
-                .filter(Objects::nonNull)
-                .filter(x -> x.getName().equalsIgnoreCase(s))
-                .findFirst()
-                .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
+        return ctx.getSource()
+                  .getPlayerNames()
+                  .stream()
+                  .map(getPlayerProfileCache()::getGameProfileForUsername)
+                  .filter(Objects::nonNull)
+                  .filter(x -> x.getName()
+                                .equalsIgnoreCase(s))
+                  .findFirst()
+                  .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
     }
 
     private static PlayerProfileCache getPlayerProfileCache() {
-        return ServerLifecycleHooks.getCurrentServer().getPlayerProfileCache();
+        return ServerLifecycleHooks.getCurrentServer()
+                                   .getPlayerProfileCache();
     }
 }

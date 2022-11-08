@@ -10,7 +10,8 @@ public class ArgumentScoreboardTeam implements ArgumentType {
         return null;
     }
 
-    public static ScoreboardTeam a(CommandContext<CommandListenerWrapper> var0, String var1) throws CommandSyntaxException {
+    public static ScoreboardTeam a(CommandContext<CommandListenerWrapper> var0,
+                                   String var1) throws CommandSyntaxException {
         return null;
     }
 

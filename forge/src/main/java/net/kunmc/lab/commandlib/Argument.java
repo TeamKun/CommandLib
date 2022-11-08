@@ -91,10 +91,14 @@ public abstract class Argument<T> {
     }
 
     protected void setOption(Option<T> option) {
-        option.suggestionAction().ifPresent(this::setSuggestionAction);
-        option.contextAction().ifPresent(this::setContextAction);
-        option.filter().ifPresent(this::setFilter);
-        option.shaper().ifPresent(this::setShaper);
+        option.suggestionAction()
+              .ifPresent(this::setSuggestionAction);
+        option.contextAction()
+              .ifPresent(this::setContextAction);
+        option.filter()
+              .ifPresent(this::setFilter);
+        option.shaper()
+              .ifPresent(this::setShaper);
     }
 
     protected void setInputExceptionByFilterGenerator(Function<CommandContext<CommandSource>, IncorrectArgumentInputException> inputExceptionByFilterGenerator) {
@@ -102,7 +106,8 @@ public abstract class Argument<T> {
     }
 
     String generateHelpMessageTag() {
-        return String.format(TextFormatting.GRAY + "<" + TextFormatting.YELLOW + "%s" + TextFormatting.GRAY + ">", name);
+        return String.format(TextFormatting.GRAY + "<" + TextFormatting.YELLOW + "%s" + TextFormatting.GRAY + ">",
+                             name);
     }
 
     protected static IncorrectArgumentInputException convertSyntaxException(CommandSyntaxException e) {
@@ -111,10 +116,13 @@ public abstract class Argument<T> {
 
     protected static String getInputString(CommandContext<CommandSource> ctx, String name) {
         try {
-            Field f = ctx.getClass().getDeclaredField("arguments");
+            Field f = ctx.getClass()
+                         .getDeclaredField("arguments");
             f.setAccessible(true);
-            ParsedArgument<CommandSource, ?> argument = ((Map<String, ParsedArgument<CommandSource, ?>>) f.get(ctx)).get(name);
-            return argument.getRange().get(ctx.getInput());
+            ParsedArgument<CommandSource, ?> argument = ((Map<String, ParsedArgument<CommandSource, ?>>) f.get(ctx)).get(
+                    name);
+            return argument.getRange()
+                           .get(ctx.getInput());
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }

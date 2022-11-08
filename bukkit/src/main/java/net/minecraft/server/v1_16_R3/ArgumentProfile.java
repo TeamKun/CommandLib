@@ -10,7 +10,8 @@ public class ArgumentProfile implements ArgumentType<ArgumentProfile.a> {
         return new ArgumentProfile();
     }
 
-    public static IChatBaseComponent a(CommandContext<CommandListenerWrapper> ctx, String s) throws CommandSyntaxException {
+    public static IChatBaseComponent a(CommandContext<CommandListenerWrapper> ctx,
+                                       String s) throws CommandSyntaxException {
         return null;
     }
 

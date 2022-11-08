@@ -18,7 +18,11 @@ public class LegacyEntityArgument extends Argument<List<Entity>> {
     private final boolean enableEntities;
     private final boolean single;
 
-    public LegacyEntityArgument(String name, SuggestionAction suggestionAction, ContextAction contextAction, boolean enableEntities, boolean single) {
+    public LegacyEntityArgument(String name,
+                                SuggestionAction suggestionAction,
+                                ContextAction contextAction,
+                                boolean enableEntities,
+                                boolean single) {
         super(name, suggestionAction, contextAction, ((Supplier<net.minecraft.command.arguments.EntityArgument>) () -> {
             if (enableEntities) {
                 if (single) {
@@ -49,13 +53,15 @@ public class LegacyEntityArgument extends Argument<List<Entity>> {
         try {
             if (enableEntities) {
                 if (single) {
-                    return Collections.singletonList(net.minecraft.command.arguments.EntityArgument.getEntity(ctx, name));
+                    return Collections.singletonList(net.minecraft.command.arguments.EntityArgument.getEntity(ctx,
+                                                                                                              name));
                 } else {
                     return new ArrayList<>(net.minecraft.command.arguments.EntityArgument.getEntities(ctx, name));
                 }
             } else {
                 if (single) {
-                    return Collections.singletonList(net.minecraft.command.arguments.EntityArgument.getPlayer(ctx, name));
+                    return Collections.singletonList(net.minecraft.command.arguments.EntityArgument.getPlayer(ctx,
+                                                                                                              name));
                 } else {
                     return new ArrayList<>(net.minecraft.command.arguments.EntityArgument.getPlayers(ctx, name));
                 }

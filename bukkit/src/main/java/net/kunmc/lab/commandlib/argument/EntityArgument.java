@@ -28,6 +28,7 @@ public class EntityArgument extends Argument<Entity> {
 
     @Override
     public Entity parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return ArgumentEntity.a(ctx, name).getBukkitEntity();
+        return ArgumentEntity.a(ctx, name)
+                             .getBukkitEntity();
     }
 }

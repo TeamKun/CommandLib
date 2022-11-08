@@ -30,6 +30,7 @@ public class LocationArgument extends Argument<Location> {
     @Override
     public Location parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
         Vec3D vec = ArgumentVec3.a(ctx, name);
-        return new Location(ctx.getSource().getBukkitWorld(), vec.x, vec.y, vec.z);
+        return new Location(ctx.getSource()
+                               .getBukkitWorld(), vec.x, vec.y, vec.z);
     }
 }

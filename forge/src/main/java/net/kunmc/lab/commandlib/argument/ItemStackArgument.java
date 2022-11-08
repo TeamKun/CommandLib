@@ -27,6 +27,7 @@ public class ItemStackArgument extends Argument<ItemStack> {
 
     @Override
     public ItemStack parse(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return net.minecraft.command.arguments.ItemArgument.getItem(ctx, name).createStack(1, false);
+        return net.minecraft.command.arguments.ItemArgument.getItem(ctx, name)
+                                                           .createStack(1, false);
     }
 }

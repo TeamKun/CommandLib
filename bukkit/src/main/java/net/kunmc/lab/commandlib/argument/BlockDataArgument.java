@@ -28,6 +28,7 @@ public class BlockDataArgument extends Argument<BlockData> {
 
     @Override
     public BlockData parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
-        return CraftBlockData.createData(ArgumentTile.a(ctx, name()).a());
+        return CraftBlockData.createData(ArgumentTile.a(ctx, name())
+                                                     .a());
     }
 }

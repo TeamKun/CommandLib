@@ -28,6 +28,7 @@ public class ItemStackArgument extends Argument<ItemStack> {
 
     @Override
     public ItemStack parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
-        return CraftItemStack.asCraftMirror(ArgumentItemStack.a(ctx, name).a(1, false));
+        return CraftItemStack.asCraftMirror(ArgumentItemStack.a(ctx, name)
+                                                             .a(1, false));
     }
 }

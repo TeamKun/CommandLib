@@ -51,30 +51,37 @@ public final class CommandLib implements Listener {
         this.commands = commands;
 
         enable();
-        Bukkit.getPluginManager().registerEvents(this, plugin);
+        Bukkit.getPluginManager()
+              .registerEvents(this, plugin);
     }
 
     private void enable() {
         registeredCommands.addAll(commands.stream()
-                .map(Command::toCommandNodes)
-                .reduce(new ArrayList<>(), (x, y) -> {
-                    x.addAll(y);
-                    return x;
-                }));
+                                          .map(Command::toCommandNodes)
+                                          .reduce(new ArrayList<>(), (x, y) -> {
+                                              x.addAll(y);
+                                              return x;
+                                          }));
 
-        CommandDispatcher dispatcher = ((CraftServer) plugin.getServer()).getServer().getCommandDispatcher();
-        RootCommandNode<CommandListenerWrapper> root = dispatcher.a().getRoot();
+        CommandDispatcher dispatcher = ((CraftServer) plugin.getServer()).getServer()
+                                                                         .getCommandDispatcher();
+        RootCommandNode<CommandListenerWrapper> root = dispatcher.a()
+                                                                 .getRoot();
         registeredCommands.forEach(x -> {
             root.addChild(x);
-            Bukkit.getCommandMap().getKnownCommands().put(x.getName(), new VanillaCommandWrapper(dispatcher, x));
+            Bukkit.getCommandMap()
+                  .getKnownCommands()
+                  .put(x.getName(), new VanillaCommandWrapper(dispatcher, x));
         });
 
-        Bukkit.getOnlinePlayers().forEach(Player::updateCommands);
+        Bukkit.getOnlinePlayers()
+              .forEach(Player::updateCommands);
     }
 
     @EventHandler
     private void onPluginDisable(PluginDisableEvent e) {
-        if (!e.getPlugin().equals(plugin)) {
+        if (!e.getPlugin()
+              .equals(plugin)) {
             return;
         }
 
@@ -82,20 +89,25 @@ public final class CommandLib implements Listener {
     }
 
     public void unregister() {
-        RootCommandNode<CommandListenerWrapper> root = ((CraftServer) plugin.getServer()).getServer().getCommandDispatcher().dispatcher().getRoot();
-        Map<String, org.bukkit.command.Command> knownCommands = Bukkit.getCommandMap().getKnownCommands();
+        RootCommandNode<CommandListenerWrapper> root = ((CraftServer) plugin.getServer()).getServer()
+                                                                                         .getCommandDispatcher()
+                                                                                         .dispatcher()
+                                                                                         .getRoot();
+        Map<String, org.bukkit.command.Command> knownCommands = Bukkit.getCommandMap()
+                                                                      .getKnownCommands();
         registeredCommands.stream()
-                .map(CommandNode::getName)
-                .forEach(s -> {
-                    root.removeCommand(s);
-                    root.removeCommand("minecraft:" + s);
-                    knownCommands.remove(s);
-                    knownCommands.remove("minecraft:" + s);
-                });
+                          .map(CommandNode::getName)
+                          .forEach(s -> {
+                              root.removeCommand(s);
+                              root.removeCommand("minecraft:" + s);
+                              knownCommands.remove(s);
+                              knownCommands.remove("minecraft:" + s);
+                          });
 
         registeredCommands.clear();
         HandlerList.unregisterAll(this);
 
-        Bukkit.getOnlinePlayers().forEach(Player::updateCommands);
+        Bukkit.getOnlinePlayers()
+              .forEach(Player::updateCommands);
     }
 }

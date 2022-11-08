@@ -28,23 +28,29 @@ public class LiteralArgument extends Argument<String> {
         });
     }
 
-    public LiteralArgument(String name, Supplier<Collection<String>> literalsSupplier, Consumer<Option<String>> options) {
+    public LiteralArgument(String name,
+                           Supplier<Collection<String>> literalsSupplier,
+                           Consumer<Option<String>> options) {
         super(name, StringArgumentType.string());
         this.literalsSupplier = literalsSupplier;
 
         setOptions(options);
         setSuggestionAction(sb -> {
-            literalsSupplier.get().stream()
-                    .filter(x -> sb.getLatestInput().isEmpty() || x.contains(sb.getLatestInput()))
-                    .forEach(sb::suggest);
+            literalsSupplier.get()
+                            .stream()
+                            .filter(x -> sb.getLatestInput()
+                                           .isEmpty() || x.contains(sb.getLatestInput()))
+                            .forEach(sb::suggest);
         });
     }
 
     public LiteralArgument(String name, Supplier<Collection<String>> literalsSupplier, ContextAction contextAction) {
         super(name, sb -> {
-            literalsSupplier.get().stream()
-                    .filter(x -> sb.getLatestInput().isEmpty() || x.contains(sb.getLatestInput()))
-                    .forEach(sb::suggest);
+            literalsSupplier.get()
+                            .stream()
+                            .filter(x -> sb.getLatestInput()
+                                           .isEmpty() || x.contains(sb.getLatestInput()))
+                            .forEach(sb::suggest);
         }, contextAction, StringArgumentType.string());
 
         this.literalsSupplier = literalsSupplier;
@@ -58,9 +64,10 @@ public class LiteralArgument extends Argument<String> {
     @Override
     public String parse(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx, name);
-        return literalsSupplier.get().stream()
-                .filter(s::equals)
-                .findFirst()
-                .orElseThrow(() -> new IncorrectArgumentInputException(LiteralArgument.this, ctx, s));
+        return literalsSupplier.get()
+                               .stream()
+                               .filter(s::equals)
+                               .findFirst()
+                               .orElseThrow(() -> new IncorrectArgumentInputException(LiteralArgument.this, ctx, s));
     }
 }

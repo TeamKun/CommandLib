@@ -12,7 +12,8 @@ public class ArgumentEntity implements ArgumentType {
         return null;
     }
 
-    public static Entity a(CommandContext<CommandListenerWrapper> commandcontext, String s) throws CommandSyntaxException {
+    public static Entity a(CommandContext<CommandListenerWrapper> commandcontext,
+                           String s) throws CommandSyntaxException {
         return null;
     }
 
@@ -20,15 +21,18 @@ public class ArgumentEntity implements ArgumentType {
         return null;
     }
 
-    public static Collection<? extends Entity> b(CommandContext<CommandListenerWrapper> commandcontext, String s) throws CommandSyntaxException {
+    public static Collection<? extends Entity> b(CommandContext<CommandListenerWrapper> commandcontext,
+                                                 String s) throws CommandSyntaxException {
         return null;
     }
 
-    public static Collection<? extends Entity> c(CommandContext<CommandListenerWrapper> commandcontext, String s) throws CommandSyntaxException {
+    public static Collection<? extends Entity> c(CommandContext<CommandListenerWrapper> commandcontext,
+                                                 String s) throws CommandSyntaxException {
         return null;
     }
 
-    public static Collection<EntityPlayer> d(CommandContext<CommandListenerWrapper> commandcontext, String s) throws CommandSyntaxException {
+    public static Collection<EntityPlayer> d(CommandContext<CommandListenerWrapper> commandcontext,
+                                             String s) throws CommandSyntaxException {
         return null;
     }
 
@@ -36,7 +40,8 @@ public class ArgumentEntity implements ArgumentType {
         return null;
     }
 
-    public static EntityPlayer e(CommandContext<CommandListenerWrapper> commandcontext, String s) throws CommandSyntaxException {
+    public static EntityPlayer e(CommandContext<CommandListenerWrapper> commandcontext,
+                                 String s) throws CommandSyntaxException {
         return null;
     }
 
@@ -44,7 +49,8 @@ public class ArgumentEntity implements ArgumentType {
         return null;
     }
 
-    public static Collection<EntityPlayer> f(CommandContext<CommandListenerWrapper> commandcontext, String s) throws CommandSyntaxException {
+    public static Collection<EntityPlayer> f(CommandContext<CommandListenerWrapper> commandcontext,
+                                             String s) throws CommandSyntaxException {
         return null;
     }
 

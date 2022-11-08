@@ -11,9 +11,8 @@ public class HelloCommand extends Command {
     public HelloCommand() {
         super("hello");
 
-        argument(new PlayersArgument("players"),
-                (players, ctx) -> {
-                    players.forEach(x -> x.sendMessage("Hello " + x.getName() + "!"));
-                });
+        argument(new PlayersArgument("players"), (players, ctx) -> {
+            players.forEach(x -> x.sendMessage("Hello " + x.getName() + "!"));
+        });
     }
 }

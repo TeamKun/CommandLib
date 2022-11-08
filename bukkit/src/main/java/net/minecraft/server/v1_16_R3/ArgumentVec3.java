@@ -10,7 +10,8 @@ public class ArgumentVec3 implements ArgumentType<Object> {
         return null;
     }
 
-    public static Vec3D a(CommandContext<CommandListenerWrapper> commandContext, String s) throws CommandSyntaxException {
+    public static Vec3D a(CommandContext<CommandListenerWrapper> commandContext,
+                          String s) throws CommandSyntaxException {
         return null;
     }
 

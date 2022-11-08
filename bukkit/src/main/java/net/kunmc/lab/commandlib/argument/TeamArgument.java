@@ -29,6 +29,9 @@ public class TeamArgument extends Argument<Team> {
 
     @Override
     public Team parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return Bukkit.getScoreboardManager().getMainScoreboard().getTeam(ArgumentScoreboardTeam.a(ctx, name).getName());
+        return Bukkit.getScoreboardManager()
+                     .getMainScoreboard()
+                     .getTeam(ArgumentScoreboardTeam.a(ctx, name)
+                                                    .getName());
     }
 }

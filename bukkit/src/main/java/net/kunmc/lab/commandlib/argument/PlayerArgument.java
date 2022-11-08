@@ -28,6 +28,7 @@ public class PlayerArgument extends Argument<Player> {
 
     @Override
     public Player parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return ((Player) ArgumentEntity.e(ctx, name).getBukkitEntity());
+        return ((Player) ArgumentEntity.e(ctx, name)
+                                       .getBukkitEntity());
     }
 }

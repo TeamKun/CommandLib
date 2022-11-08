@@ -23,11 +23,12 @@ public class EnumArgument<T extends Enum<T>> extends Argument<T> {
         this.clazz = clazz;
         setSuggestionAction(sb -> {
             Arrays.stream(clazz.getEnumConstants())
-                    .filter(x -> filter() == null || filter().test(x))
-                    .map(Enum::name)
-                    .map(String::toLowerCase)
-                    .filter(x -> sb.getLatestInput().isEmpty() || x.contains(sb.getLatestInput()))
-                    .forEach(sb::suggest);
+                  .filter(x -> filter() == null || filter().test(x))
+                  .map(Enum::name)
+                  .map(String::toLowerCase)
+                  .filter(x -> sb.getLatestInput()
+                                 .isEmpty() || x.contains(sb.getLatestInput()))
+                  .forEach(sb::suggest);
         });
         setOptions(options);
     }
@@ -41,8 +42,9 @@ public class EnumArgument<T extends Enum<T>> extends Argument<T> {
     public T parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx, name);
         return Arrays.stream(clazz.getEnumConstants())
-                .filter(x -> x.name().equalsIgnoreCase(s))
-                .findFirst()
-                .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
+                     .filter(x -> x.name()
+                                   .equalsIgnoreCase(s))
+                     .findFirst()
+                     .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
     }
 }

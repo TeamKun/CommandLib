@@ -53,7 +53,10 @@ public final class CommandLib {
     }
 
     private void register() {
-        RootCommandNode<CommandSource> root = ServerLifecycleHooks.getCurrentServer().getCommandManager().getDispatcher().getRoot();
+        RootCommandNode<CommandSource> root = ServerLifecycleHooks.getCurrentServer()
+                                                                  .getCommandManager()
+                                                                  .getDispatcher()
+                                                                  .getRoot();
 
         commands.stream()
                 .map(Command::toCommandNodes)

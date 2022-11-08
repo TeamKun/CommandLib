@@ -21,12 +21,18 @@ public final class CommandContext {
     private final List<Object> parsedArgList;
     private final Map<String, Object> parsedArgMap;
 
-    public CommandContext(Command command, com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx, List<Object> parsedArgList, Map<String, Object> parsedArgMap) {
+    public CommandContext(Command command,
+                          com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx,
+                          List<Object> parsedArgList,
+                          Map<String, Object> parsedArgMap) {
         this.command = command;
         this.handle = ctx;
         // TODO 明らかに間違ったロジックなので直すか消すかしたい
-        this.args = ImmutableList.copyOf(ctx.getInput().replaceFirst("^/", "").split(" "));
-        this.sender = ctx.getSource().getBukkitSender();
+        this.args = ImmutableList.copyOf(ctx.getInput()
+                                            .replaceFirst("^/", "")
+                                            .split(" "));
+        this.sender = ctx.getSource()
+                         .getBukkitSender();
         this.parsedArgList = parsedArgList;
         this.parsedArgMap = parsedArgMap;
     }
@@ -104,7 +110,9 @@ public final class CommandContext {
     }
 
     public void sendSuccess(@NotNull Component component) {
-        sendMessage(component.color(TextColor.color(ChatColor.GREEN.asBungee().getColor().getRGB())));
+        sendMessage(component.color(TextColor.color(ChatColor.GREEN.asBungee()
+                                                                   .getColor()
+                                                                   .getRGB())));
     }
 
     public void sendWarn(@Nullable Object obj) {
@@ -116,7 +124,9 @@ public final class CommandContext {
     }
 
     public void sendWarn(@NotNull Component component) {
-        sendMessage(component.color(TextColor.color(ChatColor.YELLOW.asBungee().getColor().getRGB())));
+        sendMessage(component.color(TextColor.color(ChatColor.YELLOW.asBungee()
+                                                                    .getColor()
+                                                                    .getRGB())));
     }
 
     public void sendFailure(@Nullable Object obj) {
@@ -128,6 +138,8 @@ public final class CommandContext {
     }
 
     public void sendFailure(@NotNull Component component) {
-        sendMessage(component.color(TextColor.color(ChatColor.RED.asBungee().getColor().getRGB())));
+        sendMessage(component.color(TextColor.color(ChatColor.RED.asBungee()
+                                                                 .getColor()
+                                                                 .getRGB())));
     }
 }

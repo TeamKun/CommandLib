@@ -96,10 +96,14 @@ public abstract class Argument<T> {
     }
 
     protected void setOption(Option<T> option) {
-        option.suggestionAction().ifPresent(this::setSuggestionAction);
-        option.contextAction().ifPresent(this::setContextAction);
-        option.filter().ifPresent(this::setFilter);
-        option.shaper().ifPresent(this::setShaper);
+        option.suggestionAction()
+              .ifPresent(this::setSuggestionAction);
+        option.contextAction()
+              .ifPresent(this::setContextAction);
+        option.filter()
+              .ifPresent(this::setFilter);
+        option.shaper()
+              .ifPresent(this::setShaper);
     }
 
     protected void setInputExceptionByFilterGenerator(Function<CommandContext<CommandListenerWrapper>, IncorrectArgumentInputException> inputExceptionByFilterGenerator) {
@@ -113,23 +117,28 @@ public abstract class Argument<T> {
     protected static IncorrectArgumentInputException convertSyntaxException(CommandSyntaxException e) {
         ChatMessage msg = ((ChatMessage) e.getRawMessage());
         TranslatableComponent component = Component.translatable()
-                .key((msg.getKey()))
-                .args(Arrays.stream(msg.getArgs())
-                        .map(Object::toString)
-                        .map(Component::text)
-                        .collect(Collectors.toList()))
-                .color(TextColor.color(ChatColor.RED.asBungee().getColor().getRGB()))
-                .build();
+                                                   .key((msg.getKey()))
+                                                   .args(Arrays.stream(msg.getArgs())
+                                                               .map(Object::toString)
+                                                               .map(Component::text)
+                                                               .collect(Collectors.toList()))
+                                                   .color(TextColor.color(ChatColor.RED.asBungee()
+                                                                                       .getColor()
+                                                                                       .getRGB()))
+                                                   .build();
 
         return new IncorrectArgumentInputException(component);
     }
 
     protected static String getInputString(CommandContext<CommandListenerWrapper> ctx, String name) {
         try {
-            Field f = ctx.getClass().getDeclaredField("arguments");
+            Field f = ctx.getClass()
+                         .getDeclaredField("arguments");
             f.setAccessible(true);
-            ParsedArgument<CommandListenerWrapper, ?> argument = ((Map<String, ParsedArgument<CommandListenerWrapper, ?>>) f.get(ctx)).get(name);
-            return argument.getRange().get(ctx.getInput());
+            ParsedArgument<CommandListenerWrapper, ?> argument = ((Map<String, ParsedArgument<CommandListenerWrapper, ?>>) f.get(
+                    ctx)).get(name);
+            return argument.getRange()
+                           .get(ctx.getInput());
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }

@@ -30,8 +30,9 @@ public class EntitiesArgument extends Argument<List<Entity>> {
 
     @Override
     public List<Entity> parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return ArgumentEntity.b(ctx, name).stream()
-                .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)
-                .collect(Collectors.toList());
+        return ArgumentEntity.b(ctx, name)
+                             .stream()
+                             .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)
+                             .collect(Collectors.toList());
     }
 }

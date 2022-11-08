@@ -497,7 +497,10 @@ public class CraftEntity implements Entity {
     }
 
     @Override
-    public @Nullable PermissionAttachment addAttachment(@NotNull Plugin plugin, @NotNull String name, boolean value, int ticks) {
+    public @Nullable PermissionAttachment addAttachment(@NotNull Plugin plugin,
+                                                        @NotNull String name,
+                                                        boolean value,
+                                                        int ticks) {
         return null;
     }
 

@@ -31,9 +31,10 @@ public class PlayersArgument extends Argument<List<Player>> {
 
     @Override
     public List<Player> parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return ArgumentEntity.f(ctx, name).stream()
-                .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)
-                .map(Player.class::cast)
-                .collect(Collectors.toList());
+        return ArgumentEntity.f(ctx, name)
+                             .stream()
+                             .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)
+                             .map(Player.class::cast)
+                             .collect(Collectors.toList());
     }
 }

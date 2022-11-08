@@ -22,11 +22,12 @@ public class OfflinePlayerArgument extends Argument<OfflinePlayer> {
         super(name, StringArgumentType.string());
         setSuggestionAction(sb -> {
             Arrays.stream(Bukkit.getOfflinePlayers())
-                    .filter(x -> filter() == null || filter().test(x))
-                    .map(OfflinePlayer::getName)
-                    .filter(Objects::nonNull)
-                    .filter(x -> sb.getLatestInput().isEmpty() || x.contains(sb.getLatestInput()))
-                    .forEach(sb::suggest);
+                  .filter(x -> filter() == null || filter().test(x))
+                  .map(OfflinePlayer::getName)
+                  .filter(Objects::nonNull)
+                  .filter(x -> sb.getLatestInput()
+                                 .isEmpty() || x.contains(sb.getLatestInput()))
+                  .forEach(sb::suggest);
         });
         setOptions(options);
     }
@@ -40,8 +41,9 @@ public class OfflinePlayerArgument extends Argument<OfflinePlayer> {
     public OfflinePlayer parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx, name);
         return Arrays.stream(Bukkit.getOfflinePlayers())
-                .filter(x -> x.getName() != null && x.getName().equalsIgnoreCase(s))
-                .findFirst()
-                .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
+                     .filter(x -> x.getName() != null && x.getName()
+                                                          .equalsIgnoreCase(s))
+                     .findFirst()
+                     .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
     }
 }

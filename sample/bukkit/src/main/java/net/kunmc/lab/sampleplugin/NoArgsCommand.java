@@ -12,7 +12,7 @@ import net.kunmc.lab.commandlib.Command;
 public class NoArgsCommand extends Command {
     public NoArgsCommand() {
         super("noargs");
-       
+
         execute(ctx -> {
             ctx.sendSuccess("This is NoArgs Command's Message!");
         });

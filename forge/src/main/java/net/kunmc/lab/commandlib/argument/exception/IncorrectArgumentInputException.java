@@ -15,21 +15,28 @@ import java.util.List;
 public final class IncorrectArgumentInputException extends Exception {
     private final List<ITextComponent> components;
 
-    public IncorrectArgumentInputException(Argument<?> argument, CommandContext<CommandSource> ctx, String incorrectInput) {
+    public IncorrectArgumentInputException(Argument<?> argument,
+                                           CommandContext<CommandSource> ctx,
+                                           String incorrectInput) {
         String input = ctx.getInput();
-        ITextComponent unknownArgumentMsg = new TranslationTextComponent("command.unknown.argument", incorrectInput).mergeStyle(TextFormatting.RED);
+        ITextComponent unknownArgumentMsg = new TranslationTextComponent("command.unknown.argument",
+                                                                         incorrectInput).mergeStyle(TextFormatting.RED);
 
-        StringRange range = ctx.getNodes().stream()
-                .filter(n -> n.getNode().getName().equals(argument.name()))
-                .findFirst()
-                .get()
-                .getRange();
+        StringRange range = ctx.getNodes()
+                               .stream()
+                               .filter(n -> n.getNode()
+                                             .getName()
+                                             .equals(argument.name()))
+                               .findFirst()
+                               .get()
+                               .getRange();
         String s = input.substring(1, range.getStart());
         if (s.length() > 10) {
             s = "..." + s.substring(s.length() - 10);
         }
-        ITextComponent hereMsg = new StringTextComponent(TextFormatting.GRAY + s + TextFormatting.RED + TextFormatting.UNDERLINE + incorrectInput + TextFormatting.RESET)
-                .appendSibling(new TranslationTextComponent("command.context.here").mergeStyle(TextFormatting.ITALIC, TextFormatting.RED));
+        ITextComponent hereMsg = new StringTextComponent(TextFormatting.GRAY + s + TextFormatting.RED + TextFormatting.UNDERLINE + incorrectInput + TextFormatting.RESET).appendSibling(
+                new TranslationTextComponent("command.context.here").mergeStyle(TextFormatting.ITALIC,
+                                                                                TextFormatting.RED));
 
         this.components = Lists.newArrayList(unknownArgumentMsg, hereMsg);
     }

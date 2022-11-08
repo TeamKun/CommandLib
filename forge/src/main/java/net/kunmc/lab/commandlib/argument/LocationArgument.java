@@ -31,9 +31,11 @@ public class LocationArgument extends Argument<Location> {
     @Override
     public Location parse(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
         Vector3d vec = Vec3Argument.getVec3(ctx, name);
-        Location loc = new Location(ctx.getSource().getWorld(), vec.x, vec.y, vec.z);
+        Location loc = new Location(ctx.getSource()
+                                       .getWorld(), vec.x, vec.y, vec.z);
 
-        Entity sender = ctx.getSource().getEntity();
+        Entity sender = ctx.getSource()
+                           .getEntity();
         if (sender != null) {
             loc.setYaw(sender.rotationYaw);
             loc.setPitch(sender.rotationPitch);

@@ -67,9 +67,9 @@ public abstract class Command {
     public final <T> void argument(@NotNull Argument<T> argument, @NotNull BiConsumer<T, CommandContext> execute) {
         argument(builder -> {
             builder.customArgument(argument)
-                    .execute(ctx -> {
-                        execute.accept(argument.cast(ctx.getParsedArg(argument.name)), ctx);
-                    });
+                   .execute(ctx -> {
+                       execute.accept(argument.cast(ctx.getParsedArg(argument.name)), ctx);
+                   });
         });
     }
 
@@ -78,12 +78,12 @@ public abstract class Command {
                                         @NotNull TriConsumer<T1, T2, CommandContext> execute) {
         argument(builder -> {
             builder.customArgument(argument1)
-                    .customArgument(argument2)
-                    .execute(ctx -> {
-                        execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
-                                argument2.cast(ctx.getParsedArg(argument2.name)),
-                                ctx);
-                    });
+                   .customArgument(argument2)
+                   .execute(ctx -> {
+                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
+                                      argument2.cast(ctx.getParsedArg(argument2.name)),
+                                      ctx);
+                   });
         });
     }
 
@@ -93,14 +93,14 @@ public abstract class Command {
                                             @NotNull TetraConsumer<T1, T2, T3, CommandContext> execute) {
         argument(builder -> {
             builder.customArgument(argument1)
-                    .customArgument(argument2)
-                    .customArgument(argument3)
-                    .execute(ctx -> {
-                        execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
-                                argument2.cast(ctx.getParsedArg(argument2.name)),
-                                argument3.cast(ctx.getParsedArg(argument3.name)),
-                                ctx);
-                    });
+                   .customArgument(argument2)
+                   .customArgument(argument3)
+                   .execute(ctx -> {
+                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
+                                      argument2.cast(ctx.getParsedArg(argument2.name)),
+                                      argument3.cast(ctx.getParsedArg(argument3.name)),
+                                      ctx);
+                   });
         });
     }
 
@@ -111,16 +111,16 @@ public abstract class Command {
                                                 @NotNull QuintConsumer<T1, T2, T3, T4, CommandContext> execute) {
         argument(builder -> {
             builder.customArgument(argument1)
-                    .customArgument(argument2)
-                    .customArgument(argument3)
-                    .customArgument(argument4)
-                    .execute(ctx -> {
-                        execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
-                                argument2.cast(ctx.getParsedArg(argument2.name)),
-                                argument3.cast(ctx.getParsedArg(argument3.name)),
-                                argument4.cast(ctx.getParsedArg(argument4.name)),
-                                ctx);
-                    });
+                   .customArgument(argument2)
+                   .customArgument(argument3)
+                   .customArgument(argument4)
+                   .execute(ctx -> {
+                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
+                                      argument2.cast(ctx.getParsedArg(argument2.name)),
+                                      argument3.cast(ctx.getParsedArg(argument3.name)),
+                                      argument4.cast(ctx.getParsedArg(argument4.name)),
+                                      ctx);
+                   });
         });
     }
 
@@ -132,18 +132,18 @@ public abstract class Command {
                                                     @NotNull HexaConsumer<T1, T2, T3, T4, T5, CommandContext> execute) {
         argument(builder -> {
             builder.customArgument(argument1)
-                    .customArgument(argument2)
-                    .customArgument(argument3)
-                    .customArgument(argument4)
-                    .customArgument(argument5)
-                    .execute(ctx -> {
-                        execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
-                                argument2.cast(ctx.getParsedArg(argument2.name)),
-                                argument3.cast(ctx.getParsedArg(argument3.name)),
-                                argument4.cast(ctx.getParsedArg(argument4.name)),
-                                argument5.cast(ctx.getParsedArg(argument5.name)),
-                                ctx);
-                    });
+                   .customArgument(argument2)
+                   .customArgument(argument3)
+                   .customArgument(argument4)
+                   .customArgument(argument5)
+                   .execute(ctx -> {
+                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
+                                      argument2.cast(ctx.getParsedArg(argument2.name)),
+                                      argument3.cast(ctx.getParsedArg(argument3.name)),
+                                      argument4.cast(ctx.getParsedArg(argument4.name)),
+                                      argument5.cast(ctx.getParsedArg(argument5.name)),
+                                      ctx);
+                   });
         });
     }
 
@@ -156,20 +156,20 @@ public abstract class Command {
                                                         @NotNull HeptConsumer<T1, T2, T3, T4, T5, T6, CommandContext> execute) {
         argument(builder -> {
             builder.customArgument(argument1)
-                    .customArgument(argument2)
-                    .customArgument(argument3)
-                    .customArgument(argument4)
-                    .customArgument(argument5)
-                    .customArgument(argument6)
-                    .execute(ctx -> {
-                        execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
-                                argument2.cast(ctx.getParsedArg(argument2.name)),
-                                argument3.cast(ctx.getParsedArg(argument3.name)),
-                                argument4.cast(ctx.getParsedArg(argument4.name)),
-                                argument5.cast(ctx.getParsedArg(argument5.name)),
-                                argument6.cast(ctx.getParsedArg(argument6.name)),
-                                ctx);
-                    });
+                   .customArgument(argument2)
+                   .customArgument(argument3)
+                   .customArgument(argument4)
+                   .customArgument(argument5)
+                   .customArgument(argument6)
+                   .execute(ctx -> {
+                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
+                                      argument2.cast(ctx.getParsedArg(argument2.name)),
+                                      argument3.cast(ctx.getParsedArg(argument3.name)),
+                                      argument4.cast(ctx.getParsedArg(argument4.name)),
+                                      argument5.cast(ctx.getParsedArg(argument5.name)),
+                                      argument6.cast(ctx.getParsedArg(argument6.name)),
+                                      ctx);
+                   });
         });
     }
 
@@ -183,22 +183,22 @@ public abstract class Command {
                                                             @NotNull OctoConsumer<T1, T2, T3, T4, T5, T6, T7, CommandContext> execute) {
         argument(builder -> {
             builder.customArgument(argument1)
-                    .customArgument(argument2)
-                    .customArgument(argument3)
-                    .customArgument(argument4)
-                    .customArgument(argument5)
-                    .customArgument(argument6)
-                    .customArgument(argument7)
-                    .execute(ctx -> {
-                        execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
-                                argument2.cast(ctx.getParsedArg(argument2.name)),
-                                argument3.cast(ctx.getParsedArg(argument3.name)),
-                                argument4.cast(ctx.getParsedArg(argument4.name)),
-                                argument5.cast(ctx.getParsedArg(argument5.name)),
-                                argument6.cast(ctx.getParsedArg(argument6.name)),
-                                argument7.cast(ctx.getParsedArg(argument7.name)),
-                                ctx);
-                    });
+                   .customArgument(argument2)
+                   .customArgument(argument3)
+                   .customArgument(argument4)
+                   .customArgument(argument5)
+                   .customArgument(argument6)
+                   .customArgument(argument7)
+                   .execute(ctx -> {
+                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
+                                      argument2.cast(ctx.getParsedArg(argument2.name)),
+                                      argument3.cast(ctx.getParsedArg(argument3.name)),
+                                      argument4.cast(ctx.getParsedArg(argument4.name)),
+                                      argument5.cast(ctx.getParsedArg(argument5.name)),
+                                      argument6.cast(ctx.getParsedArg(argument6.name)),
+                                      argument7.cast(ctx.getParsedArg(argument7.name)),
+                                      ctx);
+                   });
         });
     }
 
@@ -224,7 +224,8 @@ public abstract class Command {
         nodes.add(node);
 
         children.forEach(x -> {
-            x.toCommandNodes().forEach(node::addChild);
+            x.toCommandNodes()
+             .forEach(node::addChild);
         });
 
         nodes.addAll(createAliasCommands(node));
@@ -233,13 +234,16 @@ public abstract class Command {
     }
 
     private CommandNode<CommandListenerWrapper> toCommandNode() {
-        Bukkit.getPluginManager().addPermission(new Permission(permissionName(), defaultPermission));
+        Bukkit.getPluginManager()
+              .addPermission(new Permission(permissionName(), defaultPermission));
 
         LiteralArgumentBuilder<CommandListenerWrapper> builder = LiteralArgumentBuilder.literal(name);
-        builder.requires(cs -> cs.getBukkitSender().hasPermission(permissionName()));
+        builder.requires(cs -> cs.getBukkitSender()
+                                 .hasPermission(permissionName()));
         if (argumentsList.isEmpty()) {
             builder.executes(ctx -> {
-                return executeWithStackTrace(new CommandContext(this, ctx, new ArrayList<>(), new HashMap<>()), this::execute);
+                return executeWithStackTrace(new CommandContext(this, ctx, new ArrayList<>(), new HashMap<>()),
+                                             this::execute);
             });
 
             return builder.build();
@@ -255,7 +259,8 @@ public abstract class Command {
                 try {
                     arguments.parse(parsedArgList, parsedArgMap, ctx);
                 } catch (IncorrectArgumentInputException e) {
-                    e.sendMessage(ctx.getSource().getBukkitSender());
+                    e.sendMessage(ctx.getSource()
+                                     .getBukkitSender());
                     return 1;
                 }
 
@@ -264,7 +269,8 @@ public abstract class Command {
 
             List<CommandNode<CommandListenerWrapper>> nodes = arguments.toCommandNodes(this);
             for (int i = 0; i < nodes.size() - 1; i++) {
-                nodes.get(i).addChild(nodes.get(i + 1));
+                nodes.get(i)
+                     .addChild(nodes.get(i + 1));
             }
 
             builder.then(nodes.get(0));
@@ -275,18 +281,21 @@ public abstract class Command {
 
     private List<CommandNode<CommandListenerWrapper>> createAliasCommands(CommandNode<CommandListenerWrapper> target) {
         return aliases.stream()
-                .map(s -> {
-                    LiteralArgumentBuilder<CommandListenerWrapper> builder = LiteralArgumentBuilder.literal(s);
-                    return builder.requires(x -> x.getBukkitSender().hasPermission(permissionName()))
-                            .redirect(target);
-                })
-                .peek(b -> {
-                    if (!target.getChildren().isEmpty()) {
-                        b.executes(ctx -> target.getCommand().run(ctx));
-                    }
-                })
-                .map(LiteralArgumentBuilder::build)
-                .collect(Collectors.toList());
+                      .map(s -> {
+                          LiteralArgumentBuilder<CommandListenerWrapper> builder = LiteralArgumentBuilder.literal(s);
+                          return builder.requires(x -> x.getBukkitSender()
+                                                        .hasPermission(permissionName()))
+                                        .redirect(target);
+                      })
+                      .peek(b -> {
+                          if (!target.getChildren()
+                                     .isEmpty()) {
+                              b.executes(ctx -> target.getCommand()
+                                                      .run(ctx));
+                          }
+                      })
+                      .map(LiteralArgumentBuilder::build)
+                      .collect(Collectors.toList());
     }
 
     final void sendHelp(CommandContext ctx) {

@@ -8,16 +8,13 @@ public class VariadicArgumentCommand extends Command {
     public VariadicArgumentCommand() {
         super("variadic");
 
-        argument(new IntegerArgument("number"),
-                (number, ctx) -> {
-                    ctx.sendSuccess(number);
-                });
+        argument(new IntegerArgument("number"), (number, ctx) -> {
+            ctx.sendSuccess(number);
+        });
 
-        argument(new IntegerArgument("number"),
-                new BooleanArgument("bool"),
-                (number, bool, ctx) -> {
-                    ctx.sendSuccess(number);
-                    ctx.sendSuccess(bool);
-                });
+        argument(new IntegerArgument("number"), new BooleanArgument("bool"), (number, bool, ctx) -> {
+            ctx.sendSuccess(number);
+            ctx.sendSuccess(bool);
+        });
     }
 }
