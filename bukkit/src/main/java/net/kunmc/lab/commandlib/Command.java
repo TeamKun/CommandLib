@@ -6,7 +6,6 @@ import com.mojang.brigadier.tree.CommandNode;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.fucntion.*;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
@@ -210,20 +209,17 @@ public abstract class Command {
         return "minecraft.command." + permissionNameWithoutPrefix();
     }
 
-    void registerPermissions() {
-        Bukkit.getPluginManager()
-              .addPermission(new Permission(permissionName(), defaultPermission));
-        if (!children.isEmpty()) {
-            children.forEach(Command::registerPermissions);
-        }
-    }
+    List<Permission> permissions() {
+        List<Permission> permissions = new ArrayList<>();
+        permissions.add(new Permission(permissionName(), defaultPermission));
+        permissions.addAll(children.stream()
+                                   .map(Command::permissions)
+                                   .reduce(new ArrayList<>(), (x, y) -> {
+                                       x.addAll(y);
+                                       return x;
+                                   }));
 
-    void unregisterPermission() {
-        Bukkit.getPluginManager()
-              .removePermission(permissionName());
-        if (!children.isEmpty()) {
-            children.forEach(Command::unregisterPermission);
-        }
+        return permissions;
     }
 
     private String permissionNameWithoutPrefix() {

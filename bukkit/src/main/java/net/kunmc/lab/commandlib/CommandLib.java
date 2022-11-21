@@ -74,7 +74,13 @@ public final class CommandLib implements Listener {
                   .put(x.getName(), new VanillaCommandWrapper(dispatcher, x));
         });
 
-        commands.forEach(Command::registerPermissions);
+        commands.stream()
+                .map(Command::permissions)
+                .reduce(new ArrayList<>(), (x, y) -> {
+                    x.addAll(y);
+                    return x;
+                })
+                .forEach(Bukkit.getPluginManager()::addPermission);
 
         Bukkit.getOnlinePlayers()
               .forEach(Player::updateCommands);
@@ -109,7 +115,13 @@ public final class CommandLib implements Listener {
         registeredCommands.clear();
         HandlerList.unregisterAll(this);
 
-        commands.forEach(Command::unregisterPermission);
+        commands.stream()
+                .map(Command::permissions)
+                .reduce(new ArrayList<>(), (x, y) -> {
+                    x.addAll(y);
+                    return x;
+                })
+                .forEach(Bukkit.getPluginManager()::removePermission);
 
         Bukkit.getOnlinePlayers()
               .forEach(Player::updateCommands);
