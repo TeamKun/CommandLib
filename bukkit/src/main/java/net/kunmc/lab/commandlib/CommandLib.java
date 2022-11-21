@@ -74,6 +74,8 @@ public final class CommandLib implements Listener {
                   .put(x.getName(), new VanillaCommandWrapper(dispatcher, x));
         });
 
+        commands.forEach(Command::registerPermissions);
+
         Bukkit.getOnlinePlayers()
               .forEach(Player::updateCommands);
     }
@@ -106,6 +108,8 @@ public final class CommandLib implements Listener {
 
         registeredCommands.clear();
         HandlerList.unregisterAll(this);
+
+        commands.forEach(Command::unregisterPermission);
 
         Bukkit.getOnlinePlayers()
               .forEach(Player::updateCommands);

@@ -210,6 +210,22 @@ public abstract class Command {
         return "minecraft.command." + permissionNameWithoutPrefix();
     }
 
+    void registerPermissions() {
+        Bukkit.getPluginManager()
+              .addPermission(new Permission(permissionName(), defaultPermission));
+        if (!children.isEmpty()) {
+            children.forEach(Command::registerPermissions);
+        }
+    }
+
+    void unregisterPermission() {
+        Bukkit.getPluginManager()
+              .removePermission(permissionName());
+        if (!children.isEmpty()) {
+            children.forEach(Command::unregisterPermission);
+        }
+    }
+
     private String permissionNameWithoutPrefix() {
         if (parent == null) {
             return name;
@@ -234,9 +250,6 @@ public abstract class Command {
     }
 
     private CommandNode<CommandListenerWrapper> toCommandNode() {
-        Bukkit.getPluginManager()
-              .addPermission(new Permission(permissionName(), defaultPermission));
-
         LiteralArgumentBuilder<CommandListenerWrapper> builder = LiteralArgumentBuilder.literal(name);
         builder.requires(cs -> cs.getBukkitSender()
                                  .hasPermission(permissionName()));
