@@ -9,7 +9,7 @@ buildscript {
 
 allprojects {
     group 'net.kunmc.lab'
-    version '0.8.1'
+    version '0.8.2'
 }
 
 subprojects {
@@ -56,4 +56,3 @@ subprojects {
     }
     tasks.build.dependsOn tasks.shadowJar
 }
-
