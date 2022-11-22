@@ -5,20 +5,20 @@ import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.Nameable;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
-import net.minecraft.command.CommandSource;
+import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 
 import java.util.Collection;
 import java.util.function.Consumer;
 
-public class ObjectArgument<T extends Nameable> extends Argument<T> {
+public class NameableObjectArgument<T extends Nameable> extends Argument<T> {
     private final Collection<? extends T> candidates;
 
-    public ObjectArgument(String name, Collection<? extends T> candidates) {
+    public NameableObjectArgument(String name, Collection<? extends T> candidates) {
         this(name, candidates, option -> {
         });
     }
 
-    public ObjectArgument(String name, Collection<? extends T> candidates, Consumer<Option<T>> options) {
+    public NameableObjectArgument(String name, Collection<? extends T> candidates, Consumer<Option<T>> options) {
         super(name, StringArgumentType.string());
         checkPreconditions(candidates);
         this.candidates = candidates;
@@ -32,6 +32,7 @@ public class ObjectArgument<T extends Nameable> extends Argument<T> {
                       .forEach(sb::suggest);
         });
         setOptions(options);
+
     }
 
     private static void checkPreconditions(Collection<? extends Nameable> candidates) {
@@ -53,7 +54,7 @@ public class ObjectArgument<T extends Nameable> extends Argument<T> {
     }
 
     @Override
-    public T parse(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException {
+    public T parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx, name);
         return candidates.stream()
                          .filter(x -> x.tabCompleteName()

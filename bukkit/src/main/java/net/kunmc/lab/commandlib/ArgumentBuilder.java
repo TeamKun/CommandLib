@@ -598,30 +598,30 @@ public final class ArgumentBuilder {
      * Add argument for object that implements {@link net.kunmc.lab.commandlib.Nameable}.<br>
      * It is only possible to include an object specified by {@code candidates}
      */
-    public <T extends Nameable> ArgumentBuilder objectArgument(@NotNull String name,
-                                                               @NotNull Collection<? extends T> candidates) {
-        return objectArgument(name, candidates, null);
+    public <T extends Nameable> ArgumentBuilder nameableObjectArgument(@NotNull String name,
+                                                                       @NotNull Collection<? extends T> candidates) {
+        return nameableObjectArgument(name, candidates, null);
     }
 
     /**
      * Add argument for object that implements {@link net.kunmc.lab.commandlib.Nameable}.<br>
      * It is only possible to include an object specified by {@code candidates}
      */
-    public <T extends Nameable> ArgumentBuilder objectArgument(@NotNull String name,
-                                                               @NotNull Collection<? extends T> candidates,
-                                                               @Nullable Predicate<? super T> filter) {
-        return objectArgument(name, candidates, filter, null);
+    public <T extends Nameable> ArgumentBuilder nameableObjectArgument(@NotNull String name,
+                                                                       @NotNull Collection<? extends T> candidates,
+                                                                       @Nullable Predicate<? super T> filter) {
+        return nameableObjectArgument(name, candidates, filter, null);
     }
 
     /**
      * Add argument for object that implements {@link net.kunmc.lab.commandlib.Nameable}.<br>
      * It is only possible to include an object specified by {@code candidates}
      */
-    public <T extends Nameable> ArgumentBuilder objectArgument(@NotNull String name,
-                                                               @NotNull Collection<? extends T> candidates,
-                                                               @Nullable Predicate<? super T> filter,
-                                                               @Nullable ContextAction contextAction) {
-        return objectArgumentWith(name, candidates, option -> {
+    public <T extends Nameable> ArgumentBuilder nameableObjectArgument(@NotNull String name,
+                                                                       @NotNull Collection<? extends T> candidates,
+                                                                       @Nullable Predicate<? super T> filter,
+                                                                       @Nullable ContextAction contextAction) {
+        return nameableObjectArgumentWith(name, candidates, option -> {
             option.filter(filter)
                   .contextAction(contextAction);
         });
@@ -631,10 +631,10 @@ public final class ArgumentBuilder {
      * Add argument for object that implements {@link net.kunmc.lab.commandlib.Nameable}.<br>
      * It is only possible to include an object specified by {@code candidates}
      */
-    public <T extends Nameable> ArgumentBuilder objectArgumentWith(@NotNull String name,
-                                                                   @NotNull Collection<? extends T> candidates,
-                                                                   @Nullable Consumer<ObjectArgument.Option<T>> options) {
-        arguments.add(new ObjectArgument<>(name, candidates, options));
+    public <T extends Nameable> ArgumentBuilder nameableObjectArgumentWith(@NotNull String name,
+                                                                           @NotNull Collection<? extends T> candidates,
+                                                                           @Nullable Consumer<Argument.Option<T>> options) {
+        arguments.add(new NameableObjectArgument<>(name, candidates, options));
         return this;
     }
 
