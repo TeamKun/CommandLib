@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -732,6 +733,34 @@ public final class ArgumentBuilder {
                                                                            @NotNull Collection<? extends T> candidates,
                                                                            @Nullable Consumer<Argument.Option<T>> options) {
         arguments.add(new NameableObjectArgument<>(name, candidates, options));
+        return this;
+    }
+
+    public <T> ArgumentBuilder objectArgument(@NotNull String name, @NotNull Map<String, ? extends T> nameToObjectMap) {
+        return objectArgumentWith(name, nameToObjectMap, options -> {
+        });
+    }
+
+    public <T> ArgumentBuilder objectArgument(@NotNull String name,
+                                              @NotNull Map<String, ? extends T> nameToObjectMap,
+                                              @Nullable Predicate<? super T> filter) {
+        return objectArgument(name, nameToObjectMap, filter, null);
+    }
+
+    public <T> ArgumentBuilder objectArgument(@NotNull String name,
+                                              @NotNull Map<String, ? extends T> nameToObjectMap,
+                                              @Nullable Predicate<? super T> filter,
+                                              @Nullable ContextAction contextAction) {
+        return objectArgumentWith(name, nameToObjectMap, option -> {
+            option.filter(filter)
+                  .contextAction(contextAction);
+        });
+    }
+
+    public <T> ArgumentBuilder objectArgumentWith(@NotNull String name,
+                                                  @NotNull Map<String, ? extends T> nameToObjectMap,
+                                                  @Nullable Consumer<Argument.Option<T>> options) {
+        arguments.add(new ObjectArgument<>(name, nameToObjectMap, options));
         return this;
     }
 
