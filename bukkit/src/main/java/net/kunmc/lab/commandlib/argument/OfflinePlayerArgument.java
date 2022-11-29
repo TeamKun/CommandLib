@@ -20,6 +20,7 @@ public class OfflinePlayerArgument extends Argument<OfflinePlayer> {
 
     public OfflinePlayerArgument(String name, Consumer<Option<OfflinePlayer>> options) {
         super(name, StringArgumentType.string());
+
         setSuggestionAction(sb -> {
             Arrays.stream(Bukkit.getOfflinePlayers())
                   .filter(x -> filter() == null || filter().test(x))

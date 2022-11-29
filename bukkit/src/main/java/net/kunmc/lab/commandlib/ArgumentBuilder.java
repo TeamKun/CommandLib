@@ -14,10 +14,7 @@ import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -987,6 +984,16 @@ public final class ArgumentBuilder {
     public ArgumentBuilder unparsedArgumentWith(@NotNull String name,
                                                 @Nullable Consumer<Argument.Option<String>> options) {
         arguments.add(new UnparsedArgument(name, options));
+        return this;
+    }
+
+    public ArgumentBuilder uuidArgument(@NotNull String name) {
+        return uuidArgumentWith(name, option -> {
+        });
+    }
+
+    public ArgumentBuilder uuidArgumentWith(@NotNull String name, @Nullable Consumer<Argument.Option<UUID>> options) {
+        arguments.add(new UUIDArgument(name, options));
         return this;
     }
 
