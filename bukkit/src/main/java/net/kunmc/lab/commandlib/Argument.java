@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 public abstract class Argument<T> {
     protected final String name;
     private SuggestionAction suggestionAction;
+    private SuggestionAction additionalSuggestionAction;
     private ContextAction contextAction;
     private final ArgumentType<?> type;
     private Predicate<? super T> filter;
@@ -49,11 +50,26 @@ public abstract class Argument<T> {
     }
 
     public SuggestionAction suggestionAction() {
-        return suggestionAction;
+        if (suggestionAction == null && additionalSuggestionAction == null) {
+            return null;
+        }
+
+        return sb -> {
+            if (suggestionAction != null) {
+                suggestionAction.accept(sb);
+            }
+            if (additionalSuggestionAction != null) {
+                additionalSuggestionAction.accept(sb);
+            }
+        };
     }
 
     protected void setSuggestionAction(SuggestionAction suggestionAction) {
         this.suggestionAction = suggestionAction;
+    }
+
+    protected void setAdditionalSuggestionAction(SuggestionAction additionalSuggestionAction) {
+        this.additionalSuggestionAction = additionalSuggestionAction;
     }
 
     public ContextAction contextAction() {
@@ -98,6 +114,8 @@ public abstract class Argument<T> {
     protected void setOption(Option<T> option) {
         option.suggestionAction()
               .ifPresent(this::setSuggestionAction);
+        option.additionalSuggestionAction()
+              .ifPresent(this::setAdditionalSuggestionAction);
         option.contextAction()
               .ifPresent(this::setContextAction);
         option.filter()
@@ -140,7 +158,7 @@ public abstract class Argument<T> {
             if (argument == null) {
                 return "";
             }
-           
+
             return argument.getRange()
                            .get(ctx.getInput());
         } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -175,12 +193,17 @@ public abstract class Argument<T> {
     @Setter
     public static class Option<T> {
         protected SuggestionAction suggestionAction;
+        protected SuggestionAction additionalSuggestionAction;
         protected Predicate<? super T> filter;
         protected Function<? super T, ? extends T> shaper;
         protected ContextAction contextAction;
 
         protected Optional<SuggestionAction> suggestionAction() {
             return Optional.ofNullable(suggestionAction);
+        }
+
+        protected Optional<SuggestionAction> additionalSuggestionAction() {
+            return Optional.ofNullable(additionalSuggestionAction);
         }
 
         protected Optional<Predicate<? super T>> filter() {
