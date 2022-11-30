@@ -137,6 +137,10 @@ public abstract class Argument<T> {
             f.setAccessible(true);
             ParsedArgument<CommandListenerWrapper, ?> argument = ((Map<String, ParsedArgument<CommandListenerWrapper, ?>>) f.get(
                     ctx)).get(name);
+            if (argument == null) {
+                return "";
+            }
+           
             return argument.getRange()
                            .get(ctx.getInput());
         } catch (NoSuchFieldException | IllegalAccessException e) {
