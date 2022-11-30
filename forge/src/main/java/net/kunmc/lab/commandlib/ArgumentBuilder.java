@@ -1024,6 +1024,17 @@ public final class ArgumentBuilder {
         return this;
     }
 
+    public ArgumentBuilder uuidsArgument(@NotNull String name) {
+        return uuidsArgumentWith(name, option -> {
+        });
+    }
+
+    public ArgumentBuilder uuidsArgumentWith(@NotNull String name,
+                                             @Nullable Consumer<Argument.Option<List<UUID>>> options) {
+        arguments.add(new UUIDsArgument(name, options));
+        return this;
+    }
+
     /**
      * Set command's process.<br>
      * If arguments are not added, process set by this wouldn't work. Then you should override {@link net.kunmc.lab.commandlib.Command#execute(CommandContext)}
