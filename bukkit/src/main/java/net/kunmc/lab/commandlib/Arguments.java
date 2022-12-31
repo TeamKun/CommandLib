@@ -74,7 +74,7 @@ final class Arguments {
         }
 
         if (!argument.hasContextAction()) {
-            argument.setContextAction(parent::execute);
+            argument.setContextAction(parent::sendHelp);
         }
 
         builder.executes(ctx -> {
