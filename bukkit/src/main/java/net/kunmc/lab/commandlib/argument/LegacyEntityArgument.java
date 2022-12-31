@@ -50,31 +50,27 @@ public class LegacyEntityArgument extends Argument<List<Entity>> {
     }
 
     @Override
-    public List<Entity> parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
-        try {
-            if (enableEntities) {
-                if (single) {
-                    return Collections.singletonList(ArgumentEntity.a(ctx, name)
-                                                                   .getBukkitEntity());
-                } else {
-                    return ArgumentEntity.b(ctx, name)
-                                         .stream()
-                                         .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)
-                                         .collect(Collectors.toList());
-                }
+    public List<Entity> parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
+        if (enableEntities) {
+            if (single) {
+                return Collections.singletonList(ArgumentEntity.a(ctx, name)
+                                                               .getBukkitEntity());
             } else {
-                if (single) {
-                    return Collections.singletonList(ArgumentEntity.e(ctx, name)
-                                                                   .getBukkitEntity());
-                } else {
-                    return ArgumentEntity.f(ctx, name)
-                                         .stream()
-                                         .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)
-                                         .collect(Collectors.toList());
-                }
+                return ArgumentEntity.b(ctx, name)
+                                     .stream()
+                                     .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)
+                                     .collect(Collectors.toList());
             }
-        } catch (CommandSyntaxException e) {
-            throw convertSyntaxException(e);
+        } else {
+            if (single) {
+                return Collections.singletonList(ArgumentEntity.e(ctx, name)
+                                                               .getBukkitEntity());
+            } else {
+                return ArgumentEntity.f(ctx, name)
+                                     .stream()
+                                     .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)
+                                     .collect(Collectors.toList());
+            }
         }
     }
 }

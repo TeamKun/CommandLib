@@ -29,11 +29,7 @@ final class Arguments {
                 dstList.add(parsedArg);
                 dstMap.put(argument.name(), parsedArg);
             } catch (IllegalArgumentException ignored) {
-                /*
-                通常は発生しないが, argument追加時にContextActionを設定した場合やexecuteをOverrideした場合は
-                com.mojang.brigadier.context.CommandContext#getArgument内で例外が発生する可能性があるため
-                例外を無視している.
-                 */
+                // 補完時に入力中の引数で例外が発生するため握りつぶす
             }
         }
     }
@@ -45,7 +41,8 @@ final class Arguments {
 
         String msg = ChatColor.AQUA + "/" + literalConcatName + " ";
         msg += argumentList.stream()
-                           .map(Argument::generateHelpMessageTag)
+                           .map(x -> String.format(ChatColor.GRAY + "<" + ChatColor.YELLOW + "%s" + ChatColor.GRAY + ">",
+                                                   x.name()))
                            .collect(Collectors.joining(" "));
 
         return msg;

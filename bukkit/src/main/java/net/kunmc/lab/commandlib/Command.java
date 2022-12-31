@@ -6,8 +6,8 @@ import com.mojang.brigadier.tree.CommandNode;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.fucntion.*;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.jetbrains.annotations.NotNull;
@@ -308,12 +308,8 @@ public abstract class Command {
     }
 
     final void sendHelp(CommandContext ctx) {
-        CommandSender sender = ctx.getSender();
-
-        sender.sendMessage(ChatColor.GRAY + "--------------------------------------------------");
-        sender.sendMessage(ChatColor.RED + "Usage:");
-
-        String padding = "  ";
+        String border = ChatColor.GRAY + StringUtils.repeat("-", 50);
+        String padding = StringUtils.repeat(" ", 2);
         String literalConcatName = ((Supplier<String>) () -> {
             StringBuilder s = new StringBuilder(name);
             Command parent = this.parent;
@@ -325,26 +321,30 @@ public abstract class Command {
             return s.toString();
         }).get();
 
+        ctx.sendMessage(border);
+        ctx.sendMessage(ChatColor.RED + "Usage:");
+
         if (!children.isEmpty()) {
-            sender.sendMessage(ChatColor.AQUA + padding + "/" + literalConcatName);
+            ctx.sendMessage(ChatColor.AQUA + padding + "/" + literalConcatName);
 
             children.stream()
-                    .filter(x -> sender.hasPermission(x.permissionName()))
+                    .filter(x -> ctx.getSender()
+                                    .hasPermission(x.permissionName()))
                     .forEach(x -> {
-                        sender.sendMessage(ChatColor.YELLOW + padding + padding + x.name);
+                        ctx.sendMessage(ChatColor.YELLOW + padding + padding + x.name);
                     });
 
-            sender.sendMessage("");
+            ctx.sendMessage("");
         }
 
         for (Arguments arguments : argumentsList) {
             String msg = arguments.generateHelpMessage(literalConcatName);
             if (!msg.isEmpty()) {
-                sender.sendMessage(padding + msg);
+                ctx.sendMessage(padding + msg);
             }
         }
 
-        sender.sendMessage(ChatColor.GRAY + "--------------------------------------------------");
+        ctx.sendMessage(border);
     }
 
     protected void execute(@NotNull CommandContext ctx) {

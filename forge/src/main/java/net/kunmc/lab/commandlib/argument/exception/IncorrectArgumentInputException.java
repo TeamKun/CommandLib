@@ -3,6 +3,7 @@ package net.kunmc.lab.commandlib.argument.exception;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.StringRange;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.minecraft.command.CommandSource;
 import net.minecraft.util.text.ITextComponent;
@@ -14,6 +15,10 @@ import java.util.List;
 
 public final class IncorrectArgumentInputException extends Exception {
     private final List<ITextComponent> components;
+
+    public static IncorrectArgumentInputException fromCommandSyntaxException(CommandSyntaxException e) {
+        return new IncorrectArgumentInputException(((ITextComponent) e.getRawMessage()));
+    }
 
     public IncorrectArgumentInputException(Argument<?> argument,
                                            CommandContext<CommandSource> ctx,

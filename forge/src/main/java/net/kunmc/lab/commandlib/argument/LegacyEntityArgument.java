@@ -49,25 +49,19 @@ public class LegacyEntityArgument extends Argument<List<Entity>> {
     }
 
     @Override
-    public List<Entity> parse(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException {
-        try {
-            if (enableEntities) {
-                if (single) {
-                    return Collections.singletonList(net.minecraft.command.arguments.EntityArgument.getEntity(ctx,
-                                                                                                              name));
-                } else {
-                    return new ArrayList<>(net.minecraft.command.arguments.EntityArgument.getEntities(ctx, name));
-                }
+    public List<Entity> parse(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
+        if (enableEntities) {
+            if (single) {
+                return Collections.singletonList(net.minecraft.command.arguments.EntityArgument.getEntity(ctx, name));
             } else {
-                if (single) {
-                    return Collections.singletonList(net.minecraft.command.arguments.EntityArgument.getPlayer(ctx,
-                                                                                                              name));
-                } else {
-                    return new ArrayList<>(net.minecraft.command.arguments.EntityArgument.getPlayers(ctx, name));
-                }
+                return new ArrayList<>(net.minecraft.command.arguments.EntityArgument.getEntities(ctx, name));
             }
-        } catch (CommandSyntaxException e) {
-            throw convertSyntaxException(e);
+        } else {
+            if (single) {
+                return Collections.singletonList(net.minecraft.command.arguments.EntityArgument.getPlayer(ctx, name));
+            } else {
+                return new ArrayList<>(net.minecraft.command.arguments.EntityArgument.getPlayers(ctx, name));
+            }
         }
     }
 }

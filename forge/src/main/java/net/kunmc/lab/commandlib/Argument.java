@@ -8,8 +8,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.command.CommandSource;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -123,15 +121,6 @@ public abstract class Argument<T> {
         this.inputExceptionByFilterGenerator = inputExceptionByFilterGenerator;
     }
 
-    String generateHelpMessageTag() {
-        return String.format(TextFormatting.GRAY + "<" + TextFormatting.YELLOW + "%s" + TextFormatting.GRAY + ">",
-                             name);
-    }
-
-    protected static IncorrectArgumentInputException convertSyntaxException(CommandSyntaxException e) {
-        return new IncorrectArgumentInputException(((ITextComponent) e.getRawMessage()));
-    }
-
     protected static String getInputString(CommandContext<CommandSource> ctx, String name) {
         try {
             Field f = ctx.getClass()
@@ -139,6 +128,10 @@ public abstract class Argument<T> {
             f.setAccessible(true);
             ParsedArgument<CommandSource, ?> argument = ((Map<String, ParsedArgument<CommandSource, ?>>) f.get(ctx)).get(
                     name);
+            if (argument == null) {
+                throw new IllegalArgumentException(String.format("'name(%s)' is invalid argument name.", name));
+            }
+
             return argument.getRange()
                            .get(ctx.getInput());
         } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -151,7 +144,7 @@ public abstract class Argument<T> {
         try {
             t = parse(ctx);
         } catch (CommandSyntaxException e) {
-            throw convertSyntaxException(e);
+            throw IncorrectArgumentInputException.fromCommandSyntaxException(e);
         }
 
         if (filter != null && !filter.test(t)) {

@@ -7,21 +7,14 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TranslatableComponent;
-import net.kyori.adventure.text.format.TextColor;
-import net.minecraft.server.v1_16_R3.ChatMessage;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
-import org.bukkit.ChatColor;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public abstract class Argument<T> {
     protected final String name;
@@ -128,26 +121,6 @@ public abstract class Argument<T> {
         this.inputExceptionByFilterGenerator = inputExceptionByFilterGenerator;
     }
 
-    String generateHelpMessageTag() {
-        return String.format(ChatColor.GRAY + "<" + ChatColor.YELLOW + "%s" + ChatColor.GRAY + ">", name);
-    }
-
-    protected static IncorrectArgumentInputException convertSyntaxException(CommandSyntaxException e) {
-        ChatMessage msg = ((ChatMessage) e.getRawMessage());
-        TranslatableComponent component = Component.translatable()
-                                                   .key((msg.getKey()))
-                                                   .args(Arrays.stream(msg.getArgs())
-                                                               .map(Object::toString)
-                                                               .map(Component::text)
-                                                               .collect(Collectors.toList()))
-                                                   .color(TextColor.color(ChatColor.RED.asBungee()
-                                                                                       .getColor()
-                                                                                       .getRGB()))
-                                                   .build();
-
-        return new IncorrectArgumentInputException(component);
-    }
-
     protected static String getInputString(CommandContext<CommandListenerWrapper> ctx, String name) {
         try {
             Field f = ctx.getClass()
@@ -156,7 +129,7 @@ public abstract class Argument<T> {
             ParsedArgument<CommandListenerWrapper, ?> argument = ((Map<String, ParsedArgument<CommandListenerWrapper, ?>>) f.get(
                     ctx)).get(name);
             if (argument == null) {
-                return "";
+                throw new IllegalArgumentException(String.format("'name(%s)' is invalid argument name.", name));
             }
 
             return argument.getRange()
@@ -171,7 +144,7 @@ public abstract class Argument<T> {
         try {
             t = parse(ctx);
         } catch (CommandSyntaxException e) {
-            throw convertSyntaxException(e);
+            throw IncorrectArgumentInputException.fromCommandSyntaxException(e);
         }
 
         if (filter != null && !filter.test(t)) {

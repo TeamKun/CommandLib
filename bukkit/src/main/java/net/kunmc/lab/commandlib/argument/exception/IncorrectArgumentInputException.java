@@ -3,19 +3,40 @@ package net.kunmc.lab.commandlib.argument.exception;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.StringRange;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.minecraft.server.v1_16_R3.ChatMessage;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class IncorrectArgumentInputException extends Exception {
     private final List<Component> components;
+
+    public static IncorrectArgumentInputException fromCommandSyntaxException(CommandSyntaxException e) {
+        ChatMessage msg = ((ChatMessage) e.getRawMessage());
+        TranslatableComponent component = Component.translatable()
+                                                   .key((msg.getKey()))
+                                                   .args(Arrays.stream(msg.getArgs())
+                                                               .map(Object::toString)
+                                                               .map(Component::text)
+                                                               .collect(Collectors.toList()))
+                                                   .color(TextColor.color(ChatColor.RED.asBungee()
+                                                                                       .getColor()
+                                                                                       .getRGB()))
+                                                   .build();
+
+        return new IncorrectArgumentInputException(component);
+    }
 
     public IncorrectArgumentInputException(Argument<?> argument,
                                            CommandContext<CommandListenerWrapper> ctx,

@@ -1039,9 +1039,8 @@ public final class ArgumentBuilder {
      * Set command's process.<br>
      * If arguments are not added, process set by this wouldn't work. Then you should override {@link net.kunmc.lab.commandlib.Command#execute(CommandContext)}
      */
-    public ArgumentBuilder execute(@NotNull ContextAction contextAction) {
+    public void execute(@NotNull ContextAction contextAction) {
         this.contextAction = contextAction;
-        return this;
     }
 
     List<Argument<?>> build() {

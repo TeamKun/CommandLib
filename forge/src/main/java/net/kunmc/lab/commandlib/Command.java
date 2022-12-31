@@ -9,8 +9,8 @@ import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputExcepti
 import net.kunmc.lab.commandlib.util.function.*;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -280,11 +280,8 @@ public abstract class Command {
     }
 
     final void sendHelp(CommandContext ctx) {
-        ctx.sendMessage(new StringTextComponent(TextFormatting.GRAY + "--------------------------------------------------"));
-        ctx.sendMessage(new StringTextComponent(TextFormatting.RED + "Usage:"));
-
-        String padding = "  ";
-
+        String border = TextFormatting.GRAY + StringUtils.repeat("-", 50);
+        String padding = StringUtils.repeat(" ", 2);
         String literalConcatName = ((Supplier<String>) () -> {
             StringBuilder s = new StringBuilder(name);
             Command parent = this.parent;
@@ -296,24 +293,27 @@ public abstract class Command {
             return s.toString();
         }).get();
 
+        ctx.sendMessage(border);
+        ctx.sendMessage(TextFormatting.RED + "Usage:");
+
         if (!children.isEmpty()) {
-            ctx.sendMessage(new StringTextComponent(TextFormatting.AQUA + padding + "/" + literalConcatName));
+            ctx.sendMessage(TextFormatting.AQUA + padding + "/" + literalConcatName);
 
             children.forEach(c -> {
-                ctx.sendMessage(new StringTextComponent(TextFormatting.YELLOW + padding + padding + c.name));
+                ctx.sendMessage(TextFormatting.YELLOW + padding + padding + c.name);
             });
 
-            ctx.sendMessage(new StringTextComponent(""));
+            ctx.sendMessage("");
         }
 
         for (Arguments arguments : argumentsList) {
             String msg = arguments.generateHelpMessage(literalConcatName);
             if (!msg.isEmpty()) {
-                ctx.sendMessage(new StringTextComponent(padding + msg));
+                ctx.sendMessage(padding + msg);
             }
         }
 
-        ctx.sendMessage(new StringTextComponent(TextFormatting.GRAY + "--------------------------------------------------"));
+        ctx.sendMessage(border);
     }
 
     protected void execute(@NotNull CommandContext ctx) {
