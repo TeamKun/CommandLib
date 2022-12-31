@@ -1,6 +1,6 @@
 package net.kunmc.lab.commandlib;
 
-import com.google.common.collect.ImmutableList;
+import com.mojang.brigadier.context.ParsedCommandNode;
 import net.minecraft.command.CommandSource;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public final class CommandContext {
     private final Command command;
@@ -25,10 +26,11 @@ public final class CommandContext {
                           Map<String, Object> parsedArgMap) {
         this.command = command;
         this.handle = ctx;
-        // TODO 明らかに間違ったロジックなので直すか消すかしたい
-        this.args = ImmutableList.copyOf(ctx.getInput()
-                                            .replaceFirst("^/", "")
-                                            .split(" "));
+        this.args = ctx.getNodes()
+                       .stream()
+                       .map(ParsedCommandNode::getRange)
+                       .map(x -> x.get(ctx.getInput()))
+                       .collect(Collectors.toList());
         this.sender = ctx.getSource();
         this.parsedArgList = parsedArgList;
         this.parsedArgMap = parsedArgMap;
@@ -38,7 +40,10 @@ public final class CommandContext {
         return handle;
     }
 
-    @Deprecated
+    public String getArg(int index) {
+        return args.get(index);
+    }
+
     public List<String> getArgs() {
         return args;
     }

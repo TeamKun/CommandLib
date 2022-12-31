@@ -1,6 +1,6 @@
 package net.kunmc.lab.commandlib;
 
-import com.google.common.collect.ImmutableList;
+import com.mojang.brigadier.context.ParsedCommandNode;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public final class CommandContext {
     private final Command command;
@@ -27,10 +28,11 @@ public final class CommandContext {
                           Map<String, Object> parsedArgMap) {
         this.command = command;
         this.handle = ctx;
-        // TODO 明らかに間違ったロジックなので直すか消すかしたい
-        this.args = ImmutableList.copyOf(ctx.getInput()
-                                            .replaceFirst("^/", "")
-                                            .split(" "));
+        this.args = ctx.getNodes()
+                       .stream()
+                       .map(ParsedCommandNode::getRange)
+                       .map(x -> x.get(ctx.getInput()))
+                       .collect(Collectors.toList());
         this.sender = ctx.getSource()
                          .getBukkitSender();
         this.parsedArgList = parsedArgList;
@@ -41,12 +43,10 @@ public final class CommandContext {
         return handle;
     }
 
-    @Deprecated
     public List<String> getArgs() {
         return args;
     }
 
-    @Deprecated
     public String getArg(int index) {
         return args.get(index);
     }
