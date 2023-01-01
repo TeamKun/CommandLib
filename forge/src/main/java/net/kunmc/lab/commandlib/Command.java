@@ -9,7 +9,9 @@ import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputExcepti
 import net.kunmc.lab.commandlib.util.function.*;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.event.HoverEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,6 +25,7 @@ import static net.kunmc.lab.commandlib.CommandLib.executeWithStackTrace;
 
 public abstract class Command {
     private final String name;
+    private String description = "";
     private int permissionLevel = 4;
     private Command parent = null;
     private final List<Command> children = new ArrayList<>();
@@ -32,6 +35,10 @@ public abstract class Command {
 
     public Command(@NotNull String name) {
         this.name = name;
+    }
+
+    public final void setDescription(String description) {
+        this.description = description;
     }
 
     public final void setPermissionLevel(int level) {
@@ -297,10 +304,20 @@ public abstract class Command {
         ctx.sendMessage(TextFormatting.RED + "Usage:");
 
         if (!children.isEmpty()) {
-            ctx.sendMessage(TextFormatting.AQUA + padding + "/" + literalConcatName);
+            ctx.sendMessage(new StringTextComponent(TextFormatting.AQUA + padding + "/" + literalConcatName).getStyle()
+                                                                                                            .setHoverEvent(
+                                                                                                                    new HoverEvent(
+                                                                                                                            HoverEvent.Action.SHOW_TEXT,
+                                                                                                                            new StringTextComponent(
+                                                                                                                                    description))));
 
-            children.forEach(c -> {
-                ctx.sendMessage(TextFormatting.YELLOW + padding + padding + c.name);
+            children.forEach(x -> {
+                ctx.sendMessage(new StringTextComponent(TextFormatting.YELLOW + padding + padding + x.name).getStyle()
+                                                                                                           .setHoverEvent(
+                                                                                                                   new HoverEvent(
+                                                                                                                           HoverEvent.Action.SHOW_TEXT,
+                                                                                                                           new StringTextComponent(
+                                                                                                                                   x.description))));
             });
 
             ctx.sendMessage("");
@@ -309,7 +326,10 @@ public abstract class Command {
         for (Arguments arguments : argumentsList) {
             String msg = arguments.generateHelpMessage(literalConcatName);
             if (!msg.isEmpty()) {
-                ctx.sendMessage(padding + msg);
+                ctx.sendMessage(new StringTextComponent(padding + msg).getStyle()
+                                                                      .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                                                                                    new StringTextComponent(
+                                                                                                            description))));
             }
         }
 

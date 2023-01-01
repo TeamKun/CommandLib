@@ -5,6 +5,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.fucntion.*;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
@@ -22,6 +24,7 @@ import static net.kunmc.lab.commandlib.CommandLib.executeWithStackTrace;
 
 public abstract class Command {
     private final String name;
+    private String description = "";
     private PermissionDefault defaultPermission = PermissionDefault.OP;
     private Command parent = null;
     private final List<Command> children = new ArrayList<>();
@@ -31,6 +34,10 @@ public abstract class Command {
 
     public Command(@NotNull String name) {
         this.name = name;
+    }
+
+    public final void setDescription(String description) {
+        this.description = description;
     }
 
     public final void setPermission(PermissionDefault defaultPermission) {
@@ -325,13 +332,15 @@ public abstract class Command {
         ctx.sendMessage(ChatColor.RED + "Usage:");
 
         if (!children.isEmpty()) {
-            ctx.sendMessage(ChatColor.AQUA + padding + "/" + literalConcatName);
+            ctx.sendMessage(Component.text(ChatColor.AQUA + padding + "/" + literalConcatName)
+                                     .hoverEvent(HoverEvent.showText(Component.text(description))));
 
             children.stream()
                     .filter(x -> ctx.getSender()
                                     .hasPermission(x.permissionName()))
                     .forEach(x -> {
-                        ctx.sendMessage(ChatColor.YELLOW + padding + padding + x.name);
+                        ctx.sendMessage(Component.text(ChatColor.YELLOW + padding + padding + x.name)
+                                                 .hoverEvent(HoverEvent.showText(Component.text(x.description))));
                     });
 
             ctx.sendMessage("");
@@ -340,7 +349,8 @@ public abstract class Command {
         for (Arguments arguments : argumentsList) {
             String msg = arguments.generateHelpMessage(literalConcatName);
             if (!msg.isEmpty()) {
-                ctx.sendMessage(padding + msg);
+                ctx.sendMessage(Component.text(padding + msg)
+                                         .hoverEvent(HoverEvent.showText(Component.text(description))));
             }
         }
 

@@ -3,6 +3,7 @@ package net.kunmc.lab.testplugin;
 import net.kunmc.lab.commandlib.Command;
 import net.kunmc.lab.commandlib.CommandLib;
 import net.kunmc.lab.commandlib.argument.DoubleArgument;
+import net.kunmc.lab.commandlib.argument.PlayerArgument;
 import net.kunmc.lab.commandlib.argument.StringArgument;
 import net.kunmc.lab.commandlib.argument.UUIDArgument;
 import org.bukkit.Bukkit;
@@ -14,10 +15,18 @@ public final class TestPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         CommandLib.register(this, new Command("commandlibtest") {{
-            execute(ctx -> {
-                ctx.sendSuccess("test msg");
-                ctx.sendSuccess(ctx.getArgs());
-            });
+            setDescription("test command");
+
+            addChildren(new Command("a") {{
+                setDescription("a command");
+                argument(new PlayerArgument("player"), (player, ctx) -> ctx.sendSuccess(player.getName()));
+            }}, new Command("b") {{
+                setDescription("b command");
+                addChildren(new Command("child") {{
+                    execute(ctx -> ctx.sendSuccess("b child"));
+                }});
+            }});
+
             argument(new UUIDArgument("target"),
                      new DoubleArgument("double"),
                      new StringArgument("str", StringArgument.Type.PHRASE),
