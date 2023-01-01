@@ -10,6 +10,7 @@ import net.kunmc.lab.commandlib.util.function.*;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.event.HoverEvent;
 import org.apache.commons.lang3.StringUtils;
@@ -304,34 +305,39 @@ public abstract class Command {
         ctx.sendMessage(TextFormatting.RED + "Usage:");
 
         if (!children.isEmpty()) {
-            ctx.sendMessage(new StringTextComponent(TextFormatting.AQUA + padding + "/" + literalConcatName).getStyle()
-                                                                                                            .setHoverEvent(
-                                                                                                                    new HoverEvent(
-                                                                                                                            HoverEvent.Action.SHOW_TEXT,
-                                                                                                                            new StringTextComponent(
-                                                                                                                                    description))));
+            StringTextComponent msg = new StringTextComponent(TextFormatting.AQUA + padding + "/" + literalConcatName);
+            msg.setStyle(msg.getStyle()
+                            .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                                          new StringTextComponent(description))));
+            ctx.sendMessage(msg);
 
             children.forEach(x -> {
-                ctx.sendMessage(new StringTextComponent(TextFormatting.YELLOW + padding + padding + x.name).getStyle()
-                                                                                                           .setHoverEvent(
-                                                                                                                   new HoverEvent(
-                                                                                                                           HoverEvent.Action.SHOW_TEXT,
-                                                                                                                           new StringTextComponent(
-                                                                                                                                   x.description))));
+                StringTextComponent childMsg = new StringTextComponent(TextFormatting.YELLOW + padding + padding + x.name);
+                childMsg.setStyle(childMsg.getStyle()
+                                          .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                                                        new StringTextComponent(x.description))));
+                ctx.sendMessage(childMsg);
             });
+        }
 
+        List<TextComponent> argumentsHelpMessages = argumentsList.stream()
+                                                                 .map(x -> x.generateHelpMessage(literalConcatName))
+                                                                 .filter(x -> !x.isEmpty())
+                                                                 .map(x -> {
+                                                                     StringTextComponent msg = new StringTextComponent(
+                                                                             padding + x);
+                                                                     msg.setStyle(msg.getStyle()
+                                                                                     .setHoverEvent(new HoverEvent(
+                                                                                             HoverEvent.Action.SHOW_TEXT,
+                                                                                             new StringTextComponent(
+                                                                                                     description))));
+                                                                     return msg;
+                                                                 })
+                                                                 .collect(Collectors.toList());
+        if (!children.isEmpty() && !argumentsHelpMessages.isEmpty()) {
             ctx.sendMessage("");
         }
-
-        for (Arguments arguments : argumentsList) {
-            String msg = arguments.generateHelpMessage(literalConcatName);
-            if (!msg.isEmpty()) {
-                ctx.sendMessage(new StringTextComponent(padding + msg).getStyle()
-                                                                      .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                                                                                    new StringTextComponent(
-                                                                                                            description))));
-            }
-        }
+        argumentsHelpMessages.forEach(ctx::sendMessage);
 
         ctx.sendMessage(border);
     }

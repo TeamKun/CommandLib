@@ -342,17 +342,19 @@ public abstract class Command {
                         ctx.sendMessage(Component.text(ChatColor.YELLOW + padding + padding + x.name)
                                                  .hoverEvent(HoverEvent.showText(Component.text(x.description))));
                     });
+        }
 
+        List<Component> argumentsHelpMessages = argumentsList.stream()
+                                                             .map(x -> x.generateHelpMessage(literalConcatName))
+                                                             .filter(x -> !x.isEmpty())
+                                                             .map(x -> Component.text(padding + x)
+                                                                                .hoverEvent(HoverEvent.showText(
+                                                                                        Component.text(description))))
+                                                             .collect(Collectors.toList());
+        if (!children.isEmpty() && !argumentsHelpMessages.isEmpty()) {
             ctx.sendMessage("");
         }
-
-        for (Arguments arguments : argumentsList) {
-            String msg = arguments.generateHelpMessage(literalConcatName);
-            if (!msg.isEmpty()) {
-                ctx.sendMessage(Component.text(padding + msg)
-                                         .hoverEvent(HoverEvent.showText(Component.text(description))));
-            }
-        }
+        argumentsHelpMessages.forEach(ctx::sendMessage);
 
         ctx.sendMessage(border);
     }
