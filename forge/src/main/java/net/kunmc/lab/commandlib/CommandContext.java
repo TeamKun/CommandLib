@@ -101,11 +101,6 @@ public final class CommandContext {
                                   .getPos());
     }
 
-
-    public void sendHelp() {
-        command.sendHelp(this);
-    }
-
     public void sendMessage(@Nullable Object obj) {
         sendMessage(Objects.toString(obj));
     }

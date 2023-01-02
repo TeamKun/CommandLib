@@ -103,10 +103,6 @@ public final class CommandContext {
         return sender;
     }
 
-    public void sendHelp() {
-        command.sendHelp(this);
-    }
-
     public void sendMessage(@Nullable Object obj) {
         sendMessage(Objects.toString(obj));
     }
