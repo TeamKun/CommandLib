@@ -348,19 +348,19 @@ public abstract class Command {
                         return s + ChatColor.WHITE + ": " + x.description;
                     })
                     .forEach(ctx::sendMessage);
-
-            List<Component> argumentsHelpMessages = argumentsList.stream()
-                                                                 .map(x -> x.generateHelpMessage(literalConcatName))
-                                                                 .filter(x -> !x.isEmpty())
-                                                                 .map(x -> Component.text(padding + x))
-                                                                 .collect(Collectors.toList());
-            if (!children.isEmpty() && !argumentsHelpMessages.isEmpty()) {
-                ctx.sendMessage("");
-            }
-            argumentsHelpMessages.forEach(ctx::sendMessage);
-
-            ctx.sendMessage(border);
         }
+
+        List<Component> argumentsHelpMessages = argumentsList.stream()
+                                                             .map(x -> x.generateHelpMessage(literalConcatName))
+                                                             .filter(x -> !x.isEmpty())
+                                                             .map(x -> Component.text(padding + x))
+                                                             .collect(Collectors.toList());
+        if (!children.isEmpty() && !argumentsHelpMessages.isEmpty()) {
+            ctx.sendMessage("");
+        }
+        argumentsHelpMessages.forEach(ctx::sendMessage);
+
+        ctx.sendMessage(border);
     }
 
     protected void execute(@NotNull CommandContext ctx) {
