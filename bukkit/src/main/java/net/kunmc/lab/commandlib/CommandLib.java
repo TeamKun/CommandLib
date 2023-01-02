@@ -72,6 +72,11 @@ public final class CommandLib implements Listener {
             Bukkit.getCommandMap()
                   .getKnownCommands()
                   .put(x.getName(), new VanillaCommandWrapper(dispatcher, x));
+
+            root.getChild("execute")
+                .getChild("run")
+                .getRedirect()
+                .addChild(x);
         });
 
         commands.stream()
@@ -110,6 +115,11 @@ public final class CommandLib implements Listener {
                               root.removeCommand("minecraft:" + s);
                               knownCommands.remove(s);
                               knownCommands.remove("minecraft:" + s);
+
+                              root.getChild("execute")
+                                  .getChild("run")
+                                  .getRedirect()
+                                  .removeCommand(s);
                           });
 
         registeredCommands.clear();
