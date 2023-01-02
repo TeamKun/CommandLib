@@ -3,6 +3,7 @@ package net.kunmc.lab.commandlib.util;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
@@ -16,6 +17,10 @@ public class Location implements Cloneable {
     private double z;
     private float pitch;
     private float yaw;
+
+    public Location(World world, Vector3d vec) {
+        this(world, vec.x, vec.y, vec.z);
+    }
 
     public Location(World world, double x, double y, double z) {
         this(world, x, y, z, 0.0F, 0.0F);

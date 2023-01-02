@@ -1,10 +1,13 @@
 package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.context.ParsedCommandNode;
+import net.kunmc.lab.commandlib.util.Location;
 import net.minecraft.command.CommandSource;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.server.ServerWorld;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -81,6 +84,23 @@ public final class CommandContext {
     public CommandSource getSender() {
         return sender;
     }
+
+    public Entity getEntity() {
+        return handle.getSource()
+                     .getEntity();
+    }
+
+    public ServerWorld getWorld() {
+        return handle.getSource()
+                     .getWorld();
+    }
+
+    public Location getLocation() {
+        return new Location(getWorld(),
+                            handle.getSource()
+                                  .getPos());
+    }
+
 
     public void sendHelp() {
         command.sendHelp(this);

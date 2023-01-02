@@ -7,7 +7,6 @@ import net.kunmc.lab.commandlib.argument.PlayerArgument;
 import net.kunmc.lab.commandlib.argument.StringArgument;
 import net.kunmc.lab.commandlib.argument.UUIDArgument;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
@@ -32,15 +31,7 @@ public final class TestPlugin extends JavaPlugin {
                      new DoubleArgument("double"),
                      new StringArgument("str", StringArgument.Type.PHRASE),
                      (target, d, s, ctx) -> {
-                         ctx.sendSuccess(ctx.getHandle()
-                                            .getInput());
-                         ctx.sendSuccess(ctx.getArgs());
-                         if (ctx.getSender() instanceof Player) {
-                             ctx.sendFailure(ctx.getHandle()
-                                                .getSource()
-                                                .getBukkitWorld()
-                                                .getName());
-                         }
+                         ctx.sendSuccess(ctx.getWorld());
                      });
         }});
     }

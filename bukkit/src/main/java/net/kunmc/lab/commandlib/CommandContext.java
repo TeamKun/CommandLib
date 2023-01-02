@@ -5,7 +5,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -79,6 +82,21 @@ public final class CommandContext {
         }
 
         return clazz.cast(parsedArg);
+    }
+
+    public Entity getEntity() {
+        return handle.getSource()
+                     .getBukkitEntity();
+    }
+
+    public World getWorld() {
+        return handle.getSource()
+                     .getBukkitWorld();
+    }
+
+    public Location getLocation() {
+        return handle.getSource()
+                     .getBukkitLocation();
     }
 
     public CommandSender getSender() {
