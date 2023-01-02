@@ -2,11 +2,10 @@ package net.kunmc.lab.testplugin;
 
 import net.kunmc.lab.commandlib.Command;
 import net.kunmc.lab.commandlib.CommandLib;
-import net.kunmc.lab.commandlib.argument.DoubleArgument;
+import net.kunmc.lab.commandlib.argument.EnumArgument;
 import net.kunmc.lab.commandlib.argument.PlayerArgument;
-import net.kunmc.lab.commandlib.argument.StringArgument;
-import net.kunmc.lab.commandlib.argument.UUIDArgument;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
@@ -27,12 +26,9 @@ public final class TestPlugin extends JavaPlugin {
                 }});
             }});
 
-            argument(new UUIDArgument("target"),
-                     new DoubleArgument("double"),
-                     new StringArgument("str", StringArgument.Type.PHRASE),
-                     (target, d, s, ctx) -> {
-                         ctx.sendSuccess(ctx.getWorld());
-                     });
+            argument(new EnumArgument<>("name", Material.class), (material, ctx) -> {
+                ctx.sendSuccess(material);
+            });
         }});
     }
 

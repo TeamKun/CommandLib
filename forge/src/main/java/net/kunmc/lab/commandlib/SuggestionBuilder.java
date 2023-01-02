@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.ParsedCommandNode;
+import com.mojang.brigadier.context.StringRange;
 import net.minecraft.command.CommandSource;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -37,7 +38,8 @@ public final class SuggestionBuilder {
     }
 
     public String getLatestInput() {
-        if (!isWaitingQuote() && getInput().endsWith(" ")) {
+        String input = getInput();
+        if (!isWaitingQuote() && input.endsWith(" ")) {
             return "";
         }
 
@@ -45,9 +47,14 @@ public final class SuggestionBuilder {
         if (nodes.size() == 0) {
             return "";
         }
-        ParsedCommandNode<CommandSource> last = nodes.get(nodes.size() - 1);
-        return last.getRange()
-                   .get(getInput());
+
+        StringRange range = nodes.get(nodes.size() - 1)
+                                 .getRange();
+        if (input.length() == range.getEnd()) {
+            return range.get(input);
+
+        }
+        return input.substring(range.getEnd() + 1);
     }
 
     private boolean isWaitingQuote() {
