@@ -1,12 +1,12 @@
 package net.kunmc.lab.testplugin;
 
+import com.google.common.collect.Lists;
 import net.kunmc.lab.commandlib.Command;
 import net.kunmc.lab.commandlib.CommandLib;
-import net.kunmc.lab.commandlib.argument.EnumArgument;
+import net.kunmc.lab.commandlib.argument.LiteralArgument;
 import net.kunmc.lab.commandlib.argument.OfflinePlayersArgument;
 import net.kunmc.lab.commandlib.argument.UUIDsArgument;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
@@ -28,8 +28,8 @@ public final class TestPlugin extends JavaPlugin {
                 }});
             }});
 
-            argument(new EnumArgument<>("name", Material.class), (material, ctx) -> {
-                ctx.sendSuccess(material);
+            argument(new LiteralArgument("literals", Lists.newArrayList("hoge", "fuga")), (literal, ctx) -> {
+                ctx.sendSuccess(literal);
             });
         }});
     }

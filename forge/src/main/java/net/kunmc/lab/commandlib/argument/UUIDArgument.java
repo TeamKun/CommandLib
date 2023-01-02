@@ -11,6 +11,7 @@ import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,13 +43,11 @@ public class UUIDArgument extends Argument<UUID> {
                       return true;
                   }
 
-                  if (x.getName() != null && x.getName()
-                                              .contains(input)) {
+                  if (x.getName() != null && StringUtils.containsIgnoreCase(x.getName(), input)) {
                       return true;
                   }
-                  return x.getId()
-                          .toString()
-                          .contains(input);
+                  return StringUtils.containsIgnoreCase(x.getId()
+                                                         .toString(), input);
               })
               .forEach(x -> uuidToNameMap.put(x.getId(), x.getName()));
 

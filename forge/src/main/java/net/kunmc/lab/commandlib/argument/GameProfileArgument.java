@@ -8,6 +8,7 @@ import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputExcepti
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -32,7 +33,7 @@ public class GameProfileArgument extends Argument<GameProfile> {
               .filter(x -> filter() == null || filter().test(x))
               .map(GameProfile::getName)
               .filter(x -> sb.getLatestInput()
-                             .isEmpty() || x.contains(sb.getLatestInput()))
+                             .isEmpty() || StringUtils.containsIgnoreCase(x, sb.getLatestInput()))
               .forEach(sb::suggest);
         });
         setOptions(options);

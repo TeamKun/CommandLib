@@ -8,6 +8,7 @@ import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputExcepti
 import net.kunmc.lab.commandlib.util.TextColorUtil;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -36,13 +37,11 @@ public class UUIDArgument extends Argument<UUID> {
                           return true;
                       }
 
-                      if (x.getName() != null && x.getName()
-                                                  .contains(input)) {
+                      if (x.getName() != null && StringUtils.containsIgnoreCase(x.getName(), input)) {
                           return true;
                       }
-                      return x.getUniqueId()
-                              .toString()
-                              .contains(input);
+                      return StringUtils.containsIgnoreCase(x.getUniqueId()
+                                                             .toString(), input);
                   })
                   .forEach(x -> uuidToNameMap.put(x.getUniqueId(), x.getName()));
 

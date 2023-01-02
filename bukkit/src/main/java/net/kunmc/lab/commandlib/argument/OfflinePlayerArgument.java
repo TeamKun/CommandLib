@@ -5,6 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -27,7 +28,7 @@ public class OfflinePlayerArgument extends Argument<OfflinePlayer> {
                   .map(OfflinePlayer::getName)
                   .filter(Objects::nonNull)
                   .filter(x -> sb.getLatestInput()
-                                 .isEmpty() || x.contains(sb.getLatestInput()))
+                                 .isEmpty() || StringUtils.containsIgnoreCase(x, sb.getLatestInput()))
                   .forEach(sb::suggest);
         });
         setOptions(options);
