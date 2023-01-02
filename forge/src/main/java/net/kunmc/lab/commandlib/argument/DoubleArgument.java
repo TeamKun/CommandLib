@@ -1,9 +1,8 @@
 package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.brigadier.arguments.DoubleArgumentType;
-import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.Argument;
-import net.minecraft.command.CommandSource;
+import net.kunmc.lab.commandlib.CommandContext;
 
 import java.util.function.Consumer;
 
@@ -34,7 +33,7 @@ public class DoubleArgument extends Argument<Double> {
     }
 
     @Override
-    public Double parse(CommandContext<CommandSource> ctx) {
-        return DoubleArgumentType.getDouble(ctx, name);
+    public Double parse(CommandContext ctx) {
+        return DoubleArgumentType.getDouble(ctx.getHandle(), name);
     }
 }

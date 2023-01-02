@@ -1,11 +1,10 @@
 package net.kunmc.lab.commandlib.argument.exception;
 
 import com.google.common.collect.Lists;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
-import net.minecraft.command.CommandSource;
+import net.kunmc.lab.commandlib.CommandContext;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -20,14 +19,14 @@ public final class IncorrectArgumentInputException extends Exception {
         return new IncorrectArgumentInputException(((ITextComponent) e.getRawMessage()));
     }
 
-    public IncorrectArgumentInputException(Argument<?> argument,
-                                           CommandContext<CommandSource> ctx,
-                                           String incorrectInput) {
-        String input = ctx.getInput();
+    public IncorrectArgumentInputException(Argument<?> argument, CommandContext ctx, String incorrectInput) {
+        String input = ctx.getHandle()
+                          .getInput();
         ITextComponent unknownArgumentMsg = new TranslationTextComponent("command.unknown.argument",
                                                                          incorrectInput).mergeStyle(TextFormatting.RED);
 
-        StringRange range = ctx.getNodes()
+        StringRange range = ctx.getHandle()
+                               .getNodes()
                                .stream()
                                .filter(n -> n.getNode()
                                              .getName()
@@ -50,7 +49,7 @@ public final class IncorrectArgumentInputException extends Exception {
         this.components = Lists.asList(component, components);
     }
 
-    public void sendMessage(CommandSource sender) {
-        components.forEach(sender::sendErrorMessage);
+    public void sendMessage(CommandContext context) {
+        components.forEach(context::sendMessage);
     }
 }

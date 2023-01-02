@@ -1,10 +1,9 @@
 package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.Argument;
+import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
-import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -40,8 +39,8 @@ public class OfflinePlayerArgument extends Argument<OfflinePlayer> {
     }
 
     @Override
-    public OfflinePlayer parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
-        String s = StringArgumentType.getString(ctx, name);
+    public OfflinePlayer parse(CommandContext ctx) throws IncorrectArgumentInputException {
+        String s = StringArgumentType.getString(ctx.getHandle(), name);
         return Arrays.stream(Bukkit.getOfflinePlayers())
                      .filter(x -> x.getName() != null && x.getName()
                                                           .equalsIgnoreCase(s))

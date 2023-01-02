@@ -1,13 +1,12 @@
 package net.kunmc.lab.commandlib.argument;
 
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
+import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.SuggestionAction;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.ArgumentEntity;
-import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.entity.Entity;
 
 import java.util.Collections;
@@ -50,23 +49,23 @@ public class LegacyEntityArgument extends Argument<List<Entity>> {
     }
 
     @Override
-    public List<Entity> parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
+    public List<Entity> parse(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
         if (enableEntities) {
             if (single) {
-                return Collections.singletonList(ArgumentEntity.a(ctx, name)
+                return Collections.singletonList(ArgumentEntity.a(ctx.getHandle(), name)
                                                                .getBukkitEntity());
             } else {
-                return ArgumentEntity.b(ctx, name)
+                return ArgumentEntity.b(ctx.getHandle(), name)
                                      .stream()
                                      .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)
                                      .collect(Collectors.toList());
             }
         } else {
             if (single) {
-                return Collections.singletonList(ArgumentEntity.e(ctx, name)
+                return Collections.singletonList(ArgumentEntity.e(ctx.getHandle(), name)
                                                                .getBukkitEntity());
             } else {
-                return ArgumentEntity.f(ctx, name)
+                return ArgumentEntity.f(ctx.getHandle(), name)
                                      .stream()
                                      .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)
                                      .collect(Collectors.toList());

@@ -2,11 +2,10 @@ package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
+import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
-import net.minecraft.command.CommandSource;
 import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -68,8 +67,8 @@ public class UUIDArgument extends Argument<UUID> {
     }
 
     @Override
-    public UUID parse(CommandContext<CommandSource> ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
-        String s = StringArgumentType.getString(ctx, name);
+    public UUID parse(CommandContext ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
+        String s = StringArgumentType.getString(ctx.getHandle(), name);
 
         GameProfile gameProfile = getPlayerProfileCache().getGameProfileForUsername(s);
         if (gameProfile != null) {

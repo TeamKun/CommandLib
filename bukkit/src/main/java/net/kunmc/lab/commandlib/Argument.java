@@ -1,16 +1,11 @@
 package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
-import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 
-import java.lang.reflect.Field;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -24,7 +19,7 @@ public abstract class Argument<T> {
     private final ArgumentType<?> type;
     private Predicate<? super T> filter;
     private Function<? super T, ? extends T> shaper;
-    private Function<CommandContext<CommandListenerWrapper>, IncorrectArgumentInputException> inputExceptionByFilterGenerator;
+    private Function<CommandContext, IncorrectArgumentInputException> inputExceptionByFilterGenerator;
 
     public Argument(String name, ArgumentType<?> type) {
         this.name = name;
@@ -69,15 +64,15 @@ public abstract class Argument<T> {
         return contextAction;
     }
 
+    protected void setContextAction(ContextAction contextAction) {
+        this.contextAction = contextAction;
+    }
+
     public ArgumentType<?> type() {
         return type;
     }
 
     public abstract T cast(Object parsedArgument);
-
-    protected void setContextAction(ContextAction contextAction) {
-        this.contextAction = contextAction;
-    }
 
     boolean hasContextAction() {
         return contextAction != null;
@@ -117,29 +112,11 @@ public abstract class Argument<T> {
               .ifPresent(this::setShaper);
     }
 
-    protected void setInputExceptionByFilterGenerator(Function<CommandContext<CommandListenerWrapper>, IncorrectArgumentInputException> inputExceptionByFilterGenerator) {
+    protected void setInputExceptionByFilterGenerator(Function<CommandContext, IncorrectArgumentInputException> inputExceptionByFilterGenerator) {
         this.inputExceptionByFilterGenerator = inputExceptionByFilterGenerator;
     }
 
-    protected static String getInputString(CommandContext<CommandListenerWrapper> ctx, String name) {
-        try {
-            Field f = ctx.getClass()
-                         .getDeclaredField("arguments");
-            f.setAccessible(true);
-            ParsedArgument<CommandListenerWrapper, ?> argument = ((Map<String, ParsedArgument<CommandListenerWrapper, ?>>) f.get(
-                    ctx)).get(name);
-            if (argument == null) {
-                throw new IllegalArgumentException(String.format("'name(%s)' is invalid argument name.", name));
-            }
-
-            return argument.getRange()
-                           .get(ctx.getInput());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    final T parseInternal(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
+    final T parseInternal(CommandContext ctx) throws IncorrectArgumentInputException {
         T t;
         try {
             t = parse(ctx);
@@ -149,7 +126,7 @@ public abstract class Argument<T> {
 
         if (filter != null && !filter.test(t)) {
             if (inputExceptionByFilterGenerator == null) {
-                throw new IncorrectArgumentInputException(this, ctx, getInputString(ctx, name));
+                throw new IncorrectArgumentInputException(this, ctx, ctx.getInput(name));
             }
             throw inputExceptionByFilterGenerator.apply(ctx);
         }
@@ -160,7 +137,7 @@ public abstract class Argument<T> {
         return shaper.apply(t);
     }
 
-    public abstract T parse(CommandContext<CommandListenerWrapper> ctx) throws CommandSyntaxException, IncorrectArgumentInputException;
+    public abstract T parse(CommandContext ctx) throws CommandSyntaxException, IncorrectArgumentInputException;
 
     @Accessors(chain = true, fluent = true)
     @Setter

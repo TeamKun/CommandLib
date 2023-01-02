@@ -1,9 +1,8 @@
 package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.Argument;
-import net.minecraft.command.CommandSource;
+import net.kunmc.lab.commandlib.CommandContext;
 
 import java.util.function.Consumer;
 
@@ -33,7 +32,7 @@ public class IntegerArgument extends Argument<Integer> {
     }
 
     @Override
-    public Integer parse(CommandContext<CommandSource> ctx) {
-        return IntegerArgumentType.getInteger(ctx, name);
+    public Integer parse(CommandContext ctx) {
+        return IntegerArgumentType.getInteger(ctx.getHandle(), name);
     }
 }

@@ -1,11 +1,10 @@
 package net.kunmc.lab.commandlib.argument;
 
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
+import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.ArgumentMobEffect;
-import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.craftbukkit.v1_16_R3.potion.CraftPotionEffectType;
 import org.bukkit.potion.PotionEffect;
 
@@ -28,7 +27,7 @@ public class PotionEffectArgument extends Argument<PotionEffect> {
     }
 
     @Override
-    public PotionEffect parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return new CraftPotionEffectType(ArgumentMobEffect.a(ctx, name)).createEffect(1, 0);
+    public PotionEffect parse(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
+        return new CraftPotionEffectType(ArgumentMobEffect.a(ctx.getHandle(), name)).createEffect(1, 0);
     }
 }

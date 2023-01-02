@@ -2,11 +2,10 @@ package net.kunmc.lab.commandlib.argument;
 
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
+import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
-import net.minecraft.command.CommandSource;
 import net.minecraft.command.arguments.GameProfileArgument;
 import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.util.text.StringTextComponent;
@@ -74,11 +73,12 @@ public class UUIDsArgument extends Argument<List<UUID>> {
     }
 
     @Override
-    public List<UUID> parse(CommandContext<CommandSource> ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
-        String s = getInputString(ctx, name);
+    public List<UUID> parse(CommandContext ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
+        String s = ctx.getInput(name);
 
         if (s.startsWith("@")) {
-            List<UUID> uuids = ctx.getSource()
+            List<UUID> uuids = ctx.getHandle()
+                                  .getSource()
                                   .getPlayerNames()
                                   .stream()
                                   .map(getPlayerProfileCache()::getGameProfileForUsername)

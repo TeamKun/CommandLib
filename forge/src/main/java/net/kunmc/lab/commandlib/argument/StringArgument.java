@@ -1,9 +1,8 @@
 package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.Argument;
-import net.minecraft.command.CommandSource;
+import net.kunmc.lab.commandlib.CommandContext;
 
 import java.util.function.Consumer;
 
@@ -33,8 +32,8 @@ public class StringArgument extends Argument<String> {
     }
 
     @Override
-    public String parse(CommandContext<CommandSource> ctx) {
-        return StringArgumentType.getString(ctx, name);
+    public String parse(CommandContext ctx) {
+        return StringArgumentType.getString(ctx.getHandle(), name);
     }
 
     public enum Type {

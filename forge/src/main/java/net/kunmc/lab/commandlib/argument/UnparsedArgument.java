@@ -1,9 +1,8 @@
 package net.kunmc.lab.commandlib.argument;
 
-import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.Argument;
+import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.SuggestionAction;
-import net.minecraft.command.CommandSource;
 import net.minecraft.command.arguments.GameProfileArgument;
 
 import java.util.function.Consumer;
@@ -33,7 +32,7 @@ public class UnparsedArgument extends Argument<String> {
     }
 
     @Override
-    public String parse(CommandContext<CommandSource> ctx) {
-        return getInputString(ctx, name);
+    public String parse(CommandContext ctx) {
+        return ctx.getInput(name);
     }
 }

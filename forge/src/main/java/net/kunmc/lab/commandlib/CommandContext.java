@@ -1,6 +1,5 @@
 package net.kunmc.lab.commandlib;
 
-import com.mojang.brigadier.context.ParsedCommandNode;
 import net.kunmc.lab.commandlib.util.Location;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
@@ -8,55 +7,53 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.server.ServerWorld;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public final class CommandContext {
-    private final Command command;
     private final com.mojang.brigadier.context.CommandContext<CommandSource> handle;
-    private final List<String> args;
+    private final Map<String, String> argumentNameToInputArgMap = new LinkedHashMap<>();
     private final CommandSource sender;
-    private final List<Object> parsedArgList;
-    private final Map<String, Object> parsedArgMap;
+    private final LinkedHashMap<String, Object> parsedArgMap = new LinkedHashMap<>();
 
-    public CommandContext(Command command,
-                          com.mojang.brigadier.context.CommandContext<CommandSource> ctx,
-                          List<Object> parsedArgList,
-                          Map<String, Object> parsedArgMap) {
-        this.command = command;
+    public CommandContext(com.mojang.brigadier.context.CommandContext<CommandSource> ctx) {
         this.handle = ctx;
-        this.args = ctx.getNodes()
-                       .stream()
-                       .map(ParsedCommandNode::getRange)
-                       .map(x -> x.get(ctx.getInput()))
-                       .collect(Collectors.toList());
         this.sender = ctx.getSource();
-        this.parsedArgList = parsedArgList;
-        this.parsedArgMap = parsedArgMap;
+
+        ctx.getNodes()
+           .forEach(x -> {
+               argumentNameToInputArgMap.put(x.getNode()
+                                              .getName(),
+                                             x.getRange()
+                                              .get(ctx.getInput()));
+           });
     }
 
     public com.mojang.brigadier.context.CommandContext<CommandSource> getHandle() {
         return handle;
     }
 
+    public String getInput(String name) {
+        return argumentNameToInputArgMap.getOrDefault(name, "");
+    }
+
     public String getArg(int index) {
-        return args.get(index);
+        return getArgs().get(index);
     }
 
     public List<String> getArgs() {
-        return args;
+        return new ArrayList<>(argumentNameToInputArgMap.values());
     }
 
     public List<Object> getParsedArgs() {
-        return parsedArgList;
+        return Arrays.asList(parsedArgMap.values()
+                                         .toArray());
     }
 
     public Object getParsedArg(int index) {
-        return parsedArgList.get(index);
+        return getParsedArgs().get(index);
     }
 
     public Object getParsedArg(String name) {
@@ -81,10 +78,6 @@ public final class CommandContext {
         return clazz.cast(parsedArg);
     }
 
-    public CommandSource getSender() {
-        return sender;
-    }
-
     public Entity getEntity() {
         return handle.getSource()
                      .getEntity();
@@ -101,23 +94,27 @@ public final class CommandContext {
                                   .getPos());
     }
 
+    public CommandSource getSender() {
+        return sender;
+    }
+
     public void sendMessage(@Nullable Object obj) {
         sendMessage(Objects.toString(obj));
     }
 
-    public void sendMessage(String message) {
+    public void sendMessage(@Nullable String message) {
         sendMessage(message, false);
     }
 
-    public void sendMessage(String message, boolean allowLogging) {
-        sender.sendFeedback(new StringTextComponent(message), allowLogging);
+    public void sendMessage(@Nullable String message, boolean allowLogging) {
+        sender.sendFeedback(new StringTextComponent(String.valueOf(message)), allowLogging);
     }
 
-    public void sendMessage(ITextComponent component) {
+    public void sendMessage(@NotNull ITextComponent component) {
         sendMessage(component, false);
     }
 
-    public void sendMessage(ITextComponent component, boolean allowLogging) {
+    public void sendMessage(@NotNull ITextComponent component, boolean allowLogging) {
         sender.sendFeedback(component, allowLogging);
     }
 
@@ -125,11 +122,11 @@ public final class CommandContext {
         sendSuccess(Objects.toString(obj));
     }
 
-    public void sendSuccess(String message) {
+    public void sendSuccess(@Nullable String message) {
         sendSuccess(message, false);
     }
 
-    public void sendSuccess(String message, boolean allowLogging) {
+    public void sendSuccess(@Nullable String message, boolean allowLogging) {
         sendMessage(TextFormatting.GREEN + message, allowLogging);
     }
 
@@ -137,11 +134,11 @@ public final class CommandContext {
         sendWarn(Objects.toString(obj));
     }
 
-    public void sendWarn(String message) {
+    public void sendWarn(@Nullable String message) {
         sendWarn(message, false);
     }
 
-    public void sendWarn(String message, boolean allowLogging) {
+    public void sendWarn(@Nullable String message, boolean allowLogging) {
         sendMessage(TextFormatting.YELLOW + message, allowLogging);
     }
 
@@ -149,11 +146,15 @@ public final class CommandContext {
         sendFailure(Objects.toString(obj));
     }
 
-    public void sendFailure(String message) {
+    public void sendFailure(@Nullable String message) {
         sendFailure(message, false);
     }
 
-    public void sendFailure(String message, boolean allowLogging) {
+    public void sendFailure(@Nullable String message, boolean allowLogging) {
         sendMessage(TextFormatting.RED + message, allowLogging);
+    }
+
+    void addParsedArgument(String name, Object parsedArgument) {
+        parsedArgMap.put(name, parsedArgument);
     }
 }

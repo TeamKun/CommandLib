@@ -1,11 +1,10 @@
 package net.kunmc.lab.commandlib.argument;
 
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
+import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.ArgumentScoreboardTeam;
-import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.Team;
 
@@ -28,10 +27,10 @@ public class TeamArgument extends Argument<Team> {
     }
 
     @Override
-    public Team parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
+    public Team parse(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
         return Bukkit.getScoreboardManager()
                      .getMainScoreboard()
-                     .getTeam(ArgumentScoreboardTeam.a(ctx, name)
+                     .getTeam(ArgumentScoreboardTeam.a(ctx.getHandle(), name)
                                                     .getName());
     }
 }

@@ -2,7 +2,6 @@ package net.kunmc.lab.commandlib;
 
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
@@ -15,7 +14,9 @@ import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -234,8 +235,7 @@ public abstract class Command {
                                                                 .requires(cs -> cs.hasPermissionLevel(permissionLevel));
         if (argumentsList.isEmpty()) {
             builder.executes(ctx -> {
-                return executeWithStackTrace(new CommandContext(this, ctx, new ArrayList<>(), new HashMap<>()),
-                                             this::execute);
+                return executeWithStackTrace(new CommandContext(ctx), this::execute);
             });
 
             return builder.build();
@@ -245,26 +245,19 @@ public abstract class Command {
         argumentsList.sort((x, y) -> Integer.compare(y.size(), x.size()));
 
         for (Arguments arguments : argumentsList) {
+            builder.then(arguments.build(this::sendHelp));
+
             builder.executes(ctx -> {
-                List<Object> parsedArgList = new ArrayList<>();
-                Map<String, Object> parsedArgMap = new HashMap<>();
+                CommandContext context = new CommandContext(ctx);
                 try {
-                    arguments.parse(parsedArgList, parsedArgMap, ctx);
+                    arguments.parse(context);
                 } catch (IncorrectArgumentInputException e) {
-                    e.sendMessage(ctx.getSource());
+                    e.sendMessage(context);
                     return 1;
                 }
 
-                return executeWithStackTrace(new CommandContext(this, ctx, parsedArgList, parsedArgMap), this::execute);
+                return executeWithStackTrace(context, this::execute);
             });
-
-            List<ArgumentCommandNode<CommandSource, ?>> nodes = arguments.toCommandNodes(this);
-            for (int i = 0; i < nodes.size() - 1; i++) {
-                nodes.get(i)
-                     .addChild(nodes.get(i + 1));
-            }
-
-            builder.then(nodes.get(0));
         }
 
         return builder.build();

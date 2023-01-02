@@ -1,19 +1,17 @@
 package net.kunmc.lab.commandlib.argument.exception;
 
 import com.google.common.collect.Lists;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
+import net.kunmc.lab.commandlib.CommandContext;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.minecraft.server.v1_16_R3.ChatMessage;
-import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,17 +36,17 @@ public final class IncorrectArgumentInputException extends Exception {
         return new IncorrectArgumentInputException(component);
     }
 
-    public IncorrectArgumentInputException(Argument<?> argument,
-                                           CommandContext<CommandListenerWrapper> ctx,
-                                           String incorrectInput) {
-        String input = ctx.getInput();
+    public IncorrectArgumentInputException(Argument<?> argument, CommandContext ctx, String incorrectInput) {
+        String input = ctx.getHandle()
+                          .getInput();
         Component unknownArgumentMsg = Component.translatable("command.unknown.argument",
                                                               TextColor.color(ChatColor.RED.asBungee()
                                                                                            .getColor()
                                                                                            .getRGB()),
                                                               Component.text(incorrectInput));
 
-        StringRange range = ctx.getNodes()
+        StringRange range = ctx.getHandle()
+                               .getNodes()
                                .stream()
                                .filter(n -> n.getNode()
                                              .getName()
@@ -76,7 +74,7 @@ public final class IncorrectArgumentInputException extends Exception {
         this.components = Lists.asList(component, components);
     }
 
-    public void sendMessage(CommandSender sender) {
-        components.forEach(sender::sendMessage);
+    public void sendMessage(CommandContext context) {
+        components.forEach(context::sendMessage);
     }
 }

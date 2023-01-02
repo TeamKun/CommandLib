@@ -1,14 +1,13 @@
 package net.kunmc.lab.commandlib.argument;
 
 import com.google.common.collect.Lists;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
+import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.TextColorUtil;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.v1_16_R3.ArgumentProfile;
-import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -60,8 +59,8 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
     }
 
     @Override
-    public List<OfflinePlayer> parse(CommandContext<CommandListenerWrapper> ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
-        String s = getInputString(ctx, name);
+    public List<OfflinePlayer> parse(CommandContext ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
+        String s = ctx.getInput(name);
 
         if (s.startsWith("@")) {
             List<OfflinePlayer> players = Arrays.stream(Bukkit.getOfflinePlayers())

@@ -1,11 +1,10 @@
 package net.kunmc.lab.commandlib.argument;
 
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
+import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.ArgumentEntity;
-import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.entity.Entity;
 
 import java.util.function.Consumer;
@@ -27,8 +26,8 @@ public class EntityArgument extends Argument<Entity> {
     }
 
     @Override
-    public Entity parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return ArgumentEntity.a(ctx, name)
+    public Entity parse(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
+        return ArgumentEntity.a(ctx.getHandle(), name)
                              .getBukkitEntity();
     }
 }

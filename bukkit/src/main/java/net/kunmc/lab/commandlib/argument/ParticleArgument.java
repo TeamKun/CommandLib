@@ -1,10 +1,9 @@
 package net.kunmc.lab.commandlib.argument;
 
-import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.Argument;
+import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.ArgumentParticle;
-import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.Particle;
 import org.bukkit.craftbukkit.v1_16_R3.CraftParticle;
 
@@ -27,7 +26,7 @@ public class ParticleArgument extends Argument<Particle> {
     }
 
     @Override
-    public Particle parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
-        return CraftParticle.toBukkit(ArgumentParticle.a(ctx, name));
+    public Particle parse(CommandContext ctx) throws IncorrectArgumentInputException {
+        return CraftParticle.toBukkit(ArgumentParticle.a(ctx.getHandle(), name));
     }
 }

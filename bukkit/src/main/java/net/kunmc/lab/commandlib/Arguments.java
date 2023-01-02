@@ -1,33 +1,26 @@
 package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.ArgumentCommandNode;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.ChatColor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 final class Arguments {
-    private final List<Argument<?>> argumentList;
+    private final List<Argument<?>> arguments;
 
-    Arguments(List<Argument<?>> argumentList) {
-        this.argumentList = argumentList;
+    Arguments(List<Argument<?>> arguments) {
+        this.arguments = arguments;
     }
 
-    void parse(List<Object> dstList,
-               Map<String, Object> dstMap,
-               CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
-        for (Argument<?> argument : argumentList) {
+    void parse(CommandContext ctx) throws IncorrectArgumentInputException {
+        for (Argument<?> argument : arguments) {
             try {
                 Object parsedArg = argument.parseInternal(ctx);
-                dstList.add(parsedArg);
-                dstMap.put(argument.name(), parsedArg);
+                ctx.addParsedArgument(argument.name, parsedArg);
             } catch (IllegalArgumentException ignored) {
                 // 補完時に入力中の引数で例外が発生するため握りつぶす
             }
@@ -35,33 +28,33 @@ final class Arguments {
     }
 
     String generateHelpMessage(String literalConcatName) {
-        if (argumentList.isEmpty()) {
+        if (arguments.isEmpty()) {
             return "";
         }
 
         String msg = ChatColor.AQUA + "/" + literalConcatName + " ";
-        msg += argumentList.stream()
-                           .map(x -> String.format(ChatColor.GRAY + "<" + ChatColor.YELLOW + "%s" + ChatColor.GRAY + ">",
-                                                   x.name()))
-                           .collect(Collectors.joining(" "));
+        msg += arguments.stream()
+                        .map(x -> String.format(ChatColor.GRAY + "<" + ChatColor.YELLOW + "%s" + ChatColor.GRAY + ">",
+                                                x.name()))
+                        .collect(Collectors.joining(" "));
 
         return msg;
     }
 
-    private RequiredArgumentBuilder<CommandListenerWrapper, ?> buildArgument(Argument<?> argument, Command parent) {
+    private RequiredArgumentBuilder<CommandListenerWrapper, ?> buildArgument(Argument<?> argument,
+                                                                             ContextAction defaultAction) {
         RequiredArgumentBuilder<CommandListenerWrapper, ?> builder = RequiredArgumentBuilder.argument(argument.name(),
                                                                                                       argument.type());
 
         if (argument.suggestionAction() != null) {
             builder.suggests((ctx, sb) -> {
-                List<Object> parsedArgList = new ArrayList<>();
-                Map<String, Object> parsedArgMap = new HashMap<>();
+                CommandContext context = new CommandContext(ctx);
                 try {
-                    parse(parsedArgList, parsedArgMap, ctx);
+                    parse(context);
                 } catch (IncorrectArgumentInputException ignored) {
                 }
 
-                SuggestionBuilder suggestionBuilder = new SuggestionBuilder(ctx, parsedArgList, parsedArgMap);
+                SuggestionBuilder suggestionBuilder = new SuggestionBuilder(context);
                 argument.suggestionAction()
                         .accept(suggestionBuilder);
                 suggestionBuilder.build()
@@ -74,37 +67,45 @@ final class Arguments {
         }
 
         if (!argument.hasContextAction()) {
-            argument.setContextAction(parent::sendHelp);
+            argument.setContextAction(defaultAction);
         }
 
         builder.executes(ctx -> {
-            List<Object> parsedArgList = new ArrayList<>();
-            Map<String, Object> parsedArgMap = new HashMap<>();
+            CommandContext context = new CommandContext(ctx);
             try {
-                parse(parsedArgList, parsedArgMap, ctx);
+                parse(context);
             } catch (IncorrectArgumentInputException e) {
-                e.sendMessage(ctx.getSource()
-                                 .getBukkitSender());
+                e.sendMessage(context);
                 return 1;
             }
-            return CommandLib.executeWithStackTrace(new net.kunmc.lab.commandlib.CommandContext(parent,
-                                                                                                ctx,
-                                                                                                parsedArgList,
-                                                                                                parsedArgMap),
-                                                    argument.contextAction());
+            return CommandLib.executeWithStackTrace(context, argument.contextAction());
         });
 
         return builder;
     }
 
     int size() {
-        return argumentList.size();
+        return arguments.size();
     }
 
-    List<CommandNode<CommandListenerWrapper>> toCommandNodes(Command parent) {
-        return argumentList.stream()
-                           .map(x -> buildArgument(x, parent))
-                           .map(RequiredArgumentBuilder::build)
-                           .collect(Collectors.toList());
+    private List<ArgumentCommandNode<CommandListenerWrapper, ?>> toCommandNodes(ContextAction defaultAction) {
+        return arguments.stream()
+                        .map(x -> buildArgument(x, defaultAction))
+                        .map(RequiredArgumentBuilder::build)
+                        .collect(Collectors.toList());
+    }
+
+    ArgumentCommandNode<CommandListenerWrapper, ?> build(ContextAction defaultAction) {
+        List<ArgumentCommandNode<CommandListenerWrapper, ?>> nodes = toCommandNodes(defaultAction);
+        if (nodes.isEmpty()) {
+            return null;
+        }
+
+        for (int i = 0; i < nodes.size() - 1; i++) {
+            nodes.get(i)
+                 .addChild(nodes.get(i + 1));
+        }
+
+        return nodes.get(0);
     }
 }

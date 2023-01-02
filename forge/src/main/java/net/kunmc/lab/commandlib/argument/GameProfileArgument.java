@@ -2,10 +2,9 @@ package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.Argument;
+import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
-import net.minecraft.command.CommandSource;
 import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.StringUtils;
@@ -45,9 +44,10 @@ public class GameProfileArgument extends Argument<GameProfile> {
     }
 
     @Override
-    public GameProfile parse(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException {
-        String s = StringArgumentType.getString(ctx, name);
-        return ctx.getSource()
+    public GameProfile parse(CommandContext ctx) throws IncorrectArgumentInputException {
+        String s = StringArgumentType.getString(ctx.getHandle(), name);
+        return ctx.getHandle()
+                  .getSource()
                   .getPlayerNames()
                   .stream()
                   .map(getPlayerProfileCache()::getGameProfileForUsername)

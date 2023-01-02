@@ -1,16 +1,11 @@
 package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
-import net.minecraft.command.CommandSource;
 
-import java.lang.reflect.Field;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -18,13 +13,13 @@ import java.util.function.Predicate;
 
 public abstract class Argument<T> {
     protected final String name;
-    private final ArgumentType<?> type;
     private SuggestionAction suggestionAction;
     private SuggestionAction additionalSuggestionAction;
     private ContextAction contextAction;
+    private final ArgumentType<?> type;
     private Predicate<? super T> filter;
     private Function<? super T, ? extends T> shaper;
-    private Function<CommandContext<CommandSource>, IncorrectArgumentInputException> inputExceptionByFilterGenerator;
+    private Function<CommandContext, IncorrectArgumentInputException> inputExceptionByFilterGenerator;
 
     public Argument(String name, ArgumentType<?> type) {
         this.name = name;
@@ -117,29 +112,11 @@ public abstract class Argument<T> {
               .ifPresent(this::setShaper);
     }
 
-    protected void setInputExceptionByFilterGenerator(Function<CommandContext<CommandSource>, IncorrectArgumentInputException> inputExceptionByFilterGenerator) {
+    protected void setInputExceptionByFilterGenerator(Function<CommandContext, IncorrectArgumentInputException> inputExceptionByFilterGenerator) {
         this.inputExceptionByFilterGenerator = inputExceptionByFilterGenerator;
     }
 
-    protected static String getInputString(CommandContext<CommandSource> ctx, String name) {
-        try {
-            Field f = ctx.getClass()
-                         .getDeclaredField("arguments");
-            f.setAccessible(true);
-            ParsedArgument<CommandSource, ?> argument = ((Map<String, ParsedArgument<CommandSource, ?>>) f.get(ctx)).get(
-                    name);
-            if (argument == null) {
-                throw new IllegalArgumentException(String.format("'name(%s)' is invalid argument name.", name));
-            }
-
-            return argument.getRange()
-                           .get(ctx.getInput());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    final T parseInternal(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException {
+    final T parseInternal(CommandContext ctx) throws IncorrectArgumentInputException {
         T t;
         try {
             t = parse(ctx);
@@ -149,7 +126,7 @@ public abstract class Argument<T> {
 
         if (filter != null && !filter.test(t)) {
             if (inputExceptionByFilterGenerator == null) {
-                throw new IncorrectArgumentInputException(this, ctx, getInputString(ctx, name));
+                throw new IncorrectArgumentInputException(this, ctx, ctx.getInput(name));
             }
             throw inputExceptionByFilterGenerator.apply(ctx);
         }
@@ -160,7 +137,7 @@ public abstract class Argument<T> {
         return shaper.apply(t);
     }
 
-    public abstract T parse(CommandContext<CommandSource> ctx) throws CommandSyntaxException, IncorrectArgumentInputException;
+    public abstract T parse(CommandContext ctx) throws CommandSyntaxException, IncorrectArgumentInputException;
 
     @Accessors(chain = true, fluent = true)
     @Setter

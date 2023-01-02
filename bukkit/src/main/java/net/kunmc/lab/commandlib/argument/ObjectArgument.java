@@ -1,10 +1,9 @@
 package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.Argument;
+import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
-import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -39,8 +38,8 @@ public class ObjectArgument<T> extends Argument<T> {
     }
 
     @Override
-    public T parse(CommandContext<CommandListenerWrapper> ctx) throws IncorrectArgumentInputException {
-        String s = StringArgumentType.getString(ctx, name);
+    public T parse(CommandContext ctx) throws IncorrectArgumentInputException {
+        String s = StringArgumentType.getString(ctx.getHandle(), name);
         return nameToObjectMap.entrySet()
                               .stream()
                               .filter(x -> x.getKey()

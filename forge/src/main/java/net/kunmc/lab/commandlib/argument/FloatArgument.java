@@ -1,9 +1,8 @@
 package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.brigadier.arguments.FloatArgumentType;
-import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.Argument;
-import net.minecraft.command.CommandSource;
+import net.kunmc.lab.commandlib.CommandContext;
 
 import java.util.function.Consumer;
 
@@ -34,7 +33,7 @@ public class FloatArgument extends Argument<Float> {
     }
 
     @Override
-    public Float parse(CommandContext<CommandSource> ctx) {
-        return FloatArgumentType.getFloat(ctx, name);
+    public Float parse(CommandContext ctx) {
+        return FloatArgumentType.getFloat(ctx.getHandle(), name);
     }
 }

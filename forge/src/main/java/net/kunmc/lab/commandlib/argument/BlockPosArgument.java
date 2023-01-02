@@ -1,9 +1,8 @@
 package net.kunmc.lab.commandlib.argument;
 
-import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.Argument;
+import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
-import net.minecraft.command.CommandSource;
 import net.minecraft.command.arguments.Vec3Argument;
 import net.minecraft.util.math.BlockPos;
 
@@ -26,8 +25,9 @@ public class BlockPosArgument extends Argument<BlockPos> {
     }
 
     @Override
-    public BlockPos parse(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException {
-        return Vec3Argument.getLocation(ctx, name)
-                           .getBlockPos(ctx.getSource());
+    public BlockPos parse(CommandContext ctx) throws IncorrectArgumentInputException {
+        return Vec3Argument.getLocation(ctx.getHandle(), name)
+                           .getBlockPos(ctx.getHandle()
+                                           .getSource());
     }
 }

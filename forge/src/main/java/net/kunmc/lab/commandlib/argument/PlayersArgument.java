@@ -1,11 +1,10 @@
 package net.kunmc.lab.commandlib.argument;
 
 
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
+import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
-import net.minecraft.command.CommandSource;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.player.ServerPlayerEntity;
 
@@ -30,7 +29,7 @@ public class PlayersArgument extends Argument<List<ServerPlayerEntity>> {
     }
 
     @Override
-    public List<ServerPlayerEntity> parse(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return new ArrayList<>(EntityArgument.getPlayers(ctx, name));
+    public List<ServerPlayerEntity> parse(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
+        return new ArrayList<>(EntityArgument.getPlayers(ctx.getHandle(), name));
     }
 }

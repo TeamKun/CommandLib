@@ -1,13 +1,12 @@
 package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
+import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.TextColorUtil;
 import net.kyori.adventure.text.Component;
-import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -62,8 +61,8 @@ public class UUIDArgument extends Argument<UUID> {
     }
 
     @Override
-    public UUID parse(CommandContext<CommandListenerWrapper> ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
-        String s = StringArgumentType.getString(ctx, name);
+    public UUID parse(CommandContext ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
+        String s = StringArgumentType.getString(ctx.getHandle(), name);
 
         OfflinePlayer p = Bukkit.getOfflinePlayerIfCached(s);
         if (p != null) {

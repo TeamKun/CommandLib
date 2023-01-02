@@ -1,10 +1,9 @@
 package net.kunmc.lab.commandlib.argument;
 
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
+import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
-import net.minecraft.command.CommandSource;
 import net.minecraft.item.ItemStack;
 
 import java.util.function.Consumer;
@@ -26,8 +25,8 @@ public class ItemStackArgument extends Argument<ItemStack> {
     }
 
     @Override
-    public ItemStack parse(CommandContext<CommandSource> ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return net.minecraft.command.arguments.ItemArgument.getItem(ctx, name)
+    public ItemStack parse(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
+        return net.minecraft.command.arguments.ItemArgument.getItem(ctx.getHandle(), name)
                                                            .createStack(1, false);
     }
 }

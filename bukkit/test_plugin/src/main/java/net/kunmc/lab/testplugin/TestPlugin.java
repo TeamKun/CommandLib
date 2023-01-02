@@ -3,9 +3,7 @@ package net.kunmc.lab.testplugin;
 import com.google.common.collect.Lists;
 import net.kunmc.lab.commandlib.Command;
 import net.kunmc.lab.commandlib.CommandLib;
-import net.kunmc.lab.commandlib.argument.LiteralArgument;
-import net.kunmc.lab.commandlib.argument.OfflinePlayersArgument;
-import net.kunmc.lab.commandlib.argument.UUIDsArgument;
+import net.kunmc.lab.commandlib.argument.*;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -24,7 +22,12 @@ public final class TestPlugin extends JavaPlugin {
                          (offlinePlayers, ctx) -> ctx.sendSuccess(offlinePlayers));
             }}, new Command("b") {{
                 addChildren(new Command("child") {{
-                    argument(new UUIDsArgument("uuids"), (uuids, ctx) -> ctx.sendSuccess(uuids));
+                    argument(new UUIDsArgument("uuids"),
+                             new DoubleArgument("d"),
+                             new StringArgument("str"),
+                             (uuids, d, str, ctx) -> {
+                                 ctx.sendSuccess(ctx.getParsedArgs());
+                             });
                 }});
             }});
 

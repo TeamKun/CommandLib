@@ -1,6 +1,5 @@
 package net.kunmc.lab.commandlib;
 
-import com.mojang.brigadier.context.ParsedCommandNode;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
@@ -12,54 +11,51 @@ import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public final class CommandContext {
-    private final Command command;
     private final com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> handle;
-    private final List<String> args;
+    private final Map<String, String> argumentNameToInputArgMap = new LinkedHashMap<>();
     private final CommandSender sender;
-    private final List<Object> parsedArgList;
-    private final Map<String, Object> parsedArgMap;
+    private final LinkedHashMap<String, Object> parsedArgMap = new LinkedHashMap<>();
 
-    public CommandContext(Command command,
-                          com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx,
-                          List<Object> parsedArgList,
-                          Map<String, Object> parsedArgMap) {
-        this.command = command;
+    public CommandContext(com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx) {
         this.handle = ctx;
-        this.args = ctx.getNodes()
-                       .stream()
-                       .map(ParsedCommandNode::getRange)
-                       .map(x -> x.get(ctx.getInput()))
-                       .collect(Collectors.toList());
         this.sender = ctx.getSource()
                          .getBukkitSender();
-        this.parsedArgList = parsedArgList;
-        this.parsedArgMap = parsedArgMap;
+
+        ctx.getNodes()
+           .forEach(x -> {
+               argumentNameToInputArgMap.put(x.getNode()
+                                              .getName(),
+                                             x.getRange()
+                                              .get(ctx.getInput()));
+           });
     }
 
     public com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> getHandle() {
         return handle;
     }
 
-    public List<String> getArgs() {
-        return args;
+    public String getInput(String name) {
+        return argumentNameToInputArgMap.getOrDefault(name, "");
     }
 
     public String getArg(int index) {
-        return args.get(index);
+        return getArgs().get(index);
+    }
+
+    public List<String> getArgs() {
+        return new ArrayList<>(argumentNameToInputArgMap.values());
     }
 
     public List<Object> getParsedArgs() {
-        return parsedArgList;
+        return Arrays.asList(parsedArgMap.values()
+                                         .toArray());
     }
 
     public Object getParsedArg(int index) {
-        return parsedArgList.get(index);
+        return getParsedArgs().get(index);
     }
 
     public Object getParsedArg(String name) {
@@ -108,7 +104,7 @@ public final class CommandContext {
     }
 
     public void sendMessage(@Nullable String message) {
-        sender.sendMessage(Objects.toString((message)));
+        sender.sendMessage(String.valueOf(message));
     }
 
     public void sendMessage(@NotNull Component component) {
@@ -155,5 +151,9 @@ public final class CommandContext {
         sendMessage(component.color(TextColor.color(ChatColor.RED.asBungee()
                                                                  .getColor()
                                                                  .getRGB())));
+    }
+
+    void addParsedArgument(String name, Object parsedArgument) {
+        parsedArgMap.put(name, parsedArgument);
     }
 }
