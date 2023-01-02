@@ -7,8 +7,6 @@ import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.TextColorUtil;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
-import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_16_R3.ArgumentProfile;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.Bukkit;
@@ -94,8 +92,7 @@ public class UUIDsArgument extends Argument<List<UUID>> {
             }
 
             throw new IncorrectArgumentInputException(Component.text(s + " is invalid selector.")
-                                                               .color(TextColor.color(ChatColor.RED.getColor()
-                                                                                                   .getRGB())));
+                                                               .color(TextColorUtil.RED));
         }
 
         OfflinePlayer p = Bukkit.getOfflinePlayerIfCached(s);
