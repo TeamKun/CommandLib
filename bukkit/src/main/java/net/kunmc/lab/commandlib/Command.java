@@ -6,7 +6,6 @@ import com.mojang.brigadier.tree.CommandNode;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.fucntion.*;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.HoverEvent;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
@@ -36,11 +35,11 @@ public abstract class Command {
         this.name = name;
     }
 
-    public final void setDescription(String description) {
+    public final void setDescription(@NotNull String description) {
         this.description = description;
     }
 
-    public final void setPermission(PermissionDefault defaultPermission) {
+    public final void setPermission(@NotNull PermissionDefault defaultPermission) {
         this.defaultPermission = defaultPermission;
     }
 
@@ -329,34 +328,39 @@ public abstract class Command {
         }).get();
 
         ctx.sendMessage(border);
+
+        if (!description.isEmpty()) {
+            ctx.sendMessage(description);
+        }
         ctx.sendMessage(ChatColor.RED + "Usage:");
 
         if (!children.isEmpty()) {
-            ctx.sendMessage(Component.text(ChatColor.AQUA + padding + "/" + literalConcatName)
-                                     .hoverEvent(HoverEvent.showText(Component.text(description))));
+            ctx.sendMessage(ChatColor.AQUA + padding + "/" + literalConcatName);
 
             children.stream()
                     .filter(x -> ctx.getSender()
                                     .hasPermission(x.permissionName()))
-                    .forEach(x -> {
-                        ctx.sendMessage(Component.text(ChatColor.YELLOW + padding + padding + x.name)
-                                                 .hoverEvent(HoverEvent.showText(Component.text(x.description))));
-                    });
-        }
+                    .map(x -> {
+                        String s = ChatColor.YELLOW + padding + padding + x.name;
+                        if (x.description.isEmpty()) {
+                            return s;
+                        }
+                        return s + ChatColor.WHITE + ": " + x.description;
+                    })
+                    .forEach(ctx::sendMessage);
 
-        List<Component> argumentsHelpMessages = argumentsList.stream()
-                                                             .map(x -> x.generateHelpMessage(literalConcatName))
-                                                             .filter(x -> !x.isEmpty())
-                                                             .map(x -> Component.text(padding + x)
-                                                                                .hoverEvent(HoverEvent.showText(
-                                                                                        Component.text(description))))
-                                                             .collect(Collectors.toList());
-        if (!children.isEmpty() && !argumentsHelpMessages.isEmpty()) {
-            ctx.sendMessage("");
-        }
-        argumentsHelpMessages.forEach(ctx::sendMessage);
+            List<Component> argumentsHelpMessages = argumentsList.stream()
+                                                                 .map(x -> x.generateHelpMessage(literalConcatName))
+                                                                 .filter(x -> !x.isEmpty())
+                                                                 .map(x -> Component.text(padding + x))
+                                                                 .collect(Collectors.toList());
+            if (!children.isEmpty() && !argumentsHelpMessages.isEmpty()) {
+                ctx.sendMessage("");
+            }
+            argumentsHelpMessages.forEach(ctx::sendMessage);
 
-        ctx.sendMessage(border);
+            ctx.sendMessage(border);
+        }
     }
 
     protected void execute(@NotNull CommandContext ctx) {

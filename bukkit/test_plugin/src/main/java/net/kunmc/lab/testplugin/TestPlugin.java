@@ -21,7 +21,6 @@ public final class TestPlugin extends JavaPlugin {
                 setDescription("a command");
                 argument(new PlayerArgument("player"), (player, ctx) -> ctx.sendSuccess(player.getName()));
             }}, new Command("b") {{
-                setDescription("b command");
                 addChildren(new Command("child") {{
                     execute(ctx -> ctx.sendSuccess("b child"));
                 }});

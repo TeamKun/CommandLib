@@ -12,7 +12,6 @@ import net.minecraft.command.Commands;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.event.HoverEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -302,37 +301,30 @@ public abstract class Command {
         }).get();
 
         ctx.sendMessage(border);
+
+        if (!description.isEmpty()) {
+            ctx.sendMessage(description);
+        }
         ctx.sendMessage(TextFormatting.RED + "Usage:");
 
         if (!children.isEmpty()) {
-            StringTextComponent msg = new StringTextComponent(TextFormatting.AQUA + padding + "/" + literalConcatName);
-            msg.setStyle(msg.getStyle()
-                            .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                                          new StringTextComponent(description))));
-            ctx.sendMessage(msg);
+            ctx.sendMessage(TextFormatting.AQUA + padding + "/" + literalConcatName);
 
-            children.forEach(x -> {
-                StringTextComponent childMsg = new StringTextComponent(TextFormatting.YELLOW + padding + padding + x.name);
-                childMsg.setStyle(childMsg.getStyle()
-                                          .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                                                        new StringTextComponent(x.description))));
-                ctx.sendMessage(childMsg);
-            });
+            children.stream()
+                    .map(x -> {
+                        String s = TextFormatting.YELLOW + padding + padding + x.name;
+                        if (x.description.isEmpty()) {
+                            return s;
+                        }
+                        return s + TextFormatting.WHITE + ": " + x.description;
+                    })
+                    .forEach(ctx::sendMessage);
         }
 
         List<TextComponent> argumentsHelpMessages = argumentsList.stream()
                                                                  .map(x -> x.generateHelpMessage(literalConcatName))
                                                                  .filter(x -> !x.isEmpty())
-                                                                 .map(x -> {
-                                                                     StringTextComponent msg = new StringTextComponent(
-                                                                             padding + x);
-                                                                     msg.setStyle(msg.getStyle()
-                                                                                     .setHoverEvent(new HoverEvent(
-                                                                                             HoverEvent.Action.SHOW_TEXT,
-                                                                                             new StringTextComponent(
-                                                                                                     description))));
-                                                                     return msg;
-                                                                 })
+                                                                 .map(x -> new StringTextComponent(padding + x))
                                                                  .collect(Collectors.toList());
         if (!children.isEmpty() && !argumentsHelpMessages.isEmpty()) {
             ctx.sendMessage("");
