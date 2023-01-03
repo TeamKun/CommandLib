@@ -9,7 +9,7 @@ public final class TextColorUtil {
     public static final TextColor RED = fromChatColor(ChatColor.RED);
 
     public static TextColor fromChatColor(org.bukkit.ChatColor chatColor) {
-        return fromChatColor(chatColor);
+        return fromChatColor(chatColor.asBungee());
     }
 
     public static TextColor fromChatColor(ChatColor chatColor) {
