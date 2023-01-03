@@ -14,6 +14,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -57,34 +58,40 @@ public final class CommandLib implements Listener {
     }
 
     private void enable() {
-        registeredCommands.addAll(commands.stream()
-                                          .flatMap(x -> x.toCommandNodes()
-                                                         .stream())
-                                          .collect(Collectors.toList()));
+        // 1ティック遅延させないとreload confirmの時にバグる
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                registeredCommands.addAll(commands.stream()
+                                                  .flatMap(x -> x.toCommandNodes()
+                                                                 .stream())
+                                                  .collect(Collectors.toList()));
 
-        CommandDispatcher dispatcher = ((CraftServer) plugin.getServer()).getServer()
-                                                                         .getCommandDispatcher();
-        RootCommandNode<CommandListenerWrapper> root = dispatcher.a()
-                                                                 .getRoot();
-        registeredCommands.forEach(x -> {
-            root.addChild(x);
-            Bukkit.getCommandMap()
-                  .getKnownCommands()
-                  .put(x.getName(), new VanillaCommandWrapper(dispatcher, x));
+                CommandDispatcher dispatcher = ((CraftServer) plugin.getServer()).getServer()
+                                                                                 .getCommandDispatcher();
+                RootCommandNode<CommandListenerWrapper> root = dispatcher.a()
+                                                                         .getRoot();
+                registeredCommands.forEach(x -> {
+                    root.addChild(x);
+                    Bukkit.getCommandMap()
+                          .getKnownCommands()
+                          .put(x.getName(), new VanillaCommandWrapper(dispatcher, x));
 
-            root.getChild("execute")
-                .getChild("run")
-                .getRedirect()
-                .addChild(x);
-        });
+                    root.getChild("execute")
+                        .getChild("run")
+                        .getRedirect()
+                        .addChild(x);
+                });
 
-        commands.stream()
-                .flatMap(x -> x.permissions()
-                               .stream())
-                .forEach(Bukkit.getPluginManager()::addPermission);
+                commands.stream()
+                        .flatMap(x -> x.permissions()
+                                       .stream())
+                        .forEach(Bukkit.getPluginManager()::addPermission);
 
-        Bukkit.getOnlinePlayers()
-              .forEach(Player::updateCommands);
+                Bukkit.getOnlinePlayers()
+                      .forEach(Player::updateCommands);
+            }
+        }.runTask(plugin);
     }
 
     @EventHandler
