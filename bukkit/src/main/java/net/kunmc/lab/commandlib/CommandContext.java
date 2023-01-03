@@ -1,9 +1,8 @@
 package net.kunmc.lab.commandlib;
 
+import net.kunmc.lab.commandlib.util.TextColorUtil;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -16,13 +15,10 @@ import java.util.*;
 public final class CommandContext {
     private final com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> handle;
     private final Map<String, String> argumentNameToInputArgMap = new LinkedHashMap<>();
-    private final CommandSender sender;
     private final LinkedHashMap<String, Object> parsedArgMap = new LinkedHashMap<>();
 
     public CommandContext(com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx) {
         this.handle = ctx;
-        this.sender = ctx.getSource()
-                         .getBukkitSender();
 
         ctx.getNodes()
            .forEach(x -> {
@@ -96,7 +92,8 @@ public final class CommandContext {
     }
 
     public CommandSender getSender() {
-        return sender;
+        return handle.getSource()
+                     .getBukkitSender();
     }
 
     public void sendMessage(@Nullable Object obj) {
@@ -104,11 +101,11 @@ public final class CommandContext {
     }
 
     public void sendMessage(@Nullable String message) {
-        sender.sendMessage(String.valueOf(message));
+        sendMessage(Component.text(String.valueOf(message)));
     }
 
     public void sendMessage(@NotNull Component component) {
-        sender.sendMessage(component);
+        getSender().sendMessage(component);
     }
 
     public void sendSuccess(@Nullable Object obj) {
@@ -116,13 +113,11 @@ public final class CommandContext {
     }
 
     public void sendSuccess(@Nullable String message) {
-        sendMessage(ChatColor.GREEN + message);
+        sendSuccess(Component.text(String.valueOf(message)));
     }
 
     public void sendSuccess(@NotNull Component component) {
-        sendMessage(component.color(TextColor.color(ChatColor.GREEN.asBungee()
-                                                                   .getColor()
-                                                                   .getRGB())));
+        sendMessage(component.color(TextColorUtil.GREEN));
     }
 
     public void sendWarn(@Nullable Object obj) {
@@ -130,13 +125,11 @@ public final class CommandContext {
     }
 
     public void sendWarn(@Nullable String message) {
-        sendMessage(ChatColor.YELLOW + message);
+        sendWarn(Component.text(String.valueOf(message)));
     }
 
     public void sendWarn(@NotNull Component component) {
-        sendMessage(component.color(TextColor.color(ChatColor.YELLOW.asBungee()
-                                                                    .getColor()
-                                                                    .getRGB())));
+        sendMessage(component.color(TextColorUtil.YELLOW));
     }
 
     public void sendFailure(@Nullable Object obj) {
@@ -144,13 +137,11 @@ public final class CommandContext {
     }
 
     public void sendFailure(@Nullable String message) {
-        sendMessage(ChatColor.RED + message);
+        sendFailure(Component.text(String.valueOf(message)));
     }
 
     public void sendFailure(@NotNull Component component) {
-        sendMessage(component.color(TextColor.color(ChatColor.RED.asBungee()
-                                                                 .getColor()
-                                                                 .getRGB())));
+        sendMessage(component.color(TextColorUtil.RED));
     }
 
     void addParsedArgument(String name, Object parsedArgument) {

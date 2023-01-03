@@ -31,7 +31,7 @@ public abstract class Command {
     private final List<Command> children = new ArrayList<>();
     private final List<String> aliases = new ArrayList<>();
     private final List<Arguments> argumentsList = new ArrayList<>();
-    private Consumer<CommandContext> execute = this::sendHelp;
+    private ContextAction execute = this::sendHelp;
 
     public Command(@NotNull String name) {
         this.name = name;
@@ -209,7 +209,7 @@ public abstract class Command {
         });
     }
 
-    public final void execute(@NotNull Consumer<CommandContext> execute) {
+    public final void execute(@NotNull ContextAction execute) {
         this.execute = execute;
     }
 
@@ -221,12 +221,9 @@ public abstract class Command {
         List<Permission> permissions = new ArrayList<>();
         permissions.add(new Permission(permissionName(), defaultPermission));
         permissions.addAll(children.stream()
-                                   .map(Command::permissions)
-                                   .reduce(new ArrayList<>(), (x, y) -> {
-                                       x.addAll(y);
-                                       return x;
-                                   }));
-
+                                   .flatMap(x -> x.permissions()
+                                                  .stream())
+                                   .collect(Collectors.toList()));
         return permissions;
     }
 

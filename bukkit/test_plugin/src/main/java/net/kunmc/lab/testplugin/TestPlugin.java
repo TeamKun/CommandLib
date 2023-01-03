@@ -5,6 +5,7 @@ import net.kunmc.lab.commandlib.Command;
 import net.kunmc.lab.commandlib.CommandLib;
 import net.kunmc.lab.commandlib.argument.*;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
@@ -29,6 +30,8 @@ public final class TestPlugin extends JavaPlugin {
                                  ctx.sendSuccess(ctx.getParsedArgs());
                              });
                 }});
+            }}, new Command("c") {{
+                argument(new EnumArgument<>("enu", Material.class), (e, ctx) -> ctx.sendMessage(e));
             }});
 
             argument(new LiteralArgument("literals", Lists.newArrayList("hoge", "fuga")), (literal, ctx) -> {

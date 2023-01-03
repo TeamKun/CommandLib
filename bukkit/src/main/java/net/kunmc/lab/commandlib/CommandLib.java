@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public final class CommandLib implements Listener {
     private final Plugin plugin;
@@ -57,11 +58,9 @@ public final class CommandLib implements Listener {
 
     private void enable() {
         registeredCommands.addAll(commands.stream()
-                                          .map(Command::toCommandNodes)
-                                          .reduce(new ArrayList<>(), (x, y) -> {
-                                              x.addAll(y);
-                                              return x;
-                                          }));
+                                          .flatMap(x -> x.toCommandNodes()
+                                                         .stream())
+                                          .collect(Collectors.toList()));
 
         CommandDispatcher dispatcher = ((CraftServer) plugin.getServer()).getServer()
                                                                          .getCommandDispatcher();
@@ -80,11 +79,8 @@ public final class CommandLib implements Listener {
         });
 
         commands.stream()
-                .map(Command::permissions)
-                .reduce(new ArrayList<>(), (x, y) -> {
-                    x.addAll(y);
-                    return x;
-                })
+                .flatMap(x -> x.permissions()
+                               .stream())
                 .forEach(Bukkit.getPluginManager()::addPermission);
 
         Bukkit.getOnlinePlayers()
@@ -126,11 +122,8 @@ public final class CommandLib implements Listener {
         HandlerList.unregisterAll(this);
 
         commands.stream()
-                .map(Command::permissions)
-                .reduce(new ArrayList<>(), (x, y) -> {
-                    x.addAll(y);
-                    return x;
-                })
+                .flatMap(x -> x.permissions()
+                               .stream())
                 .forEach(Bukkit.getPluginManager()::removePermission);
 
         Bukkit.getOnlinePlayers()

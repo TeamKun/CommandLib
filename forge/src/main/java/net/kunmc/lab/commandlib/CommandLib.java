@@ -10,7 +10,6 @@ import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 public final class CommandLib {
@@ -59,11 +58,8 @@ public final class CommandLib {
                                                                   .getRoot();
 
         commands.stream()
-                .map(Command::toCommandNodes)
-                .reduce(new ArrayList<>(), (x, y) -> {
-                    x.addAll(y);
-                    return x;
-                })
+                .flatMap(x -> x.toCommandNodes()
+                               .stream())
                 .forEach(root::addChild);
     }
 }

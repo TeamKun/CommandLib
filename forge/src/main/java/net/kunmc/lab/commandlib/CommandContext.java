@@ -3,9 +3,7 @@ package net.kunmc.lab.commandlib;
 import net.kunmc.lab.commandlib.util.Location;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.*;
 import net.minecraft.world.server.ServerWorld;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,12 +13,10 @@ import java.util.*;
 public final class CommandContext {
     private final com.mojang.brigadier.context.CommandContext<CommandSource> handle;
     private final Map<String, String> argumentNameToInputArgMap = new LinkedHashMap<>();
-    private final CommandSource sender;
     private final LinkedHashMap<String, Object> parsedArgMap = new LinkedHashMap<>();
 
     public CommandContext(com.mojang.brigadier.context.CommandContext<CommandSource> ctx) {
         this.handle = ctx;
-        this.sender = ctx.getSource();
 
         ctx.getNodes()
            .forEach(x -> {
@@ -95,7 +91,7 @@ public final class CommandContext {
     }
 
     public CommandSource getSender() {
-        return sender;
+        return handle.getSource();
     }
 
     public void sendMessage(@Nullable Object obj) {
@@ -107,7 +103,8 @@ public final class CommandContext {
     }
 
     public void sendMessage(@Nullable String message, boolean allowLogging) {
-        sender.sendFeedback(new StringTextComponent(String.valueOf(message)), allowLogging);
+        sendMessage(new StringTextComponent(String.valueOf(message)), allowLogging);
+
     }
 
     public void sendMessage(@NotNull ITextComponent component) {
@@ -115,7 +112,7 @@ public final class CommandContext {
     }
 
     public void sendMessage(@NotNull ITextComponent component, boolean allowLogging) {
-        sender.sendFeedback(component, allowLogging);
+        getSender().sendFeedback(component, allowLogging);
     }
 
     public void sendSuccess(@Nullable Object obj) {
@@ -127,7 +124,10 @@ public final class CommandContext {
     }
 
     public void sendSuccess(@Nullable String message, boolean allowLogging) {
-        sendMessage(TextFormatting.GREEN + message, allowLogging);
+        TextComponent component = new StringTextComponent(String.valueOf(message));
+        component.setStyle(component.getStyle()
+                                    .setColor(Color.fromInt(TextFormatting.GREEN.getColor())));
+        sendMessage(component, allowLogging);
     }
 
     public void sendWarn(@Nullable Object obj) {
@@ -139,7 +139,10 @@ public final class CommandContext {
     }
 
     public void sendWarn(@Nullable String message, boolean allowLogging) {
-        sendMessage(TextFormatting.YELLOW + message, allowLogging);
+        TextComponent component = new StringTextComponent(String.valueOf(message));
+        component.setStyle(component.getStyle()
+                                    .setColor(Color.fromInt(TextFormatting.YELLOW.getColor())));
+        sendMessage(component, allowLogging);
     }
 
     public void sendFailure(@Nullable Object obj) {
@@ -151,7 +154,10 @@ public final class CommandContext {
     }
 
     public void sendFailure(@Nullable String message, boolean allowLogging) {
-        sendMessage(TextFormatting.RED + message, allowLogging);
+        TextComponent component = new StringTextComponent(String.valueOf(message));
+        component.setStyle(component.getStyle()
+                                    .setColor(Color.fromInt(TextFormatting.RED.getColor())));
+        sendMessage(component, allowLogging);
     }
 
     void addParsedArgument(String name, Object parsedArgument) {

@@ -130,10 +130,19 @@ public final class ArgumentBuilder {
     }
 
     /**
-     * Add argument for {@link net.kunmc.lab.commandlib.Argument} Object implemented by you.
+     * Add any argument that implements {@link net.kunmc.lab.commandlib.Argument}.
      */
-    public ArgumentBuilder customArgument(@NotNull Argument<?> argument) {
+    public <T> ArgumentBuilder customArgument(@NotNull Argument<T> argument) {
         arguments.add(argument);
+        return this;
+    }
+
+    /**
+     * Add any argument that implements {@link net.kunmc.lab.commandlib.Argument}.
+     */
+    public <T> ArgumentBuilder customArgument(@NotNull Argument<T> argument, @Nullable ContextAction contextAction) {
+        arguments.add(argument);
+        argument.setContextAction(contextAction);
         return this;
     }
 
@@ -1037,7 +1046,7 @@ public final class ArgumentBuilder {
 
     /**
      * Set command's process.<br>
-     * If arguments are not added, process set by this wouldn't work. Then you should override {@link net.kunmc.lab.commandlib.Command#execute(CommandContext)}
+     * If arguments are not added, process set by this wouldn't work. Then you should override {@link net.kunmc.lab.commandlib.Command#execute(CommandContext)} or use {@link net.kunmc.lab.commandlib.Command#execute(ContextAction)}
      */
     public void execute(@NotNull ContextAction contextAction) {
         this.contextAction = contextAction;

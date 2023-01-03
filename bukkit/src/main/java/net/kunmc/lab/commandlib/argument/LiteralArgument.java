@@ -33,7 +33,6 @@ public class LiteralArgument extends Argument<String> {
         super(name, StringArgumentType.string());
         this.literalsSupplier = literalsSupplier;
 
-        setOptions(options);
         setSuggestionAction(sb -> {
             literalsSupplier.get()
                             .stream()
@@ -41,6 +40,7 @@ public class LiteralArgument extends Argument<String> {
                                            .isEmpty() || x.contains(sb.getLatestInput()))
                             .forEach(sb::suggest);
         });
+        setOptions(options);
     }
 
     public LiteralArgument(String name, Supplier<Collection<String>> literalsSupplier, ContextAction contextAction) {
