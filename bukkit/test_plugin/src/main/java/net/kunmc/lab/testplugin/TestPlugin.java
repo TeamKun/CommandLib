@@ -31,7 +31,11 @@ public final class TestPlugin extends JavaPlugin {
                              });
                 }});
             }}, new Command("c") {{
-                argument(new EnumArgument<>("enu", Material.class), (e, ctx) -> ctx.sendMessage(e));
+                argument(new EnumArgument<>("enu", Material.class), (e, ctx) -> {
+                    ctx.sendMessageWithOption(e, option -> {
+                    });
+                    ctx.sendMessageWithOption(e, option -> option.rgb(0));
+                });
             }});
 
             argument(new LiteralArgument("literals", Lists.newArrayList("hoge", "fuga")), (literal, ctx) -> {

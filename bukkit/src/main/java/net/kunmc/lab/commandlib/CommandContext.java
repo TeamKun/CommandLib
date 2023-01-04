@@ -1,7 +1,11 @@
 package net.kunmc.lab.commandlib;
 
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.kunmc.lab.commandlib.util.TextColorUtil;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -11,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public final class CommandContext {
     private final com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> handle;
@@ -108,6 +113,18 @@ public final class CommandContext {
         getSender().sendMessage(component);
     }
 
+    public void sendMessageWithOption(@Nullable Object obj, @NotNull Consumer<MessageOption> options) {
+        sendMessageWithOption(Objects.toString(obj), options);
+    }
+
+    public void sendMessageWithOption(@Nullable String message, @NotNull Consumer<MessageOption> options) {
+        MessageOption option = new MessageOption();
+        options.accept(option);
+        sendMessage(Component.text(String.valueOf(message))
+                             .hoverEvent(HoverEvent.showText(Component.text(String.valueOf(option.hoverText))))
+                             .color(TextColor.color(option.rgb)));
+    }
+
     public void sendSuccess(@Nullable Object obj) {
         sendSuccess(Objects.toString(obj));
     }
@@ -146,5 +163,15 @@ public final class CommandContext {
 
     void addParsedArgument(String name, Object parsedArgument) {
         parsedArgMap.put(name, parsedArgument);
+    }
+
+    @Accessors(chain = true, fluent = true)
+    @Setter
+    public static class MessageOption {
+        private int rgb = 0xFFFFFF;
+        private String hoverText = "";
+
+        private MessageOption() {
+        }
     }
 }

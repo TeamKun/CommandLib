@@ -1,14 +1,18 @@
 package net.kunmc.lab.commandlib;
 
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.kunmc.lab.commandlib.util.Location;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.text.*;
+import net.minecraft.util.text.event.HoverEvent;
 import net.minecraft.world.server.ServerWorld;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public final class CommandContext {
     private final com.mojang.brigadier.context.CommandContext<CommandSource> handle;
@@ -107,6 +111,23 @@ public final class CommandContext {
 
     }
 
+    public void sendMessageWithOption(@Nullable Object obj, @NotNull Consumer<MessageOption> options) {
+        sendMessageWithOption(Objects.toString(obj), options);
+    }
+
+    public void sendMessageWithOption(@Nullable String message, @NotNull Consumer<MessageOption> options) {
+        MessageOption option = new MessageOption();
+        options.accept(option);
+
+        TextComponent component = new StringTextComponent(String.valueOf(message));
+        component.setStyle(component.getStyle()
+                                    .setColor(Color.fromInt(option.rgb))
+                                    .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                                                  new StringTextComponent(option.hoverText))));
+        sendMessage(component);
+    }
+
+
     public void sendMessage(@NotNull ITextComponent component) {
         sendMessage(component, false);
     }
@@ -162,5 +183,15 @@ public final class CommandContext {
 
     void addParsedArgument(String name, Object parsedArgument) {
         parsedArgMap.put(name, parsedArgument);
+    }
+
+    @Accessors(chain = true, fluent = true)
+    @Setter
+    public static class MessageOption {
+        private int rgb = 0xFFFFFF;
+        private String hoverText = "";
+
+        private MessageOption() {
+        }
     }
 }
