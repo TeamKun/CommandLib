@@ -5,7 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
-import net.kunmc.lab.commandlib.util.function.*;
+import net.kunmc.lab.commandlib.util.fucntion.*;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.util.text.StringTextComponent;

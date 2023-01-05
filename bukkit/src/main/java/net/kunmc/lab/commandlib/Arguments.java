@@ -54,7 +54,7 @@ final class Arguments {
                 } catch (IncorrectArgumentInputException ignored) {
                 }
 
-                SuggestionBuilder suggestionBuilder = new SuggestionBuilder(context);
+                SuggestionBuilder<CommandContext> suggestionBuilder = new SuggestionBuilder<>(context);
                 argument.suggestionAction()
                         .accept(suggestionBuilder);
                 suggestionBuilder.build()

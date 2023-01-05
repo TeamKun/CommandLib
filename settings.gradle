@@ -1,2 +1,4 @@
 rootProject.name = 'CommandLib'
 include "forge", "bukkit"
+include 'common'
+

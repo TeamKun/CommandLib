@@ -22,14 +22,17 @@ configurations {
 }
 
 dependencies {
+    implementation project(":common")
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
     minecraft 'net.minecraftforge:forge:1.16.5-36.2.20'
-    compileOnly "org.jetbrains:annotations:16.0.2"
-    adder "org.jetbrains:annotations:16.0.2"
+    implementation "org.jetbrains:annotations:16.0.2"
 }
 
 shadowJar {
-    configurations = [project.configurations.adder]
+    dependencies {
+        include(dependency("org.jetbrains:annotations:.*"))
+        include(project(":common"))
+    }
 }
 jar.finalizedBy("shadowJar")
