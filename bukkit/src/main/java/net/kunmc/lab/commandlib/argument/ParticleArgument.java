@@ -2,7 +2,7 @@ package net.kunmc.lab.commandlib.argument;
 
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.ArgumentParticle;
 import org.bukkit.Particle;
 import org.bukkit.craftbukkit.v1_16_R3.CraftParticle;
@@ -15,7 +15,7 @@ public class ParticleArgument extends Argument<Particle> {
         });
     }
 
-    public ParticleArgument(String name, Consumer<Option<Particle>> options) {
+    public ParticleArgument(String name, Consumer<Option<Particle, CommandContext>> options) {
         super(name, ArgumentParticle.a());
         setOptions(options);
     }

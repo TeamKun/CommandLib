@@ -2,7 +2,7 @@ package net.kunmc.lab.commandlib.argument;
 
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.minecraft.command.arguments.BlockStateInput;
 
 import java.util.function.Consumer;
@@ -13,7 +13,7 @@ public class BlockStateArgument extends Argument<BlockStateInput> {
         });
     }
 
-    public BlockStateArgument(String name, Consumer<Option<BlockStateInput>> options) {
+    public BlockStateArgument(String name, Consumer<Option<BlockStateInput, CommandContext>> options) {
         super(name, net.minecraft.command.arguments.BlockStateArgument.blockState());
         setOptions(options);
     }

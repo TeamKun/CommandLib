@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.minecraft.command.arguments.PotionArgument;
 import net.minecraft.potion.Effect;
 
@@ -15,7 +15,7 @@ public class EffectArgument extends Argument<Effect> {
         });
     }
 
-    public EffectArgument(String name, Consumer<Option<Effect>> options) {
+    public EffectArgument(String name, Consumer<Option<Effect, CommandContext>> options) {
         super(name, PotionArgument.mobEffect());
         setOptions(options);
     }

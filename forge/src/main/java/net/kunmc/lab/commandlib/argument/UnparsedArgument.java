@@ -14,7 +14,7 @@ public class UnparsedArgument extends Argument<String> {
         });
     }
 
-    public UnparsedArgument(String name, Consumer<Option<String>> options) {
+    public UnparsedArgument(String name, Consumer<Option<String, CommandContext>> options) {
         super(name, GameProfileArgument.gameProfile());
         setOptions(options);
         setSuggestionAction(((Supplier<SuggestionAction>) () -> {

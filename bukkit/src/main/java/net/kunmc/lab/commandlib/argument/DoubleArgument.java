@@ -12,7 +12,7 @@ public class DoubleArgument extends Argument<Double> {
         });
     }
 
-    public DoubleArgument(String name, Consumer<Option<Double>> options) {
+    public DoubleArgument(String name, Consumer<Option<Double, CommandContext>> options) {
         super(name, DoubleArgumentType.doubleArg(-Double.MAX_VALUE, Double.MAX_VALUE));
         setOptions(options);
     }
@@ -22,7 +22,7 @@ public class DoubleArgument extends Argument<Double> {
         }, min, max);
     }
 
-    public DoubleArgument(String name, Consumer<Option<Double>> options, Double min, Double max) {
+    public DoubleArgument(String name, Consumer<Option<Double, CommandContext>> options, Double min, Double max) {
         super(name, DoubleArgumentType.doubleArg(min, max));
         setOptions(options);
     }

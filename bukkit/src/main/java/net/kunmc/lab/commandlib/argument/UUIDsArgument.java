@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.TextColorUtil;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.v1_16_R3.ArgumentProfile;
@@ -23,7 +23,7 @@ public class UUIDsArgument extends Argument<List<UUID>> {
         });
     }
 
-    public UUIDsArgument(String name, Consumer<Option<List<UUID>>> options) {
+    public UUIDsArgument(String name, Consumer<Option<List<UUID>, CommandContext>> options) {
         super(name, ArgumentProfile.a());
 
         setSuggestionAction(sb -> {
@@ -77,20 +77,21 @@ public class UUIDsArgument extends Argument<List<UUID>> {
                 if (!uuids.isEmpty()) {
                     return uuids;
                 }
-                throw new IncorrectArgumentInputException(Component.text("no player found")
-                                                                   .color(TextColorUtil.RED));
+                throw new IncorrectArgumentInputException(x -> ((CommandContext) x).sendMessage(Component.text(
+                                                                                                                 "no player found")
+                                                                                                         .color(TextColorUtil.RED)));
             }
             if (s.equals("@r")) {
                 Collections.shuffle(uuids, ThreadLocalRandom.current());
                 return Collections.singletonList(uuids.stream()
                                                       .findFirst()
-                                                      .orElseThrow(() -> new IncorrectArgumentInputException(Component.text(
-                                                                                                                              "no player found")
-                                                                                                                      .color(TextColorUtil.RED))));
+                                                      .orElseThrow(() -> new IncorrectArgumentInputException(x -> ((CommandContext) x).sendMessage(
+                                                              Component.text("no player found")
+                                                                       .color(TextColorUtil.RED)))));
             }
 
-            throw new IncorrectArgumentInputException(Component.text(s + " is invalid selector.")
-                                                               .color(TextColorUtil.RED));
+            throw new IncorrectArgumentInputException(x -> ((CommandContext) x).sendMessage(Component.text(s + " is invalid selector.")
+                                                                                                     .color(TextColorUtil.RED)));
         }
 
         OfflinePlayer p = Bukkit.getOfflinePlayerIfCached(s);
@@ -101,10 +102,10 @@ public class UUIDsArgument extends Argument<List<UUID>> {
         try {
             return Collections.singletonList(UUID.fromString(s));
         } catch (IllegalArgumentException e) {
-            throw new IncorrectArgumentInputException(Component.text(s + " is not found.")
-                                                               .color(TextColorUtil.RED),
-                                                      Component.text(s + " is not valid UUID.")
-                                                               .color(TextColorUtil.RED));
+            throw new IncorrectArgumentInputException(x -> {
+                ((CommandContext) x).sendMessage(Component.text(s + " is not found or not valid UUID")
+                                                          .color(TextColorUtil.RED));
+            });
         }
     }
 }

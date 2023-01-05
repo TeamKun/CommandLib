@@ -1,51 +1,18 @@
 package net.kunmc.lab.commandlib.argument;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
-import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
 
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class ObjectArgument<T> extends Argument<T> {
-    private final Map<String, ? extends T> nameToObjectMap;
-
+public class ObjectArgument<T> extends AbstractObjectArgument<T, CommandContext> {
     public ObjectArgument(String name, Map<String, ? extends T> nameToObjectMap) {
-        this(name, nameToObjectMap, option -> {
-        });
+        super(name, nameToObjectMap);
     }
 
-    public ObjectArgument(String name, Map<String, ? extends T> nameToObjectMap, Consumer<Option<T>> options) {
-        super(name, StringArgumentType.string());
-        this.nameToObjectMap = nameToObjectMap;
-
-        setSuggestionAction(sb -> {
-            nameToObjectMap.entrySet()
-                           .stream()
-                           .filter(x -> filter() == null || filter().test(x.getValue()))
-                           .map(Map.Entry::getKey)
-                           .filter(x -> sb.getLatestInput()
-                                          .isEmpty() || x.contains(sb.getLatestInput()))
-                           .forEach(sb::suggest);
-        });
-        setOptions(options);
-    }
-
-    @Override
-    public T cast(Object parsedArgument) {
-        return ((T) parsedArgument);
-    }
-
-    @Override
-    public T parse(CommandContext ctx) throws IncorrectArgumentInputException {
-        String s = StringArgumentType.getString(ctx.getHandle(), name);
-        return nameToObjectMap.entrySet()
-                              .stream()
-                              .filter(x -> x.getKey()
-                                            .equals(s))
-                              .map(Map.Entry::getValue)
-                              .findFirst()
-                              .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
+    public ObjectArgument(String name,
+                          Map<String, ? extends T> nameToObjectMap,
+                          Consumer<Option<T, CommandContext>> options) {
+        super(name, nameToObjectMap, options);
     }
 }

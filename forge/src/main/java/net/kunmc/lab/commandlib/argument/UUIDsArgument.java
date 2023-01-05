@@ -5,7 +5,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.minecraft.command.arguments.GameProfileArgument;
 import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.util.text.StringTextComponent;
@@ -24,14 +24,15 @@ public class UUIDsArgument extends Argument<List<UUID>> {
         });
     }
 
-    public UUIDsArgument(String name, Consumer<Option<List<UUID>>> options) {
+    public UUIDsArgument(String name, Consumer<Option<List<UUID>, CommandContext>> options) {
         super(name, GameProfileArgument.gameProfile());
 
         setSuggestionAction(sb -> {
             String input = sb.getLatestInput();
 
             Map<UUID, String> uuidToNameMap = new HashMap<>();
-            sb.getHandle()
+            sb.getContext()
+              .getHandle()
               .getSource()
               .getPlayerNames()
               .stream()
@@ -89,17 +90,19 @@ public class UUIDsArgument extends Argument<List<UUID>> {
                 if (!uuids.isEmpty()) {
                     return uuids;
                 }
-                throw new IncorrectArgumentInputException(new StringTextComponent(TextFormatting.RED + "no player found"));
+                throw new IncorrectArgumentInputException(x -> ((CommandContext) x).sendMessage(new StringTextComponent(
+                        TextFormatting.RED + "no player found")));
             }
             if (s.equals("@r")) {
                 Collections.shuffle(uuids, ThreadLocalRandom.current());
                 return Collections.singletonList(uuids.stream()
                                                       .findFirst()
-                                                      .orElseThrow(() -> new IncorrectArgumentInputException(new StringTextComponent(
-                                                              TextFormatting.RED + "no player found"))));
+                                                      .orElseThrow(() -> new IncorrectArgumentInputException(x -> ((CommandContext) x).sendMessage(
+                                                              new StringTextComponent(TextFormatting.RED + "no player found")))));
             }
 
-            throw new IncorrectArgumentInputException(new StringTextComponent(TextFormatting.RED + s + " is invalid selector."));
+            throw new IncorrectArgumentInputException(x -> ((CommandContext) x).sendMessage(new StringTextComponent(
+                    TextFormatting.RED + s + " is invalid selector.")));
         }
 
         GameProfile gameProfile = getPlayerProfileCache().getGameProfileForUsername(s);
@@ -110,8 +113,8 @@ public class UUIDsArgument extends Argument<List<UUID>> {
         try {
             return Collections.singletonList(UUID.fromString(s));
         } catch (IllegalArgumentException e) {
-            throw new IncorrectArgumentInputException(new StringTextComponent(TextFormatting.RED + s + " is not found."),
-                                                      new StringTextComponent(TextFormatting.RED + s + " is not valid UUID."));
+            throw new IncorrectArgumentInputException(x -> ((CommandContext) x).sendMessage(new StringTextComponent(
+                    TextFormatting.RED + s + " is not found or not valid UUID.")));
         }
     }
 

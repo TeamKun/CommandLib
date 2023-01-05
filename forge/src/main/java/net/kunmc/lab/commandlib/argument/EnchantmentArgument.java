@@ -2,7 +2,7 @@ package net.kunmc.lab.commandlib.argument;
 
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.minecraft.enchantment.Enchantment;
 
 import java.util.function.Consumer;
@@ -13,7 +13,7 @@ public class EnchantmentArgument extends Argument<Enchantment> {
         });
     }
 
-    public EnchantmentArgument(String name, Consumer<Option<Enchantment>> options) {
+    public EnchantmentArgument(String name, Consumer<Option<Enchantment, CommandContext>> options) {
         super(name, net.minecraft.command.arguments.EnchantmentArgument.enchantment());
         setOptions(options);
     }

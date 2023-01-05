@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -18,7 +18,7 @@ public class OfflinePlayerArgument extends Argument<OfflinePlayer> {
         });
     }
 
-    public OfflinePlayerArgument(String name, Consumer<Option<OfflinePlayer>> options) {
+    public OfflinePlayerArgument(String name, Consumer<Option<OfflinePlayer, CommandContext>> options) {
         super(name, StringArgumentType.string());
 
         setSuggestionAction(sb -> {

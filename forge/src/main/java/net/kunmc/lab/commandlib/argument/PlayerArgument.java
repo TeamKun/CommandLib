@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.player.ServerPlayerEntity;
 
@@ -15,7 +15,7 @@ public class PlayerArgument extends Argument<ServerPlayerEntity> {
         });
     }
 
-    public PlayerArgument(String name, Consumer<Option<ServerPlayerEntity>> options) {
+    public PlayerArgument(String name, Consumer<Option<ServerPlayerEntity, CommandContext>> options) {
         super(name, EntityArgument.player());
         setOptions(options);
     }

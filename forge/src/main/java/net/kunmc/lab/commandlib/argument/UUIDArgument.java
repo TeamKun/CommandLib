@@ -5,7 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -24,12 +24,13 @@ public class UUIDArgument extends Argument<UUID> {
         });
     }
 
-    public UUIDArgument(String name, Consumer<Option<UUID>> options) {
+    public UUIDArgument(String name, Consumer<Option<UUID, CommandContext>> options) {
         super(name, StringArgumentType.string());
 
         setSuggestionAction(sb -> {
             Map<UUID, String> uuidToNameMap = new HashMap<>();
-            sb.getHandle()
+            sb.getContext()
+              .getHandle()
               .getSource()
               .getPlayerNames()
               .stream()
@@ -78,8 +79,8 @@ public class UUIDArgument extends Argument<UUID> {
         try {
             return UUID.fromString(s);
         } catch (IllegalArgumentException e) {
-            throw new IncorrectArgumentInputException(new StringTextComponent(TextFormatting.RED + s + " is not found."),
-                                                      new StringTextComponent(TextFormatting.RED + s + " is not valid UUID."));
+            throw new IncorrectArgumentInputException(x -> ((CommandContext) x).sendMessage(new StringTextComponent(
+                    TextFormatting.RED + s + " is not found or not valid UUID.")));
         }
     }
 

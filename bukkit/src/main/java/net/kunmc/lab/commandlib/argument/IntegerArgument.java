@@ -12,7 +12,7 @@ public class IntegerArgument extends Argument<Integer> {
         });
     }
 
-    public IntegerArgument(String name, Consumer<Option<Integer>> options) {
+    public IntegerArgument(String name, Consumer<Option<Integer, CommandContext>> options) {
         super(name, IntegerArgumentType.integer(Integer.MIN_VALUE, Integer.MAX_VALUE));
         setOptions(options);
     }
@@ -22,7 +22,7 @@ public class IntegerArgument extends Argument<Integer> {
         }, min, max);
     }
 
-    public IntegerArgument(String name, Consumer<Option<Integer>> options, Integer min, Integer max) {
+    public IntegerArgument(String name, Consumer<Option<Integer, CommandContext>> options, Integer min, Integer max) {
         super(name, IntegerArgumentType.integer(min, max));
         setOptions(options);
     }

@@ -36,18 +36,6 @@ public final class CommandLib implements Listener {
         return new CommandLib(plugin, commands);
     }
 
-    static int executeWithStackTrace(CommandContext ctx, ContextAction contextAction) {
-        try {
-            contextAction.accept(ctx);
-            return 1;
-        } catch (Exception e) {
-            e.printStackTrace();
-            ctx.sendFailure("An unexpected error occurred trying to execute that command.");
-            ctx.sendFailure("Check the console for details.");
-            return 0;
-        }
-    }
-
     private CommandLib(Plugin plugin, Collection<? extends Command> commands) {
         this.plugin = plugin;
         this.commands = commands;

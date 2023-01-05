@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class SuggestionBuilder<C extends AbstractCommandContext<?>> {
+public final class SuggestionBuilder<C extends AbstractCommandContext<?, ?>> {
     private final List<Suggestion> suggestions = new ArrayList<>();
     private final C ctx;
 

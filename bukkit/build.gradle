@@ -15,6 +15,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
     compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
     compileOnly "com.mojang:brigadier:1.0.18"
+    implementation "org.apache.commons:commons-lang3:3.12.0"
     //compileOnly fileTree(dir: "./libs/", include: "patched*.jar")
 }
 
@@ -32,6 +33,7 @@ shadowJar {
     exclude "net/minecraft"
     exclude "org/bukkit"
     exclude "com/mojang"
+    relocate "org.apache", "${project.group}.${rootProject.name.toLowerCase()}.shadow.org.apache"
 }
 jar.finalizedBy("shadowJar")
 

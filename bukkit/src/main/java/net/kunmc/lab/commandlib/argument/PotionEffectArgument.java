@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.ArgumentMobEffect;
 import org.bukkit.craftbukkit.v1_16_R3.potion.CraftPotionEffectType;
 import org.bukkit.potion.PotionEffect;
@@ -16,7 +16,7 @@ public class PotionEffectArgument extends Argument<PotionEffect> {
         });
     }
 
-    public PotionEffectArgument(String name, Consumer<Option<PotionEffect>> options) {
+    public PotionEffectArgument(String name, Consumer<Option<PotionEffect, CommandContext>> options) {
         super(name, ArgumentMobEffect.a());
         setOptions(options);
     }

@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 
 import java.util.function.Consumer;
@@ -14,7 +14,7 @@ public class TeamArgument extends Argument<ScorePlayerTeam> {
         });
     }
 
-    public TeamArgument(String name, Consumer<Option<ScorePlayerTeam>> options) {
+    public TeamArgument(String name, Consumer<Option<ScorePlayerTeam, CommandContext>> options) {
         super(name, net.minecraft.command.arguments.TeamArgument.team());
         setOptions(options);
     }

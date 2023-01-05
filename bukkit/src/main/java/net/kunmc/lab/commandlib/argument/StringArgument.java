@@ -12,7 +12,7 @@ public class StringArgument extends Argument<String> {
         });
     }
 
-    public StringArgument(String name, Consumer<Option<String>> options) {
+    public StringArgument(String name, Consumer<Option<String, CommandContext>> options) {
         this(name, options, Type.PHRASE_QUOTED);
     }
 
@@ -21,7 +21,7 @@ public class StringArgument extends Argument<String> {
         }, type);
     }
 
-    public StringArgument(String name, Consumer<Option<String>> options, Type type) {
+    public StringArgument(String name, Consumer<Option<String, CommandContext>> options, Type type) {
         super(name, type.type);
         setOptions(options);
     }

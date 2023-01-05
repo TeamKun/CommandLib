@@ -4,9 +4,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
-import net.kunmc.lab.commandlib.util.TextColorUtil;
-import net.kyori.adventure.text.Component;
+import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.util.ChatColorUtil;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -23,7 +22,7 @@ public class UUIDArgument extends Argument<UUID> {
         });
     }
 
-    public UUIDArgument(String name, Consumer<Option<UUID>> options) {
+    public UUIDArgument(String name, Consumer<Option<UUID, CommandContext>> options) {
         super(name, StringArgumentType.string());
 
         setSuggestionAction(sb -> {
@@ -72,11 +71,10 @@ public class UUIDArgument extends Argument<UUID> {
         try {
             return UUID.fromString(s);
         } catch (IllegalArgumentException e) {
-            throw new IncorrectArgumentInputException(Component.text(s + " is not found.")
-                                                               .color(TextColorUtil.RED),
-                                                      Component.text(s + " is not valid UUID.")
-                                                               .color(TextColorUtil.RED));
-
+            throw new IncorrectArgumentInputException(x -> {
+                x.sendComponentBuilders(x.textComponentBuilder(s + " is not found or not valid UUID")
+                                         .color(ChatColorUtil.RED.getRGB()));
+            });
         }
     }
 }

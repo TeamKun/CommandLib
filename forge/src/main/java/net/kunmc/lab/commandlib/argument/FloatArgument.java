@@ -12,7 +12,7 @@ public class FloatArgument extends Argument<Float> {
         });
     }
 
-    public FloatArgument(String name, Consumer<Option<Float>> options) {
+    public FloatArgument(String name, Consumer<Option<Float, CommandContext>> options) {
         super(name, FloatArgumentType.floatArg(-Float.MAX_VALUE, Float.MAX_VALUE));
         setOptions(options);
     }
@@ -22,7 +22,7 @@ public class FloatArgument extends Argument<Float> {
         }, min, max);
     }
 
-    public FloatArgument(String name, Consumer<Option<Float>> options, Float min, Float max) {
+    public FloatArgument(String name, Consumer<Option<Float, CommandContext>> options, Float min, Float max) {
         super(name, FloatArgumentType.floatArg(min, max));
         setOptions(options);
     }

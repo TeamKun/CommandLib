@@ -18,4 +18,5 @@ dependencies {
     compileOnly "com.mojang:brigadier:1.0.18"
     compileOnly "org.jetbrains:annotations:16.0.2"
     compileOnly "com.google.guava:guava:31.1-jre"
+    compileOnly "org.apache.commons:commons-lang3:3.12.0"
 }

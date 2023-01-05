@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.Location;
 import net.minecraft.command.arguments.Vec3Argument;
 import net.minecraft.entity.Entity;
@@ -17,7 +17,7 @@ public class LocationArgument extends Argument<Location> {
         });
     }
 
-    public LocationArgument(String name, Consumer<Option<Location>> options) {
+    public LocationArgument(String name, Consumer<Option<Location, CommandContext>> options) {
         super(name, Vec3Argument.vec3());
         setOptions(options);
     }

@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.StringUtils;
@@ -18,11 +18,12 @@ public class GameProfileArgument extends Argument<GameProfile> {
         });
     }
 
-    public GameProfileArgument(String name, Consumer<Option<GameProfile>> options) {
+    public GameProfileArgument(String name, Consumer<Option<GameProfile, CommandContext>> options) {
         super(name, StringArgumentType.string());
 
         setSuggestionAction(sb -> {
-            sb.getHandle()
+            sb.getContext()
+              .getHandle()
               .getSource()
               .getPlayerNames()
               .stream()

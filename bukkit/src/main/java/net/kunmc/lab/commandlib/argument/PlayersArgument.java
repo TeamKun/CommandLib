@@ -4,7 +4,7 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.ArgumentEntity;
 import org.bukkit.entity.Player;
 
@@ -18,7 +18,7 @@ public class PlayersArgument extends Argument<List<Player>> {
         });
     }
 
-    public PlayersArgument(String name, Consumer<Option<List<Player>>> options) {
+    public PlayersArgument(String name, Consumer<Option<List<Player>, CommandContext>> options) {
         super(name, ArgumentEntity.d());
         setOptions(options);
     }

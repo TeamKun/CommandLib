@@ -12,7 +12,7 @@ public class BooleanArgument extends Argument<Boolean> {
         });
     }
 
-    public BooleanArgument(String name, Consumer<Option<Boolean>> options) {
+    public BooleanArgument(String name, Consumer<Option<Boolean, CommandContext>> options) {
         super(name, BoolArgumentType.bool());
         setOptions(options);
     }

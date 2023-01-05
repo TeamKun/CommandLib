@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.minecraft.server.v1_16_R3.ArgumentEntity;
 import org.bukkit.entity.Entity;
 
@@ -15,7 +15,7 @@ public class EntityArgument extends Argument<Entity> {
         });
     }
 
-    public EntityArgument(String name, Consumer<Option<Entity>> options) {
+    public EntityArgument(String name, Consumer<Option<Entity, CommandContext>> options) {
         super(name, ArgumentEntity.a());
         setOptions(options);
     }
