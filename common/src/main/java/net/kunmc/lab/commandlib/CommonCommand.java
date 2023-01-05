@@ -313,20 +313,23 @@ public abstract class CommonCommand<S, C extends AbstractCommandContext<S, ?>, A
         }
         ctx.sendMessage(ChatColorUtil.RED + "Usage:");
 
-        if (!children.isEmpty()) {
+        List<T> permissibleChildren = children.stream()
+                                              .filter(x -> x.hasPermission(ctx))
+                                              .collect(Collectors.toList());
+        if (!permissibleChildren.isEmpty()) {
             ctx.sendMessage(ChatColorUtil.AQUA + padding + "/" + literalConcatName);
 
-            children.stream()
-                    .filter(x -> x.hasPermission(ctx))
-                    .map(x -> {
-                        String s = ChatColorUtil.YELLOW + padding + padding + x.name();
-                        if (x.description()
-                             .isEmpty()) {
-                            return s;
-                        }
-                        return s + ChatColorUtil.WHITE + ": " + x.description();
-                    })
-                    .forEach(ctx::sendMessage);
+            permissibleChildren.stream()
+                               .filter(x -> x.hasPermission(ctx))
+                               .map(x -> {
+                                   String s = ChatColorUtil.YELLOW + padding + padding + x.name();
+                                   if (x.description()
+                                        .isEmpty()) {
+                                       return s;
+                                   }
+                                   return s + ChatColorUtil.WHITE + ": " + x.description();
+                               })
+                               .forEach(ctx::sendMessage);
         }
 
         List<String> argumentsHelpMessages = argumentsList.stream()
@@ -334,7 +337,7 @@ public abstract class CommonCommand<S, C extends AbstractCommandContext<S, ?>, A
                                                           .filter(x -> !x.isEmpty())
                                                           .map(x -> padding + x)
                                                           .collect(Collectors.toList());
-        if (!children.isEmpty() && !argumentsHelpMessages.isEmpty()) {
+        if (!permissibleChildren.isEmpty() && !argumentsHelpMessages.isEmpty()) {
             ctx.sendMessage("");
         }
         argumentsHelpMessages.forEach(ctx::sendMessage);

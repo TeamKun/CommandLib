@@ -6,6 +6,7 @@ import net.kunmc.lab.commandlib.CommandLib;
 import net.kunmc.lab.commandlib.argument.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
@@ -16,12 +17,15 @@ public final class TestPlugin extends JavaPlugin {
         CommandLib.register(this, new Command("commandlibtest") {{
             addAliases("commandlibtestalias");
             setDescription("test command");
+            setPermission(PermissionDefault.TRUE);
 
             addChildren(new Command("a") {{
                 setDescription("a command");
+                setPermission(PermissionDefault.OP);
                 argument(new OfflinePlayersArgument("offlines"),
                          (offlinePlayers, ctx) -> ctx.sendSuccess(offlinePlayers));
             }}, new Command("b") {{
+                setPermission(PermissionDefault.TRUE);
                 addChildren(new Command("child") {{
                     argument(new UUIDsArgument("uuids"),
                              new DoubleArgument("d"),
@@ -29,7 +33,11 @@ public final class TestPlugin extends JavaPlugin {
                              (uuids, d, str, ctx) -> {
                                  ctx.sendSuccess(ctx.getParsedArgs());
                              });
+                }}, new Command("child2") {{
                 }});
+
+                argument(new StringArgument("str", option -> option.suggestionAction(sb -> sb.suggest("test"))),
+                         (d, ctx) -> ctx.sendSuccess(d));
             }}, new Command("c") {{
                 argument(new EnumArgument<>("enu", Material.class), (e, ctx) -> {
                     ctx.sendMessageWithOption(e, option -> {
