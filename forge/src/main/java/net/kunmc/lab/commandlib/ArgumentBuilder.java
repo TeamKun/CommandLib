@@ -15,13 +15,10 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContext, Arguments, ArgumentBuilder> {
     /**
@@ -346,16 +343,6 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
     }
 
     /**
-     * Add argument for T extends {@link java.lang.Enum}.
-     */
-    @Override
-    public <T extends Enum<T>> ArgumentBuilder enumArgumentWith(@NotNull String name,
-                                                                @NotNull Class<T> clazz,
-                                                                @Nullable Consumer<Argument.Option<T, CommandContext>> options) {
-        return addArgument(new EnumArgument<>(name, clazz, options));
-    }
-
-    /**
      * Add argument for {@link java.lang.Float}.
      */
     public ArgumentBuilder floatArgument(@NotNull String name) {
@@ -577,17 +564,6 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
     }
 
     /**
-     * Add argument for {@link java.lang.String}.<br>
-     * It is only possible to include a string specified by {@code literals}
-     */
-    @Override
-    public ArgumentBuilder literalArgument(@NotNull String name,
-                                           @NotNull Supplier<Collection<String>> literalsSupplier,
-                                           @Nullable ContextAction<CommandContext> contextAction) {
-        return addArgument(new LiteralArgument(name, literalsSupplier, contextAction));
-    }
-
-    /**
      * Add argument for {@link net.kunmc.lab.commandlib.util.Location}.
      */
     public ArgumentBuilder locationArgument(@NotNull String name) {
@@ -620,24 +596,6 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
     public ArgumentBuilder locationArgumentWith(@NotNull String name,
                                                 @Nullable Consumer<Argument.Option<Location, CommandContext>> options) {
         return addArgument(new LocationArgument(name, options));
-    }
-
-    /**
-     * Add argument for object that implements {@link net.kunmc.lab.commandlib.Nameable}.<br>
-     * It is only possible to include an object specified by {@code candidates}
-     */
-    @Override
-    public <T extends Nameable> ArgumentBuilder nameableObjectArgumentWith(@NotNull String name,
-                                                                           @NotNull Collection<? extends T> candidates,
-                                                                           @Nullable Consumer<Argument.Option<T, CommandContext>> options) {
-        return addArgument(new NameableObjectArgument<>(name, candidates, options));
-    }
-
-    @Override
-    public <T> ArgumentBuilder objectArgumentWith(@NotNull String name,
-                                                  @NotNull Map<String, ? extends T> nameToObjectMap,
-                                                  @Nullable Consumer<Argument.Option<T, CommandContext>> options) {
-        return addArgument(new ObjectArgument<>(name, nameToObjectMap, options));
     }
 
     /**

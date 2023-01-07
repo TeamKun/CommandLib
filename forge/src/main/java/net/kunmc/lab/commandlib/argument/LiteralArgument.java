@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class LiteralArgument extends AbstractLiteralArgument<CommandContext> {
+public class LiteralArgument extends CommonLiteralArgument<CommandContext> {
     public LiteralArgument(String name, Collection<String> literals) {
         super(name, literals);
     }

@@ -8,17 +8,17 @@ import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import java.util.Map;
 import java.util.function.Consumer;
 
-abstract class AbstractObjectArgument<T, C extends AbstractCommandContext<?, ?>> extends CommonArgument<T, C> {
+public class CommonObjectArgument<T, C extends AbstractCommandContext<?, ?>> extends CommonArgument<T, C> {
     private final Map<String, ? extends T> nameToObjectMap;
 
-    public AbstractObjectArgument(String name, Map<String, ? extends T> nameToObjectMap) {
+    public CommonObjectArgument(String name, Map<String, ? extends T> nameToObjectMap) {
         this(name, nameToObjectMap, option -> {
         });
     }
 
-    public AbstractObjectArgument(String name,
-                                  Map<String, ? extends T> nameToObjectMap,
-                                  Consumer<CommonArgument.Option<T, C>> options) {
+    public CommonObjectArgument(String name,
+                                Map<String, ? extends T> nameToObjectMap,
+                                Consumer<CommonArgument.Option<T, C>> options) {
         super(name, StringArgumentType.string());
         this.nameToObjectMap = nameToObjectMap;
 
@@ -35,12 +35,12 @@ abstract class AbstractObjectArgument<T, C extends AbstractCommandContext<?, ?>>
     }
 
     @Override
-    public T cast(Object parsedArgument) {
+    public final T cast(Object parsedArgument) {
         return ((T) parsedArgument);
     }
 
     @Override
-    public T parse(C ctx) throws IncorrectArgumentInputException {
+    public final T parse(C ctx) throws IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx.getHandle(), name);
         return nameToObjectMap.entrySet()
                               .stream()

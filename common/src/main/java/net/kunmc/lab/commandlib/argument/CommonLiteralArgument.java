@@ -10,28 +10,28 @@ import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-abstract class AbstractLiteralArgument<C extends AbstractCommandContext<?, ?>> extends CommonArgument<String, C> {
+public class CommonLiteralArgument<C extends AbstractCommandContext<?, ?>> extends CommonArgument<String, C> {
     private final Supplier<Collection<String>> literalsSupplier;
 
-    public AbstractLiteralArgument(String name, Collection<String> literals) {
+    public CommonLiteralArgument(String name, Collection<String> literals) {
         this(name, () -> literals, (Consumer<CommonArgument.Option<String, C>>) option -> {
         });
     }
 
-    public AbstractLiteralArgument(String name,
-                                   Collection<String> literals,
-                                   Consumer<CommonArgument.Option<String, C>> options) {
+    public CommonLiteralArgument(String name,
+                                 Collection<String> literals,
+                                 Consumer<CommonArgument.Option<String, C>> options) {
         this(name, () -> literals, options);
     }
 
-    public AbstractLiteralArgument(String name, Supplier<Collection<String>> literalsSupplier) {
+    public CommonLiteralArgument(String name, Supplier<Collection<String>> literalsSupplier) {
         this(name, literalsSupplier, (Consumer<CommonArgument.Option<String, C>>) option -> {
         });
     }
 
-    public AbstractLiteralArgument(String name,
-                                   Supplier<Collection<String>> literalsSupplier,
-                                   Consumer<CommonArgument.Option<String, C>> options) {
+    public CommonLiteralArgument(String name,
+                                 Supplier<Collection<String>> literalsSupplier,
+                                 Consumer<CommonArgument.Option<String, C>> options) {
         super(name, StringArgumentType.string());
         this.literalsSupplier = literalsSupplier;
 
@@ -45,9 +45,9 @@ abstract class AbstractLiteralArgument<C extends AbstractCommandContext<?, ?>> e
         setOptions(options);
     }
 
-    public AbstractLiteralArgument(String name,
-                                   Supplier<Collection<String>> literalsSupplier,
-                                   ContextAction<C> contextAction) {
+    public CommonLiteralArgument(String name,
+                                 Supplier<Collection<String>> literalsSupplier,
+                                 ContextAction<C> contextAction) {
         super(name, sb -> {
             literalsSupplier.get()
                             .stream()
@@ -60,12 +60,12 @@ abstract class AbstractLiteralArgument<C extends AbstractCommandContext<?, ?>> e
     }
 
     @Override
-    public String cast(Object parsedArgument) {
+    public final String cast(Object parsedArgument) {
         return ((String) parsedArgument);
     }
 
     @Override
-    public String parse(C ctx) throws IncorrectArgumentInputException {
+    public final String parse(C ctx) throws IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx.getHandle(), name);
         return literalsSupplier.get()
                                .stream()

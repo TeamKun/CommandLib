@@ -4,7 +4,7 @@ import net.kunmc.lab.commandlib.CommandContext;
 
 import java.util.function.Consumer;
 
-public class EnumArgument<T extends Enum<T>> extends AbstractEnumArgument<T, CommandContext> {
+public class EnumArgument<T extends Enum<T>> extends CommonEnumArgument<T, CommandContext> {
     public EnumArgument(String name, Class<T> clazz) {
         super(name, clazz);
     }

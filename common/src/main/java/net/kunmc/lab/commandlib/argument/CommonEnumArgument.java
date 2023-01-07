@@ -8,15 +8,15 @@ import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
-abstract class AbstractEnumArgument<T extends Enum<T>, C extends AbstractCommandContext<?, ?>> extends CommonArgument<T, C> {
+public class CommonEnumArgument<T extends Enum<T>, C extends AbstractCommandContext<?, ?>> extends CommonArgument<T, C> {
     private final Class<T> clazz;
 
-    public AbstractEnumArgument(String name, Class<T> clazz) {
+    public CommonEnumArgument(String name, Class<T> clazz) {
         this(name, clazz, option -> {
         });
     }
 
-    public AbstractEnumArgument(String name, Class<T> clazz, Consumer<CommonArgument.Option<T, C>> options) {
+    public CommonEnumArgument(String name, Class<T> clazz, Consumer<CommonArgument.Option<T, C>> options) {
         super(name, StringArgumentType.string());
 
         this.clazz = clazz;
@@ -33,12 +33,12 @@ abstract class AbstractEnumArgument<T extends Enum<T>, C extends AbstractCommand
     }
 
     @Override
-    public T cast(Object parsedArgument) {
+    public final T cast(Object parsedArgument) {
         return clazz.cast(parsedArgument);
     }
 
     @Override
-    public T parse(C ctx) throws IncorrectArgumentInputException {
+    public final T parse(C ctx) throws IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx.getHandle(), name);
         return Arrays.stream(clazz.getEnumConstants())
                      .filter(x -> x.name()

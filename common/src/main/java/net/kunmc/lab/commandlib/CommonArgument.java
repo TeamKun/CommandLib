@@ -35,11 +35,11 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         this.type = type;
     }
 
-    public String name() {
+    public final String name() {
         return name;
     }
 
-    public SuggestionAction<C> suggestionAction() {
+    public final SuggestionAction<C> suggestionAction() {
         if (suggestionAction == null && additionalSuggestionAction == null) {
             return null;
         }
@@ -54,45 +54,45 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         };
     }
 
-    protected void setSuggestionAction(SuggestionAction<C> suggestionAction) {
+    protected final void setSuggestionAction(SuggestionAction<C> suggestionAction) {
         this.suggestionAction = suggestionAction;
     }
 
-    protected void setAdditionalSuggestionAction(SuggestionAction<C> additionalSuggestionAction) {
+    protected final void setAdditionalSuggestionAction(SuggestionAction<C> additionalSuggestionAction) {
         this.additionalSuggestionAction = additionalSuggestionAction;
     }
 
-    public ContextAction<C> contextAction() {
+    public final ContextAction<C> contextAction() {
         return contextAction;
     }
 
-    protected void setContextAction(ContextAction<C> contextAction) {
+    protected final void setContextAction(ContextAction<C> contextAction) {
         this.contextAction = contextAction;
     }
 
-    public ArgumentType<?> type() {
+    public final ArgumentType<?> type() {
         return type;
     }
 
     public abstract T cast(Object parsedArgument);
 
-    boolean hasContextAction() {
+    final boolean hasContextAction() {
         return contextAction != null;
     }
 
-    protected Predicate<? super T> filter() {
+    protected final Predicate<? super T> filter() {
         return filter;
     }
 
-    protected void setFilter(Predicate<? super T> filter) {
+    protected final void setFilter(Predicate<? super T> filter) {
         this.filter = filter;
     }
 
-    protected void setShaper(Function<? super T, ? extends T> shaper) {
+    protected final void setShaper(Function<? super T, ? extends T> shaper) {
         this.shaper = shaper;
     }
 
-    protected void setOptions(Consumer<Option<T, C>> options) {
+    protected final void setOptions(Consumer<Option<T, C>> options) {
         if (options == null) {
             return;
         }
@@ -101,7 +101,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         setOption(option);
     }
 
-    protected void setOption(Option<T, C> option) {
+    protected final void setOption(Option<T, C> option) {
         option.suggestionAction()
               .ifPresent(this::setSuggestionAction);
         option.additionalSuggestionAction()

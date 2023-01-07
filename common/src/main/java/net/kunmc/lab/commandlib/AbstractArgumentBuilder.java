@@ -1,5 +1,9 @@
 package net.kunmc.lab.commandlib;
 
+import net.kunmc.lab.commandlib.argument.CommonEnumArgument;
+import net.kunmc.lab.commandlib.argument.CommonLiteralArgument;
+import net.kunmc.lab.commandlib.argument.CommonNameableObjectArgument;
+import net.kunmc.lab.commandlib.argument.CommonObjectArgument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -68,9 +72,11 @@ public abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?
     /**
      * Add argument for T extends {@link java.lang.Enum}.
      */
-    public abstract <E extends Enum<E>> T enumArgumentWith(@NotNull String name,
-                                                           @NotNull Class<E> clazz,
-                                                           @Nullable Consumer<CommonArgument.Option<E, C>> options);
+    public final <E extends Enum<E>> T enumArgumentWith(@NotNull String name,
+                                                        @NotNull Class<E> clazz,
+                                                        @Nullable Consumer<CommonArgument.Option<E, C>> options) {
+        return addArgument(new CommonEnumArgument<>(name, clazz, options));
+    }
 
     /**
      * Add argument for {@link java.lang.String}.<br>
@@ -102,9 +108,11 @@ public abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?
      * Add argument for {@link java.lang.String}.<br>
      * It is only possible to include a string specified by {@code literals}
      */
-    public abstract T literalArgument(@NotNull String name,
-                                      @NotNull Supplier<Collection<String>> literalsSupplier,
-                                      @Nullable ContextAction<C> contextAction);
+    public final T literalArgument(@NotNull String name,
+                                   @NotNull Supplier<Collection<String>> literalsSupplier,
+                                   @Nullable ContextAction<C> contextAction) {
+        return addArgument(new CommonLiteralArgument<>(name, literalsSupplier, contextAction));
+    }
 
     /**
      * Add argument for object that implements {@link net.kunmc.lab.commandlib.Nameable}.<br>
@@ -143,9 +151,11 @@ public abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?
      * Add argument for object that implements {@link net.kunmc.lab.commandlib.Nameable}.<br>
      * It is only possible to include an object specified by {@code candidates}
      */
-    public abstract <E extends Nameable> T nameableObjectArgumentWith(@NotNull String name,
-                                                                      @NotNull Collection<? extends E> candidates,
-                                                                      @Nullable Consumer<CommonArgument.Option<E, C>> options);
+    public final <E extends Nameable> T nameableObjectArgumentWith(@NotNull String name,
+                                                                   @NotNull Collection<? extends E> candidates,
+                                                                   @Nullable Consumer<CommonArgument.Option<E, C>> options) {
+        return addArgument(new CommonNameableObjectArgument<>(name, candidates, options));
+    }
 
 
     public final <E> T objectArgument(@NotNull String name, @NotNull Map<String, ? extends E> nameToObjectMap) {
@@ -169,9 +179,11 @@ public abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?
         });
     }
 
-    public abstract <E> T objectArgumentWith(@NotNull String name,
-                                             @NotNull Map<String, ? extends E> nameToObjectMap,
-                                             @Nullable Consumer<CommonArgument.Option<E, C>> options);
+    public final <E> T objectArgumentWith(@NotNull String name,
+                                          @NotNull Map<String, ? extends E> nameToObjectMap,
+                                          @Nullable Consumer<CommonArgument.Option<E, C>> options) {
+        return addArgument(new CommonObjectArgument<>(name, nameToObjectMap, options));
+    }
 
     /**
      * Set command's process.<br>
