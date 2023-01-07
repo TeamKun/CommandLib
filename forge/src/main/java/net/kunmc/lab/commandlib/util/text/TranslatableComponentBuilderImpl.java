@@ -1,6 +1,7 @@
 package net.kunmc.lab.commandlib.util.text;
 
 import net.minecraft.util.text.Color;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.jetbrains.annotations.NotNull;
@@ -20,6 +21,12 @@ public class TranslatableComponentBuilderImpl extends TranslatableComponentBuild
     @Override
     public TranslatableComponentBuilderImpl italic() {
         component.mergeStyle(TextFormatting.ITALIC);
+        return this;
+    }
+
+    @Override
+    public TranslatableComponentBuilderImpl append(ComponentBuilder<?, ?> builder) {
+        component.appendSibling(((ITextComponent) builder.build()));
         return this;
     }
 

@@ -3,10 +3,7 @@ package net.kunmc.lab.commandlib;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.Location;
-import net.kunmc.lab.commandlib.util.text.TextComponentBuilder;
-import net.kunmc.lab.commandlib.util.text.TextComponentBuilderImpl;
-import net.kunmc.lab.commandlib.util.text.TranslatableComponentBuilder;
-import net.kunmc.lab.commandlib.util.text.TranslatableComponentBuilderImpl;
+import net.kunmc.lab.commandlib.util.text.*;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.text.*;
@@ -15,10 +12,9 @@ import net.minecraft.world.server.ServerWorld;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.function.Consumer;
 
-public final class CommandContext extends AbstractCommandContext<CommandSource, TextComponent> {
+public final class CommandContext extends AbstractCommandContext<CommandSource, ITextComponent> {
     public CommandContext(com.mojang.brigadier.context.CommandContext<CommandSource> ctx) {
         super(ctx);
     }
@@ -121,22 +117,17 @@ public final class CommandContext extends AbstractCommandContext<CommandSource, 
     }
 
     @Override
-    public void sendComponentBuilders(ComponentBuilder<?, ?> builder, ComponentBuilder<?, ?>... builders) {
-        TextComponent c = (TextComponent) (builder.build());
-        Arrays.stream(builders)
-              .map(ComponentBuilder::build)
-              .map(TextComponent.class::cast)
-              .forEach(c::appendSibling);
-        sendMessage(c);
+    public void sendComponentBuilder(ComponentBuilder<? extends ITextComponent, ?> builder) {
+        sendMessage(builder.build());
     }
 
     @Override
-    public TextComponentBuilder<? extends TextComponent, ?> textComponentBuilder(@NotNull String text) {
+    public TextComponentBuilder<? extends TextComponent, ?> createTextComponentBuilder(@NotNull String text) {
         return new TextComponentBuilderImpl(text);
     }
 
     @Override
-    public TranslatableComponentBuilder<? extends TextComponent, ?> translatableComponentBuilder(@NotNull String key) {
+    public TranslatableComponentBuilder<? extends TextComponent, ?> createTranslatableComponentBuilder(@NotNull String key) {
         return new TranslatableComponentBuilderImpl(key);
     }
 

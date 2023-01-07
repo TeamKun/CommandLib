@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public abstract class AbstractLiteralArgument<C extends AbstractCommandContext<?, ?>> extends CommonArgument<String, C> {
+abstract class AbstractLiteralArgument<C extends AbstractCommandContext<?, ?>> extends CommonArgument<String, C> {
     private final Supplier<Collection<String>> literalsSupplier;
 
     public AbstractLiteralArgument(String name, Collection<String> literals) {

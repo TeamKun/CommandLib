@@ -34,12 +34,12 @@ public final class IncorrectArgumentInputException extends Exception {
             if (str.length() > 10) {
                 str = "..." + str.substring(str.length() - 10);
             }
-            ctx.sendComponentBuilders(ctx.translatableComponentBuilder("command.unknown.argument")
-                                         .color(ChatColorUtil.RED.getRGB()));
-            ctx.sendComponentBuilders(ctx.textComponentBuilder(ChatColorUtil.GRAY + str + ChatColorUtil.RED + ChatColorUtil.UNDERLINE + incorrectInput + ChatColorUtil.RESET),
-                                      ctx.translatableComponentBuilder("command.context.here")
-                                         .italic()
-                                         .color(ChatColorUtil.RED.getRGB()));
+            ctx.sendRawComponentBuilder((ctx.createTranslatableComponentBuilder("command.unknown.argument")
+                                            .color(ChatColorUtil.RED.getRGB())));
+            ctx.sendRawComponentBuilder(ctx.createTextComponentBuilder(ChatColorUtil.GRAY + str + ChatColorUtil.RED + ChatColorUtil.UNDERLINE + incorrectInput + ChatColorUtil.RESET)
+                                           .append(ctx.createTranslatableComponentBuilder("command.context.here")
+                                                      .italic()
+                                                      .color(ChatColorUtil.RED.getRGB())));
         };
     }
 

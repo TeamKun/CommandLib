@@ -5,7 +5,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
-import net.kunmc.lab.commandlib.util.ChatColorUtil;
 import net.minecraft.server.v1_16_R3.ArgumentProfile;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -68,21 +67,17 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
                 if (!players.isEmpty()) {
                     return players;
                 }
-                throw new IncorrectArgumentInputException(x -> x.sendComponentBuilders(x.textComponentBuilder(
-                                                                                                "no player found")
-                                                                                        .color(ChatColorUtil.RED.getRGB())));
+                throw new IncorrectArgumentInputException(x -> x.sendFailure("no player found."));
             }
             if (s.equals("@r")) {
                 Collections.shuffle(players, ThreadLocalRandom.current());
                 return Collections.singletonList(players.stream()
                                                         .findFirst()
-                                                        .orElseThrow(() -> new IncorrectArgumentInputException(x -> x.sendComponentBuilders(
-                                                                x.textComponentBuilder("no player found")
-                                                                 .color(ChatColorUtil.RED.getRGB())))));
+                                                        .orElseThrow(() -> new IncorrectArgumentInputException(x -> x.sendFailure(
+                                                                "no player found."))));
             }
 
-            throw new IncorrectArgumentInputException(x -> x.sendComponentBuilders(ctx.textComponentBuilder(s + " is invalid selector.")
-                                                                                      .color(ChatColorUtil.RED.getRGB())));
+            throw new IncorrectArgumentInputException(x -> x.sendFailure(s + " is invalid selector."));
         }
 
         OfflinePlayer p = Bukkit.getOfflinePlayerIfCached(s);

@@ -7,8 +7,6 @@ import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.minecraft.server.management.PlayerProfileCache;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.StringUtils;
 
@@ -79,8 +77,7 @@ public class UUIDArgument extends Argument<UUID> {
         try {
             return UUID.fromString(s);
         } catch (IllegalArgumentException e) {
-            throw new IncorrectArgumentInputException(x -> ((CommandContext) x).sendMessage(new StringTextComponent(
-                    TextFormatting.RED + s + " is not found or not valid UUID.")));
+            throw new IncorrectArgumentInputException(x -> x.sendFailure(s + " is not found or not valid UUID"));
         }
     }
 

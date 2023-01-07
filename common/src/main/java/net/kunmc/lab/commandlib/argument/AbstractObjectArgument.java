@@ -8,7 +8,7 @@ import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public abstract class AbstractObjectArgument<T, C extends AbstractCommandContext<?, ?>> extends CommonArgument<T, C> {
+abstract class AbstractObjectArgument<T, C extends AbstractCommandContext<?, ?>> extends CommonArgument<T, C> {
     private final Map<String, ? extends T> nameToObjectMap;
 
     public AbstractObjectArgument(String name, Map<String, ? extends T> nameToObjectMap) {

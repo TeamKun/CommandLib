@@ -4,6 +4,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.util.text.ComponentBuilder;
 import net.kunmc.lab.commandlib.util.text.TextComponentBuilder;
 import net.kunmc.lab.commandlib.util.text.TranslatableComponentBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -107,11 +108,15 @@ public abstract class AbstractCommandContext<S, C> {
 
     public abstract void sendFailure(@Nullable String message);
 
-    public abstract void sendComponentBuilders(ComponentBuilder<?, ?> builder, ComponentBuilder<?, ?>... builders);
+    public abstract void sendComponentBuilder(ComponentBuilder<? extends C, ?> builder);
 
-    public abstract TextComponentBuilder<? extends C, ?> textComponentBuilder(@NotNull String text);
+    public final void sendRawComponentBuilder(ComponentBuilder<?, ?> builder) {
+        sendComponentBuilder(((ComponentBuilder<C, ?>) builder));
+    }
 
-    public abstract TranslatableComponentBuilder<? extends C, ?> translatableComponentBuilder(@NotNull String key);
+    public abstract TextComponentBuilder<? extends C, ?> createTextComponentBuilder(@NotNull String text);
+
+    public abstract TranslatableComponentBuilder<? extends C, ?> createTranslatableComponentBuilder(@NotNull String key);
 
     abstract IncorrectArgumentInputException convertCommandSyntaxException(CommandSyntaxException e);
 

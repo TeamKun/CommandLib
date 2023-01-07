@@ -1,9 +1,6 @@
 package net.kunmc.lab.commandlib.util.text;
 
-import net.minecraft.util.text.Color;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.*;
 
 public class TextComponentBuilderImpl extends TextComponentBuilder<TextComponent, TextComponentBuilderImpl> {
     public TextComponentBuilderImpl(String text) {
@@ -20,6 +17,12 @@ public class TextComponentBuilderImpl extends TextComponentBuilder<TextComponent
     @Override
     public TextComponentBuilderImpl italic() {
         component.mergeStyle(TextFormatting.ITALIC);
+        return this;
+    }
+
+    @Override
+    public TextComponentBuilderImpl append(ComponentBuilder<?, ?> builder) {
+        component.appendSibling(((ITextComponent) builder.build()));
         return this;
     }
 }

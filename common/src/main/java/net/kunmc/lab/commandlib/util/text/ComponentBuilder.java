@@ -1,4 +1,4 @@
-package net.kunmc.lab.commandlib;
+package net.kunmc.lab.commandlib.util.text;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -12,6 +12,8 @@ public abstract class ComponentBuilder<E, T extends ComponentBuilder<E, T>> {
     public abstract T color(int rgb);
 
     public abstract T italic();
+
+    public abstract T append(ComponentBuilder<?, ?> builder);
 
     public final E build() {
         return this.component;

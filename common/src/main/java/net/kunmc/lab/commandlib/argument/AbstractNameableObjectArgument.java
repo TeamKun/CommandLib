@@ -9,7 +9,7 @@ import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-public abstract class AbstractNameableObjectArgument<T extends Nameable, C extends AbstractCommandContext<?, ?>> extends CommonArgument<T, C> {
+abstract class AbstractNameableObjectArgument<T extends Nameable, C extends AbstractCommandContext<?, ?>> extends CommonArgument<T, C> {
     private final Collection<? extends T> candidates;
 
     public AbstractNameableObjectArgument(String name, Collection<? extends T> candidates) {

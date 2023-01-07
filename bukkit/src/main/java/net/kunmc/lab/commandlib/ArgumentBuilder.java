@@ -55,8 +55,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder blockDataArgumentWith(@NotNull String name,
                                                  @Nullable Consumer<Argument.Option<BlockData, CommandContext>> options) {
-        arguments.add(new BlockDataArgument(name, options));
-        return this;
+        return addArgument(new BlockDataArgument(name, options));
     }
 
     /**
@@ -91,8 +90,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder boolArgumentWith(@NotNull String name,
                                             @Nullable Consumer<Argument.Option<Boolean, CommandContext>> options) {
-        arguments.add(new BooleanArgument(name, options));
-        return this;
+        return addArgument(new BooleanArgument(name, options));
     }
 
     /**
@@ -158,8 +156,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder doubleArgumentWith(@NotNull String name,
                                               @Nullable Consumer<Argument.Option<Double, CommandContext>> options) {
-        arguments.add(new DoubleArgument(name, options));
-        return this;
+        return addArgument(new DoubleArgument(name, options));
     }
 
     /**
@@ -169,8 +166,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
                                               @Nullable Consumer<Argument.Option<Double, CommandContext>> options,
                                               Double min,
                                               Double max) {
-        arguments.add(new DoubleArgument(name, options, min, max));
-        return this;
+        return addArgument(new DoubleArgument(name, options, min, max));
     }
 
     /**
@@ -205,8 +201,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder enchantmentArgumentWith(@NotNull String name,
                                                    @Nullable Consumer<Argument.Option<Enchantment, CommandContext>> options) {
-        arguments.add(new EnchantmentArgument(name, options));
-        return this;
+        return addArgument(new EnchantmentArgument(name, options));
     }
 
     /**
@@ -241,8 +236,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder entityArgumentWith(@NotNull String name,
                                               @Nullable Consumer<Argument.Option<Entity, CommandContext>> options) {
-        arguments.add(new EntityArgument(name, options));
-        return this;
+        return addArgument(new EntityArgument(name, options));
     }
 
     /**
@@ -277,8 +271,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder entitiesArgumentWith(@NotNull String name,
                                                 @Nullable Consumer<Argument.Option<List<Entity>, CommandContext>> options) {
-        arguments.add(new EntitiesArgument(name, options));
-        return this;
+        return addArgument(new EntitiesArgument(name, options));
     }
 
     /**
@@ -288,8 +281,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
     public <E extends Enum<E>> ArgumentBuilder enumArgumentWith(@NotNull String name,
                                                                 @NotNull Class<E> clazz,
                                                                 @Nullable Consumer<CommonArgument.Option<E, CommandContext>> options) {
-        arguments.add(new EnumArgument<>(name, clazz, options));
-        return this;
+        return addArgument(new EnumArgument<>(name, clazz, options));
     }
 
     /**
@@ -355,8 +347,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder floatArgumentWith(@NotNull String name,
                                              @Nullable Consumer<Argument.Option<Float, CommandContext>> options) {
-        arguments.add(new FloatArgument(name, options));
-        return this;
+        return addArgument(new FloatArgument(name, options));
     }
 
     /**
@@ -366,8 +357,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
                                              @Nullable Consumer<Argument.Option<Float, CommandContext>> options,
                                              Float min,
                                              Float max) {
-        arguments.add(new FloatArgument(name, options, min, max));
-        return this;
+        return addArgument(new FloatArgument(name, options, min, max));
     }
 
     /**
@@ -433,8 +423,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder integerArgumentWith(@NotNull String name,
                                                @Nullable Consumer<Argument.Option<Integer, CommandContext>> options) {
-        arguments.add(new IntegerArgument(name, options));
-        return this;
+        return addArgument(new IntegerArgument(name, options));
     }
 
     /**
@@ -444,8 +433,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
                                                @Nullable Consumer<Argument.Option<Integer, CommandContext>> options,
                                                Integer min,
                                                Integer max) {
-        arguments.add(new IntegerArgument(name, options, min, max));
-        return this;
+        return addArgument(new IntegerArgument(name, options, min, max));
     }
 
     /**
@@ -480,8 +468,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder itemStackArgumentWith(@NotNull String name,
                                                  @Nullable Consumer<Argument.Option<ItemStack, CommandContext>> options) {
-        arguments.add(new ItemStackArgument(name, options));
-        return this;
+        return addArgument(new ItemStackArgument(name, options));
     }
 
     /**
@@ -492,8 +479,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
     public ArgumentBuilder literalArgument(@NotNull String name,
                                            @NotNull Supplier<Collection<String>> literalsSupplier,
                                            @Nullable ContextAction<CommandContext> contextAction) {
-        arguments.add(new LiteralArgument(name, literalsSupplier, contextAction));
-        return this;
+        return addArgument(new LiteralArgument(name, literalsSupplier, contextAction));
     }
 
     /**
@@ -528,8 +514,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder locationArgumentWith(@NotNull String name,
                                                 @Nullable Consumer<Argument.Option<Location, CommandContext>> options) {
-        arguments.add(new LocationArgument(name, options));
-        return this;
+        return addArgument(new LocationArgument(name, options));
     }
 
     /**
@@ -540,16 +525,14 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
     public <E extends Nameable> ArgumentBuilder nameableObjectArgumentWith(@NotNull String name,
                                                                            @NotNull Collection<? extends E> candidates,
                                                                            @Nullable Consumer<CommonArgument.Option<E, CommandContext>> options) {
-        arguments.add(new NameableObjectArgument<>(name, candidates, options));
-        return this;
+        return addArgument(new NameableObjectArgument<>(name, candidates, options));
     }
 
     @Override
     public <E> ArgumentBuilder objectArgumentWith(@NotNull String name,
                                                   @NotNull Map<String, ? extends E> nameToObjectMap,
                                                   @Nullable Consumer<CommonArgument.Option<E, CommandContext>> options) {
-        arguments.add(new ObjectArgument<>(name, nameToObjectMap, options));
-        return this;
+        return addArgument(new ObjectArgument<>(name, nameToObjectMap, options));
     }
 
     /**
@@ -584,8 +567,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder offlinePlayerArgumentWith(@NotNull String name,
                                                      @Nullable Consumer<Argument.Option<OfflinePlayer, CommandContext>> options) {
-        arguments.add(new OfflinePlayerArgument(name, options));
-        return this;
+        return addArgument(new OfflinePlayerArgument(name, options));
     }
 
     /**
@@ -620,8 +602,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder particleArgumentWith(@NotNull String name,
                                                 @Nullable Consumer<Argument.Option<Particle, CommandContext>> options) {
-        arguments.add(new ParticleArgument(name, options));
-        return this;
+        return addArgument(new ParticleArgument(name, options));
     }
 
     /**
@@ -656,8 +637,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder playerArgumentWith(@NotNull String name,
                                               @Nullable Consumer<Argument.Option<Player, CommandContext>> options) {
-        arguments.add(new PlayerArgument(name, options));
-        return this;
+        return addArgument(new PlayerArgument(name, options));
     }
 
     /**
@@ -692,8 +672,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder playersArgumentWith(@NotNull String name,
                                                @Nullable Consumer<Argument.Option<List<Player>, CommandContext>> options) {
-        arguments.add(new PlayersArgument(name, options));
-        return this;
+        return addArgument(new PlayersArgument(name, options));
     }
 
     /**
@@ -728,8 +707,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder potionEffectArgumentWith(@NotNull String name,
                                                     @Nullable Consumer<Argument.Option<PotionEffect, CommandContext>> options) {
-        arguments.add(new PotionEffectArgument(name, options));
-        return this;
+        return addArgument(new PotionEffectArgument(name, options));
     }
 
     /**
@@ -793,8 +771,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder stringArgumentWith(@NotNull String name,
                                               @Nullable Consumer<Argument.Option<String, CommandContext>> options) {
-        arguments.add(new StringArgument(name, options));
-        return this;
+        return addArgument(new StringArgument(name, options));
     }
 
     /**
@@ -803,8 +780,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
     public ArgumentBuilder stringArgumentWith(@NotNull String name,
                                               @Nullable Consumer<Argument.Option<String, CommandContext>> options,
                                               @NotNull StringArgument.Type type) {
-        arguments.add(new StringArgument(name, options, type));
-        return this;
+        return addArgument(new StringArgument(name, options, type));
     }
 
     /**
@@ -839,8 +815,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder teamArgumentWith(@NotNull String name,
                                             @Nullable Consumer<Argument.Option<Team, CommandContext>> options) {
-        arguments.add(new TeamArgument(name, options));
-        return this;
+        return addArgument(new TeamArgument(name, options));
     }
 
     /**
@@ -879,8 +854,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder unparsedArgumentWith(@NotNull String name,
                                                 @Nullable Consumer<Argument.Option<String, CommandContext>> options) {
-        arguments.add(new UnparsedArgument(name, options));
-        return this;
+        return addArgument(new UnparsedArgument(name, options));
     }
 
     public ArgumentBuilder uuidArgument(@NotNull String name) {
@@ -890,8 +864,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
 
     public ArgumentBuilder uuidArgumentWith(@NotNull String name,
                                             @Nullable Consumer<Argument.Option<UUID, CommandContext>> options) {
-        arguments.add(new UUIDArgument(name, options));
-        return this;
+        return addArgument(new UUIDArgument(name, options));
     }
 
     public ArgumentBuilder uuidsArgument(@NotNull String name) {
@@ -901,8 +874,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
 
     public ArgumentBuilder uuidsArgumentWith(@NotNull String name,
                                              @Nullable Consumer<Argument.Option<List<UUID>, CommandContext>> options) {
-        arguments.add(new UUIDsArgument(name, options));
-        return this;
+        return addArgument(new UUIDsArgument(name, options));
     }
 
     @Override

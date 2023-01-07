@@ -5,7 +5,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
-import net.kunmc.lab.commandlib.util.ChatColorUtil;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -72,8 +71,7 @@ public class UUIDArgument extends Argument<UUID> {
             return UUID.fromString(s);
         } catch (IllegalArgumentException e) {
             throw new IncorrectArgumentInputException(x -> {
-                x.sendComponentBuilders(x.textComponentBuilder(s + " is not found or not valid UUID")
-                                         .color(ChatColorUtil.RED.getRGB()));
+                x.sendFailure(s + " is not found or not valid UUID");
             });
         }
     }

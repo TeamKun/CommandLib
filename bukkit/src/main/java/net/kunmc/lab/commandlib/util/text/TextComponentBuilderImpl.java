@@ -21,4 +21,10 @@ public class TextComponentBuilderImpl extends TextComponentBuilder<Component, Te
         component = component.decorate(TextDecoration.ITALIC);
         return this;
     }
+
+    @Override
+    public TextComponentBuilderImpl append(ComponentBuilder<?, ?> builder) {
+        component = component.append(((Component) builder.build()));
+        return this;
+    }
 }

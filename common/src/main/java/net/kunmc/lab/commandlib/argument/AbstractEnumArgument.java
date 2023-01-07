@@ -8,7 +8,7 @@ import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
-public abstract class AbstractEnumArgument<T extends Enum<T>, C extends AbstractCommandContext<?, ?>> extends CommonArgument<T, C> {
+abstract class AbstractEnumArgument<T extends Enum<T>, C extends AbstractCommandContext<?, ?>> extends CommonArgument<T, C> {
     private final Class<T> clazz;
 
     public AbstractEnumArgument(String name, Class<T> clazz) {

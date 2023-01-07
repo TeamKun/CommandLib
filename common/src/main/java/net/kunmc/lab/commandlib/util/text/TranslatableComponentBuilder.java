@@ -1,6 +1,5 @@
 package net.kunmc.lab.commandlib.util.text;
 
-import net.kunmc.lab.commandlib.ComponentBuilder;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class TranslatableComponentBuilder<E, T extends TranslatableComponentBuilder<E, T>> extends ComponentBuilder<E, T> {

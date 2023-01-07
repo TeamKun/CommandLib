@@ -28,6 +28,12 @@ public class TranslatableComponentBuilderImpl extends TranslatableComponentBuild
     }
 
     @Override
+    public TranslatableComponentBuilderImpl append(ComponentBuilder<?, ?> builder) {
+        component = component.append(((Component) builder.build()));
+        return this;
+    }
+
+    @Override
     public TranslatableComponentBuilderImpl key(@NotNull String key) {
         component = component.key(key);
         return this;

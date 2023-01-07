@@ -2,12 +2,8 @@ package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
-import net.kunmc.lab.commandlib.util.ChatColorUtil;
 import net.kunmc.lab.commandlib.util.TextColorUtil;
-import net.kunmc.lab.commandlib.util.text.TextComponentBuilder;
-import net.kunmc.lab.commandlib.util.text.TextComponentBuilderImpl;
-import net.kunmc.lab.commandlib.util.text.TranslatableComponentBuilder;
-import net.kunmc.lab.commandlib.util.text.TranslatableComponentBuilderImpl;
+import net.kunmc.lab.commandlib.util.text.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
@@ -22,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public final class CommandContext extends AbstractCommandContext<CommandListenerWrapper, Component> {
     public CommandContext(com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx) {
@@ -93,21 +90,17 @@ public final class CommandContext extends AbstractCommandContext<CommandListener
     }
 
     @Override
-    public void sendComponentBuilders(ComponentBuilder<?, ?> builder, ComponentBuilder<?, ?>... builders) {
-        Component component = ((Component) builder.build());
-        sendMessage(Arrays.stream(builders)
-                          .map(ComponentBuilder::build)
-                          .map(Component.class::cast)
-                          .reduce(component, Component::append));
+    public void sendComponentBuilder(ComponentBuilder<? extends Component, ?> builder) {
+        sendMessage(builder.build());
     }
 
     @Override
-    public TextComponentBuilder<? extends Component, ?> textComponentBuilder(@NotNull String text) {
+    public TextComponentBuilder<? extends Component, ?> createTextComponentBuilder(@NotNull String text) {
         return new TextComponentBuilderImpl(text);
     }
 
     @Override
-    public TranslatableComponentBuilder<? extends Component, ?> translatableComponentBuilder(@NotNull String key) {
+    public TranslatableComponentBuilder<? extends Component, ?> createTranslatableComponentBuilder(@NotNull String key) {
         return new TranslatableComponentBuilderImpl(key);
     }
 
@@ -115,9 +108,11 @@ public final class CommandContext extends AbstractCommandContext<CommandListener
     IncorrectArgumentInputException convertCommandSyntaxException(CommandSyntaxException e) {
         ChatMessage msg = ((ChatMessage) e.getRawMessage());
         return new IncorrectArgumentInputException(ctx -> {
-            ctx.sendComponentBuilders(ctx.translatableComponentBuilder(msg.getKey())
-                                         .args(msg.getArgs())
-                                         .color(ChatColorUtil.RED.getRGB()));
+            ((CommandContext) ctx).sendFailure(Component.translatable(msg.getKey())
+                                                        .args(Arrays.stream(msg.getArgs())
+                                                                    .map(String::valueOf)
+                                                                    .map(Component::text)
+                                                                    .collect(Collectors.toList())));
         });
     }
 }
