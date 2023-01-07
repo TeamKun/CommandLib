@@ -24,6 +24,10 @@ public class StringArgument extends CommonStringArgument<CommandContext> {
 
     // compatible class
     public static class Type extends CommonStringArgument.Type {
+        public static final Type WORD = new Type(StringArgumentType.word());
+        public static final Type PHRASE_QUOTED = new Type(StringArgumentType.string());
+        public static final Type PHRASE = new Type(StringArgumentType.greedyString());
+
         private Type(StringArgumentType type) {
             super(type);
         }

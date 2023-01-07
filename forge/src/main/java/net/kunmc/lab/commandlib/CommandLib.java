@@ -45,9 +45,7 @@ public final class CommandLib {
                                                                   .getDispatcher()
                                                                   .getRoot();
 
-        commands.stream()
-                .flatMap(x -> x.toCommandNodes()
-                               .stream())
-                .forEach(root::addChild);
+        new CommandNodeCreator<>(new PlatformAdapterImpl(), commands).build()
+                                                                     .forEach(root::addChild);
     }
 }

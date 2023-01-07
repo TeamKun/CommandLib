@@ -1,9 +1,8 @@
 package net.kunmc.lab.commandlib;
 
-import net.minecraft.command.CommandSource;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class Command extends CommonCommand<CommandSource, CommandContext, Arguments, ArgumentBuilder, Command> {
+public abstract class Command extends CommonCommand<CommandContext, Arguments, ArgumentBuilder, Command> {
     private int permissionLevel = 4;
 
     public Command(@NotNull String name) {
@@ -15,23 +14,17 @@ public abstract class Command extends CommonCommand<CommandSource, CommandContex
     }
 
     @Override
-    boolean hasPermission(CommandSource commandSource) {
-        return commandSource.hasPermissionLevel(permissionLevel);
-    }
-
-    @Override
-    boolean hasPermission(CommandContext ctx) {
+    final boolean hasPermission(CommandContext ctx) {
         return ctx.getSender()
                   .hasPermissionLevel(permissionLevel);
     }
 
-    @Override
-    ArgumentBuilder createArgumentBuilder() {
-        return new ArgumentBuilder();
+    final int permissionLevel() {
+        return permissionLevel;
     }
 
     @Override
-    CommandContext createCommandContext(com.mojang.brigadier.context.CommandContext<CommandSource> ctx) {
-        return new CommandContext(ctx);
+    final ArgumentBuilder createArgumentBuilder() {
+        return new ArgumentBuilder();
     }
 }

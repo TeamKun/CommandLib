@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public final class CommandLib implements Listener {
     private final Plugin plugin;
@@ -50,10 +49,7 @@ public final class CommandLib implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                registeredCommands.addAll(commands.stream()
-                                                  .flatMap(x -> x.toCommandNodes()
-                                                                 .stream())
-                                                  .collect(Collectors.toList()));
+                registeredCommands.addAll(new CommandNodeCreator<>(new PlatformAdapterImpl(), commands).build());
 
                 CommandDispatcher dispatcher = ((CraftServer) plugin.getServer()).getServer()
                                                                                  .getCommandDispatcher();

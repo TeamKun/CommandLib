@@ -1,9 +1,6 @@
 package net.kunmc.lab.commandlib;
 
 import com.google.common.collect.Lists;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.tree.CommandNode;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.ChatColorUtil;
 import net.kunmc.lab.commandlib.util.fucntion.*;
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +15,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public abstract class CommonCommand<S, C extends AbstractCommandContext<S, ?>, A extends AbstractArguments<S, C>, B extends AbstractArgumentBuilder<C, A, B>, T extends CommonCommand<S, C, A, B, T>> {
+public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, A extends AbstractArguments<?, C>, B extends AbstractArgumentBuilder<C, A, B>, T extends CommonCommand<C, A, B, T>> {
     private final String name;
     private String description = "";
     private T parent = null;
@@ -223,74 +220,15 @@ public abstract class CommonCommand<S, C extends AbstractCommandContext<S, ?>, A
         return Collections.unmodifiableList(children);
     }
 
-    abstract boolean hasPermission(S s);
+    final List<A> argumentsList() {
+        return Collections.unmodifiableList(argumentsList);
+    }
+
+    final List<String> aliases() {
+        return Collections.unmodifiableList(aliases);
+    }
 
     abstract boolean hasPermission(C ctx);
-
-    final List<CommandNode<S>> toCommandNodes() {
-        List<CommandNode<S>> nodes = new ArrayList<>();
-
-        CommandNode<S> node = toCommandNode();
-        nodes.add(node);
-
-        children.forEach(x -> {
-            x.toCommandNodes()
-             .forEach(node::addChild);
-        });
-
-        nodes.addAll(createAliasCommands(node));
-
-        return nodes;
-    }
-
-    private CommandNode<S> toCommandNode() {
-        LiteralArgumentBuilder<S> builder = LiteralArgumentBuilder.literal(name);
-        builder.requires(this::hasPermission);
-        if (argumentsList.isEmpty()) {
-            builder.executes(ctx -> ContextAction.executeWithStackTrace(createCommandContext(ctx), this::execute));
-
-            return builder.build();
-        }
-
-        // 可変長引数のコマンドに対応させる
-        argumentsList.sort((x, y) -> Integer.compare(y.size(), x.size()));
-
-        for (AbstractArguments<S, C> arguments : argumentsList) {
-            builder.then(arguments.build(this::sendHelp));
-
-            builder.executes(ctx -> {
-                C context = createCommandContext(ctx);
-                try {
-                    arguments.parse(context);
-                } catch (IncorrectArgumentInputException e) {
-                    e.sendMessage(context);
-                    return 1;
-                }
-
-                return ContextAction.executeWithStackTrace(context, this::execute);
-            });
-        }
-
-        return builder.build();
-    }
-
-    private List<CommandNode<S>> createAliasCommands(CommandNode<S> target) {
-        return aliases.stream()
-                      .map(s -> {
-                          LiteralArgumentBuilder<S> builder = LiteralArgumentBuilder.literal(s);
-                          return builder.requires(this::hasPermission)
-                                        .redirect(target);
-                      })
-                      .peek(b -> {
-                          if (!target.getChildren()
-                                     .isEmpty()) {
-                              b.executes(ctx -> target.getCommand()
-                                                      .run(ctx));
-                          }
-                      })
-                      .map(LiteralArgumentBuilder::build)
-                      .collect(Collectors.toList());
-    }
 
     final void sendHelp(C ctx) {
         String border = ChatColorUtil.GRAY + StringUtils.repeat("-", 50);
@@ -350,6 +288,4 @@ public abstract class CommonCommand<S, C extends AbstractCommandContext<S, ?>, A
     }
 
     abstract B createArgumentBuilder();
-
-    abstract C createCommandContext(com.mojang.brigadier.context.CommandContext<S> ctx);
 }

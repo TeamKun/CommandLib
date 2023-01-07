@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, A extends AbstractArguments<?, C>, T extends AbstractArgumentBuilder<C, A, T>> {
+abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, A extends AbstractArguments<?, C>, T extends AbstractArgumentBuilder<C, A, T>> {
     private final List<CommonArgument<?, C>> arguments = new ArrayList<>();
     private ContextAction<C> contextAction = null;
 

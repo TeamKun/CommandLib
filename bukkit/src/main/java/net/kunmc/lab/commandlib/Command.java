@@ -1,6 +1,5 @@
 package net.kunmc.lab.commandlib;
 
-import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class Command extends CommonCommand<CommandListenerWrapper, CommandContext, Arguments, ArgumentBuilder, Command> {
+public abstract class Command extends CommonCommand<CommandContext, Arguments, ArgumentBuilder, Command> {
     private PermissionDefault defaultPermission = PermissionDefault.OP;
 
     public Command(@NotNull String name) {
@@ -18,12 +17,6 @@ public abstract class Command extends CommonCommand<CommandListenerWrapper, Comm
 
     public final void setPermission(@NotNull PermissionDefault defaultPermission) {
         this.defaultPermission = defaultPermission;
-    }
-
-    @Override
-    final boolean hasPermission(CommandListenerWrapper commandListenerWrapper) {
-        return commandListenerWrapper.getBukkitSender()
-                                     .hasPermission(permissionName());
     }
 
     @Override
@@ -56,10 +49,5 @@ public abstract class Command extends CommonCommand<CommandListenerWrapper, Comm
     @Override
     final ArgumentBuilder createArgumentBuilder() {
         return new ArgumentBuilder();
-    }
-
-    @Override
-    final CommandContext createCommandContext(com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx) {
-        return new CommandContext(ctx);
     }
 }
