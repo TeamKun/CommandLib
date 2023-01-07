@@ -1,50 +1,31 @@
 package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
-import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 
 import java.util.function.Consumer;
 
-public class StringArgument extends Argument<String> {
+public class StringArgument extends CommonStringArgument<CommandContext> {
     public StringArgument(String name) {
-        this(name, option -> {
-        });
+        super(name);
     }
 
     public StringArgument(String name, Consumer<Option<String, CommandContext>> options) {
-        this(name, options, Type.PHRASE_QUOTED);
+        super(name, options);
     }
 
     public StringArgument(String name, Type type) {
-        this(name, option -> {
-        }, type);
+        super(name, type);
     }
 
     public StringArgument(String name, Consumer<Option<String, CommandContext>> options, Type type) {
-        super(name, type.type);
-        setOptions(options);
+        super(name, options, type);
     }
 
-    @Override
-    public String cast(Object parsedArgument) {
-        return ((String) parsedArgument);
-    }
-
-    @Override
-    public String parse(CommandContext ctx) {
-        return StringArgumentType.getString(ctx.getHandle(), name);
-    }
-
-    public enum Type {
-        WORD(StringArgumentType.word()),
-        PHRASE_QUOTED(StringArgumentType.string()),
-        PHRASE(StringArgumentType.greedyString());
-
-        final StringArgumentType type;
-
-        Type(StringArgumentType type) {
-            this.type = type;
+    // compatible class
+    public static class Type extends CommonStringArgument.Type {
+        private Type(StringArgumentType type) {
+            super(type);
         }
     }
 }

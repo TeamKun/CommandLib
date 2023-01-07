@@ -1,9 +1,6 @@
 package net.kunmc.lab.commandlib;
 
-import net.kunmc.lab.commandlib.argument.CommonEnumArgument;
-import net.kunmc.lab.commandlib.argument.CommonLiteralArgument;
-import net.kunmc.lab.commandlib.argument.CommonNameableObjectArgument;
-import net.kunmc.lab.commandlib.argument.CommonObjectArgument;
+import net.kunmc.lab.commandlib.argument.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,6 +19,115 @@ public abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?
     protected final T addArgument(@NotNull CommonArgument<?, C> argument) {
         arguments.add(argument);
         return (T) this;
+    }
+
+    /**
+     * Add argument for {@link java.lang.Boolean}.
+     */
+    public final T boolArgument(@NotNull String name) {
+        return boolArgument(name, null, null);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Boolean}.
+     */
+    public final T boolArgument(@NotNull String name, @Nullable SuggestionAction<C> suggestionAction) {
+        return boolArgument(name, suggestionAction, null);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Boolean}.
+     */
+    public final T boolArgument(@NotNull String name,
+                                @Nullable SuggestionAction<C> suggestionAction,
+                                @Nullable ContextAction<C> contextAction) {
+        return boolArgumentWith(name, options -> {
+            options.suggestionAction(suggestionAction)
+                   .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for {@link java.lang.Boolean}.
+     */
+    public final T boolArgumentWith(@NotNull String name,
+                                    @Nullable Consumer<CommonArgument.Option<Boolean, C>> options) {
+        return addArgument(new CommonBooleanArgument<>(name, options));
+    }
+
+    /**
+     * Add argument for {@link java.lang.Double}.
+     */
+    public final T doubleArgument(@NotNull String name) {
+        return doubleArgument(name, null);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Double}.
+     */
+    public final T doubleArgument(@NotNull String name, Double min, Double max) {
+        return doubleArgument(name, min, max, null);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Double}.
+     */
+    public final T doubleArgument(@NotNull String name, @Nullable SuggestionAction<C> suggestionAction) {
+        return doubleArgument(name, suggestionAction, null);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Double}.
+     */
+    public final T doubleArgument(@NotNull String name,
+                                  @Nullable SuggestionAction<C> suggestionAction,
+                                  @Nullable ContextAction<C> contextAction) {
+        return doubleArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                  .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for {@link java.lang.Double}.
+     */
+    public final T doubleArgument(@NotNull String name,
+                                  Double min,
+                                  Double max,
+                                  @Nullable SuggestionAction<C> suggestionAction) {
+        return doubleArgument(name, min, max, suggestionAction, null);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Double}.
+     */
+    public final T doubleArgument(@NotNull String name,
+                                  Double min,
+                                  Double max,
+                                  @Nullable SuggestionAction<C> suggestionAction,
+                                  @Nullable ContextAction<C> contextAction) {
+        return doubleArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                  .contextAction(contextAction);
+        }, min, max);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Double}.
+     */
+    public final T doubleArgumentWith(@NotNull String name,
+                                      @Nullable Consumer<CommonArgument.Option<Double, C>> options) {
+        return addArgument(new CommonDoubleArgument<>(name, options));
+    }
+
+    /**
+     * Add argument for {@link java.lang.Double}.
+     */
+    public final T doubleArgumentWith(@NotNull String name,
+                                      @Nullable Consumer<CommonArgument.Option<Double, C>> options,
+                                      Double min,
+                                      Double max) {
+        return addArgument(new CommonDoubleArgument<>(name, options, min, max));
     }
 
     /**
@@ -76,6 +182,156 @@ public abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?
                                                         @NotNull Class<E> clazz,
                                                         @Nullable Consumer<CommonArgument.Option<E, C>> options) {
         return addArgument(new CommonEnumArgument<>(name, clazz, options));
+    }
+
+    /**
+     * Add argument for {@link java.lang.Float}.
+     */
+    public final T floatArgument(@NotNull String name) {
+        return floatArgument(name, null);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Float}.
+     */
+    public final T floatArgument(@NotNull String name, Float min, Float max) {
+        return floatArgument(name, min, max, null);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Float}.
+     */
+    public final T floatArgument(@NotNull String name, @Nullable SuggestionAction<C> suggestionAction) {
+        return floatArgument(name, suggestionAction, null);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Float}.
+     */
+    public final T floatArgument(@NotNull String name,
+                                 @Nullable SuggestionAction<C> suggestionAction,
+                                 @Nullable ContextAction<C> contextAction) {
+        return floatArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                  .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for {@link java.lang.Float}.
+     */
+    public final T floatArgument(@NotNull String name,
+                                 Float min,
+                                 Float max,
+                                 @Nullable SuggestionAction<C> suggestionAction) {
+        return floatArgument(name, min, max, suggestionAction, null);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Float}.
+     */
+    public final T floatArgument(@NotNull String name,
+                                 Float min,
+                                 Float max,
+                                 @Nullable SuggestionAction<C> suggestionAction,
+                                 @Nullable ContextAction<C> contextAction) {
+        return floatArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                  .contextAction(contextAction);
+        }, min, max);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Float}.
+     */
+    public final T floatArgumentWith(@NotNull String name,
+                                     @Nullable Consumer<CommonArgument.Option<Float, C>> options) {
+        return addArgument(new CommonFloatArgument<>(name, options));
+    }
+
+    /**
+     * Add argument for {@link java.lang.Float}.
+     */
+    public final T floatArgumentWith(@NotNull String name,
+                                     @Nullable Consumer<CommonArgument.Option<Float, C>> options,
+                                     Float min,
+                                     Float max) {
+        return addArgument(new CommonFloatArgument<>(name, options, min, max));
+    }
+
+    /**
+     * Add argument for {@link java.lang.Integer}.
+     */
+    public final T integerArgument(@NotNull String name) {
+        return integerArgument(name, null);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Integer}.
+     */
+    public final T integerArgument(@NotNull String name, Integer min, Integer max) {
+        return integerArgument(name, min, max, null);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Integer}.
+     */
+    public final T integerArgument(@NotNull String name, @Nullable SuggestionAction<C> suggestionAction) {
+        return integerArgument(name, suggestionAction, null);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Integer}.
+     */
+    public final T integerArgument(@NotNull String name,
+                                   @Nullable SuggestionAction<C> suggestionAction,
+                                   @Nullable ContextAction<C> contextAction) {
+        return integerArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                  .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for {@link java.lang.Integer}.
+     */
+    public final T integerArgument(@NotNull String name,
+                                   Integer min,
+                                   Integer max,
+                                   @Nullable SuggestionAction<C> suggestionAction) {
+        return integerArgument(name, min, max, suggestionAction, null);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Integer}.
+     */
+    public final T integerArgument(@NotNull String name,
+                                   Integer min,
+                                   Integer max,
+                                   @Nullable SuggestionAction<C> suggestionAction,
+                                   @Nullable ContextAction<C> contextAction) {
+        return integerArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                  .contextAction(contextAction);
+        }, min, max);
+    }
+
+    /**
+     * Add argument for {@link java.lang.Integer}.
+     */
+    public final T integerArgumentWith(@NotNull String name,
+                                       @Nullable Consumer<CommonArgument.Option<Integer, C>> options) {
+        return addArgument(new CommonIntegerArgument<>(name, options));
+    }
+
+    /**
+     * Add argument for {@link java.lang.Integer}.
+     */
+    public final T integerArgumentWith(@NotNull String name,
+                                       @Nullable Consumer<CommonArgument.Option<Integer, C>> options,
+                                       Integer min,
+                                       Integer max) {
+        return addArgument(new CommonIntegerArgument<>(name, options, min, max));
     }
 
     /**
@@ -183,6 +439,78 @@ public abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?
                                           @NotNull Map<String, ? extends E> nameToObjectMap,
                                           @Nullable Consumer<CommonArgument.Option<E, C>> options) {
         return addArgument(new CommonObjectArgument<>(name, nameToObjectMap, options));
+    }
+
+    /**
+     * Add argument for {@link java.lang.String}.
+     */
+    public final T stringArgument(@NotNull String name) {
+        return stringArgument(name, ((@Nullable SuggestionAction<C>) null));
+    }
+
+    /**
+     * Add argument for {@link java.lang.String}.
+     */
+    public final T stringArgument(@NotNull String name, @NotNull CommonStringArgument.Type type) {
+        return stringArgument(name, type, null);
+    }
+
+    /**
+     * Add argument for {@link java.lang.String}.
+     */
+    public final T stringArgument(@NotNull String name, @Nullable SuggestionAction<C> suggestionAction) {
+        return stringArgument(name, suggestionAction, null);
+    }
+
+    /**
+     * Add argument for {@link java.lang.String}.
+     */
+    public final T stringArgument(@NotNull String name,
+                                  @Nullable SuggestionAction<C> suggestionAction,
+                                  @Nullable ContextAction<C> contextAction) {
+        return stringArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                  .contextAction(contextAction);
+        });
+    }
+
+    /**
+     * Add argument for {@link java.lang.String}.
+     */
+    public final T stringArgument(@NotNull String name,
+                                  @NotNull CommonStringArgument.Type type,
+                                  @Nullable SuggestionAction<C> suggestionAction) {
+        return stringArgument(name, type, suggestionAction, null);
+    }
+
+    /**
+     * Add argument for {@link java.lang.String}.
+     */
+    public final T stringArgument(@NotNull String name,
+                                  @NotNull CommonStringArgument.Type type,
+                                  @Nullable SuggestionAction<C> suggestionAction,
+                                  @Nullable ContextAction<C> contextAction) {
+        return stringArgumentWith(name, option -> {
+            option.suggestionAction(suggestionAction)
+                  .contextAction(contextAction);
+        }, type);
+    }
+
+    /**
+     * Add argument for {@link java.lang.String}.
+     */
+    public final T stringArgumentWith(@NotNull String name,
+                                      @Nullable Consumer<CommonArgument.Option<String, C>> options) {
+        return addArgument(new CommonStringArgument<>(name, options));
+    }
+
+    /**
+     * Add argument for {@link java.lang.String}.
+     */
+    public final T stringArgumentWith(@NotNull String name,
+                                      @Nullable Consumer<CommonArgument.Option<String, C>> options,
+                                      @NotNull CommonStringArgument.Type type) {
+        return addArgument(new CommonStringArgument<>(name, options, type));
     }
 
     /**

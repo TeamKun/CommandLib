@@ -1,38 +1,23 @@
 package net.kunmc.lab.commandlib.argument;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 
 import java.util.function.Consumer;
 
-public class IntegerArgument extends Argument<Integer> {
+public class IntegerArgument extends CommonIntegerArgument<CommandContext> {
     public IntegerArgument(String name) {
-        this(name, option -> {
-        });
+        super(name);
     }
 
     public IntegerArgument(String name, Consumer<Option<Integer, CommandContext>> options) {
-        super(name, IntegerArgumentType.integer(Integer.MIN_VALUE, Integer.MAX_VALUE));
+        super(name, options);
     }
 
     public IntegerArgument(String name, Integer min, Integer max) {
-        this(name, option -> {
-        }, min, max);
+        super(name, min, max);
     }
 
     public IntegerArgument(String name, Consumer<Option<Integer, CommandContext>> options, Integer min, Integer max) {
-        super(name, IntegerArgumentType.integer(min, max));
-        setOptions(options);
-    }
-
-    @Override
-    public Integer cast(Object parsedArgument) {
-        return ((Integer) parsedArgument);
-    }
-
-    @Override
-    public Integer parse(CommandContext ctx) {
-        return IntegerArgumentType.getInteger(ctx.getHandle(), name);
+        super(name, options, min, max);
     }
 }
