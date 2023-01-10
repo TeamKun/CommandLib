@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, A extends AbstractArguments<?, C>, T extends AbstractArgumentBuilder<C, A, T>> {
+abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T extends AbstractArgumentBuilder<C, T>> {
     private final List<CommonArgument<?, C>> arguments = new ArrayList<>();
     private ContextAction<C> contextAction = null;
 
@@ -515,13 +515,13 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, A
 
     /**
      * Set command's process.<br>
-     * If arguments are not added, process set by this wouldn't work. Then you should override {@link net.kunmc.lab.commandlib.CommonCommand#execute(AbstractCommandContext)} or use {@link net.kunmc.lab.commandlib.CommonCommand#execute(ContextAction)}
+     * If arguments are not added, process set by this wouldn't work. Then you should use {@link net.kunmc.lab.commandlib.CommonCommand#execute(ContextAction)}
      */
     public final void execute(@NotNull ContextAction<C> contextAction) {
         this.contextAction = contextAction;
     }
 
-    final A build() {
+    final List<CommonArgument<?, C>> build() {
         if (!arguments.isEmpty()) {
             CommonArgument<?, C> last = arguments.get(arguments.size() - 1);
             if (!last.hasContextAction()) {
@@ -529,8 +529,6 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, A
             }
         }
 
-        return createArguments(arguments);
+        return arguments;
     }
-
-    abstract A createArguments(List<CommonArgument<?, C>> arguments);
 }

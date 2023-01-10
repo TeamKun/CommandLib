@@ -1,11 +1,13 @@
 package net.kunmc.lab.commandlib.util.text;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.jetbrains.annotations.NotNull;
 
-public class TextComponentBuilderImpl extends TextComponentBuilder<Component, TextComponentBuilderImpl> {
+public class TextComponentBuilderImpl extends TextComponentBuilder<Component, TextComponent, TextComponentBuilderImpl> {
     public TextComponentBuilderImpl(@NotNull String text) {
         super(Component.text(text));
     }
@@ -18,13 +20,13 @@ public class TextComponentBuilderImpl extends TextComponentBuilder<Component, Te
 
     @Override
     public TextComponentBuilderImpl italic() {
-        component = component.decorate(TextDecoration.ITALIC);
+        component = component.style(Style.style(TextDecoration.ITALIC));
         return this;
     }
 
     @Override
-    public TextComponentBuilderImpl append(ComponentBuilder<?, ?> builder) {
-        component = component.append(((Component) builder.build()));
+    public TextComponentBuilderImpl append(Component component) {
+        this.component = this.component.append(component);
         return this;
     }
 }

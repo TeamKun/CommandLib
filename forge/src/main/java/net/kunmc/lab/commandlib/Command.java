@@ -2,7 +2,7 @@ package net.kunmc.lab.commandlib;
 
 import org.jetbrains.annotations.NotNull;
 
-public abstract class Command extends CommonCommand<CommandContext, Arguments, ArgumentBuilder, Command> {
+public abstract class Command extends CommonCommand<CommandContext, ArgumentBuilder, Command> {
     private int permissionLevel = 4;
 
     public Command(@NotNull String name) {
@@ -13,18 +13,7 @@ public abstract class Command extends CommonCommand<CommandContext, Arguments, A
         this.permissionLevel = level;
     }
 
-    @Override
-    final boolean hasPermission(CommandContext ctx) {
-        return ctx.getSender()
-                  .hasPermissionLevel(permissionLevel);
-    }
-
     final int permissionLevel() {
         return permissionLevel;
-    }
-
-    @Override
-    final ArgumentBuilder createArgumentBuilder() {
-        return new ArgumentBuilder();
     }
 }

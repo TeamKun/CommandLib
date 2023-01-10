@@ -3,17 +3,20 @@ package net.kunmc.lab.commandlib;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.util.ChatColorUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-final class CommandNodeCreator<S, C extends AbstractCommandContext<S, ?>, A extends AbstractArguments<S, C>, B extends AbstractArgumentBuilder<C, A, B>, U extends CommonCommand<C, A, B, U>> {
-    private final PlatformAdapter<S, C, A, B, U> platformAdapter;
+final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B extends AbstractArgumentBuilder<C, B>, U extends CommonCommand<C, B, U>> {
+    private final PlatformAdapter<S, T, C, B, U> platformAdapter;
     private final Collection<? extends U> commands;
 
-    public CommandNodeCreator(PlatformAdapter<S, C, A, B, U> platformAdapter, Collection<? extends U> commands) {
+    public CommandNodeCreator(PlatformAdapter<S, T, C, B, U> platformAdapter, Collection<? extends U> commands) {
         this.platformAdapter = platformAdapter;
         this.commands = commands;
     }
@@ -43,9 +46,19 @@ final class CommandNodeCreator<S, C extends AbstractCommandContext<S, ?>, A exte
 
     private CommandNode<S> toCommandNode(U command) {
         LiteralArgumentBuilder<S> builder = LiteralArgumentBuilder.literal(command.name());
+        List<Arguments<S, C>> argumentsList = command.argumentBuilderConsumers()
+                                                     .stream()
+                                                     .map(x -> {
+                                                         B b = platformAdapter.createArgumentBuilder();
+                                                         x.accept(b);
+                                                         return new Arguments<>(b.build(), platformAdapter);
+                                                     })
+                                                     .collect(Collectors.toList());
+        ContextAction<C> sendHelpAction = sendHelpAction(command, argumentsList);
+
+        command.setContextActionIfAbsent(sendHelpAction);
         builder.requires(x -> platformAdapter.hasPermission(command, x));
 
-        List<A> argumentsList = new ArrayList<>(command.argumentsList());
         if (argumentsList.isEmpty()) {
             builder.executes(ctx -> ContextAction.executeWithStackTrace(platformAdapter.createCommandContext(ctx),
                                                                         command::execute));
@@ -53,25 +66,23 @@ final class CommandNodeCreator<S, C extends AbstractCommandContext<S, ?>, A exte
             return builder.build();
         }
 
-        // 可変長引数のコマンドに対応させる
-        argumentsList.sort((x, y) -> Integer.compare(y.size(), x.size()));
+        argumentsList.stream()
+                     .sorted((x, y) -> Integer.compare(y.size(), x.size())) // 可変長引数のコマンドに対応させる
+                     .forEach(arguments -> {
+                         builder.then(arguments.build(sendHelpAction));
 
-        for (A arguments : argumentsList) {
-            // メソッドリファレンスにするとコンパイルが通らない
-            builder.then(arguments.build(ctx -> command.sendHelp(ctx)));
+                         builder.executes(ctx -> {
+                             C context = platformAdapter.createCommandContext(ctx);
+                             try {
+                                 arguments.parse(context);
+                             } catch (IncorrectArgumentInputException e) {
+                                 e.sendMessage(context);
+                                 return 1;
+                             }
 
-            builder.executes(ctx -> {
-                C context = platformAdapter.createCommandContext(ctx);
-                try {
-                    arguments.parse(context);
-                } catch (IncorrectArgumentInputException e) {
-                    e.sendMessage(context);
-                    return 1;
-                }
-
-                return ContextAction.executeWithStackTrace(context, command::execute);
-            });
-        }
+                             return ContextAction.executeWithStackTrace(context, command::execute);
+                         });
+                     });
 
         return builder.build();
     }
@@ -81,17 +92,72 @@ final class CommandNodeCreator<S, C extends AbstractCommandContext<S, ?>, A exte
                      .stream()
                      .map(s -> {
                          LiteralArgumentBuilder<S> builder = LiteralArgumentBuilder.literal(s);
+                         if (!redirectTarget.getChildren()
+                                            .isEmpty()) {
+                             builder.executes(ctx -> redirectTarget.getCommand()
+                                                                   .run(ctx));
+                         }
                          return builder.requires(x -> platformAdapter.hasPermission(source, x))
                                        .redirect(redirectTarget);
                      })
-                     .peek(b -> {
-                         if (!redirectTarget.getChildren()
-                                            .isEmpty()) {
-                             b.executes(ctx -> redirectTarget.getCommand()
-                                                             .run(ctx));
-                         }
-                     })
                      .map(LiteralArgumentBuilder::build)
                      .collect(Collectors.toList());
+    }
+
+    private ContextAction<C> sendHelpAction(U command, List<Arguments<S, C>> argumentsList) {
+        return ctx -> {
+            String border = ChatColorUtil.GRAY + StringUtils.repeat("-", 50);
+            String padding = StringUtils.repeat(" ", 2);
+            String literalConcatName = ((Supplier<String>) () -> {
+                StringBuilder s = new StringBuilder(command.name());
+                U parent = command.parent();
+                while (parent != null) {
+                    s.insert(0, parent.name() + " ");
+                    parent = parent.parent();
+                }
+
+                return s.toString();
+            }).get();
+
+            ctx.sendMessage(border);
+
+            if (!command.description()
+                        .isEmpty()) {
+                ctx.sendMessage(command.description());
+            }
+            ctx.sendMessage(ChatColorUtil.RED + "Usage:");
+
+            List<U> permissibleChildren = command.children()
+                                                 .stream()
+                                                 .filter(x -> platformAdapter.hasPermission(x, ctx))
+                                                 .collect(Collectors.toList());
+            if (!permissibleChildren.isEmpty()) {
+                ctx.sendMessage(ChatColorUtil.AQUA + padding + "/" + literalConcatName);
+
+                permissibleChildren.stream()
+                                   .filter(x -> platformAdapter.hasPermission(x, ctx))
+                                   .map(x -> {
+                                       String s = ChatColorUtil.YELLOW + padding + padding + x.name();
+                                       if (x.description()
+                                            .isEmpty()) {
+                                           return s;
+                                       }
+                                       return s + ChatColorUtil.WHITE + ": " + x.description();
+                                   })
+                                   .forEach(ctx::sendMessage);
+            }
+
+            List<String> argumentsHelpMessages = argumentsList.stream()
+                                                              .map(Arguments::concatTagNames)
+                                                              .filter(x -> !x.isEmpty())
+                                                              .map(x -> padding + ChatColorUtil.AQUA + "/" + literalConcatName + " " + x)
+                                                              .collect(Collectors.toList());
+            if (!permissibleChildren.isEmpty() && !argumentsHelpMessages.isEmpty()) {
+                ctx.sendMessage("");
+            }
+            argumentsHelpMessages.forEach(ctx::sendMessage);
+
+            ctx.sendMessage(border);
+        };
     }
 }

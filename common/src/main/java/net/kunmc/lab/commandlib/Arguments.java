@@ -8,11 +8,13 @@ import net.kunmc.lab.commandlib.util.ChatColorUtil;
 import java.util.List;
 import java.util.stream.Collectors;
 
-abstract class AbstractArguments<S, C extends AbstractCommandContext<S, ?>> {
+final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
     private final List<? extends CommonArgument<?, C>> arguments;
+    private final PlatformAdapter<S, ?, C, ?, ?> platformAdapter;
 
-    AbstractArguments(List<? extends CommonArgument<?, C>> arguments) {
+    Arguments(List<? extends CommonArgument<?, C>> arguments, PlatformAdapter<S, ?, C, ?, ?> platformAdapter) {
         this.arguments = arguments;
+        this.platformAdapter = platformAdapter;
     }
 
     void parse(C ctx) throws IncorrectArgumentInputException {
@@ -26,18 +28,15 @@ abstract class AbstractArguments<S, C extends AbstractCommandContext<S, ?>> {
         }
     }
 
-    String generateHelpMessage(String literalConcatName) {
+    String concatTagNames() {
         if (arguments.isEmpty()) {
             return "";
         }
 
-        String msg = ChatColorUtil.AQUA + "/" + literalConcatName + " ";
-        msg += arguments.stream()
+        return arguments.stream()
                         .map(x -> String.format(ChatColorUtil.GRAY + "<" + ChatColorUtil.YELLOW + "%s" + ChatColorUtil.GRAY + ">",
                                                 x.name()))
                         .collect(Collectors.joining(" "));
-
-        return msg;
     }
 
     private RequiredArgumentBuilder<S, ?> buildArgument(CommonArgument<?, C> argument, ContextAction<C> defaultAction) {
@@ -45,7 +44,7 @@ abstract class AbstractArguments<S, C extends AbstractCommandContext<S, ?>> {
 
         if (argument.suggestionAction() != null) {
             builder.suggests((ctx, sb) -> {
-                C context = createCommandContext(ctx);
+                C context = platformAdapter.createCommandContext(ctx);
                 try {
                     parse(context);
                 } catch (IncorrectArgumentInputException ignored) {
@@ -68,13 +67,14 @@ abstract class AbstractArguments<S, C extends AbstractCommandContext<S, ?>> {
         }
 
         builder.executes(ctx -> {
-            C context = createCommandContext(ctx);
+            C context = platformAdapter.createCommandContext(ctx);
             try {
                 parse(context);
             } catch (IncorrectArgumentInputException e) {
                 e.sendMessage(context);
                 return 1;
             }
+
             return ContextAction.executeWithStackTrace(context, argument.contextAction());
         });
 
@@ -105,6 +105,4 @@ abstract class AbstractArguments<S, C extends AbstractCommandContext<S, ?>> {
 
         return nodes.get(0);
     }
-
-    abstract C createCommandContext(com.mojang.brigadier.context.CommandContext<S> ctx);
 }

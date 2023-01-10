@@ -1,12 +1,7 @@
 package net.kunmc.lab.commandlib;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
-import net.kunmc.lab.commandlib.util.text.ComponentBuilder;
-import net.kunmc.lab.commandlib.util.text.TextComponentBuilder;
-import net.kunmc.lab.commandlib.util.text.TranslatableComponentBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,9 +13,12 @@ public abstract class AbstractCommandContext<S, C> {
     protected final com.mojang.brigadier.context.CommandContext<S> handle;
     private final Map<String, String> argumentNameToInputArgMap = new LinkedHashMap<>();
     private final LinkedHashMap<String, Object> parsedArgMap = new LinkedHashMap<>();
+    private final PlatformAdapter<S, C, ?, ?, ?> platformAdapter;
 
-    public AbstractCommandContext(com.mojang.brigadier.context.CommandContext<S> ctx) {
+    public AbstractCommandContext(com.mojang.brigadier.context.CommandContext<S> ctx,
+                                  PlatformAdapter<S, C, ?, ?, ?> platformAdapter) {
         this.handle = ctx;
+        this.platformAdapter = platformAdapter;
 
         ctx.getNodes()
            .forEach(x -> {
@@ -108,17 +106,11 @@ public abstract class AbstractCommandContext<S, C> {
 
     public abstract void sendFailure(@Nullable String message);
 
-    public abstract void sendComponentBuilder(ComponentBuilder<? extends C, ?> builder);
+    public abstract void sendComponent(C component);
 
-    public final void sendRawComponentBuilder(ComponentBuilder<?, ?> builder) {
-        sendComponentBuilder(((ComponentBuilder<C, ?>) builder));
+    public final PlatformAdapter<S, C, ?, ?, ?> platformAdapter() {
+        return platformAdapter;
     }
-
-    public abstract TextComponentBuilder<? extends C, ?> createTextComponentBuilder(@NotNull String text);
-
-    public abstract TranslatableComponentBuilder<? extends C, ?> createTranslatableComponentBuilder(@NotNull String key);
-
-    abstract IncorrectArgumentInputException convertCommandSyntaxException(CommandSyntaxException e);
 
     final void addParsedArgument(String name, Object parsedArgument) {
         parsedArgMap.put(name, parsedArgument);

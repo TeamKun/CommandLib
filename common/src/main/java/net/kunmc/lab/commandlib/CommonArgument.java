@@ -119,7 +119,8 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         try {
             t = parse(ctx);
         } catch (CommandSyntaxException e) {
-            throw ctx.convertCommandSyntaxException(e);
+            throw ctx.platformAdapter()
+                     .convertCommandSyntaxException(e);
         }
 
         if (filter != null && !filter.test(t)) {

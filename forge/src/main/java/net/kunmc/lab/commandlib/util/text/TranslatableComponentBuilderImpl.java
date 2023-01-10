@@ -6,7 +6,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.jetbrains.annotations.NotNull;
 
-public class TranslatableComponentBuilderImpl extends TranslatableComponentBuilder<TranslationTextComponent, TranslatableComponentBuilderImpl> {
+public class TranslatableComponentBuilderImpl extends TranslatableComponentBuilder<ITextComponent, TranslationTextComponent, TranslatableComponentBuilderImpl> {
     public TranslatableComponentBuilderImpl(@NotNull String key) {
         super(new TranslationTextComponent(key));
     }
@@ -25,8 +25,8 @@ public class TranslatableComponentBuilderImpl extends TranslatableComponentBuild
     }
 
     @Override
-    public TranslatableComponentBuilderImpl append(ComponentBuilder<?, ?> builder) {
-        component.appendSibling(((ITextComponent) builder.build()));
+    public TranslatableComponentBuilderImpl append(ITextComponent component) {
+        this.component.appendSibling(component);
         return this;
     }
 

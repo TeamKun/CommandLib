@@ -10,9 +10,9 @@ import java.util.function.Consumer;
 public final class IncorrectArgumentInputException extends Exception {
     private final Consumer<AbstractCommandContext<?, ?>> sendMessages;
 
-    public IncorrectArgumentInputException(CommonArgument<?, ?> argument,
-                                           AbstractCommandContext<?, ?> ctx,
-                                           String incorrectInput) {
+    public <C extends AbstractCommandContext<?, ?>> IncorrectArgumentInputException(CommonArgument<?, C> argument,
+                                                                                    C ctx,
+                                                                                    String incorrectInput) {
         String input = ctx.getHandle()
                           .getInput();
         StringRange range = ctx.getHandle()
@@ -24,22 +24,28 @@ public final class IncorrectArgumentInputException extends Exception {
                                .findFirst()
                                .get()
                                .getRange();
-        String s = input.substring(1, range.getStart());
-        if (s.length() > 10) {
-            s = "..." + s.substring(s.length() - 10);
+
+        String str = input.substring(1, range.getStart());
+        if (str.length() > 10) {
+            str = "..." + str.substring(str.length() - 10);
         }
 
+        String finalStr = str;
         this.sendMessages = context -> {
-            String str = input.substring(1, range.getStart());
-            if (str.length() > 10) {
-                str = "..." + str.substring(str.length() - 10);
-            }
-            ctx.sendRawComponentBuilder((ctx.createTranslatableComponentBuilder("command.unknown.argument")
-                                            .color(ChatColorUtil.RED.getRGB())));
-            ctx.sendRawComponentBuilder(ctx.createTextComponentBuilder(ChatColorUtil.GRAY + str + ChatColorUtil.RED + ChatColorUtil.UNDERLINE + incorrectInput + ChatColorUtil.RESET)
-                                           .append(ctx.createTranslatableComponentBuilder("command.context.here")
-                                                      .italic()
-                                                      .color(ChatColorUtil.RED.getRGB())));
+            // IDE上では怒られないがコンパイルが通らないのでRawにしている
+            AbstractCommandContext c = context;
+            c.sendComponent(c.platformAdapter()
+                             .createTranslatableComponentBuilder("command.unknown.argument")
+                             .color(ChatColorUtil.RED.getRGB())
+                             .build());
+            c.sendComponent(c.platformAdapter()
+                             .createTextComponentBuilder(ChatColorUtil.GRAY + finalStr + ChatColorUtil.RED + ChatColorUtil.UNDERLINE + incorrectInput + ChatColorUtil.RESET)
+                             .append(c.platformAdapter()
+                                      .createTranslatableComponentBuilder("command.context.here")
+                                      .italic()
+                                      .color(ChatColorUtil.RED.getRGB())
+                                      .build())
+                             .build());
         };
     }
 

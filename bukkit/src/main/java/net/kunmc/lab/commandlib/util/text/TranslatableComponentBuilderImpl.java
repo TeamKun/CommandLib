@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class TranslatableComponentBuilderImpl extends TranslatableComponentBuilder<TranslatableComponent, TranslatableComponentBuilderImpl> {
+public class TranslatableComponentBuilderImpl extends TranslatableComponentBuilder<Component, TranslatableComponent, TranslatableComponentBuilderImpl> {
     public TranslatableComponentBuilderImpl(@NotNull String key) {
         super(Component.translatable(key));
     }
@@ -28,8 +28,8 @@ public class TranslatableComponentBuilderImpl extends TranslatableComponentBuild
     }
 
     @Override
-    public TranslatableComponentBuilderImpl append(ComponentBuilder<?, ?> builder) {
-        component = component.append(((Component) builder.build()));
+    public TranslatableComponentBuilderImpl append(Component component) {
+        this.component = this.component.append(component);
         return this;
     }
 

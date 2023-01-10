@@ -2,7 +2,7 @@ package net.kunmc.lab.commandlib.util.text;
 
 import org.jetbrains.annotations.NotNull;
 
-public abstract class ComponentBuilder<E, T extends ComponentBuilder<E, T>> {
+public abstract class ComponentBuilder<B, E extends B, T extends ComponentBuilder<B, E, T>> {
     protected E component;
 
     public ComponentBuilder(@NotNull E component) {
@@ -13,9 +13,9 @@ public abstract class ComponentBuilder<E, T extends ComponentBuilder<E, T>> {
 
     public abstract T italic();
 
-    public abstract T append(ComponentBuilder<?, ?> builder);
+    public abstract T append(B component);
 
-    public final E build() {
+    public final B build() {
         return this.component;
     }
 }

@@ -1,9 +1,6 @@
 package net.kunmc.lab.commandlib;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.Location;
-import net.kunmc.lab.commandlib.util.text.*;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.text.*;
@@ -15,8 +12,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 public final class CommandContext extends AbstractCommandContext<CommandSource, ITextComponent> {
-    public CommandContext(com.mojang.brigadier.context.CommandContext<CommandSource> ctx) {
-        super(ctx);
+    public CommandContext(com.mojang.brigadier.context.CommandContext<CommandSource> ctx,
+                          PlatformAdapterImpl platformAdapter) {
+        super(ctx, platformAdapter);
     }
 
     public Entity getEntity() {
@@ -39,6 +37,7 @@ public final class CommandContext extends AbstractCommandContext<CommandSource, 
         return handle.getSource();
     }
 
+    @Override
     public void sendMessage(@Nullable String message) {
         sendMessage(message, false);
     }
@@ -48,6 +47,7 @@ public final class CommandContext extends AbstractCommandContext<CommandSource, 
 
     }
 
+    @Override
     public void sendMessageWithOption(@Nullable String message, @NotNull Consumer<MessageOption> options) {
         ITextComponent messageComponent = MessageOption.createMessage(options, (rgb, hoverText) -> {
             TextComponent c = new StringTextComponent(String.valueOf(message));
@@ -60,21 +60,6 @@ public final class CommandContext extends AbstractCommandContext<CommandSource, 
         sendMessage(messageComponent);
     }
 
-    public void sendTranslatableWithOption(@NotNull String key,
-                                           @NotNull Object[] args,
-                                           @NotNull Consumer<MessageOption> options) {
-        ITextComponent messageComponent = MessageOption.createMessage(options, (rgb, hoverText) -> {
-            TextComponent c = new TranslationTextComponent(key, args);
-            return c.setStyle(c.getStyle()
-                               .setColor(Color.fromInt(rgb))
-                               .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                                             new StringTextComponent(hoverText))));
-        });
-
-        sendMessage(messageComponent);
-    }
-
-
     public void sendMessage(@NotNull ITextComponent component) {
         sendMessage(component, false);
     }
@@ -83,6 +68,7 @@ public final class CommandContext extends AbstractCommandContext<CommandSource, 
         getSender().sendFeedback(component, allowLogging);
     }
 
+    @Override
     public void sendSuccess(@Nullable String message) {
         sendSuccess(message, false);
     }
@@ -94,6 +80,7 @@ public final class CommandContext extends AbstractCommandContext<CommandSource, 
         sendMessage(component, allowLogging);
     }
 
+    @Override
     public void sendWarn(@Nullable String message) {
         sendWarn(message, false);
     }
@@ -105,6 +92,7 @@ public final class CommandContext extends AbstractCommandContext<CommandSource, 
         sendMessage(component, allowLogging);
     }
 
+    @Override
     public void sendFailure(@Nullable String message) {
         sendFailure(message, false);
     }
@@ -117,24 +105,7 @@ public final class CommandContext extends AbstractCommandContext<CommandSource, 
     }
 
     @Override
-    public void sendComponentBuilder(ComponentBuilder<? extends ITextComponent, ?> builder) {
-        sendMessage(builder.build());
-    }
-
-    @Override
-    public TextComponentBuilder<? extends TextComponent, ?> createTextComponentBuilder(@NotNull String text) {
-        return new TextComponentBuilderImpl(text);
-    }
-
-    @Override
-    public TranslatableComponentBuilder<? extends TextComponent, ?> createTranslatableComponentBuilder(@NotNull String key) {
-        return new TranslatableComponentBuilderImpl(key);
-    }
-
-    @Override
-    IncorrectArgumentInputException convertCommandSyntaxException(CommandSyntaxException e) {
-        return new IncorrectArgumentInputException(ctx -> {
-            ((CommandContext) ctx).sendMessage(((ITextComponent) e.getRawMessage()));
-        });
+    public void sendComponent(ITextComponent component) {
+        sendMessage(component);
     }
 }

@@ -1,13 +1,9 @@
 package net.kunmc.lab.commandlib;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.TextColorUtil;
-import net.kunmc.lab.commandlib.util.text.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
-import net.minecraft.server.v1_16_R3.ChatMessage;
 import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -16,13 +12,12 @@ import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public final class CommandContext extends AbstractCommandContext<CommandListenerWrapper, Component> {
-    public CommandContext(com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx) {
-        super(ctx);
+    public CommandContext(com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx,
+                          PlatformAdapterImpl platformAdapter) {
+        super(ctx, platformAdapter);
     }
 
     public Entity getEntity() {
@@ -45,6 +40,7 @@ public final class CommandContext extends AbstractCommandContext<CommandListener
                      .getBukkitSender();
     }
 
+    @Override
     public void sendMessage(@Nullable String message) {
         sendMessage(Component.text(String.valueOf(message)));
     }
@@ -53,6 +49,7 @@ public final class CommandContext extends AbstractCommandContext<CommandListener
         getSender().sendMessage(component);
     }
 
+    @Override
     public void sendMessageWithOption(@Nullable String message, @NotNull Consumer<MessageOption> options) {
         Component messageComponent = MessageOption.createMessage(options,
                                                                  (rgb, hoverText) -> Component.text(String.valueOf(
@@ -65,6 +62,7 @@ public final class CommandContext extends AbstractCommandContext<CommandListener
         sendMessage(messageComponent);
     }
 
+    @Override
     public void sendSuccess(@Nullable String message) {
         sendSuccess(Component.text(String.valueOf(message)));
     }
@@ -73,6 +71,7 @@ public final class CommandContext extends AbstractCommandContext<CommandListener
         sendMessage(component.color(TextColorUtil.GREEN));
     }
 
+    @Override
     public void sendWarn(@Nullable String message) {
         sendWarn(Component.text(String.valueOf(message)));
     }
@@ -81,6 +80,7 @@ public final class CommandContext extends AbstractCommandContext<CommandListener
         sendMessage(component.color(TextColorUtil.YELLOW));
     }
 
+    @Override
     public void sendFailure(@Nullable String message) {
         sendFailure(Component.text(String.valueOf(message)));
     }
@@ -90,29 +90,7 @@ public final class CommandContext extends AbstractCommandContext<CommandListener
     }
 
     @Override
-    public void sendComponentBuilder(ComponentBuilder<? extends Component, ?> builder) {
-        sendMessage(builder.build());
-    }
-
-    @Override
-    public TextComponentBuilder<? extends Component, ?> createTextComponentBuilder(@NotNull String text) {
-        return new TextComponentBuilderImpl(text);
-    }
-
-    @Override
-    public TranslatableComponentBuilder<? extends Component, ?> createTranslatableComponentBuilder(@NotNull String key) {
-        return new TranslatableComponentBuilderImpl(key);
-    }
-
-    @Override
-    IncorrectArgumentInputException convertCommandSyntaxException(CommandSyntaxException e) {
-        ChatMessage msg = ((ChatMessage) e.getRawMessage());
-        return new IncorrectArgumentInputException(ctx -> {
-            ((CommandContext) ctx).sendFailure(Component.translatable(msg.getKey())
-                                                        .args(Arrays.stream(msg.getArgs())
-                                                                    .map(String::valueOf)
-                                                                    .map(Component::text)
-                                                                    .collect(Collectors.toList())));
-        });
+    public void sendComponent(Component component) {
+        sendMessage(component);
     }
 }

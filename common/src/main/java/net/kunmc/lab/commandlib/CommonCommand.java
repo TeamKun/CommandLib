@@ -1,9 +1,7 @@
 package net.kunmc.lab.commandlib;
 
 import com.google.common.collect.Lists;
-import net.kunmc.lab.commandlib.util.ChatColorUtil;
 import net.kunmc.lab.commandlib.util.fucntion.*;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -12,17 +10,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
-public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, A extends AbstractArguments<?, C>, B extends AbstractArgumentBuilder<C, A, B>, T extends CommonCommand<C, A, B, T>> {
+public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B extends AbstractArgumentBuilder<C, B>, T extends CommonCommand<C, B, T>> {
     private final String name;
     private String description = "";
     private T parent = null;
     private final List<T> children = new ArrayList<>();
     private final List<String> aliases = new ArrayList<>();
-    private final List<A> argumentsList = new ArrayList<>();
-    private ContextAction<C> execute = this::sendHelp;
+    private final List<Consumer<B>> argumentBuilderConsumers = new ArrayList<>();
+    private ContextAction<C> contextAction;
 
     public CommonCommand(@NotNull String name) {
         this.name = name;
@@ -61,9 +57,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, A ex
     }
 
     public final void argument(@NotNull Consumer<B> buildArguments) {
-        B builder = createArgumentBuilder();
-        buildArguments.accept(builder);
-        argumentsList.add(builder.build());
+        argumentBuilderConsumers.add(buildArguments);
     }
 
     public final <T1> void argument(@NotNull CommonArgument<T1, C> argument, @NotNull BiConsumer<T1, C> execute) {
@@ -205,7 +199,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, A ex
     }
 
     public final void execute(@NotNull ContextAction<C> execute) {
-        this.execute = execute;
+        this.contextAction = execute;
     }
 
     final T parent() {
@@ -220,72 +214,29 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, A ex
         return Collections.unmodifiableList(children);
     }
 
-    final List<A> argumentsList() {
-        return Collections.unmodifiableList(argumentsList);
+    final List<Consumer<B>> argumentBuilderConsumers() {
+        return Collections.unmodifiableList(argumentBuilderConsumers);
     }
 
     final List<String> aliases() {
         return Collections.unmodifiableList(aliases);
     }
 
-    abstract boolean hasPermission(C ctx);
-
-    final void sendHelp(C ctx) {
-        String border = ChatColorUtil.GRAY + StringUtils.repeat("-", 50);
-        String padding = StringUtils.repeat(" ", 2);
-        String literalConcatName = ((Supplier<String>) () -> {
-            StringBuilder s = new StringBuilder(name);
-            T parent = parent();
-            while (parent != null) {
-                s.insert(0, parent.name() + " ");
-                parent = parent.parent();
-            }
-
-            return s.toString();
-        }).get();
-
-        ctx.sendMessage(border);
-
-        if (!description.isEmpty()) {
-            ctx.sendMessage(description);
+    /**
+     * @deprecated Remove when removing {@link CommonCommand#execute(AbstractCommandContext)}
+     */
+    @Deprecated
+    final void setContextActionIfAbsent(ContextAction<C> contextAction) {
+        if (this.contextAction == null) {
+            this.contextAction = contextAction;
         }
-        ctx.sendMessage(ChatColorUtil.RED + "Usage:");
-
-        List<T> permissibleChildren = children.stream()
-                                              .filter(x -> x.hasPermission(ctx))
-                                              .collect(Collectors.toList());
-        if (!permissibleChildren.isEmpty()) {
-            ctx.sendMessage(ChatColorUtil.AQUA + padding + "/" + literalConcatName);
-
-            permissibleChildren.stream()
-                               .filter(x -> x.hasPermission(ctx))
-                               .map(x -> {
-                                   String s = ChatColorUtil.YELLOW + padding + padding + x.name();
-                                   if (x.description()
-                                        .isEmpty()) {
-                                       return s;
-                                   }
-                                   return s + ChatColorUtil.WHITE + ": " + x.description();
-                               })
-                               .forEach(ctx::sendMessage);
-        }
-
-        List<String> argumentsHelpMessages = argumentsList.stream()
-                                                          .map(x -> x.generateHelpMessage(literalConcatName))
-                                                          .filter(x -> !x.isEmpty())
-                                                          .map(x -> padding + x)
-                                                          .collect(Collectors.toList());
-        if (!permissibleChildren.isEmpty() && !argumentsHelpMessages.isEmpty()) {
-            ctx.sendMessage("");
-        }
-        argumentsHelpMessages.forEach(ctx::sendMessage);
-
-        ctx.sendMessage(border);
     }
 
+    /**
+     * @deprecated Use {@link CommonCommand#execute(ContextAction)} instead of overriding this method.
+     */
+    @Deprecated
     protected void execute(@NotNull C ctx) {
-        execute.accept(ctx);
+        this.contextAction.accept(ctx);
     }
-
-    abstract B createArgumentBuilder();
 }

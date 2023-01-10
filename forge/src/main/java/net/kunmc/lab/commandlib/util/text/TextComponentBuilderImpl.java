@@ -2,7 +2,7 @@ package net.kunmc.lab.commandlib.util.text;
 
 import net.minecraft.util.text.*;
 
-public class TextComponentBuilderImpl extends TextComponentBuilder<TextComponent, TextComponentBuilderImpl> {
+public class TextComponentBuilderImpl extends TextComponentBuilder<ITextComponent, TextComponent, TextComponentBuilderImpl> {
     public TextComponentBuilderImpl(String text) {
         super(new StringTextComponent(text));
     }
@@ -21,8 +21,8 @@ public class TextComponentBuilderImpl extends TextComponentBuilder<TextComponent
     }
 
     @Override
-    public TextComponentBuilderImpl append(ComponentBuilder<?, ?> builder) {
-        component.appendSibling(((ITextComponent) builder.build()));
+    public TextComponentBuilderImpl append(ITextComponent component) {
+        this.component.appendSibling(component);
         return this;
     }
 }

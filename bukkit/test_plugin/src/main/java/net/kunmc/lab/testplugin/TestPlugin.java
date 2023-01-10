@@ -19,7 +19,12 @@ public final class TestPlugin extends JavaPlugin {
             setDescription("test command");
             setPermission(PermissionDefault.TRUE);
 
-            addChildren(new Command("a") {{
+            addChildren(new Command("var") {{
+                argument(new IntegerArgument("integer"), (integer, ctx) -> ctx.sendSuccess(integer));
+                argument(new IntegerArgument("integer"),
+                         new EnumArgument<>("enum", Material.class),
+                         (integer, e, ctx) -> ctx.sendSuccess(integer + e.name()));
+            }}, new Command("a") {{
                 setDescription("a command");
                 setPermission(PermissionDefault.OP);
                 argument(new OfflinePlayersArgument("offlines"),

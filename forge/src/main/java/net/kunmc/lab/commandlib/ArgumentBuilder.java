@@ -20,7 +20,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContext, Arguments, ArgumentBuilder> {
+public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContext, ArgumentBuilder> {
     /**
      * Add argument for {@link net.minecraft.util.math.BlockPos}.
      */
@@ -532,10 +532,5 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
     public ArgumentBuilder uuidsArgumentWith(@NotNull String name,
                                              @Nullable Consumer<Argument.Option<List<UUID>, CommandContext>> options) {
         return addArgument(new UUIDsArgument(name, options));
-    }
-
-    @Override
-    Arguments createArguments(List<CommonArgument<?, CommandContext>> commonArguments) {
-        return new Arguments(commonArguments);
     }
 }
