@@ -60,28 +60,26 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
         builder.requires(x -> platformAdapter.hasPermission(command, x));
 
         if (argumentsList.isEmpty()) {
-            builder.executes(ctx -> ContextAction.executeWithStackTrace(platformAdapter.createCommandContext(ctx),
-                                                                        command::execute));
-
-            return builder.build();
+            return builder.executes(ctx -> ContextAction.executeWithStackTrace(platformAdapter.createCommandContext(ctx),
+                                                                               command::execute))
+                          .build();
         }
 
         argumentsList.stream()
                      .sorted((x, y) -> Integer.compare(y.size(), x.size())) // 可変長引数のコマンドに対応させる
                      .forEach(arguments -> {
-                         builder.then(arguments.build(sendHelpAction));
+                         builder.then(arguments.build(sendHelpAction))
+                                .executes(ctx -> {
+                                    C context = platformAdapter.createCommandContext(ctx);
+                                    try {
+                                        arguments.parse(context);
+                                    } catch (IncorrectArgumentInputException e) {
+                                        e.sendMessage(context);
+                                        return 1;
+                                    }
 
-                         builder.executes(ctx -> {
-                             C context = platformAdapter.createCommandContext(ctx);
-                             try {
-                                 arguments.parse(context);
-                             } catch (IncorrectArgumentInputException e) {
-                                 e.sendMessage(context);
-                                 return 1;
-                             }
-
-                             return ContextAction.executeWithStackTrace(context, command::execute);
-                         });
+                                    return ContextAction.executeWithStackTrace(context, command::execute);
+                                });
                      });
 
         return builder.build();
@@ -90,14 +88,12 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
     private List<CommandNode<S>> createAliasCommands(U source, CommandNode<S> redirectTarget) {
         return source.aliases()
                      .stream()
-                     .map(s -> {
-                         LiteralArgumentBuilder<S> builder = LiteralArgumentBuilder.literal(s);
-                         builder.executes(ctx -> redirectTarget.getCommand()
-                                                               .run(ctx));
-                         return builder.requires(x -> platformAdapter.hasPermission(source, x))
-                                       .redirect(redirectTarget);
-                     })
-                     .map(LiteralArgumentBuilder::build)
+                     .map(s -> LiteralArgumentBuilder.<S>literal(s)
+                                                     .requires(x -> platformAdapter.hasPermission(source, x))
+                                                     .executes(x -> redirectTarget.getCommand()
+                                                                                  .run(x))
+                                                     .redirect(redirectTarget)
+                                                     .build())
                      .collect(Collectors.toList());
     }
 
@@ -144,15 +140,15 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                                    .forEach(ctx::sendMessage);
             }
 
-            List<String> argumentsHelpMessages = argumentsList.stream()
-                                                              .map(Arguments::concatTagNames)
-                                                              .filter(x -> !x.isEmpty())
-                                                              .map(x -> padding + ChatColorUtil.AQUA + "/" + literalConcatName + " " + x)
-                                                              .collect(Collectors.toList());
-            if (!permissibleChildren.isEmpty() && !argumentsHelpMessages.isEmpty()) {
+            List<String> concatenatedTagNames = argumentsList.stream()
+                                                             .map(Arguments::concatTagNames)
+                                                             .filter(x -> !x.isEmpty())
+                                                             .map(x -> padding + ChatColorUtil.AQUA + "/" + literalConcatName + " " + x)
+                                                             .collect(Collectors.toList());
+            if (!permissibleChildren.isEmpty() && !concatenatedTagNames.isEmpty()) {
                 ctx.sendMessage("");
             }
-            argumentsHelpMessages.forEach(ctx::sendMessage);
+            concatenatedTagNames.forEach(ctx::sendMessage);
 
             ctx.sendMessage(border);
         };
