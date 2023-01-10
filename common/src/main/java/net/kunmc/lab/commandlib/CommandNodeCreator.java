@@ -92,11 +92,8 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                      .stream()
                      .map(s -> {
                          LiteralArgumentBuilder<S> builder = LiteralArgumentBuilder.literal(s);
-                         if (!redirectTarget.getChildren()
-                                            .isEmpty()) {
-                             builder.executes(ctx -> redirectTarget.getCommand()
-                                                                   .run(ctx));
-                         }
+                         builder.executes(ctx -> redirectTarget.getCommand()
+                                                               .run(ctx));
                          return builder.requires(x -> platformAdapter.hasPermission(source, x))
                                        .redirect(redirectTarget);
                      })
