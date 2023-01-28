@@ -61,14 +61,14 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
 
         if (argumentsList.isEmpty()) {
             return builder.executes(ctx -> ContextAction.executeWithStackTrace(platformAdapter.createCommandContext(ctx),
-                                                                               command::execute))
+                                                                               command.contextAction()))
                           .build();
         }
 
         argumentsList.stream()
                      .sorted((x, y) -> Integer.compare(y.size(), x.size())) // 可変長引数のコマンドに対応させる
                      .forEach(arguments -> {
-                         builder.then(arguments.build(sendHelpAction))
+                         builder.then(arguments.build(sendHelpAction, command))
                                 .executes(ctx -> {
                                     C context = platformAdapter.createCommandContext(ctx);
                                     try {
@@ -78,7 +78,7 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                                         return 1;
                                     }
 
-                                    return ContextAction.executeWithStackTrace(context, command::execute);
+                                    return ContextAction.executeWithStackTrace(context, command.contextAction());
                                 });
                      });
 

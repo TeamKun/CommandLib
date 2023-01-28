@@ -19,7 +19,33 @@ public final class TestPlugin extends JavaPlugin {
             setDescription("test command");
             setPermission(PermissionDefault.TRUE);
 
-            addChildren(new Command("test") {{
+            addPreprocess(ctx -> {
+                ctx.sendWarn("pre1");
+            });
+            addPreprocess(ctx -> {
+                ctx.sendWarn("pre2");
+                return Bukkit.getCurrentTick() % 2 == 0;
+            });
+            addPreprocess(ctx -> {
+                ctx.sendWarn("pre3");
+            });
+
+            execute(ctx -> ctx.sendSuccess("test"));
+
+            addChildren(new Command("inheritTest") {{
+                execute(ctx -> ctx.sendSuccess("inheritTest"));
+                argument(new IntegerArgument("n"), (n, ctx) -> ctx.sendSuccess(n));
+            }}, new Command("noInheritTest") {{
+                setInheritParentPreprocess(false);
+                execute(ctx -> ctx.sendSuccess("noInheritTest"));
+                argument(new IntegerArgument("n"), (n, ctx) -> ctx.sendSuccess(n));
+            }}, new Command("inheritAndComposeTest") {{
+                addPreprocess(ctx -> {
+                    ctx.sendFailure("compose pre");
+                });
+                execute(ctx -> ctx.sendSuccess("compose"));
+                argument(new IntegerArgument("n"), (n, ctx) -> ctx.sendSuccess(n));
+            }}, new Command("test") {{
                 addAliases("alias");
             }}, new Command("var") {{
                 argument(new IntegerArgument("integer"), (integer, ctx) -> ctx.sendSuccess(integer));

@@ -4,20 +4,20 @@ import com.google.common.collect.Lists;
 import net.kunmc.lab.commandlib.util.fucntion.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B extends AbstractArgumentBuilder<C, B>, T extends CommonCommand<C, B, T>> {
     private final String name;
     private String description = "";
     private T parent = null;
+    private boolean inheritParentPreprocess = true;
     private final List<T> children = new ArrayList<>();
     private final List<String> aliases = new ArrayList<>();
     private final List<Consumer<B>> argumentBuilderConsumers = new ArrayList<>();
+    private final List<Function<C, Boolean>> preprocesses = new ArrayList<>();
     private ContextAction<C> contextAction;
 
     public CommonCommand(@NotNull String name) {
@@ -43,8 +43,8 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     public final void addChildren(@NotNull Collection<? extends T> children) {
         this.children.addAll(children);
 
-        for (T child : children) {
-            child.setParent((T) this);
+        for (CommonCommand<C, B, T> child : children) {
+            child.parent = ((T) this);
         }
     }
 
@@ -54,6 +54,10 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
 
     public final void addAliases(@NotNull Collection<String> aliases) {
         this.aliases.addAll(aliases);
+    }
+
+    public final void setInheritParentPreprocess(boolean inherit) {
+        this.inheritParentPreprocess = inherit;
     }
 
     public final void argument(@NotNull Consumer<B> buildArguments) {
@@ -198,6 +202,20 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         });
     }
 
+    public final void addPreprocess(Consumer<C> preprocess) {
+        addPreprocess(ctx -> {
+            preprocess.accept(ctx);
+            return true;
+        });
+    }
+
+    /**
+     * @param preprocess return false if cancel executing command.
+     */
+    public final void addPreprocess(Function<C, Boolean> preprocess) {
+        preprocesses.add(preprocess);
+    }
+
     public final void execute(@NotNull ContextAction<C> execute) {
         this.contextAction = execute;
     }
@@ -206,12 +224,18 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         return parent;
     }
 
-    final void setParent(T parent) {
-        this.parent = parent;
-    }
-
     final List<T> children() {
         return Collections.unmodifiableList(children);
+    }
+
+    final List<Function<C, Boolean>> preprocesses() {
+        List<Function<C, Boolean>> preprocesses = new LinkedList<>(this.preprocesses);
+        if (!inheritParentPreprocess || parent == null) {
+            return preprocesses;
+        }
+
+        preprocesses.addAll(0, parent.preprocesses());
+        return preprocesses;
     }
 
     final List<Consumer<B>> argumentBuilderConsumers() {
@@ -220,6 +244,16 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
 
     final List<String> aliases() {
         return Collections.unmodifiableList(aliases);
+    }
+
+    final ContextAction<C> contextAction() {
+        return ctx -> {
+            if (!preprocesses().stream()
+                               .allMatch(x -> x.apply(ctx))) {
+                return;
+            }
+            execute(ctx);
+        };
     }
 
     /**

@@ -39,7 +39,9 @@ final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
                         .collect(Collectors.joining(" "));
     }
 
-    private RequiredArgumentBuilder<S, ?> buildArgument(CommonArgument<?, C> argument, ContextAction<C> defaultAction) {
+    private RequiredArgumentBuilder<S, ?> buildArgument(CommonArgument<?, C> argument,
+                                                        ContextAction<C> defaultAction,
+                                                        CommonCommand<C, ?, ?> parent) {
         RequiredArgumentBuilder<S, ?> builder = RequiredArgumentBuilder.argument(argument.name(), argument.type());
 
         if (argument.suggestionAction() != null) {
@@ -75,6 +77,12 @@ final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
                 return 1;
             }
 
+            if (!parent.preprocesses()
+                       .stream()
+                       .allMatch(x -> x.apply(context))) {
+                return 1;
+            }
+
             return ContextAction.executeWithStackTrace(context, argument.contextAction());
         });
 
@@ -85,15 +93,16 @@ final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
         return arguments.size();
     }
 
-    private List<ArgumentCommandNode<S, ?>> toCommandNodes(ContextAction<C> defaultAction) {
+    private List<ArgumentCommandNode<S, ?>> toCommandNodes(ContextAction<C> defaultAction,
+                                                           CommonCommand<C, ?, ?> parent) {
         return arguments.stream()
-                        .map(x -> buildArgument(x, defaultAction))
+                        .map(x -> buildArgument(x, defaultAction, parent))
                         .map(RequiredArgumentBuilder::build)
                         .collect(Collectors.toList());
     }
 
-    ArgumentCommandNode<S, ?> build(ContextAction<C> defaultAction) {
-        List<ArgumentCommandNode<S, ?>> nodes = toCommandNodes(defaultAction);
+    ArgumentCommandNode<S, ?> build(ContextAction<C> defaultAction, CommonCommand<C, ?, ?> parent) {
+        List<ArgumentCommandNode<S, ?>> nodes = toCommandNodes(defaultAction, parent);
         if (nodes.isEmpty()) {
             return null;
         }
