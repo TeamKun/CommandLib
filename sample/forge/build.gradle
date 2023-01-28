@@ -71,7 +71,7 @@ repositories {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.16.5-36.2.20'
 
-    implementation "com.github.TeamKun.CommandLib:forge:0.8.1"
+    implementation "com.github.TeamKun.CommandLib:forge:0.12.2"
 }
 
 jar {
