@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -16,6 +17,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
     private boolean displayDefaultSuggestions = true;
     private SuggestionAction<C> suggestionAction;
     private SuggestionAction<C> additionalSuggestionAction;
+    private BiFunction<C, String, T> additionalParser;
     private ContextAction<C> contextAction;
     private final ArgumentType<?> type;
     private Predicate<? super T> filter;
@@ -71,6 +73,10 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         this.additionalSuggestionAction = additionalSuggestionAction;
     }
 
+    protected final void setAdditionalParser(BiFunction<C, String, T> parser) {
+        this.additionalParser = parser;
+    }
+
     public final ContextAction<C> contextAction() {
         return contextAction;
     }
@@ -116,6 +122,8 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
               .ifPresent(this::setSuggestionAction);
         option.additionalSuggestionAction()
               .ifPresent(this::setAdditionalSuggestionAction);
+        option.additionalParser()
+              .ifPresent(this::setAdditionalParser);
         option.contextAction()
               .ifPresent(this::setContextAction);
         option.filter()
@@ -125,12 +133,18 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
     }
 
     final T parseInternal(C ctx) throws IncorrectArgumentInputException {
-        T t;
+        T t = null;
         try {
             t = parse(ctx);
         } catch (CommandSyntaxException e) {
-            throw ctx.platformAdapter()
-                     .convertCommandSyntaxException(e);
+            if (additionalParser != null) {
+                t = additionalParser.apply(ctx, ctx.getInput(name));
+            }
+
+            if (t == null) {
+                throw ctx.platformAdapter()
+                         .convertCommandSyntaxException(e);
+            }
         }
 
         if (filter != null && !filter.test(t)) {
@@ -151,6 +165,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         protected boolean displayDefaultSuggestions = true;
         protected SuggestionAction<C> suggestionAction;
         protected SuggestionAction<C> additionalSuggestionAction;
+        protected BiFunction<C, String, T> additionalParser;
         protected Predicate<? super T> filter;
         protected Function<? super T, ? extends T> shaper;
         protected ContextAction<C> contextAction;
@@ -165,6 +180,10 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
 
         protected Optional<SuggestionAction<C>> additionalSuggestionAction() {
             return Optional.ofNullable(additionalSuggestionAction);
+        }
+
+        protected Optional<BiFunction<C, String, T>> additionalParser() {
+            return Optional.ofNullable(additionalParser);
         }
 
         protected Optional<Predicate<? super T>> filter() {

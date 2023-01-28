@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public final class TestPlugin extends JavaPlugin {
@@ -32,7 +33,20 @@ public final class TestPlugin extends JavaPlugin {
 
             execute(ctx -> ctx.sendSuccess("test"));
 
-            addChildren(new Command("inheritTest") {{
+            addChildren(new Command("additionalparse") {{
+                argument(new PlayerArgument("target", option -> {
+                    option.suggestionAction(sb -> sb.suggest("hogehoge"))
+                          .additionalParser((ctx, input) -> {
+                              if (input.equals("hogehoge") && !Bukkit.getOnlinePlayers()
+                                                                     .isEmpty()) {
+                                  return new ArrayList<>(Bukkit.getOnlinePlayers()).get(0);
+                              }
+                              return null;
+                          });
+                }), (material, ctx) -> {
+                    ctx.sendSuccess(material);
+                });
+            }}, new Command("inheritTest") {{
                 execute(ctx -> ctx.sendSuccess("inheritTest"));
                 argument(new IntegerArgument("n"), (n, ctx) -> ctx.sendSuccess(n));
             }}, new Command("noInheritTest") {{
