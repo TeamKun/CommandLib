@@ -47,6 +47,10 @@ public final class TestPlugin extends JavaPlugin {
                 argument(new IntegerArgument("n"), (n, ctx) -> ctx.sendSuccess(n));
             }}, new Command("test") {{
                 addAliases("alias");
+                argument(new PlayerArgument("target", option -> option.suggestionAction(sb -> sb.suggest("aiueo"))),
+                         (p, ctx) -> {
+                             ctx.sendSuccess(p.getName());
+                         });
             }}, new Command("var") {{
                 argument(new IntegerArgument("integer"), (integer, ctx) -> ctx.sendSuccess(integer));
                 argument(new IntegerArgument("integer"),

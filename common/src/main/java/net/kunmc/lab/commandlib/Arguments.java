@@ -59,6 +59,16 @@ final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
                                  .forEach(s -> {
                                      s.suggest(sb);
                                  });
+                if (argument.isDisplayDefaultSuggestions()) {
+                    argument.type()
+                            .listSuggestions(ctx, sb)
+                            .thenAccept(x -> {
+                                x.getList()
+                                 .forEach(s -> {
+                                     sb.suggest(s.getText(), s.getTooltip());
+                                 });
+                            });
+                }
 
                 return sb.buildFuture();
             });

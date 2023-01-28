@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 
 public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> {
     protected final String name;
+    private boolean displayDefaultSuggestions = true;
     private SuggestionAction<C> suggestionAction;
     private SuggestionAction<C> additionalSuggestionAction;
     private ContextAction<C> contextAction;
@@ -37,6 +38,14 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
 
     public final String name() {
         return name;
+    }
+
+    final boolean isDisplayDefaultSuggestions() {
+        return displayDefaultSuggestions;
+    }
+
+    protected final void setDisplayDefaultSuggestions(boolean display) {
+        this.displayDefaultSuggestions = display;
     }
 
     public final SuggestionAction<C> suggestionAction() {
@@ -102,6 +111,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
     }
 
     protected final void setOption(Option<T, C> option) {
+        setDisplayDefaultSuggestions(option.isDisplayDefaultSuggestions());
         option.suggestionAction()
               .ifPresent(this::setSuggestionAction);
         option.additionalSuggestionAction()
@@ -138,11 +148,16 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
     @Accessors(chain = true, fluent = true)
     @Setter
     public static class Option<T, C extends AbstractCommandContext<?, ?>> {
+        protected boolean displayDefaultSuggestions = true;
         protected SuggestionAction<C> suggestionAction;
         protected SuggestionAction<C> additionalSuggestionAction;
         protected Predicate<? super T> filter;
         protected Function<? super T, ? extends T> shaper;
         protected ContextAction<C> contextAction;
+
+        protected boolean isDisplayDefaultSuggestions() {
+            return displayDefaultSuggestions;
+        }
 
         protected Optional<SuggestionAction<C>> suggestionAction() {
             return Optional.ofNullable(suggestionAction);
