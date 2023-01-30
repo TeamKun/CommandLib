@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -88,12 +89,17 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
     private List<CommandNode<S>> createAliasCommands(U source, CommandNode<S> redirectTarget) {
         return source.aliases()
                      .stream()
-                     .map(s -> LiteralArgumentBuilder.<S>literal(s)
-                                                     .requires(x -> platformAdapter.hasPermission(source, x))
-                                                     .executes(x -> redirectTarget.getCommand()
-                                                                                  .run(x))
-                                                     .redirect(redirectTarget)
-                                                     .build())
+                     .map(s -> {
+                         CommandNode<S> node = LiteralArgumentBuilder.<S>literal(s)
+                                                                     .requires(x -> platformAdapter.hasPermission(source,
+                                                                                                                  x))
+                                                                     .executes(x -> redirectTarget.getCommand()
+                                                                                                  .run(x))
+                                                                     .build();
+                         redirectTarget.getChildren()
+                                       .forEach(node::addChild);
+                         return node;
+                     })
                      .collect(Collectors.toList());
     }
 
@@ -101,15 +107,21 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
         return ctx -> {
             String border = ChatColorUtil.GRAY + StringUtils.repeat("-", 50);
             String padding = StringUtils.repeat(" ", 2);
+
             String literalConcatName = ((Supplier<String>) () -> {
-                StringBuilder s = new StringBuilder(command.name());
+                LinkedList<U> commands = new LinkedList<>();
+                commands.addFirst(command);
                 U parent = command.parent();
                 while (parent != null) {
-                    s.insert(0, parent.name() + " ");
+                    commands.addFirst(parent);
                     parent = parent.parent();
                 }
 
-                return s.toString();
+                List<String> names = commands.stream()
+                                             .map(CommonCommand::name)
+                                             .collect(Collectors.toList());
+                names.set(0, ctx.getArg(0));
+                return String.join(" ", names);
             }).get();
 
             ctx.sendMessage(border);
