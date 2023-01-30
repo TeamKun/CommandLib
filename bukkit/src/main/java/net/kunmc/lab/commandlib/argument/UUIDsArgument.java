@@ -56,6 +56,7 @@ public class UUIDsArgument extends Argument<List<UUID>> {
                  .filter(x -> input.isEmpty() || x.startsWith(input))
                  .forEach(sb::suggest);
         });
+        setDisplayDefaultSuggestions(false);
         setOptions(options);
     }
 
