@@ -50,6 +50,7 @@ public class UUIDArgument extends Argument<UUID> {
                 }
             });
         });
+        setDisplayDefaultSuggestions(false);
         setOptions(options);
     }
 
