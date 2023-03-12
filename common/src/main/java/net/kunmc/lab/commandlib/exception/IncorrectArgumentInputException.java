@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 public final class IncorrectArgumentInputException extends Exception {
     private final Consumer<AbstractCommandContext<?, ?>> sendMessages;
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public <C extends AbstractCommandContext<?, ?>> IncorrectArgumentInputException(CommonArgument<?, C> argument,
                                                                                     C ctx,
                                                                                     String incorrectInput) {
@@ -32,7 +33,6 @@ public final class IncorrectArgumentInputException extends Exception {
 
         String finalStr = str;
         this.sendMessages = context -> {
-            // IDE上では怒られないがコンパイルが通らないのでRawにしている
             AbstractCommandContext c = context;
             c.sendComponent(c.platformAdapter()
                              .createTranslatableComponentBuilder("command.unknown.argument")
