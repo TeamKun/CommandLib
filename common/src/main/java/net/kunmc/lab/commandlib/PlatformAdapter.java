@@ -17,7 +17,7 @@ public interface PlatformAdapter<S, T, C extends AbstractCommandContext<S, T>, B
 
     IncorrectArgumentInputException convertCommandSyntaxException(CommandSyntaxException e);
 
-    <A extends TextComponentBuilder<T, ? extends T, A>> A createTextComponentBuilder(@NotNull String text);
+    TextComponentBuilder<T, ? extends T, ?> createTextComponentBuilder(@NotNull String text);
 
-    <A extends TranslatableComponentBuilder<T, ? extends T, A>> A createTranslatableComponentBuilder(@NotNull String key);
+    TranslatableComponentBuilder<T, ? extends T, ?> createTranslatableComponentBuilder(@NotNull String key);
 }
