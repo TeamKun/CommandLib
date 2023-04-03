@@ -181,6 +181,9 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
     public static class Option<T, C extends AbstractCommandContext<?, ?>> {
         protected boolean displayDefaultSuggestions = true;
         protected SuggestionAction<C> suggestionAction;
+        /**
+         * It can be used to add additional suggests to an argument that configures a suggestion action by default, such as {@link net.kunmc.lab.commandlib.argument.CommonObjectArgument}.
+         */
         protected SuggestionAction<C> additionalSuggestionAction;
         protected BiFunction<C, String, T> additionalParser;
         /**
