@@ -35,12 +35,13 @@ public final class TestPlugin extends JavaPlugin {
             execute(ctx -> ctx.sendSuccess("test"));
 
             addChildren(new Command("additionalparse") {{
-                argument(new PlayerArgument("target", option -> {
+                argument(new UUIDArgument("target", option -> {
                     option.suggestionAction(sb -> sb.suggest("hogehoge"))
                           .additionalParser((ctx, input) -> {
                               if (input.equals("hogehoge") && !Bukkit.getOnlinePlayers()
                                                                      .isEmpty()) {
-                                  return new ArrayList<>(Bukkit.getOnlinePlayers()).get(0);
+                                  return new ArrayList<>(Bukkit.getOnlinePlayers()).get(0)
+                                                                                   .getUniqueId();
                               }
                               return null;
                           });
