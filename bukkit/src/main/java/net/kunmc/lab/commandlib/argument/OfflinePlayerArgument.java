@@ -23,7 +23,7 @@ public class OfflinePlayerArgument extends Argument<OfflinePlayer> {
 
         setSuggestionAction(sb -> {
             Arrays.stream(Bukkit.getOfflinePlayers())
-                  .filter(x -> filter() == null || filter().test(x))
+                  .filter(x -> test(x, true))
                   .map(OfflinePlayer::getName)
                   .filter(Objects::nonNull)
                   .filter(x -> sb.getLatestInput()

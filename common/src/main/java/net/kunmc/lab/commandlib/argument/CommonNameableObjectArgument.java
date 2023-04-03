@@ -26,7 +26,7 @@ public class CommonNameableObjectArgument<T extends Nameable, C extends Abstract
 
         setSuggestionAction(sb -> {
             candidates.stream()
-                      .filter(x -> filter() == null || filter().test(x))
+                      .filter(x -> test(x, true))
                       .map(Nameable::tabCompleteName)
                       .filter(x -> sb.getLatestInput()
                                      .isEmpty() || x.contains(sb.getLatestInput()))

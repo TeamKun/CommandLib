@@ -30,7 +30,7 @@ public class GameProfileArgument extends Argument<GameProfile> {
               .map(getPlayerProfileCache()::getGameProfileForUsername)
               .filter(Objects::nonNull)
               .filter(x -> Objects.nonNull(x.getName()))
-              .filter(x -> filter() == null || filter().test(x))
+              .filter(x -> test(x, true))
               .map(GameProfile::getName)
               .filter(x -> sb.getLatestInput()
                              .isEmpty() || StringUtils.containsIgnoreCase(x, sb.getLatestInput()))

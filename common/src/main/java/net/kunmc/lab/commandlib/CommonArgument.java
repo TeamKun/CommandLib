@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.InvalidArgumentException;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -95,10 +96,6 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         return contextAction != null;
     }
 
-    protected final Predicate<? super T> filter() {
-        return filter;
-    }
-
     protected final void setFilter(Predicate<? super T> filter) {
         this.filter = filter;
     }
@@ -132,6 +129,22 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
               .ifPresent(this::setShaper);
     }
 
+    protected final boolean test(T t, boolean ignoreException) {
+        if (filter == null) {
+            return true;
+        }
+
+        try {
+            return filter.test(t);
+        } catch (InvalidArgumentException e) {
+            if (ignoreException) {
+                return false;
+            }
+
+            throw e;
+        }
+    }
+
     final T parseInternal(C ctx) throws IncorrectArgumentInputException {
         T t = null;
         try {
@@ -147,8 +160,12 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
             }
         }
 
-        if (filter != null && !filter.test(t)) {
-            throw new IncorrectArgumentInputException(this, ctx, ctx.getInput(name));
+        try {
+            if (!test(t, false)) {
+                throw new IncorrectArgumentInputException(this, ctx, ctx.getInput(name));
+            }
+        } catch (InvalidArgumentException e) {
+            throw e.convert();
         }
 
         if (shaper == null) {
@@ -166,9 +183,33 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         protected SuggestionAction<C> suggestionAction;
         protected SuggestionAction<C> additionalSuggestionAction;
         protected BiFunction<C, String, T> additionalParser;
+        /**
+         * Filtering values on tab completion and after parsing.<br>
+         * Throwing {@link net.kunmc.lab.commandlib.exception.InvalidArgumentException}, you can customize the error message.
+         */
         protected Predicate<? super T> filter;
         protected Function<? super T, ? extends T> shaper;
         protected ContextAction<C> contextAction;
+
+        /**
+         * Filtering values on tab completion and after parsing.<br>
+         * Throwing {@link net.kunmc.lab.commandlib.exception.InvalidArgumentException}, you can customize the error message.
+         */
+        public Option<T, C> filter(Consumer<? super T> filter) {
+            return filter(x -> {
+                filter.accept(x);
+                return true;
+            });
+        }
+
+        /**
+         * Filtering values on tab completion and after parsing.<br>
+         * Throwing {@link net.kunmc.lab.commandlib.exception.InvalidArgumentException}, you can customize the error message.
+         */
+        public Option<T, C> filter(Predicate<? super T> filter) {
+            this.filter = filter;
+            return this;
+        }
 
         protected boolean isDisplayDefaultSuggestions() {
             return displayDefaultSuggestions;

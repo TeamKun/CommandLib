@@ -25,7 +25,7 @@ public class CommonObjectArgument<T, C extends AbstractCommandContext<?, ?>> ext
         setSuggestionAction(sb -> {
             nameToObjectMap.entrySet()
                            .stream()
-                           .filter(x -> filter() == null || filter().test(x.getValue()))
+                           .filter(x -> test(x.getValue(), true))
                            .map(Map.Entry::getKey)
                            .filter(x -> sb.getLatestInput()
                                           .isEmpty() || x.contains(sb.getLatestInput()))

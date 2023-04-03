@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import net.kunmc.lab.commandlib.Command;
 import net.kunmc.lab.commandlib.CommandLib;
 import net.kunmc.lab.commandlib.argument.*;
+import net.kunmc.lab.commandlib.exception.InvalidArgumentException;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.permissions.PermissionDefault;
@@ -90,7 +91,13 @@ public final class TestPlugin extends JavaPlugin {
                 argument(new StringArgument("str", option -> option.suggestionAction(sb -> sb.suggest("test"))),
                          (d, ctx) -> ctx.sendSuccess(d));
             }}, new Command("c") {{
-                argument(new EnumArgument<>("enu", Material.class), (e, ctx) -> {
+                argument(new EnumArgument<>("enu", Material.class, option -> {
+                    option.filter(x -> {
+                        if (!x.isBlock()) {
+                            throw new InvalidArgumentException("only block");
+                        }
+                    });
+                }), (e, ctx) -> {
                     ctx.sendMessageWithOption(e, option -> {
                     });
                     ctx.sendMessageWithOption(e, option -> option.rgb(0));

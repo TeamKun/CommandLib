@@ -27,7 +27,7 @@ public class UUIDArgument extends Argument<UUID> {
         setSuggestionAction(sb -> {
             Map<UUID, String> uuidToNameMap = new HashMap<>();
             Arrays.stream(Bukkit.getOfflinePlayers())
-                  .filter(x -> filter() == null || filter().test(x.getUniqueId()))
+                  .filter(x -> test(x.getUniqueId(), true))
                   .filter(x -> {
                       String input = sb.getLatestInput();
                       if (input.isEmpty()) {
