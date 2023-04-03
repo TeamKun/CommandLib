@@ -47,6 +47,8 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
 
     private CommandNode<S> toCommandNode(U command) {
         LiteralArgumentBuilder<S> builder = LiteralArgumentBuilder.literal(command.name());
+        builder.requires(x -> platformAdapter.hasPermission(command, x));
+
         List<Arguments<S, C>> argumentsList = command.argumentBuilderConsumers()
                                                      .stream()
                                                      .map(x -> {
@@ -55,31 +57,39 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                                                          return new Arguments<>(b.build(), platformAdapter);
                                                      })
                                                      .collect(Collectors.toList());
-        ContextAction<C> sendHelpAction = sendHelpAction(command, argumentsList);
-
-        command.setContextActionIfAbsent(sendHelpAction);
-        builder.requires(x -> platformAdapter.hasPermission(command, x));
+        ContextAction<C> helpAction = createSendHelpAction(command, argumentsList);
 
         if (argumentsList.isEmpty()) {
-            return builder.executes(ctx -> ContextAction.executeWithStackTrace(platformAdapter.createCommandContext(ctx),
-                                                                               command.contextAction()))
+            return builder.executes(context -> {
+                              C ctx = platformAdapter.createCommandContext(context);
+
+                              if (command.isContextActionUndefined()) {
+                                  return ContextAction.executeWithStackTrace(ctx, helpAction);
+                              }
+
+                              return ContextAction.executeWithStackTrace(ctx, command.contextAction());
+                          })
                           .build();
         }
 
         argumentsList.stream()
                      .sorted((x, y) -> Integer.compare(y.size(), x.size())) // 可変長引数のコマンドに対応させる
                      .forEach(arguments -> {
-                         builder.then(arguments.build(sendHelpAction, command))
-                                .executes(ctx -> {
-                                    C context = platformAdapter.createCommandContext(ctx);
+                         builder.then(arguments.build(helpAction, command))
+                                .executes(context -> {
+                                    C ctx = platformAdapter.createCommandContext(context);
+                                    if (command.isContextActionUndefined()) {
+                                        return ContextAction.executeWithStackTrace(ctx, helpAction);
+                                    }
+
                                     try {
-                                        arguments.parse(context);
+                                        arguments.parse(ctx);
                                     } catch (IncorrectArgumentInputException e) {
-                                        e.sendMessage(context);
+                                        e.sendMessage(ctx);
                                         return 1;
                                     }
 
-                                    return ContextAction.executeWithStackTrace(context, command.contextAction());
+                                    return ContextAction.executeWithStackTrace(ctx, command.contextAction());
                                 });
                      });
 
@@ -103,7 +113,7 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                      .collect(Collectors.toList());
     }
 
-    private ContextAction<C> sendHelpAction(U command, List<Arguments<S, C>> argumentsList) {
+    private ContextAction<C> createSendHelpAction(U command, List<Arguments<S, C>> argumentsList) {
         return ctx -> {
             String border = ChatColorUtil.GRAY + StringUtils.repeat("-", 50);
             String padding = StringUtils.repeat(" ", 2);

@@ -40,19 +40,19 @@ final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
     }
 
     private RequiredArgumentBuilder<S, ?> buildArgument(CommonArgument<?, C> argument,
-                                                        ContextAction<C> defaultAction,
+                                                        ContextAction<C> helpAction,
                                                         CommonCommand<C, ?, ?> parent) {
         RequiredArgumentBuilder<S, ?> builder = RequiredArgumentBuilder.argument(argument.name(), argument.type());
 
         if (argument.suggestionAction() != null) {
-            builder.suggests((ctx, sb) -> {
-                C context = platformAdapter.createCommandContext(ctx);
+            builder.suggests((context, sb) -> {
+                C ctx = platformAdapter.createCommandContext(context);
                 try {
-                    parse(context);
+                    parse(ctx);
                 } catch (IncorrectArgumentInputException ignored) {
                 }
 
-                SuggestionBuilder<C> suggestionBuilder = new SuggestionBuilder<>(context);
+                SuggestionBuilder<C> suggestionBuilder = new SuggestionBuilder<>(ctx);
                 argument.suggestionAction()
                         .accept(suggestionBuilder);
                 suggestionBuilder.build()
@@ -61,7 +61,7 @@ final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
                                  });
                 if (argument.isDisplayDefaultSuggestions()) {
                     argument.type()
-                            .listSuggestions(ctx, sb)
+                            .listSuggestions(context, sb)
                             .thenAccept(x -> {
                                 x.getList()
                                  .forEach(s -> {
@@ -74,26 +74,27 @@ final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
             });
         }
 
-        if (!argument.hasContextAction()) {
-            argument.setContextAction(defaultAction);
-        }
+        builder.executes(context -> {
+            C ctx = platformAdapter.createCommandContext(context);
 
-        builder.executes(ctx -> {
-            C context = platformAdapter.createCommandContext(ctx);
+            if (!argument.hasContextAction()) {
+                return ContextAction.executeWithStackTrace(ctx, helpAction);
+            }
+
             try {
-                parse(context);
+                parse(ctx);
             } catch (IncorrectArgumentInputException e) {
-                e.sendMessage(context);
+                e.sendMessage(ctx);
                 return 1;
             }
 
             if (!parent.preprocesses()
                        .stream()
-                       .allMatch(x -> x.apply(context))) {
+                       .allMatch(x -> x.apply(ctx))) {
                 return 1;
             }
 
-            return ContextAction.executeWithStackTrace(context, argument.contextAction());
+            return ContextAction.executeWithStackTrace(ctx, argument.contextAction());
         });
 
         return builder;
@@ -103,16 +104,15 @@ final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
         return arguments.size();
     }
 
-    private List<ArgumentCommandNode<S, ?>> toCommandNodes(ContextAction<C> defaultAction,
-                                                           CommonCommand<C, ?, ?> parent) {
+    private List<ArgumentCommandNode<S, ?>> toCommandNodes(ContextAction<C> helpAction, CommonCommand<C, ?, ?> parent) {
         return arguments.stream()
-                        .map(x -> buildArgument(x, defaultAction, parent))
+                        .map(x -> buildArgument(x, helpAction, parent))
                         .map(RequiredArgumentBuilder::build)
                         .collect(Collectors.toList());
     }
 
-    ArgumentCommandNode<S, ?> build(ContextAction<C> defaultAction, CommonCommand<C, ?, ?> parent) {
-        List<ArgumentCommandNode<S, ?>> nodes = toCommandNodes(defaultAction, parent);
+    ArgumentCommandNode<S, ?> build(ContextAction<C> helpAction, CommonCommand<C, ?, ?> parent) {
+        List<ArgumentCommandNode<S, ?>> nodes = toCommandNodes(helpAction, parent);
         if (nodes.isEmpty()) {
             return null;
         }

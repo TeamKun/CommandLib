@@ -246,31 +246,19 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         return Collections.unmodifiableList(aliases);
     }
 
+    final boolean isContextActionUndefined() {
+        return contextAction == null;
+    }
+
     final ContextAction<C> contextAction() {
         return ctx -> {
             if (!preprocesses().stream()
                                .allMatch(x -> x.apply(ctx))) {
                 return;
             }
-            execute(ctx);
+
+            // contextActionがnullの時はHelpActionが実行されるようになっているためNullPointerExceptionは発生しない
+            contextAction.accept(ctx);
         };
-    }
-
-    /**
-     * @deprecated Remove when removing {@link CommonCommand#execute(AbstractCommandContext)}
-     */
-    @Deprecated
-    final void setContextActionIfAbsent(ContextAction<C> contextAction) {
-        if (this.contextAction == null) {
-            this.contextAction = contextAction;
-        }
-    }
-
-    /**
-     * @deprecated Use {@link CommonCommand#execute(ContextAction)} instead of overriding this method.
-     */
-    @Deprecated
-    protected void execute(@NotNull C ctx) {
-        this.contextAction.accept(ctx);
     }
 }
