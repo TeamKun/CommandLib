@@ -64,10 +64,11 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                               C ctx = platformAdapter.createCommandContext(context);
 
                               if (command.isContextActionUndefined()) {
-                                  return ContextAction.executeWithStackTrace(ctx, helpAction);
+                                  return helpAction.executeWithStackTrace(ctx);
                               }
 
-                              return ContextAction.executeWithStackTrace(ctx, command.contextAction());
+                              return command.contextAction()
+                                            .executeWithStackTrace(ctx);
                           })
                           .build();
         }
@@ -79,7 +80,7 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                                 .executes(context -> {
                                     C ctx = platformAdapter.createCommandContext(context);
                                     if (command.isContextActionUndefined()) {
-                                        return ContextAction.executeWithStackTrace(ctx, helpAction);
+                                        return helpAction.executeWithStackTrace(ctx);
                                     }
 
                                     try {
@@ -89,7 +90,8 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                                         return 1;
                                     }
 
-                                    return ContextAction.executeWithStackTrace(ctx, command.contextAction());
+                                    return command.contextAction()
+                                                  .executeWithStackTrace(ctx);
                                 });
                      });
 

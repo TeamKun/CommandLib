@@ -78,7 +78,7 @@ final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
             C ctx = platformAdapter.createCommandContext(context);
 
             if (!argument.hasContextAction()) {
-                return ContextAction.executeWithStackTrace(ctx, helpAction);
+                return helpAction.executeWithStackTrace(ctx);
             }
 
             try {
@@ -94,7 +94,8 @@ final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
                 return 1;
             }
 
-            return ContextAction.executeWithStackTrace(ctx, argument.contextAction());
+            return argument.contextAction()
+                           .executeWithStackTrace(ctx);
         });
 
         return builder;
