@@ -4,10 +4,13 @@ import com.google.common.collect.Lists;
 import net.kunmc.lab.commandlib.util.fucntion.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B extends AbstractArgumentBuilder<C, B>, T extends CommonCommand<C, B, T>> {
     private final String name;
@@ -17,7 +20,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     private final List<T> children = new ArrayList<>();
     private final List<String> aliases = new ArrayList<>();
     private final List<Consumer<B>> argumentBuilderConsumers = new ArrayList<>();
-    private final List<Function<C, Boolean>> preprocesses = new ArrayList<>();
+    private Predicate<C> preprocess = ctx -> true;
     private ContextAction<C> contextAction;
 
     public CommonCommand(@NotNull String name) {
@@ -212,8 +215,8 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     /**
      * @param preprocess return false if cancel executing command.
      */
-    public final void addPreprocess(Function<C, Boolean> preprocess) {
-        preprocesses.add(preprocess);
+    public final void addPreprocess(Predicate<C> preprocess) {
+        this.preprocess = this.preprocess.and(preprocess);
     }
 
     public final void execute(@NotNull ContextAction<C> execute) {
@@ -228,14 +231,13 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         return Collections.unmodifiableList(children);
     }
 
-    final List<Function<C, Boolean>> preprocesses() {
-        List<Function<C, Boolean>> preprocesses = new LinkedList<>(this.preprocesses);
+    final Predicate<C> preprocess() {
         if (!inheritParentPreprocess || parent == null) {
-            return preprocesses;
+            return preprocess;
         }
 
-        preprocesses.addAll(0, parent.preprocesses());
-        return preprocesses;
+        return parent.preprocess()
+                     .and(preprocess);
     }
 
     final List<Consumer<B>> argumentBuilderConsumers() {
@@ -252,8 +254,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
 
     final ContextAction<C> contextAction() {
         return ctx -> {
-            if (!preprocesses().stream()
-                               .allMatch(x -> x.apply(ctx))) {
+            if (!preprocess.test(ctx)) {
                 return;
             }
 

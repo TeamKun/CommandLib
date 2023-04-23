@@ -88,9 +88,8 @@ final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
                 return 1;
             }
 
-            if (!parent.preprocesses()
-                       .stream()
-                       .allMatch(x -> x.apply(ctx))) {
+            if (!parent.preprocess()
+                       .test(ctx)) {
                 return 1;
             }
 
