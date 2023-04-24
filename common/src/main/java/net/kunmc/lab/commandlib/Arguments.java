@@ -77,6 +77,11 @@ final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
         builder.executes(context -> {
             C ctx = platformAdapter.createCommandContext(context);
 
+            if (!parent.prerequisite()
+                       .test(ctx)) {
+                return 1;
+            }
+
             if (!argument.hasContextAction()) {
                 return helpAction.executeWithStackTrace(ctx);
             }

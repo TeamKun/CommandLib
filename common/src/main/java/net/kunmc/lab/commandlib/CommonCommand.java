@@ -16,10 +16,12 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     private final String name;
     private String description = "";
     private T parent = null;
+    private boolean inheritParentPrerequisite = true;
     private boolean inheritParentPreprocess = true;
     private final List<T> children = new ArrayList<>();
     private final List<String> aliases = new ArrayList<>();
     private final List<Consumer<B>> argumentBuilderConsumers = new ArrayList<>();
+    private Predicate<C> prerequisite = ctx -> true;
     private Predicate<C> preprocess = ctx -> true;
     private ContextAction<C> contextAction;
 
@@ -57,6 +59,10 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
 
     public final void addAliases(@NotNull Collection<String> aliases) {
         this.aliases.addAll(aliases);
+    }
+
+    public final void setInheritParentPrerequisite(boolean inherit) {
+        this.inheritParentPrerequisite = inherit;
     }
 
     public final void setInheritParentPreprocess(boolean inherit) {
@@ -205,6 +211,10 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         });
     }
 
+    public final void addPrerequisite(Predicate<C> prerequisite) {
+        this.prerequisite = this.prerequisite.and(prerequisite);
+    }
+
     public final void addPreprocess(Consumer<C> preprocess) {
         addPreprocess(ctx -> {
             preprocess.accept(ctx);
@@ -229,6 +239,15 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
 
     final List<T> children() {
         return Collections.unmodifiableList(children);
+    }
+
+    final Predicate<C> prerequisite() {
+        if (!inheritParentPrerequisite || parent == null) {
+            return prerequisite;
+        }
+
+        return parent.prerequisite()
+                     .and(prerequisite);
     }
 
     final Predicate<C> preprocess() {
