@@ -21,18 +21,30 @@ public final class TestPlugin extends JavaPlugin {
             setDescription("test command");
             setPermission(PermissionDefault.TRUE);
 
-            addPreprocess(ctx -> {
-                ctx.sendWarn("pre1");
+            addPrerequisite(ctx -> {
+                ctx.sendMessage("prerequisite1");
+                return true;
             });
-            addPreprocess(ctx -> {
-                ctx.sendWarn("pre2");
+            addPrerequisite(ctx -> {
+                ctx.sendMessage("prerequisite2");
                 return Bukkit.getCurrentTick() % 2 == 0;
             });
-            addPreprocess(ctx -> {
-                ctx.sendWarn("pre3");
+            addPrerequisite(ctx -> {
+                ctx.sendMessage("prerequisite3");
+                return true;
             });
 
-            execute(ctx -> ctx.sendSuccess("test"));
+            addPreprocess(ctx -> {
+                ctx.sendWarn("preprocess1");
+            });
+            addPreprocess(ctx -> {
+                ctx.sendWarn("preprocess2");
+                return Bukkit.getCurrentTick() % 4 == 0;
+            });
+            addPreprocess(ctx -> {
+                ctx.sendWarn("preprocess3");
+            });
+
 
             addChildren(new Command("additionalparse") {{
                 argument(new UUIDArgument("target", option -> {

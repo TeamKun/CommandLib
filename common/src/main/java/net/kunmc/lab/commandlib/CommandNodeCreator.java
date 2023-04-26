@@ -85,6 +85,13 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                                 .executes(context -> {
                                     C ctx = platformAdapter.createCommandContext(context);
 
+                                    try {
+                                        arguments.parse(ctx);
+                                    } catch (IncorrectArgumentInputException e) {
+                                        e.sendMessage(ctx);
+                                        return 1;
+                                    }
+
                                     if (!command.prerequisite()
                                                 .test(ctx)) {
                                         return 0;
@@ -92,13 +99,6 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
 
                                     if (command.isContextActionUndefined()) {
                                         return helpAction.executeWithStackTrace(ctx);
-                                    }
-
-                                    try {
-                                        arguments.parse(ctx);
-                                    } catch (IncorrectArgumentInputException e) {
-                                        e.sendMessage(ctx);
-                                        return 1;
                                     }
 
                                     return command.contextAction()

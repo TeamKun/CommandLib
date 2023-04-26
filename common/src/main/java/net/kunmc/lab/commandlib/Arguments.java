@@ -77,6 +77,13 @@ final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
         builder.executes(context -> {
             C ctx = platformAdapter.createCommandContext(context);
 
+            try {
+                parse(ctx);
+            } catch (IncorrectArgumentInputException e) {
+                e.sendMessage(ctx);
+                return 1;
+            }
+
             if (!parent.prerequisite()
                        .test(ctx)) {
                 return 1;
@@ -84,13 +91,6 @@ final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
 
             if (!argument.hasContextAction()) {
                 return helpAction.executeWithStackTrace(ctx);
-            }
-
-            try {
-                parse(ctx);
-            } catch (IncorrectArgumentInputException e) {
-                e.sendMessage(ctx);
-                return 1;
             }
 
             if (!parent.preprocess()
