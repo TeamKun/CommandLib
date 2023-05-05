@@ -72,6 +72,11 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                                   return helpAction.executeWithStackTrace(ctx);
                               }
 
+                              if (!command.preprocess()
+                                          .test(ctx)) {
+                                  return 0;
+                              }
+
                               return command.contextAction()
                                             .executeWithStackTrace(ctx);
                           })
@@ -99,6 +104,11 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
 
                                     if (command.isContextActionUndefined()) {
                                         return helpAction.executeWithStackTrace(ctx);
+                                    }
+
+                                    if (!command.preprocess()
+                                                .test(ctx)) {
+                                        return 0;
                                     }
 
                                     return command.contextAction()

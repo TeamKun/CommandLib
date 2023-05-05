@@ -272,13 +272,6 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     }
 
     final ContextAction<C> contextAction() {
-        return ctx -> {
-            if (!preprocess.test(ctx)) {
-                return;
-            }
-
-            // contextActionがnullの時はHelpActionが実行されるようになっているためNullPointerExceptionは発生しない
-            contextAction.accept(ctx);
-        };
+        return contextAction;
     }
 }
