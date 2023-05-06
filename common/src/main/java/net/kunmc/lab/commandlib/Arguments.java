@@ -20,7 +20,7 @@ final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
     void parse(C ctx) throws IncorrectArgumentInputException {
         for (CommonArgument<?, C> argument : arguments) {
             try {
-                Object parsedArg = argument.parseInternal(ctx);
+                Object parsedArg = argument.parse(ctx);
                 ctx.addParsedArgument(argument.name, parsedArg);
             } catch (IllegalArgumentException ignored) {
                 // 補完時に入力中の引数で例外が発生するため握りつぶす
@@ -89,7 +89,7 @@ final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
                 return 1;
             }
 
-            if (!argument.hasContextAction()) {
+            if (argument.isContextActionUndefined()) {
                 return helpAction.executeWithStackTrace(ctx);
             }
 

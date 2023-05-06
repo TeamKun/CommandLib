@@ -33,7 +33,7 @@ public class UnparsedArgument extends Argument<String> {
     }
 
     @Override
-    public String parse(CommandContext ctx) {
+    protected String parseImpl(CommandContext ctx) {
         return ctx.getInput(name);
     }
 }

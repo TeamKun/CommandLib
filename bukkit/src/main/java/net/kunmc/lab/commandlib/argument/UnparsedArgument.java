@@ -34,7 +34,7 @@ public class UnparsedArgument extends Argument<String> {
     }
 
     @Override
-    public String parse(CommandContext ctx) throws IncorrectArgumentInputException {
+    protected String parseImpl(CommandContext ctx) throws IncorrectArgumentInputException {
         return ctx.getInput(name);
     }
 }

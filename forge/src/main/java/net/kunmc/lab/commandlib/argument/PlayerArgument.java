@@ -26,7 +26,7 @@ public class PlayerArgument extends Argument<ServerPlayerEntity> {
     }
 
     @Override
-    public ServerPlayerEntity parse(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
+    protected ServerPlayerEntity parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
         return EntityArgument.getPlayer(ctx.getHandle(), name);
     }
 }

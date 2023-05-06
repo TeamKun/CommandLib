@@ -24,15 +24,15 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
     private Predicate<? super T> filter;
     private Function<? super T, ? extends T> shaper;
 
-    public CommonArgument(String name, ArgumentType<?> type) {
+    protected CommonArgument(String name, ArgumentType<?> type) {
         this.name = name;
         this.type = type;
     }
 
-    public CommonArgument(String name,
-                          SuggestionAction<C> suggestionAction,
-                          ContextAction<C> contextAction,
-                          ArgumentType<?> type) {
+    protected CommonArgument(String name,
+                             SuggestionAction<C> suggestionAction,
+                             ContextAction<C> contextAction,
+                             ArgumentType<?> type) {
         this.name = name;
         this.suggestionAction = suggestionAction;
         this.contextAction = contextAction;
@@ -92,8 +92,8 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
 
     public abstract T cast(Object parsedArgument);
 
-    final boolean hasContextAction() {
-        return contextAction != null;
+    final boolean isContextActionUndefined() {
+        return contextAction == null;
     }
 
     protected final void setFilter(Predicate<? super T> filter) {
@@ -145,10 +145,10 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         }
     }
 
-    final T parseInternal(C ctx) throws IncorrectArgumentInputException {
+    final T parse(C ctx) throws IncorrectArgumentInputException {
         T t = null;
         try {
-            t = parse(ctx);
+            t = parseImpl(ctx);
         } catch (CommandSyntaxException e) {
             if (additionalParser != null) {
                 t = additionalParser.apply(ctx, ctx.getInput(name));
@@ -173,7 +173,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
                 throw new IncorrectArgumentInputException(this, ctx, ctx.getInput(name));
             }
         } catch (InvalidArgumentException e) {
-            throw e.convert();
+            throw e.toIncorrectArgumentInputException();
         }
 
         if (shaper == null) {
@@ -182,7 +182,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         return shaper.apply(t);
     }
 
-    public abstract T parse(C ctx) throws CommandSyntaxException, IncorrectArgumentInputException;
+    protected abstract T parseImpl(C ctx) throws CommandSyntaxException, IncorrectArgumentInputException;
 
     @Accessors(chain = true, fluent = true)
     @Setter

@@ -15,8 +15,8 @@ public abstract class AbstractCommandContext<S, C> {
     private final LinkedHashMap<String, Object> parsedArgMap = new LinkedHashMap<>();
     private final PlatformAdapter<S, C, ?, ?, ?> platformAdapter;
 
-    public AbstractCommandContext(com.mojang.brigadier.context.CommandContext<S> ctx,
-                                  PlatformAdapter<S, C, ?, ?, ?> platformAdapter) {
+    protected AbstractCommandContext(com.mojang.brigadier.context.CommandContext<S> ctx,
+                                     PlatformAdapter<S, C, ?, ?, ?> platformAdapter) {
         this.handle = ctx;
         this.platformAdapter = platformAdapter;
 

@@ -60,7 +60,7 @@ public class UUIDArgument extends Argument<UUID> {
     }
 
     @Override
-    public UUID parse(CommandContext ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
+    protected UUID parseImpl(CommandContext ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx.getHandle(), name);
 
         OfflinePlayer p = Bukkit.getOfflinePlayerIfCached(s);

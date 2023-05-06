@@ -39,7 +39,7 @@ public class OfflinePlayerArgument extends Argument<OfflinePlayer> {
     }
 
     @Override
-    public OfflinePlayer parse(CommandContext ctx) throws IncorrectArgumentInputException {
+    protected OfflinePlayer parseImpl(CommandContext ctx) throws IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx.getHandle(), name);
         return Arrays.stream(Bukkit.getOfflinePlayers())
                      .filter(x -> x.getName() != null && x.getName()

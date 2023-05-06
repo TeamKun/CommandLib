@@ -26,7 +26,7 @@ public class EnchantmentArgument extends Argument<Enchantment> {
     }
 
     @Override
-    public Enchantment parse(CommandContext ctx) throws IncorrectArgumentInputException {
+    protected Enchantment parseImpl(CommandContext ctx) throws IncorrectArgumentInputException {
         return new CraftEnchantment(ArgumentEnchantment.a(ctx.getHandle(), name));
     }
 }

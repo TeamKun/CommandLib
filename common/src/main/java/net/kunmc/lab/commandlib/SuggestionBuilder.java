@@ -106,8 +106,7 @@ public final class SuggestionBuilder<C extends AbstractCommandContext<?, ?>> {
     }
 
     public SuggestionBuilder<C> suggest(@NotNull String suggest) {
-        suggestions.add(new Suggestion(suggest, null));
-        return this;
+        return suggest(suggest, null);
     }
 
     public SuggestionBuilder<C> suggest(@NotNull String suggest, @Nullable String tooltip) {

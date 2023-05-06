@@ -25,7 +25,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     private Predicate<C> preprocess = ctx -> true;
     private ContextAction<C> contextAction;
 
-    public CommonCommand(@NotNull String name) {
+    protected CommonCommand(@NotNull String name) {
         this.name = name;
     }
 

@@ -55,7 +55,7 @@ public class CommonNameableObjectArgument<T extends Nameable, C extends Abstract
     }
 
     @Override
-    public final T parse(C ctx) throws IncorrectArgumentInputException {
+    protected final T parseImpl(C ctx) throws IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx.getHandle(), name);
         return candidates.stream()
                          .filter(x -> x.tabCompleteName()

@@ -33,7 +33,7 @@ public class CommonDoubleArgument<C extends AbstractCommandContext<?, ?>> extend
     }
 
     @Override
-    public final Double parse(C ctx) {
+    protected final Double parseImpl(C ctx) {
         return DoubleArgumentType.getDouble(ctx.getHandle(), name);
     }
 }

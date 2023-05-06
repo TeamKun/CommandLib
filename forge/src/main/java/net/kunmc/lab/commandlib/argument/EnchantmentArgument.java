@@ -24,7 +24,7 @@ public class EnchantmentArgument extends Argument<Enchantment> {
     }
 
     @Override
-    public Enchantment parse(CommandContext ctx) throws IncorrectArgumentInputException {
+    protected Enchantment parseImpl(CommandContext ctx) throws IncorrectArgumentInputException {
         return net.minecraft.command.arguments.EnchantmentArgument.getEnchantment(ctx.getHandle(), name);
     }
 }

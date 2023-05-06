@@ -24,7 +24,7 @@ public class ParticleArgument extends Argument<IParticleData> {
     }
 
     @Override
-    public IParticleData parse(CommandContext ctx) throws IncorrectArgumentInputException {
+    protected IParticleData parseImpl(CommandContext ctx) throws IncorrectArgumentInputException {
         return net.minecraft.command.arguments.ParticleArgument.getParticle(ctx.getHandle(), name);
     }
 }

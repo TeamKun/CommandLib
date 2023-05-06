@@ -23,7 +23,7 @@ public class CommonBooleanArgument<C extends AbstractCommandContext<?, ?>> exten
     }
 
     @Override
-    public final Boolean parse(C ctx) {
+    protected final Boolean parseImpl(C ctx) {
         return BoolArgumentType.getBool(ctx.getHandle(), name);
     }
 }

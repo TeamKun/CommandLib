@@ -24,7 +24,7 @@ public class BlockStateArgument extends Argument<BlockStateInput> {
     }
 
     @Override
-    public BlockStateInput parse(CommandContext ctx) throws IncorrectArgumentInputException {
+    protected BlockStateInput parseImpl(CommandContext ctx) throws IncorrectArgumentInputException {
         return net.minecraft.command.arguments.BlockStateArgument.getBlockState(ctx.getHandle(), name);
     }
 }

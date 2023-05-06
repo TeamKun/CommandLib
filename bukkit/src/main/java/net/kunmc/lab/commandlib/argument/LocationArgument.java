@@ -27,7 +27,7 @@ public class LocationArgument extends Argument<Location> {
     }
 
     @Override
-    public Location parse(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
+    protected Location parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
         Vec3D vec = ArgumentVec3.a(ctx.getHandle(), name);
         return new Location(ctx.getHandle()
                                .getSource()

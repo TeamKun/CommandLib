@@ -65,7 +65,7 @@ public class CommonLiteralArgument<C extends AbstractCommandContext<?, ?>> exten
     }
 
     @Override
-    public final String parse(C ctx) throws IncorrectArgumentInputException {
+    protected final String parseImpl(C ctx) throws IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx.getHandle(), name);
         return literalsSupplier.get()
                                .stream()

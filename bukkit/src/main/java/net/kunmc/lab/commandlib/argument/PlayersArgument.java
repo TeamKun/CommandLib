@@ -29,7 +29,7 @@ public class PlayersArgument extends Argument<List<Player>> {
     }
 
     @Override
-    public List<Player> parse(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
+    protected List<Player> parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
         return ArgumentEntity.f(ctx.getHandle(), name)
                              .stream()
                              .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)

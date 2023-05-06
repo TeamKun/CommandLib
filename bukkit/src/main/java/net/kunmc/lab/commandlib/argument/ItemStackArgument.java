@@ -27,7 +27,7 @@ public class ItemStackArgument extends Argument<ItemStack> {
     }
 
     @Override
-    public ItemStack parse(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
+    protected ItemStack parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
         return CraftItemStack.asCraftMirror(ArgumentItemStack.a(ctx.getHandle(), name)
                                                              .a(1, false));
     }

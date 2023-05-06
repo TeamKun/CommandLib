@@ -26,7 +26,7 @@ public class ParticleArgument extends Argument<Particle> {
     }
 
     @Override
-    public Particle parse(CommandContext ctx) throws IncorrectArgumentInputException {
+    protected Particle parseImpl(CommandContext ctx) throws IncorrectArgumentInputException {
         return CraftParticle.toBukkit(ArgumentParticle.a(ctx.getHandle(), name));
     }
 }

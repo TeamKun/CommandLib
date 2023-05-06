@@ -57,7 +57,7 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
     }
 
     @Override
-    public List<OfflinePlayer> parse(CommandContext ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
+    protected List<OfflinePlayer> parseImpl(CommandContext ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
         String s = ctx.getInput(name);
 
         if (s.startsWith("@")) {

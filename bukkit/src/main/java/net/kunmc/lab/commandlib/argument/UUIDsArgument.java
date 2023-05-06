@@ -66,7 +66,7 @@ public class UUIDsArgument extends Argument<List<UUID>> {
     }
 
     @Override
-    public List<UUID> parse(CommandContext ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
+    protected List<UUID> parseImpl(CommandContext ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
         String s = ctx.getInput(name);
 
         if (s.startsWith("@")) {

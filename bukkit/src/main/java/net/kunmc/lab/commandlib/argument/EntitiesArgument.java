@@ -28,7 +28,7 @@ public class EntitiesArgument extends Argument<List<Entity>> {
     }
 
     @Override
-    public List<Entity> parse(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
+    protected List<Entity> parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
         return ArgumentEntity.b(ctx.getHandle(), name)
                              .stream()
                              .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)

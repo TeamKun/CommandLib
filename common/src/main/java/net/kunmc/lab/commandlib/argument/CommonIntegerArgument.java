@@ -33,7 +33,7 @@ public class CommonIntegerArgument<C extends AbstractCommandContext<?, ?>> exten
     }
 
     @Override
-    public final Integer parse(C ctx) {
+    protected final Integer parseImpl(C ctx) {
         return IntegerArgumentType.getInteger(ctx.getHandle(), name);
     }
 }

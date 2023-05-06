@@ -40,7 +40,7 @@ public class CommonObjectArgument<T, C extends AbstractCommandContext<?, ?>> ext
     }
 
     @Override
-    public final T parse(C ctx) throws IncorrectArgumentInputException {
+    protected final T parseImpl(C ctx) throws IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx.getHandle(), name);
         return nameToObjectMap.entrySet()
                               .stream()
