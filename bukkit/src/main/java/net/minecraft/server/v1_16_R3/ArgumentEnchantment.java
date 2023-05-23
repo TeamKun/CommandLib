@@ -10,7 +10,7 @@ public class ArgumentEnchantment implements ArgumentType {
         return null;
     }
 
-    public static Enchantment a(CommandContext<CommandListenerWrapper> ctx, String s) {
+    public static Enchantment a(CommandContext ctx, String s) {
         return null;
     }
 

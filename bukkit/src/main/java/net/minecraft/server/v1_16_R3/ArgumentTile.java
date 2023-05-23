@@ -10,7 +10,7 @@ public class ArgumentTile implements ArgumentType<ArgumentTileLocation> {
         return null;
     }
 
-    public static ArgumentTileLocation a(CommandContext<CommandListenerWrapper> commandContext, String s) {
+    public static ArgumentTileLocation a(CommandContext commandContext, String s) {
         return null;
     }
 

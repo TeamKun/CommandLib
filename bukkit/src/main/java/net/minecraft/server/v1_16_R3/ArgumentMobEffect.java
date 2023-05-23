@@ -10,7 +10,7 @@ public class ArgumentMobEffect implements ArgumentType {
         return new ArgumentMobEffect();
     }
 
-    public static MobEffectList a(CommandContext<CommandListenerWrapper> ctx, String s) throws CommandSyntaxException {
+    public static MobEffectList a(CommandContext ctx, String s) throws CommandSyntaxException {
         return null;
     }
 

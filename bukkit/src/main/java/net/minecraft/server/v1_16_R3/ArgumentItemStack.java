@@ -10,7 +10,7 @@ public class ArgumentItemStack implements ArgumentType {
         return new ArgumentItemStack();
     }
 
-    public static <S> ArgumentPredicateItemStack a(CommandContext<S> var0, String var1) {
+    public static ArgumentPredicateItemStack a(CommandContext var0, String var1) {
         return null;
     }
 

@@ -1,10 +1,10 @@
 package net.kunmc.lab.commandlib;
 
 import net.kunmc.lab.commandlib.util.TextColorUtil;
+import net.kunmc.lab.commandlib.util.nms.command.NMSCommandSourceStack;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
-import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -14,30 +14,26 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-public final class CommandContext extends AbstractCommandContext<CommandListenerWrapper, Component> {
-    public CommandContext(com.mojang.brigadier.context.CommandContext<CommandListenerWrapper> ctx,
+public final class CommandContext extends AbstractCommandContext<Object, Component> {
+    public CommandContext(com.mojang.brigadier.context.CommandContext<Object> ctx,
                           PlatformAdapterImpl platformAdapter) {
         super(ctx, platformAdapter);
     }
 
     public Entity getEntity() {
-        return handle.getSource()
-                     .getBukkitEntity();
+        return new NMSCommandSourceStack(handle.getSource()).getBukkitEntity();
     }
 
     public World getWorld() {
-        return handle.getSource()
-                     .getBukkitWorld();
+        return new NMSCommandSourceStack(handle.getSource()).getBukkitWorld();
     }
 
     public Location getLocation() {
-        return handle.getSource()
-                     .getBukkitLocation();
+        return new NMSCommandSourceStack(handle.getSource()).getBukkitLocation();
     }
 
     public CommandSender getSender() {
-        return handle.getSource()
-                     .getBukkitSender();
+        return new NMSCommandSourceStack(handle.getSource()).getBukkitSender();
     }
 
     @Override

@@ -10,7 +10,7 @@ public class ArgumentParticle implements ArgumentType {
         return null;
     }
 
-    public static ParticleParam a(CommandContext<CommandListenerWrapper> ctx, String s) {
+    public static ParticleParam a(CommandContext ctx, String s) {
         return null;
     }
 

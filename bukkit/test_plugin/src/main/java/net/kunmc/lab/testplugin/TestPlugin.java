@@ -16,7 +16,11 @@ import java.util.Objects;
 public final class TestPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
-        CommandLib.register(this, new Command("commandlibtest") {{
+        CommandLib.register(this, new Command("commandlibtest2") {{
+            argument(new LocationArgument("location"), (location, ctx) -> {
+                ctx.sendSuccess(location);
+            });
+        }}, new Command("commandlibtest") {{
             addAliases("commandlibtestalias");
             setDescription("test command");
             setPermission(PermissionDefault.TRUE);
