@@ -5,7 +5,7 @@ import net.kunmc.lab.commandlib.util.nms.MinecraftClass;
 
 public class NMSCommandDispatcher extends MinecraftClass {
     public NMSCommandDispatcher(Object handle) {
-        super(handle, "CommandDispatcher", "commands.Commands");
+        super(handle, "CommandDispatcher", "commands.CommandDispatcher", "commands.Commands");
     }
 
     public CommandDispatcher<?> getBrigadier() {

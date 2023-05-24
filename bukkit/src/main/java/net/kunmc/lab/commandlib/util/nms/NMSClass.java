@@ -2,6 +2,7 @@ package net.kunmc.lab.commandlib.util.nms;
 
 import net.kunmc.lab.commandlib.util.ReflectionUtils;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -15,6 +16,11 @@ public abstract class NMSClass {
     protected final Class<?> clazz;
 
     public NMSClass(Object handle, Class<?> clazz) {
+        if (handle != null && !clazz.isAssignableFrom(handle.getClass())) {
+            throw new RuntimeException(String.format("clazz(%s) is not assignable from handle's class(%s).",
+                                                     clazz,
+                                                     handle.getClass()));
+        }
         this.handle = handle;
         this.clazz = clazz;
     }
@@ -23,35 +29,54 @@ public abstract class NMSClass {
         return handle;
     }
 
-    protected final Object invokeMethod(String methodName, Object... args) {
+    public final Class<?> getFoundClass() {
+        return clazz;
+    }
+
+    protected final Object newInstance(Class<?>[] parameterTypes, Object[] args) {
         try {
-            Method method = getMethod(methodName,
-                                      Arrays.stream(args)
-                                            .map(Object::getClass)
-                                            .toArray(Class[]::new));
-            return method.invoke(handle, args);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            Constructor<?> constructor = clazz.getConstructor(parameterTypes);
+            constructor.setAccessible(true);
+            return constructor.newInstance(args);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }
 
+    protected final Object invokeMethod(String methodName, Object... args) {
+        return invokeMethod(new String[]{methodName}, args);
+    }
+
     protected final Object invokeMethod(String methodName, String methodName2, Object... args) {
-        try {
-            Method method = getMethod(methodName,
-                                      Arrays.stream(args)
-                                            .map(Object::getClass)
-                                            .toArray(Class[]::new));
-            return method.invoke(handle, args);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        return invokeMethod(new String[]{methodName, methodName2}, args);
+    }
+
+    protected final Object invokeMethod(String methodName, String methodName2, String methodName3, Object... args) {
+        return invokeMethod(new String[]{methodName, methodName2, methodName3}, args);
+    }
+
+    protected final Object invokeMethod(String[] methodNames, Object... args) {
+        Class<?>[] argClasses = Arrays.stream(args)
+                                      .map(Object::getClass)
+                                      .toArray(Class[]::new);
+
+        for (String methodName : methodNames) {
             try {
-                Method method = getMethod(methodName2,
-                                          Arrays.stream(args)
-                                                .map(Object::getClass)
-                                                .toArray(Class[]::new));
+                Method method = getMethod(methodName, argClasses);
                 return method.invoke(handle, args);
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
-                throw new RuntimeException(ex);
+            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException ignored) {
             }
+        }
+
+        throw new RuntimeException(String.format("Could not invoke method. %s", Arrays.toString(methodNames)));
+    }
+
+    protected final Object invokeMethod(String methodName, Class<?>[] parameterClasses, Object[] args) {
+        try {
+            return getMethod(methodName, parameterClasses).invoke(handle, args);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(String.format("Could not invoke method. %s", methodName));
         }
     }
 
@@ -84,15 +109,5 @@ public abstract class NMSClass {
         Method method = ReflectionUtils.getMethodIncludingSuperclasses(clazz, methodName, parameterTypes);
         method.setAccessible(true);
         return method;
-    }
-
-    private Method getMethod(String methodName,
-                             String methodName2,
-                             Class<?>... parameterTypes) throws NoSuchMethodException {
-        try {
-            return getMethod(methodName, parameterTypes);
-        } catch (NoSuchMethodException e) {
-            return getMethod(methodName2, parameterTypes);
-        }
     }
 }

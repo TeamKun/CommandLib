@@ -8,7 +8,7 @@ import org.bukkit.entity.Entity;
 
 public class NMSCommandSourceStack extends MinecraftClass {
     public NMSCommandSourceStack(Object handle) {
-        super(handle, "CommandListenerWrapper", "commands.CommandSourceStack");
+        super(handle, "CommandListenerWrapper", "commands.CommandListenerWrapper", "commands.CommandSourceStack");
     }
 
     public CommandSender getBukkitSender() {

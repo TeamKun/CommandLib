@@ -1,6 +1,7 @@
 package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.ChatColorUtil;
@@ -18,13 +19,17 @@ final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
     }
 
     void parse(C ctx) throws IncorrectArgumentInputException {
-        for (CommonArgument<?, C> argument : arguments) {
-            try {
-                Object parsedArg = argument.parse(ctx);
-                ctx.addParsedArgument(argument.name, parsedArg);
-            } catch (IllegalArgumentException ignored) {
-                // 補完時に入力中の引数で例外が発生するため握りつぶす
-            }
+        long count = ctx.getHandle()
+                        .getNodes()
+                        .stream()
+                        .map(ParsedCommandNode::getNode)
+                        .filter(x -> x instanceof ArgumentCommandNode)
+                        .count();
+
+        for (int i = 0; i < count; i++) {
+            CommonArgument<?, C> argument = arguments.get(i);
+            Object parsedArg = argument.parse(ctx);
+            ctx.addParsedArgument(argument.name, parsedArg);
         }
     }
 

@@ -11,7 +11,7 @@ public class NMSVanillaCommandWrapper extends CraftBukkitClass {
         super(null, "command.VanillaCommandWrapper");
     }
 
-    public BukkitCommand construct(NMSCommandDispatcher dispatcher, CommandNode<?> command) {
+    public BukkitCommand createInstance(NMSCommandDispatcher dispatcher, CommandNode<?> command) {
         try {
             return ((BukkitCommand) clazz.getConstructor(dispatcher.getHandle()
                                                                    .getClass(), CommandNode.class)

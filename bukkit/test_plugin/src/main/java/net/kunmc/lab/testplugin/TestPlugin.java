@@ -17,8 +17,8 @@ public final class TestPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         CommandLib.register(this, new Command("commandlibtest2") {{
-            argument(new LocationArgument("location"), (location, ctx) -> {
-                ctx.sendSuccess(location);
+            argument(new BlockDataArgument("x"), (x, ctx) -> {
+                ctx.sendSuccess(x);
             });
         }}, new Command("commandlibtest") {{
             addAliases("commandlibtestalias");

@@ -4,7 +4,7 @@ import net.kunmc.lab.commandlib.util.nms.MinecraftClass;
 
 public class NMSVec3D extends MinecraftClass {
     public NMSVec3D(Object handle) {
-        super(handle, "Vec3D", "world.phys.Vec3");
+        super(handle, "Vec3D", "world.phys.Vec3D", "world.phys.Vec3");
     }
 
     public double x() {

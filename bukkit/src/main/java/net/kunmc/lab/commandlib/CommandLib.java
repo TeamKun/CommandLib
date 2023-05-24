@@ -49,7 +49,6 @@ public final class CommandLib implements Listener {
             @Override
             public void run() {
                 registeredCommands.addAll(new CommandNodeCreator<>(new PlatformAdapterImpl(), commands).build());
-
                 NMSCommandDispatcher dispatcher = new NMSCraftServer(plugin.getServer()).getServer()
                                                                                         .getCommandDispatcher();
                 RootCommandNode root = dispatcher.getBrigadier()
@@ -58,7 +57,7 @@ public final class CommandLib implements Listener {
                     root.addChild(x);
                     Bukkit.getCommandMap()
                           .getKnownCommands()
-                          .put(x.getName(), new NMSVanillaCommandWrapper().construct(dispatcher, x));
+                          .put(x.getName(), new NMSVanillaCommandWrapper().createInstance(dispatcher, x));
 
                     root.getChild("execute")
                         .getChild("run")
