@@ -2,6 +2,7 @@ package net.kunmc.lab.testplugin;
 
 import net.kunmc.lab.commandlib.Command;
 import net.kunmc.lab.commandlib.CommandLib;
+import net.kunmc.lab.commandlib.argument.OfflinePlayersArgument;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -12,7 +13,9 @@ public final class TestPlugin extends JavaPlugin {
     public void onEnable() {
         CommandLib.register(this, new Command("commandlibtest") {{
             argument(builder -> {
-                builder.itemStackArgument("a")
+                builder.customArgument(new OfflinePlayersArgument("a"))
+                       .unparsedArgument("b")
+                       .uuidsArgument("c")
                        .execute(ctx -> ctx.sendSuccess(ctx.getParsedArgs()));
             });
         }});

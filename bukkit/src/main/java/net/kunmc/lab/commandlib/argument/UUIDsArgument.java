@@ -5,8 +5,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentProfile;
 import net.kyori.adventure.text.Component;
-import net.minecraft.server.v1_16_R3.ArgumentProfile;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -23,7 +23,7 @@ public class UUIDsArgument extends Argument<List<UUID>> {
     }
 
     public UUIDsArgument(String name, Consumer<Option<List<UUID>, CommandContext>> options) {
-        super(name, ArgumentProfile.a());
+        super(name, new NMSArgumentProfile().argument());
 
         setSuggestionAction(sb -> {
             String input = sb.getLatestInput();
