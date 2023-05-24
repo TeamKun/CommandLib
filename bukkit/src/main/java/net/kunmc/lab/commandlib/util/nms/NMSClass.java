@@ -64,14 +64,19 @@ public abstract class NMSClass {
                                       .map(Object::getClass)
                                       .toArray(Class[]::new);
 
+        return invokeMethod(methodNames, argClasses, args);
+    }
+
+    protected final Object invokeMethod(String[] methodNames, Class<?>[] parameterClasses, Object... args) {
         Method method = null;
         for (String methodName : methodNames) {
             try {
-                method = getMethod(methodName, argClasses);
+                method = getMethod(methodName, parameterClasses);
                 break;
             } catch (NoSuchMethodException ignored) {
             }
         }
+
         if (method == null) {
             throw new MethodNotFoundException(methodNames);
         }
@@ -88,14 +93,6 @@ public abstract class NMSClass {
             }
 
             throw new RuntimeException(e);
-        }
-    }
-
-    protected final Object invokeMethod(String methodName, Class<?>[] parameterClasses, Object[] args) {
-        try {
-            return getMethod(methodName, parameterClasses).invoke(handle, args);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new MethodNotFoundException(methodName, e);
         }
     }
 

@@ -4,8 +4,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
-import net.minecraft.server.v1_16_R3.ArgumentItemStack;
-import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
+import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentItemStack;
+import net.kunmc.lab.commandlib.util.nms.world.NMSCraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.function.Consumer;
@@ -17,7 +17,7 @@ public class ItemStackArgument extends Argument<ItemStack> {
     }
 
     public ItemStackArgument(String name, Consumer<Option<ItemStack, CommandContext>> options) {
-        super(name, ArgumentItemStack.a());
+        super(name, new NMSArgumentItemStack().argument());
         setOptions(options);
     }
 
@@ -28,7 +28,7 @@ public class ItemStackArgument extends Argument<ItemStack> {
 
     @Override
     protected ItemStack parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return CraftItemStack.asCraftMirror(ArgumentItemStack.a(ctx.getHandle(), name)
-                                                             .a(1, false));
+        return new NMSCraftItemStack().asCraftMirror(new NMSArgumentItemStack().parse(ctx.getHandle(), name)
+                                                                               .createItemStack(1, false));
     }
 }
