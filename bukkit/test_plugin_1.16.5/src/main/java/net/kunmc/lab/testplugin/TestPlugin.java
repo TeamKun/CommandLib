@@ -17,8 +17,12 @@ public final class TestPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         CommandLib.register(this, new Command("commandlibtest2") {{
-            argument(new EnchantmentArgument("x"), (x, ctx) -> {
-                ctx.sendSuccess(x);
+            argument(builder -> {
+                builder.entityArgument("a")
+                       .entitiesArgument("b")
+                       .playerArgument("c")
+                       .playersArgument("d")
+                       .execute(ctx -> ctx.sendSuccess(ctx.getParsedArgs()));
             });
         }}, new Command("commandlibtest") {{
             addAliases("commandlibtestalias");
