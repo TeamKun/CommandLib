@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.nms.chat.NMSChatMessage;
-import net.kunmc.lab.commandlib.util.nms.command.NMSCommandSourceStack;
+import net.kunmc.lab.commandlib.util.nms.command.NMSCommandListenerWrapper;
 import net.kunmc.lab.commandlib.util.text.TextComponentBuilderImpl;
 import net.kunmc.lab.commandlib.util.text.TranslatableComponentBuilderImpl;
 import net.kyori.adventure.text.Component;
@@ -25,8 +25,8 @@ final class PlatformAdapterImpl implements PlatformAdapter<Object, Component, Co
 
     @Override
     public boolean hasPermission(Command command, Object commandSource) {
-        return new NMSCommandSourceStack(commandSource).getBukkitSender()
-                                                       .hasPermission(command.permissionName());
+        return new NMSCommandListenerWrapper(commandSource).getBukkitSender()
+                                                           .hasPermission(command.permissionName());
     }
 
     @Override

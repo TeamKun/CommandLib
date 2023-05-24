@@ -1,7 +1,7 @@
 package net.kunmc.lab.commandlib;
 
 import net.kunmc.lab.commandlib.util.TextColorUtil;
-import net.kunmc.lab.commandlib.util.nms.command.NMSCommandSourceStack;
+import net.kunmc.lab.commandlib.util.nms.command.NMSCommandListenerWrapper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
@@ -21,19 +21,19 @@ public final class CommandContext extends AbstractCommandContext<Object, Compone
     }
 
     public Entity getEntity() {
-        return new NMSCommandSourceStack(handle.getSource()).getBukkitEntity();
+        return new NMSCommandListenerWrapper(handle.getSource()).getBukkitEntity();
     }
 
     public World getWorld() {
-        return new NMSCommandSourceStack(handle.getSource()).getBukkitWorld();
+        return new NMSCommandListenerWrapper(handle.getSource()).getBukkitWorld();
     }
 
     public Location getLocation() {
-        return new NMSCommandSourceStack(handle.getSource()).getBukkitLocation();
+        return new NMSCommandListenerWrapper(handle.getSource()).getBukkitLocation();
     }
 
     public CommandSender getSender() {
-        return new NMSCommandSourceStack(handle.getSource()).getBukkitSender();
+        return new NMSCommandListenerWrapper(handle.getSource()).getBukkitSender();
     }
 
     @Override

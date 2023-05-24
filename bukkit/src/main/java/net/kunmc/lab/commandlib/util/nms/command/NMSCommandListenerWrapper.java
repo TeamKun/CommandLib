@@ -6,8 +6,8 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 
-public class NMSCommandSourceStack extends MinecraftClass {
-    public NMSCommandSourceStack(Object handle) {
+public class NMSCommandListenerWrapper extends MinecraftClass {
+    public NMSCommandListenerWrapper(Object handle) {
         super(handle, "CommandListenerWrapper", "commands.CommandListenerWrapper", "commands.CommandSourceStack");
     }
 
