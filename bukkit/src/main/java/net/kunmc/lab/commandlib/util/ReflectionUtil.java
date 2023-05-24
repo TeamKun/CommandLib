@@ -3,8 +3,8 @@ package net.kunmc.lab.commandlib.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public class ReflectionUtils {
-    private ReflectionUtils() {
+public class ReflectionUtil {
+    private ReflectionUtil() {
     }
 
     public static Field getFieldIncludingSuperclasses(Class<?> clazz, String name) throws NoSuchFieldException {

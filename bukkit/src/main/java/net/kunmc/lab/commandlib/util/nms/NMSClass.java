@@ -1,7 +1,7 @@
 package net.kunmc.lab.commandlib.util.nms;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kunmc.lab.commandlib.util.ReflectionUtils;
+import net.kunmc.lab.commandlib.util.ReflectionUtil;
 import net.kunmc.lab.commandlib.util.nms.exception.MethodNotFoundException;
 import net.kunmc.lab.commandlib.util.nms.exception.NMSClassNotAssignableException;
 import net.kunmc.lab.commandlib.util.nms.exception.UncheckedCommandSyntaxException;
@@ -101,7 +101,7 @@ public abstract class NMSClass {
         return list.stream()
                    .map(x -> {
                        try {
-                           return ReflectionUtils.getFieldIncludingSuperclasses(clazz, x);
+                           return ReflectionUtil.getFieldIncludingSuperclasses(clazz, x);
                        } catch (NoSuchFieldException e) {
                            return null;
                        }
@@ -121,7 +121,7 @@ public abstract class NMSClass {
     }
 
     private Method getMethod(String methodName, Class<?>... parameterTypes) throws NoSuchMethodException {
-        Method method = ReflectionUtils.getMethodIncludingSuperclasses(clazz, methodName, parameterTypes);
+        Method method = ReflectionUtil.getMethodIncludingSuperclasses(clazz, methodName, parameterTypes);
         method.setAccessible(true);
         return method;
     }
