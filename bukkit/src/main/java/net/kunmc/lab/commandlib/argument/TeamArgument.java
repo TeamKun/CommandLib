@@ -4,7 +4,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
-import net.minecraft.server.v1_16_R3.ArgumentScoreboardTeam;
+import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentScoreboardTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.Team;
 
@@ -17,7 +17,7 @@ public class TeamArgument extends Argument<Team> {
     }
 
     public TeamArgument(String name, Consumer<Option<Team, CommandContext>> options) {
-        super(name, ArgumentScoreboardTeam.a());
+        super(name, new NMSArgumentScoreboardTeam().argument());
         setOptions(options);
     }
 
@@ -30,7 +30,7 @@ public class TeamArgument extends Argument<Team> {
     protected Team parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
         return Bukkit.getScoreboardManager()
                      .getMainScoreboard()
-                     .getTeam(ArgumentScoreboardTeam.a(ctx.getHandle(), name)
-                                                    .getName());
+                     .getTeam(new NMSArgumentScoreboardTeam().parse(ctx.getHandle(), name)
+                                                             .getName());
     }
 }
