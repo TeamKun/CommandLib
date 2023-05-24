@@ -3,7 +3,11 @@ package net.kunmc.lab.commandlib;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.nms.chat.NMSChatMessage;
+import net.kunmc.lab.commandlib.util.nms.chat.NMSIChatMutableComponent;
+import net.kunmc.lab.commandlib.util.nms.chat.NMSTranslatableContents;
 import net.kunmc.lab.commandlib.util.nms.command.NMSCommandListenerWrapper;
+import net.kunmc.lab.commandlib.util.nms.exception.NMSClassNotAssignableException;
+import net.kunmc.lab.commandlib.util.nms.exception.NMSClassNotFoundException;
 import net.kunmc.lab.commandlib.util.text.TextComponentBuilderImpl;
 import net.kunmc.lab.commandlib.util.text.TranslatableComponentBuilderImpl;
 import net.kyori.adventure.text.Component;
@@ -46,15 +50,23 @@ final class PlatformAdapterImpl implements PlatformAdapter<Object, Component, Co
                                                                         .map(Component::text)
                                                                         .collect(Collectors.toList())));
             });
-
-        } catch (Exception ex) {
-            // TODO 1.19.4対応
+        } catch (NMSClassNotFoundException | NMSClassNotAssignableException ex) {
+            try {
+                NMSTranslatableContents contents = new NMSIChatMutableComponent(e.getRawMessage()).getContentsAsTranslatable();
+                return new IncorrectArgumentInputException(ctx -> {
+                    ((CommandContext) ctx).sendFailure(Component.translatable(contents.getKey())
+                                                                .args(Arrays.stream(contents.getArgs())
+                                                                            .map(String::valueOf)
+                                                                            .map(Component::text)
+                                                                            .collect(Collectors.toList())));
+                });
+            } catch (NMSClassNotFoundException | NMSClassNotAssignableException ex2) {
+                throw new RuntimeException(String.format(
+                        "Cannot handle CommandSyntaxException. Because, Message's class(%s) is unsupported.",
+                        e.getRawMessage()
+                         .getClass()));
+            }
         }
-
-        throw new RuntimeException(String.format(
-                "Cannot handle CommandSyntaxException. Because, Message's class(%s) is unsupported.",
-                e.getRawMessage()
-                 .getClass()));
     }
 
     @Override

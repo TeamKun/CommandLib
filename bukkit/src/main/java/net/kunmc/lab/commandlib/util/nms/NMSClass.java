@@ -3,6 +3,7 @@ package net.kunmc.lab.commandlib.util.nms;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.util.ReflectionUtils;
 import net.kunmc.lab.commandlib.util.nms.exception.MethodNotFoundException;
+import net.kunmc.lab.commandlib.util.nms.exception.NMSClassNotAssignableException;
 import net.kunmc.lab.commandlib.util.nms.exception.UncheckedCommandSyntaxException;
 
 import java.lang.reflect.Constructor;
@@ -20,9 +21,7 @@ public abstract class NMSClass {
 
     public NMSClass(Object handle, Class<?> clazz) {
         if (handle != null && !clazz.isAssignableFrom(handle.getClass())) {
-            throw new RuntimeException(String.format("clazz(%s) is not assignable from handle's class(%s).",
-                                                     clazz,
-                                                     handle.getClass()));
+            throw new NMSClassNotAssignableException(handle, clazz);
         }
         this.handle = handle;
         this.clazz = clazz;

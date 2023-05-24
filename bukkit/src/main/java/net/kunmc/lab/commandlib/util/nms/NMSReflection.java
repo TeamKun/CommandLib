@@ -1,5 +1,6 @@
 package net.kunmc.lab.commandlib.util.nms;
 
+import net.kunmc.lab.commandlib.util.nms.exception.NMSClassNotFoundException;
 import org.bukkit.Bukkit;
 
 import java.util.HashMap;
@@ -28,7 +29,7 @@ public class NMSReflection {
         craftBukkitPackagePrefix = "org.bukkit.craftbukkit." + version;
     }
 
-    public static Optional<Class<?>> findMinecraftClass(String className, String... classNames) {
+    public static Class<?> findMinecraftClass(String className, String... classNames) {
         return Stream.concat(Stream.of(className), Stream.of(classNames))
                      .map(x -> {
                          Class<?> nmsClass = findClass(nmsPackagePrefix + "." + x).orElse(null);
@@ -38,11 +39,13 @@ public class NMSReflection {
                          return findClass(minecraftPackagePrefix + "." + x).orElse(null);
                      })
                      .filter(Objects::nonNull)
-                     .findFirst();
+                     .findFirst()
+                     .orElseThrow(() -> new NMSClassNotFoundException(className, classNames));
     }
 
-    public static Optional<Class<?>> findCraftBukkitClass(String className) {
-        return findClass(craftBukkitPackagePrefix + "." + className);
+    public static Class<?> findCraftBukkitClass(String className) {
+        return findClass(craftBukkitPackagePrefix + "." + className).orElseThrow(() -> new NMSClassNotFoundException(
+                className));
     }
 
     private static Optional<Class<?>> findClass(String className) {
