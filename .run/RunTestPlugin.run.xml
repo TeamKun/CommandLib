@@ -1,20 +1,50 @@
 <component name="ProjectRunConfigurationManager">
-    <configuration default="false" name="RunTestPlugin" type="JarApplication">
-        <option name="JAR_PATH" value="$PROJECT_DIR$/bukkit/test_plugin/server/server.jar"/>
+    <configuration default="false" name="RunTestPlugin_1.16.5" type="JarApplication">
+        <option name="JAR_PATH" value="$PROJECT_DIR$/bukkit/test_plugin_1.16.5/server/server.jar"/>
         <option name="VM_PARAMETERS" value="-Dplugin.env=DEV"/>
         <option name="PROGRAM_PARAMETERS" value="nogui"/>
-        <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/bukkit/test_plugin/server"/>
+        <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/bukkit/test_plugin_1.16.5/server"/>
         <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true"/>
         <option name="ALTERNATIVE_JRE_PATH" value="1.8"/>
         <method v="2">
             <option name="Gradle.BeforeRunTask" enabled="false" tasks="downloadServerJar"
-                    externalProjectPath="$PROJECT_DIR$/bukkit/test_plugin" vmOptions="" scriptParameters=""/>
+                    externalProjectPath="$PROJECT_DIR$/bukkit/test_plugin_1.16.5" vmOptions="" scriptParameters=""/>
             <option name="Gradle.BeforeRunTask" enabled="true" tasks="build"
-                    externalProjectPath="$PROJECT_DIR$/bukkit/test_plugin" vmOptions="" scriptParameters=""/>
-            <option name="Gradle.BeforeRunTask" enabled="true" tasks="copyProtocolLibToServer"
-                    externalProjectPath="$PROJECT_DIR$/bukkit/test_plugin" vmOptions="" scriptParameters=""/>
+                    externalProjectPath="$PROJECT_DIR$/bukkit/test_plugin_1.16.5" vmOptions="" scriptParameters=""/>
             <option name="Gradle.BeforeRunTask" enabled="true" tasks="copyToServer"
-                    externalProjectPath="$PROJECT_DIR$/bukkit/test_plugin" vmOptions="" scriptParameters=""/>
+                    externalProjectPath="$PROJECT_DIR$/bukkit/test_plugin_1.16.5" vmOptions="" scriptParameters=""/>
+        </method>
+    </configuration>
+    <configuration default="false" name="RunTestPlugin_1.19.4" type="JarApplication">
+        <option name="JAR_PATH" value="$PROJECT_DIR$/bukkit/test_plugin_1.19.4/server/server.jar"/>
+        <option name="VM_PARAMETERS" value="-Dplugin.env=DEV"/>
+        <option name="PROGRAM_PARAMETERS" value="nogui"/>
+        <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/bukkit/test_plugin_1.19.4/server"/>
+        <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true"/>
+        <option name="ALTERNATIVE_JRE_PATH" value="17"/>
+        <method v="2">
+            <option name="Gradle.BeforeRunTask" enabled="false" tasks="downloadServerJar"
+                    externalProjectPath="$PROJECT_DIR$/bukkit/test_plugin_1.19.4" vmOptions="" scriptParameters=""/>
+            <option name="Gradle.BeforeRunTask" enabled="true" tasks="build"
+                    externalProjectPath="$PROJECT_DIR$/bukkit/test_plugin_1.19.4" vmOptions="" scriptParameters=""/>
+            <option name="Gradle.BeforeRunTask" enabled="true" tasks="copyToServer"
+                    externalProjectPath="$PROJECT_DIR$/bukkit/test_plugin_1.19.4" vmOptions="" scriptParameters=""/>
+        </method>
+    </configuration>
+    <configuration default="false" name="RunTestPlugin_1.19.4_mojmap" type="JarApplication">
+        <option name="JAR_PATH" value="$PROJECT_DIR$/bukkit/test_plugin_1.19.4/server_mojmap/server.jar"/>
+        <option name="VM_PARAMETERS" value="-Dplugin.env=DEV"/>
+        <option name="PROGRAM_PARAMETERS" value="nogui"/>
+        <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/bukkit/test_plugin_1.19.4/server_mojmap"/>
+        <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true"/>
+        <option name="ALTERNATIVE_JRE_PATH" value="17"/>
+        <method v="2">
+            <option name="Gradle.BeforeRunTask" enabled="false" tasks="downloadServerJar"
+                    externalProjectPath="$PROJECT_DIR$/bukkit/test_plugin_1.19.4" vmOptions="" scriptParameters=""/>
+            <option name="Gradle.BeforeRunTask" enabled="true" tasks="build"
+                    externalProjectPath="$PROJECT_DIR$/bukkit/test_plugin_1.19.4" vmOptions="" scriptParameters=""/>
+            <option name="Gradle.BeforeRunTask" enabled="true" tasks="copyToServer"
+                    externalProjectPath="$PROJECT_DIR$/bukkit/test_plugin_1.19.4" vmOptions="" scriptParameters=""/>
         </method>
     </configuration>
 </component>

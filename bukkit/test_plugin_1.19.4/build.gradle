@@ -1,0 +1,146 @@
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardCopyOption
+
+plugins {
+    id "java"
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+}
+
+group = "net.kunmc.lab"
+version = "1.0.0"
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "papermc-repo"
+        url = "https://papermc.io/repo/repository/maven-public/"
+    }
+    maven { url = "https://repo.papermc.io/repository/maven-public/" }
+    maven {
+        name = "sonatype"
+        url = "https://oss.sonatype.org/content/groups/public/"
+    }
+    flatDir { dirs "server/cache", "libs" }
+}
+
+dependencies {
+    // NMS周りのクラスでコンパイルエラー出るため一旦1.16.5
+    // TODO
+    compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
+//    compileOnly "io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT"
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    compileOnly "com.mojang:brigadier:1.0.18"
+    implementation "org.apache.commons:commons-lang3:3.12.0"
+}
+
+def targetJavaVersion = 17
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release = targetJavaVersion
+    }
+}
+
+jar {
+    doFirst {
+        copy {
+            from '.'
+            into buildDir.name + '/resources/main/'
+            include 'LICENSE*'
+        }
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs += ["../src/main/java", "../../common/src/main/java"]
+        }
+    }
+}
+
+shadowJar {
+    archiveFileName = "${rootProject.name}-${project.version}.jar"
+    relocate "net.kunmc.lab.commandlib", "${project.group}.${project.name.toLowerCase()}.commandlib"
+    relocate "net.kunmc.lab.configlib", "${project.group}.${project.name.toLowerCase()}.configlib"
+}
+tasks.build.dependsOn tasks.shadowJar
+
+processResources {
+    def props = [name: rootProject.name, version: version, MainClass: getMainClassFQDN(projectDir.toPath())]
+    inputs.properties props
+    filteringCharset "UTF-8"
+    filesMatching("plugin.yml") {
+        expand props
+    }
+}
+
+shadowJar {
+    exclude "net/minecraft"
+    exclude "org/bukkit"
+    exclude "com/mojang"
+}
+jar.finalizedBy("shadowJar")
+
+jar {
+    exclude "net/minecraft"
+    exclude "org/bukkit"
+    exclude "com/mojang"
+}
+
+task copyToServer {
+    mustRunAfter build
+
+    copy {
+        from new File(buildDir.absolutePath, "libs/${rootProject.name}-${version}.jar")
+        into "./server/plugins"
+    }
+
+    copy {
+        from new File(buildDir.absolutePath, "libs/${rootProject.name}-${version}.jar")
+        into "./server_mojmap/plugins"
+    }
+}
+
+task buildAndCopy(group: "build") {
+    dependsOn build, copyToServer
+}
+
+task downloadServerJar {
+    String buildNumber = '538';
+    URL url = new URL("https://api.papermc.io/v2/projects/paper/versions/1.19.4/builds/" + buildNumber + "/downloads/paper-1.19.4-" + buildNumber + ".jar")
+    File file = new File(projectDir.toPath().toAbsolutePath().toString() + "/server/server.jar")
+    if (!file.exists()) {
+        try (InputStream stream = url.openStream()) {
+            Files.copy(stream, file.toPath(), StandardCopyOption.REPLACE_EXISTING)
+        }
+    }
+
+    URL mojmapUrl = new URL("https://api.papermc.io/v2/projects/paper/versions/1.19.4/builds/" + buildNumber + "/downloads/paper-mojmap-1.19.4-" + buildNumber + ".jar")
+    File mojmapFile = new File(projectDir.toPath().toAbsolutePath().toString() + "/server_mojmap/server.jar")
+    if (!mojmapFile.exists()) {
+        try (InputStream stream = mojmapUrl.openStream()) {
+            Files.copy(stream, mojmapFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+        }
+    }
+}
+
+static String getMainClassFQDN(Path projectPath) {
+    Path mainClassFile = Files.walk(projectPath)
+            .filter(x -> x.getFileName().toString().endsWith(".java"))
+            .filter(path -> Files.lines(path).anyMatch(str -> str.contains("extends JavaPlugin")))
+            .findFirst()
+            .get()
+    return mainClassFile.toString().replace("\\", ".").replace("/", ".").replaceAll(".*src.main.java.|.java\$", "")
+}
