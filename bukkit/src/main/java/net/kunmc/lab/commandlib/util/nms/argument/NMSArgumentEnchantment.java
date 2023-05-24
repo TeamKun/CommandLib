@@ -2,20 +2,20 @@ package net.kunmc.lab.commandlib.util.nms.argument;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import net.kunmc.lab.commandlib.util.nms.MinecraftClass;
 import net.kunmc.lab.commandlib.util.nms.command.NMSCommandBuildContext;
 import net.kunmc.lab.commandlib.util.nms.core.NMSHolder;
 import net.kunmc.lab.commandlib.util.nms.core.NMSRegistries;
-import net.kunmc.lab.commandlib.util.nms.exception.InvokeMethodException;
+import net.kunmc.lab.commandlib.util.nms.exception.MethodNotFoundException;
 import net.kunmc.lab.commandlib.util.nms.resources.NMSResourceKey;
 import net.kunmc.lab.commandlib.util.nms.server.NMSCraftServer;
 import net.kunmc.lab.commandlib.util.nms.world.NMSEnchantment;
 
-public class NMSArgumentEnchantment extends MinecraftClass {
+public class NMSArgumentEnchantment extends NMSArgument<NMSEnchantment> {
     public NMSArgumentEnchantment() {
         super(null, "ArgumentEnchantment", "commands.arguments.ResourceArgument");
     }
 
+    @Override
     public ArgumentType<?> argument() {
         try {
             return ((ArgumentType<?>) invokeMethod("a"));
@@ -30,10 +30,11 @@ public class NMSArgumentEnchantment extends MinecraftClass {
         }
     }
 
-    public NMSEnchantment parse(CommandContext<?> ctx, String name) {
+    @Override
+    protected NMSEnchantment parseImpl(CommandContext<?> ctx, String name) {
         try {
             return new NMSEnchantment(invokeMethod("a", ctx, name));
-        } catch (InvokeMethodException e) {
+        } catch (MethodNotFoundException e) {
             return new NMSEnchantment(new NMSHolder.NMSReference(invokeMethod("g",
                                                                               "getEnchantment",
                                                                               ctx,

@@ -1,7 +1,9 @@
 package net.kunmc.lab.commandlib.util.nms;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.util.ReflectionUtils;
-import net.kunmc.lab.commandlib.util.nms.exception.InvokeMethodException;
+import net.kunmc.lab.commandlib.util.nms.exception.MethodNotFoundException;
+import net.kunmc.lab.commandlib.util.nms.exception.UncheckedCommandSyntaxException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -62,22 +64,38 @@ public abstract class NMSClass {
                                       .map(Object::getClass)
                                       .toArray(Class[]::new);
 
+        Method method = null;
         for (String methodName : methodNames) {
             try {
-                Method method = getMethod(methodName, argClasses);
-                return method.invoke(handle, args);
-            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException ignored) {
+                method = getMethod(methodName, argClasses);
+                break;
+            } catch (NoSuchMethodException ignored) {
             }
         }
+        if (method == null) {
+            throw new MethodNotFoundException(methodNames);
+        }
 
-        throw new InvokeMethodException(methodNames);
+        try {
+            return method.invoke(handle, args);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            Throwable cause = e.getTargetException();
+
+            if (cause instanceof CommandSyntaxException) {
+                throw new UncheckedCommandSyntaxException(((CommandSyntaxException) cause));
+            }
+
+            throw new RuntimeException(e);
+        }
     }
 
     protected final Object invokeMethod(String methodName, Class<?>[] parameterClasses, Object[] args) {
         try {
             return getMethod(methodName, parameterClasses).invoke(handle, args);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new InvokeMethodException(methodName, e);
+            throw new MethodNotFoundException(methodName, e);
         }
     }
 

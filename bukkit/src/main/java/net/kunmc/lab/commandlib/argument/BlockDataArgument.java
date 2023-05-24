@@ -1,5 +1,6 @@
 package net.kunmc.lab.commandlib.argument;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
@@ -26,7 +27,7 @@ public class BlockDataArgument extends Argument<BlockData> {
     }
 
     @Override
-    protected BlockData parseImpl(CommandContext ctx) throws IncorrectArgumentInputException {
+    protected BlockData parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
         return new NMSCraftBlockData().createData(new NMSArgumentTile().parse(ctx.getHandle(), name)
                                                                        .getBlockData());
     }

@@ -1,5 +1,6 @@
 package net.kunmc.lab.commandlib.argument;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
@@ -26,7 +27,7 @@ public class EnchantmentArgument extends Argument<Enchantment> {
     }
 
     @Override
-    protected Enchantment parseImpl(CommandContext ctx) throws IncorrectArgumentInputException {
+    protected Enchantment parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
         return new NMSCraftEnchantment().createInstance(new NMSArgumentEnchantment().parse(ctx.getHandle(), name));
     }
 }

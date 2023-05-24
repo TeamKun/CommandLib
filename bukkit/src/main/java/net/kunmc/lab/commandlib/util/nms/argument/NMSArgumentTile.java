@@ -2,11 +2,10 @@ package net.kunmc.lab.commandlib.util.nms.argument;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import net.kunmc.lab.commandlib.util.nms.MinecraftClass;
 import net.kunmc.lab.commandlib.util.nms.command.NMSCommandBuildContext;
 import net.kunmc.lab.commandlib.util.nms.server.NMSCraftServer;
 
-public class NMSArgumentTile extends MinecraftClass {
+public class NMSArgumentTile extends NMSArgument<NMSArgumentTileLocation> {
     public NMSArgumentTile() {
         super(null,
               "ArgumentTile",
@@ -14,6 +13,7 @@ public class NMSArgumentTile extends MinecraftClass {
               "commands.arguments.blocks.BlockStateArgument");
     }
 
+    @Override
     public ArgumentType<?> argument() {
         try {
             return ((ArgumentType<?>) invokeMethod("a"));
@@ -26,7 +26,8 @@ public class NMSArgumentTile extends MinecraftClass {
         }
     }
 
-    public NMSArgumentTileLocation parse(CommandContext<?> ctx, String name) {
+    @Override
+    public NMSArgumentTileLocation parseImpl(CommandContext<?> ctx, String name) {
         return new NMSArgumentTileLocation(invokeMethod("a", "getBlock", ctx, name));
     }
 }

@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
-import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentEntity;
+import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentPlayers;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public class PlayersArgument extends Argument<List<Player>> {
     }
 
     public PlayersArgument(String name, Consumer<Option<List<Player>, CommandContext>> options) {
-        super(name, new NMSArgumentEntity().playersArgument());
+        super(name, new NMSArgumentPlayers().argument());
         setOptions(options);
     }
 
@@ -29,6 +29,6 @@ public class PlayersArgument extends Argument<List<Player>> {
 
     @Override
     protected List<Player> parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return new NMSArgumentEntity().getPlayers(ctx.getHandle(), name);
+        return new NMSArgumentPlayers().parse(ctx.getHandle(), name);
     }
 }
