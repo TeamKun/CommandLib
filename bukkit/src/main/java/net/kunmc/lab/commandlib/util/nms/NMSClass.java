@@ -1,6 +1,7 @@
 package net.kunmc.lab.commandlib.util.nms;
 
 import net.kunmc.lab.commandlib.util.ReflectionUtils;
+import net.kunmc.lab.commandlib.util.nms.exception.InvokeMethodException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -69,14 +70,14 @@ public abstract class NMSClass {
             }
         }
 
-        throw new RuntimeException(String.format("Could not invoke method. %s", Arrays.toString(methodNames)));
+        throw new InvokeMethodException(methodNames);
     }
 
     protected final Object invokeMethod(String methodName, Class<?>[] parameterClasses, Object[] args) {
         try {
             return getMethod(methodName, parameterClasses).invoke(handle, args);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(String.format("Could not invoke method. %s", methodName));
+            throw new InvokeMethodException(methodName, e);
         }
     }
 

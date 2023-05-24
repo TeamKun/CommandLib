@@ -16,6 +16,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -96,15 +97,14 @@ public final class CommandLib implements Listener {
         registeredCommands.stream()
                           .map(CommandNode::getName)
                           .forEach(s -> {
-                              root.removeCommand(s);
-                              root.removeCommand("minecraft:" + s);
+                              removeCommand(root, s);
+                              removeCommand(root, "minecraft:" + s);
                               knownCommands.remove(s);
                               knownCommands.remove("minecraft:" + s);
 
-                              root.getChild("execute")
-                                  .getChild("run")
-                                  .getRedirect()
-                                  .removeCommand(s);
+                              removeCommand(root.getChild("execute")
+                                                .getChild("run")
+                                                .getRedirect(), s);
                           });
 
         registeredCommands.clear();
@@ -117,5 +117,25 @@ public final class CommandLib implements Listener {
 
         Bukkit.getOnlinePlayers()
               .forEach(Player::updateCommands);
+    }
+
+    private static void removeCommand(CommandNode<?> commandNode, String name) {
+        Class<?> clazz = CommandNode.class;
+
+        try {
+            Field children = clazz.getDeclaredField("children");
+            children.setAccessible(true);
+            ((Map) children.get(commandNode)).remove(name);
+
+            Field literals = clazz.getDeclaredField("literals");
+            literals.setAccessible(true);
+            ((Map) literals.get(commandNode)).remove(name);
+
+            Field arguments = clazz.getDeclaredField("arguments");
+            arguments.setAccessible(true);
+            ((Map) arguments.get(commandNode)).remove(name);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

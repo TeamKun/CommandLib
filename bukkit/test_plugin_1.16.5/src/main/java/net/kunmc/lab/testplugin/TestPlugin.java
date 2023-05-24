@@ -17,7 +17,7 @@ public final class TestPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         CommandLib.register(this, new Command("commandlibtest2") {{
-            argument(new BlockDataArgument("x"), (x, ctx) -> {
+            argument(new EnchantmentArgument("x"), (x, ctx) -> {
                 ctx.sendSuccess(x);
             });
         }}, new Command("commandlibtest") {{

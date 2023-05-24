@@ -3,8 +3,8 @@ package net.kunmc.lab.commandlib.argument;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
-import net.minecraft.server.v1_16_R3.ArgumentEnchantment;
-import org.bukkit.craftbukkit.v1_16_R3.enchantments.CraftEnchantment;
+import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentEnchantment;
+import net.kunmc.lab.commandlib.util.nms.world.NMSCraftEnchantment;
 import org.bukkit.enchantments.Enchantment;
 
 import java.util.function.Consumer;
@@ -16,7 +16,7 @@ public class EnchantmentArgument extends Argument<Enchantment> {
     }
 
     public EnchantmentArgument(String name, Consumer<Option<Enchantment, CommandContext>> options) {
-        super(name, ArgumentEnchantment.a());
+        super(name, new NMSArgumentEnchantment().argument());
         setOptions(options);
     }
 
@@ -27,6 +27,6 @@ public class EnchantmentArgument extends Argument<Enchantment> {
 
     @Override
     protected Enchantment parseImpl(CommandContext ctx) throws IncorrectArgumentInputException {
-        return new CraftEnchantment(ArgumentEnchantment.a(ctx.getHandle(), name));
+        return new NMSCraftEnchantment().createInstance(new NMSArgumentEnchantment().parse(ctx.getHandle(), name));
     }
 }

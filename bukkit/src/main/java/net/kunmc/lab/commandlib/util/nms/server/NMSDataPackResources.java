@@ -9,6 +9,6 @@ public class NMSDataPackResources extends MinecraftClass {
     }
 
     public NMSCommandBuildContext getCommandBuildContext() {
-        return new NMSCommandBuildContext(getValue(Object.class, "c"));
+        return new NMSCommandBuildContext(getValue(Object.class, "c", "commandBuildContext"));
     }
 }
