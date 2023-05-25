@@ -18,7 +18,7 @@ public final class TestPlugin extends JavaPlugin {
     public void onEnable() {
         CommandLib.register(this, new Command("commandlibtest2") {{
             argument(builder -> {
-                builder.potionEffectArgument("a")
+                builder.blockDataArgument("a")
                        .execute(ctx -> ctx.sendSuccess(ctx.getParsedArgs()));
             });
         }}, new Command("commandlibtest") {{

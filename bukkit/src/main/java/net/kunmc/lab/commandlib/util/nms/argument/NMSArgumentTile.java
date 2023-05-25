@@ -7,10 +7,7 @@ import net.kunmc.lab.commandlib.util.nms.server.NMSCraftServer;
 
 public class NMSArgumentTile extends NMSArgument<NMSArgumentTileLocation> {
     public NMSArgumentTile() {
-        super(null,
-              "ArgumentTile",
-              "commands.arguments.blocks.ArgumentTile",
-              "commands.arguments.blocks.BlockStateArgument");
+        super("ArgumentTile", "commands.arguments.blocks.ArgumentTile", "commands.arguments.blocks.BlockStateArgument");
     }
 
     @Override
@@ -27,7 +24,7 @@ public class NMSArgumentTile extends NMSArgument<NMSArgumentTileLocation> {
     }
 
     @Override
-    public NMSArgumentTileLocation parseImpl(CommandContext<?> ctx, String name) {
+    protected NMSArgumentTileLocation parseImpl(CommandContext<?> ctx, String name) {
         return new NMSArgumentTileLocation(invokeMethod("a", "getBlock", ctx, name));
     }
 }
