@@ -11,4 +11,8 @@ public class NMSRegistries extends MinecraftClass {
     public NMSResourceKey enchantment() {
         return new NMSResourceKey(getValue(Object.class, "q", "ENCHANTMENT"));
     }
+
+    public NMSResourceKey mobEffect() {
+        return new NMSResourceKey(getValue(Object.class, "N", "MOB_EFFECT"));
+    }
 }
