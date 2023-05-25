@@ -5,12 +5,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
-import net.minecraft.server.v1_16_R3.ArgumentEntity;
+import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentPlayers;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class PlayersArgument extends Argument<List<Player>> {
     public PlayersArgument(String name) {
@@ -19,7 +18,7 @@ public class PlayersArgument extends Argument<List<Player>> {
     }
 
     public PlayersArgument(String name, Consumer<Option<List<Player>, CommandContext>> options) {
-        super(name, ArgumentEntity.d());
+        super(name, new NMSArgumentPlayers().argument());
         setOptions(options);
     }
 
@@ -30,10 +29,6 @@ public class PlayersArgument extends Argument<List<Player>> {
 
     @Override
     protected List<Player> parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return ArgumentEntity.f(ctx.getHandle(), name)
-                             .stream()
-                             .map(net.minecraft.server.v1_16_R3.Entity::getBukkitEntity)
-                             .map(Player.class::cast)
-                             .collect(Collectors.toList());
+        return new NMSArgumentPlayers().parse(ctx.getHandle(), name);
     }
 }

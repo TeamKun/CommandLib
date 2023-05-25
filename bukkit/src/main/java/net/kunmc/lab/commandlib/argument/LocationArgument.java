@@ -4,8 +4,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
-import net.minecraft.server.v1_16_R3.ArgumentVec3;
-import net.minecraft.server.v1_16_R3.Vec3D;
+import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentVec3D;
+import net.kunmc.lab.commandlib.util.nms.command.NMSCommandListenerWrapper;
+import net.kunmc.lab.commandlib.util.nms.world.NMSVec3D;
 import org.bukkit.Location;
 
 import java.util.function.Consumer;
@@ -17,7 +18,7 @@ public class LocationArgument extends Argument<Location> {
     }
 
     public LocationArgument(String name, Consumer<Option<Location, CommandContext>> options) {
-        super(name, ArgumentVec3.a());
+        super(name, new NMSArgumentVec3D().argument());
         setOptions(options);
     }
 
@@ -28,9 +29,8 @@ public class LocationArgument extends Argument<Location> {
 
     @Override
     protected Location parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        Vec3D vec = ArgumentVec3.a(ctx.getHandle(), name);
-        return new Location(ctx.getHandle()
-                               .getSource()
-                               .getBukkitWorld(), vec.x, vec.y, vec.z);
+        NMSVec3D vec = new NMSArgumentVec3D().parse(ctx.getHandle(), name);
+        return new Location(new NMSCommandListenerWrapper(ctx.getHandle()
+                                                             .getSource()).getBukkitWorld(), vec.x(), vec.y(), vec.z());
     }
 }

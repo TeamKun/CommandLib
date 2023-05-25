@@ -3,11 +3,10 @@ package net.kunmc.lab.commandlib;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
-import net.minecraft.server.v1_16_R3.CommandDispatcher;
-import net.minecraft.server.v1_16_R3.CommandListenerWrapper;
+import net.kunmc.lab.commandlib.util.nms.command.NMSCommandDispatcher;
+import net.kunmc.lab.commandlib.util.nms.command.NMSVanillaCommandWrapper;
+import net.kunmc.lab.commandlib.util.nms.server.NMSCraftServer;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_16_R3.command.VanillaCommandWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -17,6 +16,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,7 +25,7 @@ import java.util.Map;
 public final class CommandLib implements Listener {
     private final Plugin plugin;
     private final Collection<? extends Command> commands;
-    private final List<CommandNode<CommandListenerWrapper>> registeredCommands = new ArrayList<>();
+    private final List<CommandNode<?>> registeredCommands = new ArrayList<>();
 
     public static CommandLib register(@NotNull Plugin plugin, @NotNull Command command, @NotNull Command... commands) {
         return register(plugin, Lists.asList(command, commands));
@@ -50,16 +50,15 @@ public final class CommandLib implements Listener {
             @Override
             public void run() {
                 registeredCommands.addAll(new CommandNodeCreator<>(new PlatformAdapterImpl(), commands).build());
-
-                CommandDispatcher dispatcher = ((CraftServer) plugin.getServer()).getServer()
-                                                                                 .getCommandDispatcher();
-                RootCommandNode<CommandListenerWrapper> root = dispatcher.a()
-                                                                         .getRoot();
+                NMSCommandDispatcher dispatcher = new NMSCraftServer(plugin.getServer()).getServer()
+                                                                                        .getCommandDispatcher();
+                RootCommandNode root = dispatcher.getBrigadier()
+                                                 .getRoot();
                 registeredCommands.forEach(x -> {
                     root.addChild(x);
                     Bukkit.getCommandMap()
                           .getKnownCommands()
-                          .put(x.getName(), new VanillaCommandWrapper(dispatcher, x));
+                          .put(x.getName(), new NMSVanillaCommandWrapper().createInstance(dispatcher, x));
 
                     root.getChild("execute")
                         .getChild("run")
@@ -89,24 +88,23 @@ public final class CommandLib implements Listener {
     }
 
     public void unregister() {
-        RootCommandNode<CommandListenerWrapper> root = ((CraftServer) plugin.getServer()).getServer()
-                                                                                         .getCommandDispatcher()
-                                                                                         .dispatcher()
-                                                                                         .getRoot();
+        RootCommandNode root = new NMSCraftServer(plugin.getServer()).getServer()
+                                                                     .getCommandDispatcher()
+                                                                     .getBrigadier()
+                                                                     .getRoot();
         Map<String, org.bukkit.command.Command> knownCommands = Bukkit.getCommandMap()
                                                                       .getKnownCommands();
         registeredCommands.stream()
                           .map(CommandNode::getName)
                           .forEach(s -> {
-                              root.removeCommand(s);
-                              root.removeCommand("minecraft:" + s);
+                              removeCommand(root, s);
+                              removeCommand(root, "minecraft:" + s);
                               knownCommands.remove(s);
                               knownCommands.remove("minecraft:" + s);
 
-                              root.getChild("execute")
-                                  .getChild("run")
-                                  .getRedirect()
-                                  .removeCommand(s);
+                              removeCommand(root.getChild("execute")
+                                                .getChild("run")
+                                                .getRedirect(), s);
                           });
 
         registeredCommands.clear();
@@ -119,5 +117,25 @@ public final class CommandLib implements Listener {
 
         Bukkit.getOnlinePlayers()
               .forEach(Player::updateCommands);
+    }
+
+    private static void removeCommand(CommandNode<?> commandNode, String name) {
+        Class<?> clazz = CommandNode.class;
+
+        try {
+            Field children = clazz.getDeclaredField("children");
+            children.setAccessible(true);
+            ((Map) children.get(commandNode)).remove(name);
+
+            Field literals = clazz.getDeclaredField("literals");
+            literals.setAccessible(true);
+            ((Map) literals.get(commandNode)).remove(name);
+
+            Field arguments = clazz.getDeclaredField("arguments");
+            arguments.setAccessible(true);
+            ((Map) arguments.get(commandNode)).remove(name);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

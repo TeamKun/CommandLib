@@ -16,7 +16,8 @@ dependencies {
     compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
     compileOnly "com.mojang:brigadier:1.0.18"
     implementation "org.apache.commons:commons-lang3:3.12.0"
-    //compileOnly fileTree(dir: "./libs/", include: "patched*.jar")
+//    compileOnly fileTree(dir: "./test_plugin_1.16.5/", include: "server/cache/patched*.jar")
+//    compileOnly fileTree(dir: "./test_plugin_1.19.4/", include: ["server/versions/1.19.4/paper*.jar", "server_mojmap/versions/1.19.4/paper*jar"])
 }
 
 def targetJavaVersion = 8

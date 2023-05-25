@@ -4,7 +4,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
-import net.minecraft.server.v1_16_R3.ArgumentEntity;
+import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentEntity;
 import org.bukkit.entity.Entity;
 
 import java.util.function.Consumer;
@@ -16,7 +16,7 @@ public class EntityArgument extends Argument<Entity> {
     }
 
     public EntityArgument(String name, Consumer<Option<Entity, CommandContext>> options) {
-        super(name, ArgumentEntity.a());
+        super(name, new NMSArgumentEntity().argument());
         setOptions(options);
     }
 
@@ -27,7 +27,6 @@ public class EntityArgument extends Argument<Entity> {
 
     @Override
     protected Entity parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return ArgumentEntity.a(ctx.getHandle(), name)
-                             .getBukkitEntity();
+        return new NMSArgumentEntity().parse(ctx.getHandle(), name);
     }
 }
