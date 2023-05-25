@@ -12,7 +12,7 @@ public final class TestPlugin extends JavaPlugin {
     public void onEnable() {
         CommandLib.register(this, new Command("commandlibtest") {{
             argument(builder -> {
-                builder.teamArgument("a")
+                builder.particleArgument("a")
                        .execute(ctx -> ctx.sendSuccess(ctx.getParsedArgs()));
             });
         }});
