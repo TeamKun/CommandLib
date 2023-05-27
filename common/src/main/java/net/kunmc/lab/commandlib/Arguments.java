@@ -51,60 +51,70 @@ final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
 
         if (argument.suggestionAction() != null) {
             builder.suggests((context, sb) -> {
-                C ctx = platformAdapter.createCommandContext(context);
                 try {
-                    parse(ctx);
-                } catch (IncorrectArgumentInputException ignored) {
-                }
+                    C ctx = platformAdapter.createCommandContext(context);
+                    try {
+                        parse(ctx);
+                    } catch (IncorrectArgumentInputException ignored) {
+                    }
 
-                SuggestionBuilder<C> suggestionBuilder = new SuggestionBuilder<>(ctx);
-                argument.suggestionAction()
-                        .accept(suggestionBuilder);
-                suggestionBuilder.build()
-                                 .forEach(s -> {
-                                     s.suggest(sb);
-                                 });
-                if (argument.isDisplayDefaultSuggestions()) {
-                    argument.type()
-                            .listSuggestions(context, sb)
-                            .thenAccept(x -> {
-                                x.getList()
-                                 .forEach(s -> {
-                                     sb.suggest(s.getText(), s.getTooltip());
-                                 });
-                            });
-                }
+                    SuggestionBuilder<C> suggestionBuilder = new SuggestionBuilder<>(ctx);
+                    argument.suggestionAction()
+                            .accept(suggestionBuilder);
+                    suggestionBuilder.build()
+                                     .forEach(s -> {
+                                         s.suggest(sb);
+                                     });
+                    if (argument.isDisplayDefaultSuggestions()) {
+                        argument.type()
+                                .listSuggestions(context, sb)
+                                .thenAccept(x -> {
+                                    x.getList()
+                                     .forEach(s -> {
+                                         sb.suggest(s.getText(), s.getTooltip());
+                                     });
+                                });
+                    }
 
-                return sb.buildFuture();
+                    return sb.buildFuture();
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    throw e;
+                }
             });
         }
 
         builder.executes(context -> {
-            C ctx = platformAdapter.createCommandContext(context);
-
             try {
-                parse(ctx);
-            } catch (IncorrectArgumentInputException e) {
-                e.sendMessage(ctx);
-                return 1;
-            }
+                C ctx = platformAdapter.createCommandContext(context);
 
-            if (!parent.prerequisite()
-                       .test(ctx)) {
-                return 1;
-            }
+                try {
+                    parse(ctx);
+                } catch (IncorrectArgumentInputException e) {
+                    e.sendMessage(ctx);
+                    return 1;
+                }
 
-            if (argument.isContextActionUndefined()) {
-                return helpAction.executeWithStackTrace(ctx);
-            }
+                if (!parent.prerequisite()
+                           .test(ctx)) {
+                    return 1;
+                }
 
-            if (!parent.preprocess()
-                       .test(ctx)) {
-                return 1;
-            }
+                if (argument.isContextActionUndefined()) {
+                    return helpAction.executeWithStackTrace(ctx);
+                }
 
-            return argument.contextAction()
-                           .executeWithStackTrace(ctx);
+                if (!parent.preprocess()
+                           .test(ctx)) {
+                    return 1;
+                }
+
+                return argument.contextAction()
+                               .executeWithStackTrace(ctx);
+            } catch (Throwable e) {
+                e.printStackTrace();
+                throw e;
+            }
         });
 
         return builder;

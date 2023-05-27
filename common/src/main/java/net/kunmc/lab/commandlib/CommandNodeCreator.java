@@ -61,24 +61,29 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
 
         if (argumentsList.isEmpty()) {
             return builder.executes(context -> {
-                              C ctx = platformAdapter.createCommandContext(context);
+                              try {
+                                  C ctx = platformAdapter.createCommandContext(context);
 
-                              if (!command.prerequisite()
-                                          .test(ctx)) {
-                                  return 0;
+                                  if (!command.prerequisite()
+                                              .test(ctx)) {
+                                      return 0;
+                                  }
+
+                                  if (command.isContextActionUndefined()) {
+                                      return helpAction.executeWithStackTrace(ctx);
+                                  }
+
+                                  if (!command.preprocess()
+                                              .test(ctx)) {
+                                      return 0;
+                                  }
+
+                                  return command.contextAction()
+                                                .executeWithStackTrace(ctx);
+                              } catch (Throwable e) {
+                                  e.printStackTrace();
+                                  throw e;
                               }
-
-                              if (command.isContextActionUndefined()) {
-                                  return helpAction.executeWithStackTrace(ctx);
-                              }
-
-                              if (!command.preprocess()
-                                          .test(ctx)) {
-                                  return 0;
-                              }
-
-                              return command.contextAction()
-                                            .executeWithStackTrace(ctx);
                           })
                           .build();
         }
@@ -88,31 +93,36 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                      .forEach(arguments -> {
                          builder.then(arguments.build(helpAction, command))
                                 .executes(context -> {
-                                    C ctx = platformAdapter.createCommandContext(context);
-
                                     try {
-                                        arguments.parse(ctx);
-                                    } catch (IncorrectArgumentInputException e) {
-                                        e.sendMessage(ctx);
-                                        return 1;
-                                    }
+                                        C ctx = platformAdapter.createCommandContext(context);
 
-                                    if (!command.prerequisite()
-                                                .test(ctx)) {
-                                        return 0;
-                                    }
+                                        try {
+                                            arguments.parse(ctx);
+                                        } catch (IncorrectArgumentInputException e) {
+                                            e.sendMessage(ctx);
+                                            return 1;
+                                        }
 
-                                    if (command.isContextActionUndefined()) {
-                                        return helpAction.executeWithStackTrace(ctx);
-                                    }
+                                        if (!command.prerequisite()
+                                                    .test(ctx)) {
+                                            return 0;
+                                        }
 
-                                    if (!command.preprocess()
-                                                .test(ctx)) {
-                                        return 0;
-                                    }
+                                        if (command.isContextActionUndefined()) {
+                                            return helpAction.executeWithStackTrace(ctx);
+                                        }
 
-                                    return command.contextAction()
-                                                  .executeWithStackTrace(ctx);
+                                        if (!command.preprocess()
+                                                    .test(ctx)) {
+                                            return 0;
+                                        }
+
+                                        return command.contextAction()
+                                                      .executeWithStackTrace(ctx);
+                                    } catch (Throwable e) {
+                                        e.printStackTrace();
+                                        throw e;
+                                    }
                                 });
                      });
 
