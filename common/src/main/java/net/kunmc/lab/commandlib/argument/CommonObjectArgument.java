@@ -41,7 +41,7 @@ public class CommonObjectArgument<T, C extends AbstractCommandContext<?, ?>> ext
 
     @Override
     protected final T parseImpl(C ctx) throws IncorrectArgumentInputException {
-        String s = StringArgumentType.getString(ctx.getHandle(), name);
+        String s = StringArgumentType.getString(ctx.getHandle(), name());
         return nameToObjectMap.entrySet()
                               .stream()
                               .filter(x -> x.getKey()

@@ -29,7 +29,7 @@ final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
         for (int i = 0; i < count; i++) {
             CommonArgument<?, C> argument = arguments.get(i);
             Object parsedArg = argument.parse(ctx);
-            ctx.addParsedArgument(argument.name, parsedArg);
+            ctx.addParsedArgument(argument.name(), parsedArg);
         }
     }
 

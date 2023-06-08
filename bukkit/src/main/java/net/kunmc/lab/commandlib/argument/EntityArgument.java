@@ -27,6 +27,6 @@ public class EntityArgument extends Argument<Entity> {
 
     @Override
     protected Entity parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return new NMSArgumentEntity().parse(ctx.getHandle(), name);
+        return new NMSArgumentEntity().parse(ctx.getHandle(), name());
     }
 }

@@ -34,6 +34,6 @@ public class CommonFloatArgument<C extends AbstractCommandContext<?, ?>> extends
 
     @Override
     protected final Float parseImpl(C ctx) {
-        return FloatArgumentType.getFloat(ctx.getHandle(), name);
+        return FloatArgumentType.getFloat(ctx.getHandle(), name());
     }
 }

@@ -46,7 +46,7 @@ public class GameProfileArgument extends Argument<GameProfile> {
 
     @Override
     protected GameProfile parseImpl(CommandContext ctx) throws IncorrectArgumentInputException {
-        String s = StringArgumentType.getString(ctx.getHandle(), name);
+        String s = StringArgumentType.getString(ctx.getHandle(), name());
         return ctx.getHandle()
                   .getSource()
                   .getPlayerNames()

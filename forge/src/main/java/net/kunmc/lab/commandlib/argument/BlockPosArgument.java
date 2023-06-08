@@ -26,7 +26,7 @@ public class BlockPosArgument extends Argument<BlockPos> {
 
     @Override
     protected BlockPos parseImpl(CommandContext ctx) throws IncorrectArgumentInputException {
-        return Vec3Argument.getLocation(ctx.getHandle(), name)
+        return Vec3Argument.getLocation(ctx.getHandle(), name())
                            .getBlockPos(ctx.getHandle()
                                            .getSource());
     }

@@ -29,7 +29,7 @@ public class LocationArgument extends Argument<Location> {
 
     @Override
     protected Location parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        Vector3d vec = Vec3Argument.getVec3(ctx.getHandle(), name);
+        Vector3d vec = Vec3Argument.getVec3(ctx.getHandle(), name());
         Location loc = new Location(ctx.getWorld(), vec.x, vec.y, vec.z);
 
         Entity sender = ctx.getEntity();

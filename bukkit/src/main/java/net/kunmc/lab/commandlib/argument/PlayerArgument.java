@@ -27,6 +27,6 @@ public class PlayerArgument extends Argument<Player> {
 
     @Override
     protected Player parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return new NMSArgumentPlayer().parse(ctx.getHandle(), name);
+        return new NMSArgumentPlayer().parse(ctx.getHandle(), name());
     }
 }

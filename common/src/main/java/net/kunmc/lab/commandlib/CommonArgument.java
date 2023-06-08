@@ -14,7 +14,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> {
-    protected final String name;
+    private final String name;
     private boolean displayDefaultSuggestions = true;
     private SuggestionAction<C> suggestionAction;
     private SuggestionAction<C> additionalSuggestionAction;

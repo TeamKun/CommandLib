@@ -77,7 +77,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         argument(builder -> {
             builder.customArgument(argument)
                    .execute(ctx -> {
-                       execute.accept(argument.cast(ctx.getParsedArg(argument.name)), ctx);
+                       execute.accept(argument.cast(ctx.getParsedArg(argument.name())), ctx);
                    });
         });
     }
@@ -89,8 +89,8 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
             builder.customArgument(argument1)
                    .customArgument(argument2)
                    .execute(ctx -> {
-                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
-                                      argument2.cast(ctx.getParsedArg(argument2.name)),
+                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name())),
+                                      argument2.cast(ctx.getParsedArg(argument2.name())),
                                       ctx);
                    });
         });
@@ -105,9 +105,9 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
                    .customArgument(argument2)
                    .customArgument(argument3)
                    .execute(ctx -> {
-                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
-                                      argument2.cast(ctx.getParsedArg(argument2.name)),
-                                      argument3.cast(ctx.getParsedArg(argument3.name)),
+                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name())),
+                                      argument2.cast(ctx.getParsedArg(argument2.name())),
+                                      argument3.cast(ctx.getParsedArg(argument3.name())),
                                       ctx);
                    });
         });
@@ -124,10 +124,10 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
                    .customArgument(argument3)
                    .customArgument(argument4)
                    .execute(ctx -> {
-                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
-                                      argument2.cast(ctx.getParsedArg(argument2.name)),
-                                      argument3.cast(ctx.getParsedArg(argument3.name)),
-                                      argument4.cast(ctx.getParsedArg(argument4.name)),
+                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name())),
+                                      argument2.cast(ctx.getParsedArg(argument2.name())),
+                                      argument3.cast(ctx.getParsedArg(argument3.name())),
+                                      argument4.cast(ctx.getParsedArg(argument4.name())),
                                       ctx);
                    });
         });
@@ -146,11 +146,11 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
                    .customArgument(argument4)
                    .customArgument(argument5)
                    .execute(ctx -> {
-                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
-                                      argument2.cast(ctx.getParsedArg(argument2.name)),
-                                      argument3.cast(ctx.getParsedArg(argument3.name)),
-                                      argument4.cast(ctx.getParsedArg(argument4.name)),
-                                      argument5.cast(ctx.getParsedArg(argument5.name)),
+                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name())),
+                                      argument2.cast(ctx.getParsedArg(argument2.name())),
+                                      argument3.cast(ctx.getParsedArg(argument3.name())),
+                                      argument4.cast(ctx.getParsedArg(argument4.name())),
+                                      argument5.cast(ctx.getParsedArg(argument5.name())),
                                       ctx);
                    });
         });
@@ -171,12 +171,12 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
                    .customArgument(argument5)
                    .customArgument(argument6)
                    .execute(ctx -> {
-                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
-                                      argument2.cast(ctx.getParsedArg(argument2.name)),
-                                      argument3.cast(ctx.getParsedArg(argument3.name)),
-                                      argument4.cast(ctx.getParsedArg(argument4.name)),
-                                      argument5.cast(ctx.getParsedArg(argument5.name)),
-                                      argument6.cast(ctx.getParsedArg(argument6.name)),
+                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name())),
+                                      argument2.cast(ctx.getParsedArg(argument2.name())),
+                                      argument3.cast(ctx.getParsedArg(argument3.name())),
+                                      argument4.cast(ctx.getParsedArg(argument4.name())),
+                                      argument5.cast(ctx.getParsedArg(argument5.name())),
+                                      argument6.cast(ctx.getParsedArg(argument6.name())),
                                       ctx);
                    });
         });
@@ -199,13 +199,13 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
                    .customArgument(argument6)
                    .customArgument(argument7)
                    .execute(ctx -> {
-                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name)),
-                                      argument2.cast(ctx.getParsedArg(argument2.name)),
-                                      argument3.cast(ctx.getParsedArg(argument3.name)),
-                                      argument4.cast(ctx.getParsedArg(argument4.name)),
-                                      argument5.cast(ctx.getParsedArg(argument5.name)),
-                                      argument6.cast(ctx.getParsedArg(argument6.name)),
-                                      argument7.cast(ctx.getParsedArg(argument7.name)),
+                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name())),
+                                      argument2.cast(ctx.getParsedArg(argument2.name())),
+                                      argument3.cast(ctx.getParsedArg(argument3.name())),
+                                      argument4.cast(ctx.getParsedArg(argument4.name())),
+                                      argument5.cast(ctx.getParsedArg(argument5.name())),
+                                      argument6.cast(ctx.getParsedArg(argument6.name())),
+                                      argument7.cast(ctx.getParsedArg(argument7.name())),
                                       ctx);
                    });
         });

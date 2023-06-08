@@ -39,7 +39,7 @@ public class CommonEnumArgument<T extends Enum<T>, C extends AbstractCommandCont
 
     @Override
     protected final T parseImpl(C ctx) throws IncorrectArgumentInputException {
-        String s = StringArgumentType.getString(ctx.getHandle(), name);
+        String s = StringArgumentType.getString(ctx.getHandle(), name());
         return Arrays.stream(clazz.getEnumConstants())
                      .filter(x -> x.name()
                                    .equalsIgnoreCase(s))

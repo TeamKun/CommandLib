@@ -28,6 +28,6 @@ public class ParticleArgument extends Argument<Particle> {
 
     @Override
     protected Particle parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return new NMSCraftParticle().toBukkit(new NMSArgumentParticle().parse(ctx.getHandle(), name));
+        return new NMSCraftParticle().toBukkit(new NMSArgumentParticle().parse(ctx.getHandle(), name()));
     }
 }

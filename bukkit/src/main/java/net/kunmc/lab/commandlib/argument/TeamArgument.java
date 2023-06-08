@@ -30,7 +30,7 @@ public class TeamArgument extends Argument<Team> {
     protected Team parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
         return Bukkit.getScoreboardManager()
                      .getMainScoreboard()
-                     .getTeam(new NMSArgumentScoreboardTeam().parse(ctx.getHandle(), name)
+                     .getTeam(new NMSArgumentScoreboardTeam().parse(ctx.getHandle(), name())
                                                              .getName());
     }
 }

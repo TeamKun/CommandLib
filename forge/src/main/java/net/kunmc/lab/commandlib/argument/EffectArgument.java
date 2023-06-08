@@ -27,6 +27,6 @@ public class EffectArgument extends Argument<Effect> {
 
     @Override
     protected Effect parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return PotionArgument.getMobEffect(ctx.getHandle(), name);
+        return PotionArgument.getMobEffect(ctx.getHandle(), name());
     }
 }

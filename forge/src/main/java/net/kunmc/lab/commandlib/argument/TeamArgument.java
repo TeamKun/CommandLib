@@ -26,6 +26,6 @@ public class TeamArgument extends Argument<ScorePlayerTeam> {
 
     @Override
     protected ScorePlayerTeam parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return net.minecraft.command.arguments.TeamArgument.getTeam(ctx.getHandle(), name);
+        return net.minecraft.command.arguments.TeamArgument.getTeam(ctx.getHandle(), name());
     }
 }

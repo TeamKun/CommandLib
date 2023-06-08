@@ -34,6 +34,6 @@ public class CommonIntegerArgument<C extends AbstractCommandContext<?, ?>> exten
 
     @Override
     protected final Integer parseImpl(C ctx) {
-        return IntegerArgumentType.getInteger(ctx.getHandle(), name);
+        return IntegerArgumentType.getInteger(ctx.getHandle(), name());
     }
 }

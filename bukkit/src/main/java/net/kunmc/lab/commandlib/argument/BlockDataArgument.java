@@ -28,7 +28,7 @@ public class BlockDataArgument extends Argument<BlockData> {
 
     @Override
     protected BlockData parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return new NMSCraftBlockData().createData(new NMSArgumentTile().parse(ctx.getHandle(), name)
+        return new NMSCraftBlockData().createData(new NMSArgumentTile().parse(ctx.getHandle(), name())
                                                                        .getBlockData());
     }
 }

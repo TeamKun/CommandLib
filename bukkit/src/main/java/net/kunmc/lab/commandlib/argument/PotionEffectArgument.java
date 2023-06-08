@@ -28,7 +28,7 @@ public class PotionEffectArgument extends Argument<PotionEffect> {
 
     @Override
     protected PotionEffect parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return new NMSCraftPotionEffectType().createInstance(new NMSArgumentMobEffect().parse(ctx.getHandle(), name))
+        return new NMSCraftPotionEffectType().createInstance(new NMSArgumentMobEffect().parse(ctx.getHandle(), name()))
                                              .createEffect(1, 0);
     }
 }

@@ -28,6 +28,6 @@ public class EntitiesArgument extends Argument<List<Entity>> {
 
     @Override
     protected List<Entity> parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return new NMSArgumentEntities().parse(ctx.getHandle(), name);
+        return new NMSArgumentEntities().parse(ctx.getHandle(), name());
     }
 }

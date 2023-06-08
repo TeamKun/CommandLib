@@ -33,7 +33,7 @@ public class CommonStringArgument<C extends AbstractCommandContext<?, ?>> extend
 
     @Override
     protected final String parseImpl(C ctx) {
-        return StringArgumentType.getString(ctx.getHandle(), name);
+        return StringArgumentType.getString(ctx.getHandle(), name());
     }
 
     public static class Type {

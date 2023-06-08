@@ -28,6 +28,6 @@ public class EnchantmentArgument extends Argument<Enchantment> {
 
     @Override
     protected Enchantment parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return new NMSCraftEnchantment().createInstance(new NMSArgumentEnchantment().parse(ctx.getHandle(), name));
+        return new NMSCraftEnchantment().createInstance(new NMSArgumentEnchantment().parse(ctx.getHandle(), name()));
     }
 }

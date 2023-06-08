@@ -29,6 +29,6 @@ public class EntitiesArgument extends Argument<List<Entity>> {
 
     @Override
     protected List<Entity> parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return new ArrayList<>(EntityArgument.getEntities(ctx.getHandle(), name));
+        return new ArrayList<>(EntityArgument.getEntities(ctx.getHandle(), name()));
     }
 }

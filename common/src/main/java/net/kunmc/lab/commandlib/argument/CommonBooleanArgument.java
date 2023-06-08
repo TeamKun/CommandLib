@@ -24,6 +24,6 @@ public class CommonBooleanArgument<C extends AbstractCommandContext<?, ?>> exten
 
     @Override
     protected final Boolean parseImpl(C ctx) {
-        return BoolArgumentType.getBool(ctx.getHandle(), name);
+        return BoolArgumentType.getBool(ctx.getHandle(), name());
     }
 }

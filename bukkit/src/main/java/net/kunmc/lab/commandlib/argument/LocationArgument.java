@@ -29,7 +29,7 @@ public class LocationArgument extends Argument<Location> {
 
     @Override
     protected Location parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        NMSVec3D vec = new NMSArgumentVec3D().parse(ctx.getHandle(), name);
+        NMSVec3D vec = new NMSArgumentVec3D().parse(ctx.getHandle(), name());
         return new Location(new NMSCommandListenerWrapper(ctx.getHandle()
                                                              .getSource()).getBukkitWorld(), vec.x(), vec.y(), vec.z());
     }

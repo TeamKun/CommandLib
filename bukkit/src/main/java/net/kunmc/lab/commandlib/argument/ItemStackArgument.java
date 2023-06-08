@@ -28,7 +28,7 @@ public class ItemStackArgument extends Argument<ItemStack> {
 
     @Override
     protected ItemStack parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return new NMSCraftItemStack().asCraftMirror(new NMSArgumentItemStack().parse(ctx.getHandle(), name)
+        return new NMSCraftItemStack().asCraftMirror(new NMSArgumentItemStack().parse(ctx.getHandle(), name())
                                                                                .createItemStack(1, false));
     }
 }

@@ -58,7 +58,7 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
 
     @Override
     protected List<OfflinePlayer> parseImpl(CommandContext ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
-        String s = ctx.getInput(name);
+        String s = ctx.getInput(name());
 
         if (s.startsWith("@")) {
             List<OfflinePlayer> players = Arrays.stream(Bukkit.getOfflinePlayers())

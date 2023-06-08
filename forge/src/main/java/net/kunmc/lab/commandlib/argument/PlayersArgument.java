@@ -30,6 +30,6 @@ public class PlayersArgument extends Argument<List<ServerPlayerEntity>> {
 
     @Override
     protected List<ServerPlayerEntity> parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return new ArrayList<>(EntityArgument.getPlayers(ctx.getHandle(), name));
+        return new ArrayList<>(EntityArgument.getPlayers(ctx.getHandle(), name()));
     }
 }

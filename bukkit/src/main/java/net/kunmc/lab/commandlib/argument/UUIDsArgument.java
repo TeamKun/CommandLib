@@ -67,7 +67,7 @@ public class UUIDsArgument extends Argument<List<UUID>> {
 
     @Override
     protected List<UUID> parseImpl(CommandContext ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
-        String s = ctx.getInput(name);
+        String s = ctx.getInput(name());
 
         if (s.startsWith("@")) {
             List<UUID> uuids = Arrays.stream(Bukkit.getOfflinePlayers())
