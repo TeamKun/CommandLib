@@ -31,21 +31,6 @@ java {
 }
 
 shadowJar {
-    exclude "net/minecraft"
-    exclude "org/bukkit"
-    exclude "com/mojang"
     relocate "org.apache", "${project.group}.${rootProject.name.toLowerCase()}.shadow.org.apache"
 }
 jar.finalizedBy("shadowJar")
-
-jar {
-    exclude "net/minecraft"
-    exclude "org/bukkit"
-    exclude "com/mojang"
-}
-
-javadoc {
-    exclude "net/minecraft"
-    exclude "org/bukkit"
-    exclude "com/mojang"
-}
