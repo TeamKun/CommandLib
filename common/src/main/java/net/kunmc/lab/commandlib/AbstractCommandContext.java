@@ -1,7 +1,5 @@
 package net.kunmc.lab.commandlib;
 
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -116,8 +114,6 @@ public abstract class AbstractCommandContext<S, C> {
         parsedArgMap.put(name, parsedArgument);
     }
 
-    @Accessors(chain = true, fluent = true)
-    @Setter
     public static class MessageOption {
         private int rgb = 0xFFFFFF;
         private String hoverText = "";
@@ -130,6 +126,16 @@ public abstract class AbstractCommandContext<S, C> {
         }
 
         private MessageOption() {
+        }
+
+        public MessageOption rgb(int rgb) {
+            this.rgb = rgb;
+            return this;
+        }
+
+        public MessageOption hoverText(String hoverText) {
+            this.hoverText = hoverText;
+            return this;
         }
     }
 }

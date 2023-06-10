@@ -23,8 +23,6 @@ java {
 }
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
     compileOnly "com.mojang:brigadier:1.0.18"
     compileOnly "org.jetbrains:annotations:16.0.2"
     compileOnly "com.google.guava:guava:31.1-jre"

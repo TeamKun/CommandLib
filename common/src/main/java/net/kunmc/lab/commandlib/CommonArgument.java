@@ -2,8 +2,6 @@ package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.exception.InvalidArgumentException;
 
@@ -184,8 +182,6 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
 
     protected abstract T parseImpl(C ctx) throws CommandSyntaxException, IncorrectArgumentInputException;
 
-    @Accessors(chain = true, fluent = true)
-    @Setter
     public static class Option<T, C extends AbstractCommandContext<?, ?>> {
         protected boolean displayDefaultSuggestions = true;
         protected SuggestionAction<C> suggestionAction;
@@ -194,13 +190,45 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
          */
         protected SuggestionAction<C> additionalSuggestionAction;
         protected BiFunction<C, String, T> additionalParser;
-        /**
-         * Filtering values on tab completion and after parsing.<br>
-         * Throwing {@link net.kunmc.lab.commandlib.exception.InvalidArgumentException}, you can customize the error message.
-         */
         protected Predicate<? super T> filter;
         protected Function<? super T, ? extends T> shaper;
         protected ContextAction<C> contextAction;
+
+        public Option<T, C> displayDefaultSuggestions(boolean displayDefaultSuggestions) {
+            this.displayDefaultSuggestions = displayDefaultSuggestions;
+            return this;
+        }
+
+        protected boolean isDisplayDefaultSuggestions() {
+            return displayDefaultSuggestions;
+        }
+
+        public Option<T, C> suggestionAction(SuggestionAction<C> suggestionAction) {
+            this.suggestionAction = suggestionAction;
+            return this;
+        }
+
+        protected Optional<SuggestionAction<C>> suggestionAction() {
+            return Optional.ofNullable(suggestionAction);
+        }
+
+        public Option<T, C> additionalSuggestionAction(SuggestionAction<C> additionalSuggestionAction) {
+            this.additionalSuggestionAction = additionalSuggestionAction;
+            return this;
+        }
+
+        protected Optional<SuggestionAction<C>> additionalSuggestionAction() {
+            return Optional.ofNullable(additionalSuggestionAction);
+        }
+
+        public Option<T, C> additionalParser(BiFunction<C, String, T> additionalParser) {
+            this.additionalParser = additionalParser;
+            return this;
+        }
+
+        protected Optional<BiFunction<C, String, T>> additionalParser() {
+            return Optional.ofNullable(additionalParser);
+        }
 
         /**
          * Filtering values on tab completion and after parsing.<br>
@@ -222,28 +250,22 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
             return this;
         }
 
-        protected boolean isDisplayDefaultSuggestions() {
-            return displayDefaultSuggestions;
-        }
-
-        protected Optional<SuggestionAction<C>> suggestionAction() {
-            return Optional.ofNullable(suggestionAction);
-        }
-
-        protected Optional<SuggestionAction<C>> additionalSuggestionAction() {
-            return Optional.ofNullable(additionalSuggestionAction);
-        }
-
-        protected Optional<BiFunction<C, String, T>> additionalParser() {
-            return Optional.ofNullable(additionalParser);
-        }
-
         protected Optional<Predicate<? super T>> filter() {
             return Optional.ofNullable(filter);
         }
 
+        public Option<T, C> shaper(Function<? super T, ? extends T> shaper) {
+            this.shaper = shaper;
+            return this;
+        }
+
         protected Optional<Function<? super T, ? extends T>> shaper() {
             return Optional.ofNullable(shaper);
+        }
+
+        public Option<T, C> contextAction(ContextAction<C> contextAction) {
+            this.contextAction = contextAction;
+            return this;
         }
 
         protected Optional<ContextAction<C>> contextAction() {
