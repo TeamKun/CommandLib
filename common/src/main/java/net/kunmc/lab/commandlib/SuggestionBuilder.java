@@ -27,9 +27,6 @@ public final class SuggestionBuilder<C extends AbstractCommandContext<?, ?>> {
 
     public String getLatestInput() {
         String input = getInput();
-        if (!isWaitingQuote() && input.endsWith(" ")) {
-            return "";
-        }
 
         List<? extends ParsedCommandNode<?>> nodes = ctx.getHandle()
                                                         .getNodes();
@@ -44,17 +41,6 @@ public final class SuggestionBuilder<C extends AbstractCommandContext<?, ?>> {
 
         }
         return input.substring(range.getEnd() + 1);
-    }
-
-    private boolean isWaitingQuote() {
-        int count = 0;
-        String input = getInput();
-        for (int i = 1; i < input.length(); i++) {
-            if (input.charAt(i) == '"' && input.charAt(i - 1) != '\\') {
-                count++;
-            }
-        }
-        return count % 2 != 0;
     }
 
     public List<String> getArgs() {

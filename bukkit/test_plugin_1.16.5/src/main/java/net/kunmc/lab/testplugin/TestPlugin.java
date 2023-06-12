@@ -17,9 +17,14 @@ public final class TestPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         CommandLib.register(this, new Command("commandlibtest2") {{
-            argument(builder -> {
-                builder.blockDataArgument("a")
-                       .execute(ctx -> ctx.sendSuccess(ctx.getParsedArgs()));
+            argument(new IntegerArgument("n", option -> option.suggestionAction(sb -> {
+                sb.getContext()
+                  .sendSuccess(sb.getLatestInput());
+            })), new StringArgument("s", option -> option.suggestionAction(sb -> {
+                sb.getContext()
+                  .sendSuccess(sb.getLatestInput());
+            }), StringArgument.Type.PHRASE), (n, s, ctx) -> {
+                ctx.sendSuccess(n);
             });
         }}, new Command("commandlibtest") {{
             addAliases("commandlibtestalias");
