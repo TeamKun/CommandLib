@@ -7,29 +7,40 @@ import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class CommonObjectArgument<T, C extends AbstractCommandContext<?, ?>> extends CommonArgument<T, C> {
-    private final Map<String, ? extends T> nameToObjectMap;
+    private final Supplier<Map<String, ? extends T>> mapSupplier;
 
     public CommonObjectArgument(String name, Map<String, ? extends T> nameToObjectMap) {
         this(name, nameToObjectMap, option -> {
         });
     }
 
+    public CommonObjectArgument(String name, Map<String, ? extends T> nameToObjectMap, Consumer<Option<T, C>> options) {
+        this(name, () -> nameToObjectMap, options);
+    }
+
+    public CommonObjectArgument(String name, Supplier<Map<String, ? extends T>> mapSupplier) {
+        this(name, mapSupplier, option -> {
+        });
+    }
+
     public CommonObjectArgument(String name,
-                                Map<String, ? extends T> nameToObjectMap,
-                                Consumer<CommonArgument.Option<T, C>> options) {
+                                Supplier<Map<String, ? extends T>> mapSupplier,
+                                Consumer<Option<T, C>> options) {
         super(name, StringArgumentType.string());
-        this.nameToObjectMap = nameToObjectMap;
+        this.mapSupplier = mapSupplier;
 
         setSuggestionAction(sb -> {
-            nameToObjectMap.entrySet()
-                           .stream()
-                           .filter(x -> test(x.getValue(), true))
-                           .map(Map.Entry::getKey)
-                           .filter(x -> sb.getLatestInput()
-                                          .isEmpty() || x.contains(sb.getLatestInput()))
-                           .forEach(sb::suggest);
+            mapSupplier.get()
+                       .entrySet()
+                       .stream()
+                       .filter(x -> test(x.getValue(), true))
+                       .map(Map.Entry::getKey)
+                       .filter(x -> sb.getLatestInput()
+                                      .isEmpty() || x.contains(sb.getLatestInput()))
+                       .forEach(sb::suggest);
         });
         setOptions(options);
     }
@@ -42,12 +53,13 @@ public class CommonObjectArgument<T, C extends AbstractCommandContext<?, ?>> ext
     @Override
     protected final T parseImpl(C ctx) throws IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx.getHandle(), name());
-        return nameToObjectMap.entrySet()
-                              .stream()
-                              .filter(x -> x.getKey()
-                                            .equals(s))
-                              .map(Map.Entry::getValue)
-                              .findFirst()
-                              .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
+        return mapSupplier.get()
+                          .entrySet()
+                          .stream()
+                          .filter(x -> x.getKey()
+                                        .equals(s))
+                          .map(Map.Entry::getValue)
+                          .findFirst()
+                          .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
     }
 }

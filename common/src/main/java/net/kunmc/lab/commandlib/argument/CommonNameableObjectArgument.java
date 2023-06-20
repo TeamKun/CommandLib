@@ -8,9 +8,10 @@ import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 
 import java.util.Collection;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class CommonNameableObjectArgument<T extends Nameable, C extends AbstractCommandContext<?, ?>> extends CommonArgument<T, C> {
-    private final Collection<? extends T> candidates;
+    private final Supplier<Collection<? extends T>> candidatesSupplier;
 
     public CommonNameableObjectArgument(String name, Collection<? extends T> candidates) {
         this(name, candidates, option -> {
@@ -20,33 +21,30 @@ public class CommonNameableObjectArgument<T extends Nameable, C extends Abstract
     public CommonNameableObjectArgument(String name,
                                         Collection<? extends T> candidates,
                                         Consumer<Option<T, C>> options) {
-        super(name, StringArgumentType.string());
-        checkPreconditions(candidates);
-        this.candidates = candidates;
-
-        setSuggestionAction(sb -> {
-            candidates.stream()
-                      .filter(x -> test(x, true))
-                      .map(Nameable::tabCompleteName)
-                      .filter(x -> sb.getLatestInput()
-                                     .isEmpty() || x.contains(sb.getLatestInput()))
-                      .forEach(sb::suggest);
-        });
-        setOptions(options);
-
+        this(name, () -> candidates, options);
     }
 
-    private static void checkPreconditions(Collection<? extends Nameable> candidates) {
-        if (candidates.isEmpty()) {
-            throw new IllegalArgumentException("candidates is empty.");
-        }
+    public CommonNameableObjectArgument(String name, Supplier<Collection<? extends T>> candidatesSupplier) {
+        this(name, candidatesSupplier, option -> {
+        });
+    }
 
-        if (candidates.stream()
-                      .map(Nameable::tabCompleteName)
-                      .distinct()
-                      .count() != candidates.size()) {
-            throw new IllegalArgumentException("candidates has duplicate name elements.");
-        }
+    public CommonNameableObjectArgument(String name,
+                                        Supplier<Collection<? extends T>> candidatesSupplier,
+                                        Consumer<Option<T, C>> options) {
+        super(name, StringArgumentType.string());
+        this.candidatesSupplier = candidatesSupplier;
+
+        setSuggestionAction(sb -> {
+            candidatesSupplier.get()
+                              .stream()
+                              .filter(x -> test(x, true))
+                              .map(Nameable::tabCompleteName)
+                              .filter(x -> sb.getLatestInput()
+                                             .isEmpty() || x.contains(sb.getLatestInput()))
+                              .forEach(sb::suggest);
+        });
+        setOptions(options);
     }
 
     @Override
@@ -57,10 +55,11 @@ public class CommonNameableObjectArgument<T extends Nameable, C extends Abstract
     @Override
     protected final T parseImpl(C ctx) throws IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx.getHandle(), name());
-        return candidates.stream()
-                         .filter(x -> x.tabCompleteName()
-                                       .equals(s))
-                         .findFirst()
-                         .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
+        return candidatesSupplier.get()
+                                 .stream()
+                                 .filter(x -> x.tabCompleteName()
+                                               .equals(s))
+                                 .findFirst()
+                                 .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
     }
 }
