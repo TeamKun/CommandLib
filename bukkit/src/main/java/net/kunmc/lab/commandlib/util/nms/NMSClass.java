@@ -37,7 +37,7 @@ public abstract class NMSClass {
 
     protected final Object newInstance(Class<?>[] parameterTypes, Object[] args) {
         try {
-            Constructor<?> constructor = clazz.getConstructor(parameterTypes);
+            Constructor<?> constructor = clazz.getDeclaredConstructor(parameterTypes);
             constructor.setAccessible(true);
             return constructor.newInstance(args);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
