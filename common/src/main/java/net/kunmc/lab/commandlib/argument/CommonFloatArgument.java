@@ -14,7 +14,7 @@ public class CommonFloatArgument<C extends AbstractCommandContext<?, ?>> extends
 
     public CommonFloatArgument(String name, Consumer<Option<Float, C>> options) {
         super(name, FloatArgumentType.floatArg(-Float.MAX_VALUE, Float.MAX_VALUE));
-        setOptions(options);
+        applyOptions(options);
     }
 
     public CommonFloatArgument(String name, Float min, Float max) {
@@ -24,7 +24,7 @@ public class CommonFloatArgument<C extends AbstractCommandContext<?, ?>> extends
 
     public CommonFloatArgument(String name, Consumer<Option<Float, C>> options, Float min, Float max) {
         super(name, FloatArgumentType.floatArg(min, max));
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

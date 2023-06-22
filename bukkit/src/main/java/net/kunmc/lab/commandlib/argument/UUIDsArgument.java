@@ -57,7 +57,7 @@ public class UUIDsArgument extends Argument<List<UUID>> {
                  .forEach(sb::suggest);
         });
         setDisplayDefaultSuggestions(false);
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

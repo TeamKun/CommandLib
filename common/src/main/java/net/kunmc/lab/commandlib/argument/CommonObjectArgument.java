@@ -42,7 +42,7 @@ public class CommonObjectArgument<T, C extends AbstractCommandContext<?, ?>> ext
                                       .isEmpty() || x.contains(sb.getLatestInput()))
                        .forEach(sb::suggest);
         });
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

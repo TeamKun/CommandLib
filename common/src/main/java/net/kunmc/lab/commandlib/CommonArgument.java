@@ -102,16 +102,16 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         this.shaper = shaper;
     }
 
-    protected final void setOptions(Consumer<Option<T, C>> options) {
+    protected final void applyOptions(Consumer<Option<T, C>> options) {
         if (options == null) {
             return;
         }
         Option<T, C> option = new Option<>();
         options.accept(option);
-        setOption(option);
+        applyOption(option);
     }
 
-    protected final void setOption(Option<T, C> option) {
+    protected final void applyOption(Option<T, C> option) {
         setDisplayDefaultSuggestions(option.isDisplayDefaultSuggestions());
         option.suggestionAction()
               .ifPresent(this::setSuggestionAction);

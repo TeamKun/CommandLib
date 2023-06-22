@@ -29,7 +29,7 @@ public class CommonEnumArgument<T extends Enum<T>, C extends AbstractCommandCont
                                  .isEmpty() || x.contains(sb.getLatestInput()))
                   .forEach(sb::suggest);
         });
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

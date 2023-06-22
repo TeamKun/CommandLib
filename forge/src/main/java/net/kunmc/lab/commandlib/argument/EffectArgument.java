@@ -17,7 +17,7 @@ public class EffectArgument extends Argument<Effect> {
 
     public EffectArgument(String name, Consumer<Option<Effect, CommandContext>> options) {
         super(name, PotionArgument.mobEffect());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

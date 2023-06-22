@@ -36,7 +36,7 @@ public class GameProfileArgument extends Argument<GameProfile> {
                              .isEmpty() || StringUtils.containsIgnoreCase(x, sb.getLatestInput()))
               .forEach(sb::suggest);
         });
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

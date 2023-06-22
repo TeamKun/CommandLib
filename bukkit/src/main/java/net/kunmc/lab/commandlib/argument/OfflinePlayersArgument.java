@@ -48,7 +48,7 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
                  .filter(x -> input.isEmpty() || x.startsWith(input))
                  .forEach(sb::suggest);
         });
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

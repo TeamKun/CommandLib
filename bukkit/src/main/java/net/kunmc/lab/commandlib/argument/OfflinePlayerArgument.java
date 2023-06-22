@@ -30,7 +30,7 @@ public class OfflinePlayerArgument extends Argument<OfflinePlayer> {
                                  .isEmpty() || StringUtils.containsIgnoreCase(x, sb.getLatestInput()))
                   .forEach(sb::suggest);
         });
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

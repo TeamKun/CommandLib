@@ -23,7 +23,7 @@ public class CommonStringArgument<C extends AbstractCommandContext<?, ?>> extend
 
     public CommonStringArgument(String name, Consumer<Option<String, C>> options, Type type) {
         super(name, type.type);
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

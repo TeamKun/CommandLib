@@ -18,7 +18,7 @@ public class ParticleArgument extends Argument<Particle> {
 
     public ParticleArgument(String name, Consumer<Option<Particle, CommandContext>> options) {
         super(name, new NMSArgumentParticle().argument());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

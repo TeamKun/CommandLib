@@ -44,7 +44,7 @@ public class CommonNameableObjectArgument<T extends Nameable, C extends Abstract
                                              .isEmpty() || x.contains(sb.getLatestInput()))
                               .forEach(sb::suggest);
         });
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

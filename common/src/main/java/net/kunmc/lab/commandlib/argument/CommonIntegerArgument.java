@@ -14,7 +14,7 @@ public class CommonIntegerArgument<C extends AbstractCommandContext<?, ?>> exten
 
     public CommonIntegerArgument(String name, Consumer<Option<Integer, C>> options) {
         super(name, IntegerArgumentType.integer(Integer.MIN_VALUE, Integer.MAX_VALUE));
-        setOptions(options);
+        applyOptions(options);
     }
 
     public CommonIntegerArgument(String name, Integer min, Integer max) {
@@ -24,7 +24,7 @@ public class CommonIntegerArgument<C extends AbstractCommandContext<?, ?>> exten
 
     public CommonIntegerArgument(String name, Consumer<Option<Integer, C>> options, Integer min, Integer max) {
         super(name, IntegerArgumentType.integer(min, max));
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

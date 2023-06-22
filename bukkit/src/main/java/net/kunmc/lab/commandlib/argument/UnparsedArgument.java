@@ -18,7 +18,7 @@ public class UnparsedArgument extends Argument<String> {
     public UnparsedArgument(String name, Consumer<Option<String, CommandContext>> options) {
         super(name, new NMSArgumentProfile().argument());
         setDisplayDefaultSuggestions(false);
-        setOptions(options);
+        applyOptions(options);
         setSuggestionAction(((Supplier<SuggestionAction<CommandContext>>) () -> {
             if (suggestionAction() == null) {
                 return sb -> {

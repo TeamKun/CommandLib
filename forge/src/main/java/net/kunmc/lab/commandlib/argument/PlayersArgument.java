@@ -20,7 +20,7 @@ public class PlayersArgument extends Argument<List<ServerPlayerEntity>> {
 
     public PlayersArgument(String name, Consumer<Option<List<ServerPlayerEntity>, CommandContext>> options) {
         super(name, EntityArgument.players());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

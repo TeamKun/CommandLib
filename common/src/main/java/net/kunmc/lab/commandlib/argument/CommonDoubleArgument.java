@@ -14,7 +14,7 @@ public class CommonDoubleArgument<C extends AbstractCommandContext<?, ?>> extend
 
     public CommonDoubleArgument(String name, Consumer<Option<Double, C>> options) {
         super(name, DoubleArgumentType.doubleArg(-Double.MAX_VALUE, Double.MAX_VALUE));
-        setOptions(options);
+        applyOptions(options);
     }
 
     public CommonDoubleArgument(String name, Double min, Double max) {
@@ -24,7 +24,7 @@ public class CommonDoubleArgument<C extends AbstractCommandContext<?, ?>> extend
 
     public CommonDoubleArgument(String name, Consumer<Option<Double, C>> options, Double min, Double max) {
         super(name, DoubleArgumentType.doubleArg(min, max));
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override
