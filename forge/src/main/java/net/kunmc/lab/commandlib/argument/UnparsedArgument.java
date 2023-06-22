@@ -17,7 +17,6 @@ public class UnparsedArgument extends Argument<String> {
     public UnparsedArgument(String name, Consumer<Option<String, CommandContext>> options) {
         super(name, GameProfileArgument.gameProfile());
         setDisplayDefaultSuggestions(false);
-        applyOptions(options);
         setSuggestionAction(((Supplier<SuggestionAction<CommandContext>>) () -> {
             if (suggestionAction() == null) {
                 return sb -> {
@@ -25,6 +24,7 @@ public class UnparsedArgument extends Argument<String> {
             }
             return suggestionAction();
         }).get());
+        applyOptions(options);
     }
 
     @Override
