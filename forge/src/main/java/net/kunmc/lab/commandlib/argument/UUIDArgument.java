@@ -34,7 +34,7 @@ public class UUIDArgument extends Argument<UUID> {
               .stream()
               .map(getPlayerProfileCache()::getGameProfileForUsername)
               .filter(Objects::nonNull)
-              .filter(x -> test(x.getId(), true))
+              .filter(x -> filter().test(x.getId()))
               .filter(x -> {
                   String input = sb.getLatestInput();
                   if (input.isEmpty()) {
