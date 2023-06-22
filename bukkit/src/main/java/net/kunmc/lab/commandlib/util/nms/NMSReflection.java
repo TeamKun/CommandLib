@@ -3,10 +3,10 @@ package net.kunmc.lab.commandlib.util.nms;
 import net.kunmc.lab.commandlib.util.nms.exception.NMSClassNotFoundException;
 import org.bukkit.Bukkit;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 public class NMSReflection {
@@ -14,7 +14,7 @@ public class NMSReflection {
     private static final String minecraftPackagePrefix = "net.minecraft";
     private static final String nmsPackagePrefix;
     private static final String craftBukkitPackagePrefix;
-    private static final Map<String, Optional<Class<?>>> cache = new HashMap<>();
+    private static final Map<String, Optional<Class<?>>> cache = new ConcurrentHashMap<>();
     private static final ClassLoader classLoader = Bukkit.getServer()
                                                          .getClass()
                                                          .getClassLoader();
