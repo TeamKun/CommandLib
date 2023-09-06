@@ -48,15 +48,8 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
         LiteralArgumentBuilder<S> builder = LiteralArgumentBuilder.literal(command.name());
         builder.requires(x -> platformAdapter.hasPermission(command, x));
 
-        List<Arguments<S, T, C>> argumentsList = command.argumentBuilderConsumers()
-                                                        .stream()
-                                                        .map(x -> {
-                                                            B b = platformAdapter.createArgumentBuilder();
-                                                            x.accept(b);
-                                                            return new Arguments<>(b.build());
-                                                        })
-                                                        .collect(Collectors.toList());
-        ContextAction<C> helpAction = createSendHelpAction(command, argumentsList);
+        List<Arguments<C>> argumentsList = command.argumentsList();
+        ContextAction<C> helpAction = createSendHelpAction(command);
 
         if (argumentsList.isEmpty()) {
             return builder.executes(context -> {
@@ -90,7 +83,7 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
         argumentsList.stream()
                      .sorted((x, y) -> Integer.compare(y.size(), x.size())) // 可変長引数のコマンドに対応させる
                      .forEach(arguments -> {
-                         builder.then(arguments.build(helpAction, command))
+                         builder.then(new ArgumentCommandNodeCreator<>(arguments).build(helpAction, command))
                                 .executes(context -> {
                                     try {
                                         C ctx = platformAdapter.createCommandContext(context);
@@ -145,7 +138,7 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                      .collect(Collectors.toList());
     }
 
-    private ContextAction<C> createSendHelpAction(U command, List<Arguments<S, T, C>> argumentsList) {
+    private ContextAction<C> createSendHelpAction(U command) {
         return ctx -> {
             String border = ChatColorUtil.GRAY + StringUtils.repeat("-", 50);
             String padding = StringUtils.repeat(" ", 2);
@@ -194,11 +187,12 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                                    .forEach(ctx::sendMessage);
             }
 
-            List<String> concatenatedTagNames = argumentsList.stream()
-                                                             .map(Arguments::concatTagNames)
-                                                             .filter(x -> !x.isEmpty())
-                                                             .map(x -> padding + ChatColorUtil.AQUA + "/" + literalConcatName + " " + x)
-                                                             .collect(Collectors.toList());
+            List<String> concatenatedTagNames = command.argumentsList()
+                                                       .stream()
+                                                       .map(Arguments::concatTagNames)
+                                                       .filter(x -> !x.isEmpty())
+                                                       .map(x -> padding + ChatColorUtil.AQUA + "/" + literalConcatName + " " + x)
+                                                       .collect(Collectors.toList());
             if (!permissibleChildren.isEmpty() && !concatenatedTagNames.isEmpty()) {
                 ctx.sendMessage("");
             }

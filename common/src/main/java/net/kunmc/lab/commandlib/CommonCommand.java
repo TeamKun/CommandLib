@@ -20,10 +20,12 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     private boolean inheritParentPreprocess = true;
     private final List<T> children = new ArrayList<>();
     private final List<String> aliases = new ArrayList<>();
-    private final List<Consumer<B>> argumentBuilderConsumers = new ArrayList<>();
+    private final List<Arguments<C>> argumentsList = new ArrayList<>();
     private Predicate<C> prerequisite = ctx -> true;
     private Predicate<C> preprocess = ctx -> true;
     private ContextAction<C> contextAction;
+    @SuppressWarnings("unchecked")
+    private final PlatformAdapter<?, ?, C, B, T> platformAdapter = (PlatformAdapter<?, ?, C, B, T>) PlatformAdapter.get();
 
     protected CommonCommand(@NotNull String name) {
         this.name = name;
@@ -70,7 +72,9 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     }
 
     public final void argument(@NotNull Consumer<B> buildArguments) {
-        argumentBuilderConsumers.add(buildArguments);
+        B builder = platformAdapter.createArgumentBuilder();
+        buildArguments.accept(builder);
+        argumentsList.add(new Arguments<>(builder.build()));
     }
 
     public final <T1> void argument(@NotNull CommonArgument<T1, C> argument, @NotNull BiConsumer<T1, C> execute) {
@@ -259,8 +263,8 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
                      .and(preprocess);
     }
 
-    final List<Consumer<B>> argumentBuilderConsumers() {
-        return Collections.unmodifiableList(argumentBuilderConsumers);
+    final List<Arguments<C>> argumentsList() {
+        return Collections.unmodifiableList(argumentsList);
     }
 
     final List<String> aliases() {
