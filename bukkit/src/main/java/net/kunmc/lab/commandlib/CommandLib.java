@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public final class CommandLib extends AbstractCommandLib implements Listener {
+public final class CommandLib implements Listener {
     private final Plugin plugin;
     private final Collection<? extends Command> commands;
     private final List<CommandNode<?>> registeredCommands = new ArrayList<>();
