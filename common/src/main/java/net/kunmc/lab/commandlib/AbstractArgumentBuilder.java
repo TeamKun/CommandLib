@@ -16,6 +16,7 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
     private final List<CommonArgument<?, C>> arguments = new ArrayList<>();
     private ContextAction<C> contextAction = null;
 
+    @SuppressWarnings("unchecked")
     protected final T addArgument(@NotNull CommonArgument<?, C> argument) {
         arguments.add(argument);
         return (T) this;

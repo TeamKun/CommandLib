@@ -6,6 +6,7 @@ import net.kunmc.lab.commandlib.CommonArgument;
 import net.kunmc.lab.commandlib.PlatformAdapter;
 import net.kunmc.lab.commandlib.util.ChatColorUtil;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public final class IncorrectArgumentInputException extends Exception {
@@ -24,7 +25,7 @@ public final class IncorrectArgumentInputException extends Exception {
                                              .getName()
                                              .equals(argument.name()))
                                .findFirst()
-                               .get()
+                               .orElseThrow(IllegalStateException::new)
                                .getRange();
         PlatformAdapter platformAdapter = PlatformAdapter.get();
 
@@ -37,7 +38,7 @@ public final class IncorrectArgumentInputException extends Exception {
         this.sendMessages = context -> {
             AbstractCommandContext c = context;
             c.sendComponent(platformAdapter.createTranslatableComponentBuilder("command.unknown.argument")
-                                           .color(ChatColorUtil.RED.getRGB())
+                                           .color(Objects.requireNonNull(ChatColorUtil.RED.getRGB()))
                                            .build());
             c.sendComponent(platformAdapter.createTextComponentBuilder(ChatColorUtil.GRAY + finalStr + ChatColorUtil.RED + ChatColorUtil.UNDERLINE + incorrectInput + ChatColorUtil.RESET)
                                            .append(platformAdapter.createTranslatableComponentBuilder(

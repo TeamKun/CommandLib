@@ -43,10 +43,12 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         this.description = description;
     }
 
+    @SafeVarargs
     public final void addChildren(@NotNull T child, @NotNull T... children) {
         addChildren(Lists.asList(child, children));
     }
 
+    @SuppressWarnings("unchecked")
     public final void addChildren(@NotNull Collection<? extends T> children) {
         this.children.addAll(children);
 

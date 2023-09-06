@@ -44,6 +44,7 @@ public final class CommandLib implements Listener {
               .registerEvents(this, plugin);
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private void enable() {
         // 1ティック遅延させないとreload confirmの時にバグる
         new BukkitRunnable() {
@@ -87,6 +88,7 @@ public final class CommandLib implements Listener {
         unregister();
     }
 
+    @SuppressWarnings("rawtypes")
     public void unregister() {
         RootCommandNode root = new NMSCraftServer(plugin.getServer()).getServer()
                                                                      .getCommandDispatcher()
@@ -119,6 +121,7 @@ public final class CommandLib implements Listener {
               .forEach(Player::updateCommands);
     }
 
+    @SuppressWarnings("rawtypes")
     private static void removeCommand(CommandNode<?> commandNode, String name) {
         Class<?> clazz = CommandNode.class;
 
