@@ -6,7 +6,16 @@ import net.kunmc.lab.commandlib.util.text.TextComponentBuilder;
 import net.kunmc.lab.commandlib.util.text.TranslatableComponentBuilder;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ServiceLoader;
+
 public interface PlatformAdapter<S, T, C extends AbstractCommandContext<S, T>, B extends AbstractArgumentBuilder<C, B>, U extends CommonCommand<C, B, U>> {
+    @SuppressWarnings("unchecked")
+    static <S, T, C extends AbstractCommandContext<S, T>, B extends AbstractArgumentBuilder<C, B>, U extends CommonCommand<C, B, U>> PlatformAdapter<S, T, C, B, U> get() {
+        return ServiceLoader.load(PlatformAdapter.class, AbstractCommandLib.class.getClassLoader())
+                            .iterator()
+                            .next();
+    }
+
     C createCommandContext(com.mojang.brigadier.context.CommandContext<S> ctx);
 
     B createArgumentBuilder();

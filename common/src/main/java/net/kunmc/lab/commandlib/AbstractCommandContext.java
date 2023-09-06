@@ -11,12 +11,9 @@ public abstract class AbstractCommandContext<S, C> {
     protected final com.mojang.brigadier.context.CommandContext<S> handle;
     private final Map<String, String> argumentNameToInputArgMap = new LinkedHashMap<>();
     private final LinkedHashMap<String, Object> parsedArgMap = new LinkedHashMap<>();
-    private final PlatformAdapter<S, C, ?, ?, ?> platformAdapter;
 
-    protected AbstractCommandContext(com.mojang.brigadier.context.CommandContext<S> ctx,
-                                     PlatformAdapter<S, C, ?, ?, ?> platformAdapter) {
+    protected AbstractCommandContext(com.mojang.brigadier.context.CommandContext<S> ctx) {
         this.handle = ctx;
-        this.platformAdapter = platformAdapter;
 
         ctx.getNodes()
            .forEach(x -> {
@@ -105,10 +102,6 @@ public abstract class AbstractCommandContext<S, C> {
     public abstract void sendFailure(@Nullable String message);
 
     public abstract void sendComponent(C component);
-
-    public final PlatformAdapter<S, C, ?, ?, ?> platformAdapter() {
-        return platformAdapter;
-    }
 
     final void addParsedArgument(String name, Object parsedArgument) {
         parsedArgMap.put(name, parsedArgument);

@@ -3,6 +3,7 @@ package net.kunmc.lab.commandlib.exception;
 import com.mojang.brigadier.context.StringRange;
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
+import net.kunmc.lab.commandlib.PlatformAdapter;
 import net.kunmc.lab.commandlib.util.ChatColorUtil;
 
 import java.util.function.Consumer;
@@ -25,6 +26,7 @@ public final class IncorrectArgumentInputException extends Exception {
                                .findFirst()
                                .get()
                                .getRange();
+        PlatformAdapter platformAdapter = PlatformAdapter.get();
 
         String str = input.substring(1, range.getStart());
         if (str.length() > 10) {
@@ -34,18 +36,16 @@ public final class IncorrectArgumentInputException extends Exception {
         String finalStr = str;
         this.sendMessages = context -> {
             AbstractCommandContext c = context;
-            c.sendComponent(c.platformAdapter()
-                             .createTranslatableComponentBuilder("command.unknown.argument")
-                             .color(ChatColorUtil.RED.getRGB())
-                             .build());
-            c.sendComponent(c.platformAdapter()
-                             .createTextComponentBuilder(ChatColorUtil.GRAY + finalStr + ChatColorUtil.RED + ChatColorUtil.UNDERLINE + incorrectInput + ChatColorUtil.RESET)
-                             .append(c.platformAdapter()
-                                      .createTranslatableComponentBuilder("command.context.here")
-                                      .italic()
-                                      .color(ChatColorUtil.RED.getRGB())
-                                      .build())
-                             .build());
+            c.sendComponent(platformAdapter.createTranslatableComponentBuilder("command.unknown.argument")
+                                           .color(ChatColorUtil.RED.getRGB())
+                                           .build());
+            c.sendComponent(platformAdapter.createTextComponentBuilder(ChatColorUtil.GRAY + finalStr + ChatColorUtil.RED + ChatColorUtil.UNDERLINE + incorrectInput + ChatColorUtil.RESET)
+                                           .append(platformAdapter.createTranslatableComponentBuilder(
+                                                                          "command.context.here")
+                                                                  .italic()
+                                                                  .color(ChatColorUtil.RED.getRGB())
+                                                                  .build())
+                                           .build());
         };
     }
 

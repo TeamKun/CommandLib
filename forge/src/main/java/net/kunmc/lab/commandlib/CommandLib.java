@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-public final class CommandLib {
+public final class CommandLib extends AbstractCommandLib {
     private final Collection<? extends Command> commands;
 
     public static void register(@NotNull Command command, @NotNull Command... commands) {
@@ -45,7 +45,7 @@ public final class CommandLib {
                                                                   .getDispatcher()
                                                                   .getRoot();
 
-        new CommandNodeCreator<>(new PlatformAdapterImpl(), commands).build()
-                                                                     .forEach(root::addChild);
+        new CommandNodeCreator<>(commands).build()
+                                          .forEach(root::addChild);
     }
 }

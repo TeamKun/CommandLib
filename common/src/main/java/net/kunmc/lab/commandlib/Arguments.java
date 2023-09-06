@@ -9,13 +9,12 @@ import net.kunmc.lab.commandlib.util.ChatColorUtil;
 import java.util.List;
 import java.util.stream.Collectors;
 
-final class Arguments<S, C extends AbstractCommandContext<S, ?>> {
+final class Arguments<S, T, C extends AbstractCommandContext<S, T>> {
     private final List<? extends CommonArgument<?, C>> arguments;
-    private final PlatformAdapter<S, ?, C, ?, ?> platformAdapter;
+    private final PlatformAdapter<S, ?, C, ?, ?> platformAdapter = PlatformAdapter.get();
 
-    Arguments(List<? extends CommonArgument<?, C>> arguments, PlatformAdapter<S, ?, C, ?, ?> platformAdapter) {
+    Arguments(List<? extends CommonArgument<?, C>> arguments) {
         this.arguments = arguments;
-        this.platformAdapter = platformAdapter;
     }
 
     void parse(C ctx) throws IncorrectArgumentInputException {

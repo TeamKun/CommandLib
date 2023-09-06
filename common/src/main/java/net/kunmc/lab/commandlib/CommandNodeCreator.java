@@ -14,11 +14,10 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B extends AbstractArgumentBuilder<C, B>, U extends CommonCommand<C, B, U>> {
-    private final PlatformAdapter<S, T, C, B, U> platformAdapter;
+    private final PlatformAdapter<S, T, C, B, U> platformAdapter = PlatformAdapter.get();
     private final Collection<? extends U> commands;
 
-    public CommandNodeCreator(PlatformAdapter<S, T, C, B, U> platformAdapter, Collection<? extends U> commands) {
-        this.platformAdapter = platformAdapter;
+    public CommandNodeCreator(Collection<? extends U> commands) {
         this.commands = commands;
     }
 
@@ -49,14 +48,14 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
         LiteralArgumentBuilder<S> builder = LiteralArgumentBuilder.literal(command.name());
         builder.requires(x -> platformAdapter.hasPermission(command, x));
 
-        List<Arguments<S, C>> argumentsList = command.argumentBuilderConsumers()
-                                                     .stream()
-                                                     .map(x -> {
-                                                         B b = platformAdapter.createArgumentBuilder();
-                                                         x.accept(b);
-                                                         return new Arguments<>(b.build(), platformAdapter);
-                                                     })
-                                                     .collect(Collectors.toList());
+        List<Arguments<S, T, C>> argumentsList = command.argumentBuilderConsumers()
+                                                        .stream()
+                                                        .map(x -> {
+                                                            B b = platformAdapter.createArgumentBuilder();
+                                                            x.accept(b);
+                                                            return new Arguments<>(b.build());
+                                                        })
+                                                        .collect(Collectors.toList());
         ContextAction<C> helpAction = createSendHelpAction(command, argumentsList);
 
         if (argumentsList.isEmpty()) {
@@ -146,7 +145,7 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                      .collect(Collectors.toList());
     }
 
-    private ContextAction<C> createSendHelpAction(U command, List<Arguments<S, C>> argumentsList) {
+    private ContextAction<C> createSendHelpAction(U command, List<Arguments<S, T, C>> argumentsList) {
         return ctx -> {
             String border = ChatColorUtil.GRAY + StringUtils.repeat("-", 50);
             String padding = StringUtils.repeat(" ", 2);

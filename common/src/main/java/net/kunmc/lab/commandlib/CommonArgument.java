@@ -153,8 +153,8 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
             }
 
             if (t == null) {
-                throw ctx.platformAdapter()
-                         .convertCommandSyntaxException(e);
+                throw PlatformAdapter.get()
+                                     .convertCommandSyntaxException(e);
             }
         } catch (IncorrectArgumentInputException e) {
             if (additionalParser != null) {

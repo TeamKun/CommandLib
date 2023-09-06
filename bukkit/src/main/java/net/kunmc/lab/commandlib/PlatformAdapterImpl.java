@@ -16,10 +16,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-final class PlatformAdapterImpl implements PlatformAdapter<Object, Component, CommandContext, ArgumentBuilder, Command> {
+public final class PlatformAdapterImpl implements PlatformAdapter<Object, Component, CommandContext, ArgumentBuilder, Command> {
     @Override
     public CommandContext createCommandContext(com.mojang.brigadier.context.CommandContext<Object> ctx) {
-        return new CommandContext(ctx, this);
+        return new CommandContext(ctx);
     }
 
     @Override

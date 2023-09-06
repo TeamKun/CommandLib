@@ -15,9 +15,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 public final class CommandContext extends AbstractCommandContext<Object, Component> {
-    public CommandContext(com.mojang.brigadier.context.CommandContext<Object> ctx,
-                          PlatformAdapterImpl platformAdapter) {
-        super(ctx, platformAdapter);
+    public CommandContext(com.mojang.brigadier.context.CommandContext<Object> ctx) {
+        super(ctx);
     }
 
     public Entity getEntity() {

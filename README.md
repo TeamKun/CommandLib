@@ -21,6 +21,7 @@ dependencies {
 }
 
 shadowJar {
+    mergeServiceFiles()
     archiveFileName = "${rootProject.name}-${project.version}.jar"
     relocate "net.kunmc.lab.commandlib", "${project.group}.${project.name.toLowerCase()}.commandlib"
 }
@@ -46,6 +47,7 @@ dependencies {
 }
 
 shadowJar {
+    mergeServiceFiles()
     archiveFileName = "${rootProject.name}-${project.version}.jar"
     dependencies {
         include(dependency("com.github.TeamKun.CommandLib:forge:.*"))

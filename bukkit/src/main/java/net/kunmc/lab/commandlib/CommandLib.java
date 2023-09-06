@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public final class CommandLib implements Listener {
+public final class CommandLib extends AbstractCommandLib implements Listener {
     private final Plugin plugin;
     private final Collection<? extends Command> commands;
     private final List<CommandNode<?>> registeredCommands = new ArrayList<>();
@@ -49,7 +49,7 @@ public final class CommandLib implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                registeredCommands.addAll(new CommandNodeCreator<>(new PlatformAdapterImpl(), commands).build());
+                registeredCommands.addAll(new CommandNodeCreator<>(commands).build());
                 NMSCommandDispatcher dispatcher = new NMSCraftServer(plugin.getServer()).getServer()
                                                                                         .getCommandDispatcher();
                 RootCommandNode root = dispatcher.getBrigadier()

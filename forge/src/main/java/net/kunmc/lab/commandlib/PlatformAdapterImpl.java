@@ -8,10 +8,10 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.util.text.ITextComponent;
 import org.jetbrains.annotations.NotNull;
 
-final class PlatformAdapterImpl implements PlatformAdapter<CommandSource, ITextComponent, CommandContext, ArgumentBuilder, Command> {
+public final class PlatformAdapterImpl implements PlatformAdapter<CommandSource, ITextComponent, CommandContext, ArgumentBuilder, Command> {
     @Override
     public CommandContext createCommandContext(com.mojang.brigadier.context.CommandContext<CommandSource> ctx) {
-        return new CommandContext(ctx, this);
+        return new CommandContext(ctx);
     }
 
     @Override
