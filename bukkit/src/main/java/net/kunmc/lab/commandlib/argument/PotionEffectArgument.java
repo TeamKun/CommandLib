@@ -18,7 +18,7 @@ public class PotionEffectArgument extends Argument<PotionEffect> {
 
     public PotionEffectArgument(String name, Consumer<Option<PotionEffect, CommandContext>> options) {
         super(name, new NMSArgumentMobEffect().argument());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

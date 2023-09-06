@@ -17,7 +17,7 @@ public class PlayerArgument extends Argument<Player> {
 
     public PlayerArgument(String name, Consumer<Option<Player, CommandContext>> options) {
         super(name, new NMSArgumentPlayer().argument());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

@@ -17,7 +17,7 @@ public class PlayerArgument extends Argument<ServerPlayerEntity> {
 
     public PlayerArgument(String name, Consumer<Option<ServerPlayerEntity, CommandContext>> options) {
         super(name, EntityArgument.player());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

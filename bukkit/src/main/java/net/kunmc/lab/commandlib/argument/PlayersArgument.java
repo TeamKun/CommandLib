@@ -19,7 +19,7 @@ public class PlayersArgument extends Argument<List<Player>> {
 
     public PlayersArgument(String name, Consumer<Option<List<Player>, CommandContext>> options) {
         super(name, new NMSArgumentPlayers().argument());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

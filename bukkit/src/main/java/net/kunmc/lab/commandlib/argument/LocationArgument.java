@@ -19,7 +19,7 @@ public class LocationArgument extends Argument<Location> {
 
     public LocationArgument(String name, Consumer<Option<Location, CommandContext>> options) {
         super(name, new NMSArgumentVec3D().argument());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

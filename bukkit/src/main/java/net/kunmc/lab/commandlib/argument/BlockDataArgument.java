@@ -18,7 +18,7 @@ public class BlockDataArgument extends Argument<BlockData> {
 
     public BlockDataArgument(String name, Consumer<Option<BlockData, CommandContext>> options) {
         super(name, new NMSArgumentTile().argument());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

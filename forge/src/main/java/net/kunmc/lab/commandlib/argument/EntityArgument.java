@@ -16,7 +16,7 @@ public class EntityArgument extends Argument<Entity> {
 
     public EntityArgument(String name, Consumer<Option<Entity, CommandContext>> options) {
         super(name, net.minecraft.command.arguments.EntityArgument.entity());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

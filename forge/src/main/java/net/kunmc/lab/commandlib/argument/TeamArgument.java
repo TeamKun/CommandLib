@@ -16,7 +16,7 @@ public class TeamArgument extends Argument<ScorePlayerTeam> {
 
     public TeamArgument(String name, Consumer<Option<ScorePlayerTeam, CommandContext>> options) {
         super(name, net.minecraft.command.arguments.TeamArgument.team());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

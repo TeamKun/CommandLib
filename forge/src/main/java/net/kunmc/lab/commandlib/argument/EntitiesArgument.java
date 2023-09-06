@@ -19,7 +19,7 @@ public class EntitiesArgument extends Argument<List<Entity>> {
 
     public EntitiesArgument(String name, Consumer<Option<List<Entity>, CommandContext>> options) {
         super(name, EntityArgument.entities());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

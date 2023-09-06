@@ -18,7 +18,7 @@ public class EntitiesArgument extends Argument<List<Entity>> {
 
     public EntitiesArgument(String name, Consumer<Option<List<Entity>, CommandContext>> options) {
         super(name, new NMSArgumentEntities().argument());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

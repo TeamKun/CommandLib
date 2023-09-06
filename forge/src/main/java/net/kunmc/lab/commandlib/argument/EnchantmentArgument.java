@@ -15,7 +15,7 @@ public class EnchantmentArgument extends Argument<Enchantment> {
 
     public EnchantmentArgument(String name, Consumer<Option<Enchantment, CommandContext>> options) {
         super(name, net.minecraft.command.arguments.EnchantmentArgument.enchantment());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

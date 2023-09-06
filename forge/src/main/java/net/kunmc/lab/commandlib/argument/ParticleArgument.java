@@ -15,7 +15,7 @@ public class ParticleArgument extends Argument<IParticleData> {
 
     public ParticleArgument(String name, Consumer<Option<IParticleData, CommandContext>> options) {
         super(name, net.minecraft.command.arguments.ParticleArgument.particle());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

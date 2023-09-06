@@ -18,7 +18,7 @@ public class EnchantmentArgument extends Argument<Enchantment> {
 
     public EnchantmentArgument(String name, Consumer<Option<Enchantment, CommandContext>> options) {
         super(name, new NMSArgumentEnchantment().argument());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

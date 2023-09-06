@@ -23,14 +23,14 @@ public class OfflinePlayerArgument extends Argument<OfflinePlayer> {
 
         setSuggestionAction(sb -> {
             Arrays.stream(Bukkit.getOfflinePlayers())
-                  .filter(x -> test(x, true))
+                  .filter(filter())
                   .map(OfflinePlayer::getName)
                   .filter(Objects::nonNull)
                   .filter(x -> sb.getLatestInput()
                                  .isEmpty() || StringUtils.containsIgnoreCase(x, sb.getLatestInput()))
                   .forEach(sb::suggest);
         });
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

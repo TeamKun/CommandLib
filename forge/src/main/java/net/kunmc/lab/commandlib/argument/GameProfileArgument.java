@@ -30,13 +30,13 @@ public class GameProfileArgument extends Argument<GameProfile> {
               .map(getPlayerProfileCache()::getGameProfileForUsername)
               .filter(Objects::nonNull)
               .filter(x -> Objects.nonNull(x.getName()))
-              .filter(x -> test(x, true))
+              .filter(filter())
               .map(GameProfile::getName)
               .filter(x -> sb.getLatestInput()
                              .isEmpty() || StringUtils.containsIgnoreCase(x, sb.getLatestInput()))
               .forEach(sb::suggest);
         });
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

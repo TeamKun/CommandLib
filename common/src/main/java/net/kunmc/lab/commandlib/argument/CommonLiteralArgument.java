@@ -42,7 +42,7 @@ public class CommonLiteralArgument<C extends AbstractCommandContext<?, ?>> exten
                                            .isEmpty() || x.contains(sb.getLatestInput()))
                             .forEach(sb::suggest);
         });
-        setOptions(options);
+        applyOptions(options);
     }
 
     public CommonLiteralArgument(String name,

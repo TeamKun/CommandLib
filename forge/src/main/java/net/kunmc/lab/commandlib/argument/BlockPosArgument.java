@@ -16,7 +16,7 @@ public class BlockPosArgument extends Argument<BlockPos> {
 
     public BlockPosArgument(String name, Consumer<Option<BlockPos, CommandContext>> options) {
         super(name, Vec3Argument.vec3());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

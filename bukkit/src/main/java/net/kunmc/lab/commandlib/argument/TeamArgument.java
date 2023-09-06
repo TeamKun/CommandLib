@@ -18,7 +18,7 @@ public class TeamArgument extends Argument<Team> {
 
     public TeamArgument(String name, Consumer<Option<Team, CommandContext>> options) {
         super(name, new NMSArgumentScoreboardTeam().argument());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

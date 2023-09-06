@@ -31,7 +31,7 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
             String input = sb.getLatestInput();
 
             Arrays.stream(Bukkit.getOfflinePlayers())
-                  .filter(x -> test(Collections.singletonList(x), true))
+                  .filter(x -> filter().test(Collections.singletonList(x)))
                   .filter(x -> {
                       if (input.isEmpty()) {
                           return true;
@@ -48,7 +48,7 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
                  .filter(x -> input.isEmpty() || x.startsWith(input))
                  .forEach(sb::suggest);
         });
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

@@ -22,14 +22,14 @@ public class CommonEnumArgument<T extends Enum<T>, C extends AbstractCommandCont
         this.clazz = clazz;
         setSuggestionAction(sb -> {
             Arrays.stream(clazz.getEnumConstants())
-                  .filter(x -> test(x, true))
+                  .filter(filter())
                   .map(Enum::name)
                   .map(String::toLowerCase)
                   .filter(x -> sb.getLatestInput()
                                  .isEmpty() || x.contains(sb.getLatestInput()))
                   .forEach(sb::suggest);
         });
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

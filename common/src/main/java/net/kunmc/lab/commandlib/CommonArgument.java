@@ -102,16 +102,16 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         this.shaper = shaper;
     }
 
-    protected final void setOptions(Consumer<Option<T, C>> options) {
+    protected final void applyOptions(Consumer<Option<T, C>> options) {
         if (options == null) {
             return;
         }
         Option<T, C> option = new Option<>();
         options.accept(option);
-        setOption(option);
+        applyOption(option);
     }
 
-    protected final void setOption(Option<T, C> option) {
+    protected final void applyOption(Option<T, C> option) {
         setDisplayDefaultSuggestions(option.isDisplayDefaultSuggestions());
         option.suggestionAction()
               .ifPresent(this::setSuggestionAction);
@@ -127,20 +127,17 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
               .ifPresent(this::setShaper);
     }
 
-    protected final boolean test(T t, boolean ignoreException) {
+    protected final Predicate<? super T> filter() {
         if (filter == null) {
-            return true;
+            return x -> true;
         }
-
-        try {
-            return filter.test(t);
-        } catch (InvalidArgumentException e) {
-            if (ignoreException) {
+        return x -> {
+            try {
+                return filter.test(x);
+            } catch (InvalidArgumentException e) {
                 return false;
             }
-
-            throw e;
-        }
+        };
     }
 
     final T parse(C ctx) throws IncorrectArgumentInputException {
@@ -167,7 +164,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         }
 
         try {
-            if (!test(t, false)) {
+            if (filter != null && !filter.test(t)) {
                 throw new IncorrectArgumentInputException(this, ctx, ctx.getInput(name));
             }
         } catch (InvalidArgumentException e) {

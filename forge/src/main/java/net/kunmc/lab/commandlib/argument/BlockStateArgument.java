@@ -15,7 +15,7 @@ public class BlockStateArgument extends Argument<BlockStateInput> {
 
     public BlockStateArgument(String name, Consumer<Option<BlockStateInput, CommandContext>> options) {
         super(name, net.minecraft.command.arguments.BlockStateArgument.blockState());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

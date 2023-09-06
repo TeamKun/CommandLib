@@ -19,7 +19,7 @@ public class LocationArgument extends Argument<Location> {
 
     public LocationArgument(String name, Consumer<Option<Location, CommandContext>> options) {
         super(name, Vec3Argument.vec3());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

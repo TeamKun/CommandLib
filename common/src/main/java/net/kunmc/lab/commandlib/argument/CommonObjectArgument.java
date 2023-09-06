@@ -36,13 +36,13 @@ public class CommonObjectArgument<T, C extends AbstractCommandContext<?, ?>> ext
             mapSupplier.get()
                        .entrySet()
                        .stream()
-                       .filter(x -> test(x.getValue(), true))
+                       .filter(x -> filter().test(x.getValue()))
                        .map(Map.Entry::getKey)
                        .filter(x -> sb.getLatestInput()
                                       .isEmpty() || x.contains(sb.getLatestInput()))
                        .forEach(sb::suggest);
         });
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

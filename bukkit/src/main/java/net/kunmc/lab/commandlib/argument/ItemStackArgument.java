@@ -18,7 +18,7 @@ public class ItemStackArgument extends Argument<ItemStack> {
 
     public ItemStackArgument(String name, Consumer<Option<ItemStack, CommandContext>> options) {
         super(name, new NMSArgumentItemStack().argument());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override

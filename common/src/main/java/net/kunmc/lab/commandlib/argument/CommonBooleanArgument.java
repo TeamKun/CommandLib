@@ -14,7 +14,7 @@ public class CommonBooleanArgument<C extends AbstractCommandContext<?, ?>> exten
 
     public CommonBooleanArgument(String name, Consumer<Option<Boolean, C>> options) {
         super(name, BoolArgumentType.bool());
-        setOptions(options);
+        applyOptions(options);
     }
 
     @Override
