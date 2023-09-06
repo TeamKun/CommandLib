@@ -5,8 +5,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.util.StringUtil;
 import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentProfile;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -37,11 +37,12 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
                           return true;
                       }
 
-                      return x.getName() != null && StringUtils.containsIgnoreCase(x.getName(), input);
+                      return x.getName() != null && StringUtil.containsIgnoreCase(x.getName(), input);
                   })
                   .map(OfflinePlayer::getName)
                   .filter(Objects::nonNull)
                   .forEach(sb::suggest);
+            String s;
 
             Lists.newArrayList("@a", "@r")
                  .stream()

@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
-import org.apache.commons.lang3.StringUtils;
+import net.kunmc.lab.commandlib.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -27,7 +27,7 @@ public class OfflinePlayerArgument extends Argument<OfflinePlayer> {
                   .map(OfflinePlayer::getName)
                   .filter(Objects::nonNull)
                   .filter(x -> sb.getLatestInput()
-                                 .isEmpty() || StringUtils.containsIgnoreCase(x, sb.getLatestInput()))
+                                 .isEmpty() || StringUtil.containsIgnoreCase(x, sb.getLatestInput()))
                   .forEach(sb::suggest);
         });
         applyOptions(options);

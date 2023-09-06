@@ -6,10 +6,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.util.StringUtil;
 import net.minecraft.command.arguments.GameProfileArgument;
 import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -42,11 +42,11 @@ public class UUIDsArgument extends Argument<List<UUID>> {
                       return true;
                   }
 
-                  if (x.getName() != null && StringUtils.containsIgnoreCase(x.getName(), input)) {
+                  if (x.getName() != null && StringUtil.containsIgnoreCase(x.getName(), input)) {
                       return true;
                   }
-                  return StringUtils.containsIgnoreCase(x.getId()
-                                                         .toString(), input);
+                  return StringUtil.containsIgnoreCase(x.getId()
+                                                        .toString(), input);
               })
               .forEach(x -> uuidToNameMap.put(x.getId(), x.getName()));
 

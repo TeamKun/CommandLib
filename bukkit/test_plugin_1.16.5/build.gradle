@@ -27,7 +27,6 @@ dependencies {
     compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
 //    compileOnly name: "patched_1.16.5"
     compileOnly "com.mojang:brigadier:1.0.18"
-    implementation "org.apache.commons:commons-lang3:3.12.0"
 }
 
 def targetJavaVersion = 8

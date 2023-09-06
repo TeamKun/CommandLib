@@ -5,9 +5,9 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.util.StringUtil;
 import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -33,7 +33,7 @@ public class GameProfileArgument extends Argument<GameProfile> {
               .filter(filter())
               .map(GameProfile::getName)
               .filter(x -> sb.getLatestInput()
-                             .isEmpty() || StringUtils.containsIgnoreCase(x, sb.getLatestInput()))
+                             .isEmpty() || StringUtil.containsIgnoreCase(x, sb.getLatestInput()))
               .forEach(sb::suggest);
         });
         applyOptions(options);

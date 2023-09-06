@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
-import org.apache.commons.lang3.StringUtils;
+import net.kunmc.lab.commandlib.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -34,11 +34,11 @@ public class UUIDArgument extends Argument<UUID> {
                           return true;
                       }
 
-                      if (x.getName() != null && StringUtils.containsIgnoreCase(x.getName(), input)) {
+                      if (x.getName() != null && StringUtil.containsIgnoreCase(x.getName(), input)) {
                           return true;
                       }
-                      return StringUtils.containsIgnoreCase(x.getUniqueId()
-                                                             .toString(), input);
+                      return StringUtil.containsIgnoreCase(x.getUniqueId()
+                                                            .toString(), input);
                   })
                   .forEach(x -> uuidToNameMap.put(x.getUniqueId(), x.getName()));
 

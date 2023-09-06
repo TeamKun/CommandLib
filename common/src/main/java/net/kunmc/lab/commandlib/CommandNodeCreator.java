@@ -4,7 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.ChatColorUtil;
-import org.apache.commons.lang3.StringUtils;
+import net.kunmc.lab.commandlib.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -140,8 +140,8 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
 
     private ContextAction<C> createSendHelpAction(U command) {
         return ctx -> {
-            String border = ChatColorUtil.GRAY + StringUtils.repeat("-", 50);
-            String padding = StringUtils.repeat(" ", 2);
+            String border = ChatColorUtil.GRAY + StringUtil.repeat("-", 50);
+            String padding = StringUtil.repeat(" ", 2);
 
             String literalConcatName = ((Supplier<String>) () -> {
                 LinkedList<U> commands = new LinkedList<>();
