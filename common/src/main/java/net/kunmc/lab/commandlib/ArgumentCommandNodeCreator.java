@@ -55,38 +55,13 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
             });
         }
 
-        builder.executes(context -> {
-            try {
-                C ctx = platformAdapter.createCommandContext(context);
-
-                try {
-                    arguments.parse(ctx);
-                } catch (IncorrectArgumentInputException e) {
-                    e.sendMessage(ctx);
-                    return 1;
-                }
-
-                if (!parent.prerequisite()
-                           .test(ctx)) {
-                    return 1;
-                }
-
-                if (argument.isContextActionUndefined()) {
-                    return helpAction.executeWithStackTrace(ctx);
-                }
-
-                if (!parent.preprocess()
-                           .test(ctx)) {
-                    return 1;
-                }
-
-                return argument.contextAction()
-                               .executeWithStackTrace(ctx);
-            } catch (Throwable e) {
-                e.printStackTrace();
-                throw e;
-            }
-        });
+        builder.executes(new CommandExecutor<>(platformAdapter,
+                                               arguments,
+                                               parent.prerequisite(),
+                                               argument::isContextActionUndefined,
+                                               helpAction,
+                                               parent.preprocess(),
+                                               argument.contextAction()));
 
         return builder;
     }

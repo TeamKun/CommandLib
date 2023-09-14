@@ -2,7 +2,6 @@ package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.ChatColorUtil;
 import net.kunmc.lab.commandlib.util.StringUtil;
 
@@ -52,31 +51,13 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
         ContextAction<C> helpAction = createSendHelpAction(command);
 
         if (argumentsList.isEmpty()) {
-            return builder.executes(context -> {
-                              try {
-                                  C ctx = platformAdapter.createCommandContext(context);
-
-                                  if (!command.prerequisite()
-                                              .test(ctx)) {
-                                      return 0;
-                                  }
-
-                                  if (command.isContextActionUndefined()) {
-                                      return helpAction.executeWithStackTrace(ctx);
-                                  }
-
-                                  if (!command.preprocess()
-                                              .test(ctx)) {
-                                      return 0;
-                                  }
-
-                                  return command.contextAction()
-                                                .executeWithStackTrace(ctx);
-                              } catch (Throwable e) {
-                                  e.printStackTrace();
-                                  throw e;
-                              }
-                          })
+            return builder.executes(new CommandExecutor<>(platformAdapter,
+                                                          null,
+                                                          command.prerequisite(),
+                                                          command::isContextActionUndefined,
+                                                          helpAction,
+                                                          command.preprocess(),
+                                                          command.contextAction()))
                           .build();
         }
 
@@ -84,38 +65,13 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                      .sorted((x, y) -> Integer.compare(y.size(), x.size())) // 可変長引数のコマンドに対応させる
                      .forEach(arguments -> {
                          builder.then(new ArgumentCommandNodeCreator<>(arguments).build(helpAction, command))
-                                .executes(context -> {
-                                    try {
-                                        C ctx = platformAdapter.createCommandContext(context);
-
-                                        try {
-                                            arguments.parse(ctx);
-                                        } catch (IncorrectArgumentInputException e) {
-                                            e.sendMessage(ctx);
-                                            return 1;
-                                        }
-
-                                        if (!command.prerequisite()
-                                                    .test(ctx)) {
-                                            return 0;
-                                        }
-
-                                        if (command.isContextActionUndefined()) {
-                                            return helpAction.executeWithStackTrace(ctx);
-                                        }
-
-                                        if (!command.preprocess()
-                                                    .test(ctx)) {
-                                            return 0;
-                                        }
-
-                                        return command.contextAction()
-                                                      .executeWithStackTrace(ctx);
-                                    } catch (Throwable e) {
-                                        e.printStackTrace();
-                                        throw e;
-                                    }
-                                });
+                                .executes(new CommandExecutor<>(platformAdapter,
+                                                                arguments,
+                                                                command.prerequisite(),
+                                                                command::isContextActionUndefined,
+                                                                helpAction,
+                                                                command.preprocess(),
+                                                                command.contextAction()));
                      });
 
         return builder.build();
