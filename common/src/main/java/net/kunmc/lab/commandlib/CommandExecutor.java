@@ -5,14 +5,12 @@ import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 
 final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implements Command<S> {
     private final PlatformAdapter<S, ?, C, ?, ?> platformAdapter;
     private final Arguments<C> arguments;
     private final Predicate<C> prerequisite;
-    private final BooleanSupplier isContextActionUndefined;
     private final ContextAction<C> helpAction;
     private final Predicate<C> preprocess;
     private final ContextAction<C> contextAction;
@@ -21,14 +19,12 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
     CommandExecutor(PlatformAdapter<S, ?, C, ?, ?> platformAdapter,
                     @Nullable Arguments<C> arguments,
                     Predicate<C> prerequisite,
-                    BooleanSupplier isContextActionUndefined,
                     ContextAction<C> helpAction,
                     Predicate<C> preprocess,
                     ContextAction<C> contextAction) {
         this.platformAdapter = platformAdapter;
         this.arguments = arguments;
         this.prerequisite = prerequisite;
-        this.isContextActionUndefined = isContextActionUndefined;
         this.helpAction = helpAction;
         this.preprocess = preprocess;
         this.contextAction = contextAction;
@@ -52,7 +48,7 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
                 return 0;
             }
 
-            if (isContextActionUndefined.getAsBoolean()) {
+            if (contextAction == null) {
                 return executeWithStackTrace(ctx, helpAction);
             }
 

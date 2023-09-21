@@ -273,10 +273,6 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         return Collections.unmodifiableList(aliases);
     }
 
-    final boolean isContextActionUndefined() {
-        return contextAction == null;
-    }
-
     final ContextAction<C> contextAction() {
         return contextAction;
     }

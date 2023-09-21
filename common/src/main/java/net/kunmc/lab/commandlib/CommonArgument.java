@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.exception.InvalidArgumentException;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -76,6 +77,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         this.additionalParser = parser;
     }
 
+    @Nullable
     public final ContextAction<C> contextAction() {
         return contextAction;
     }
@@ -89,10 +91,6 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
     }
 
     public abstract T cast(Object parsedArgument);
-
-    final boolean isContextActionUndefined() {
-        return contextAction == null;
-    }
 
     protected final void setFilter(Predicate<? super T> filter) {
         this.filter = filter;

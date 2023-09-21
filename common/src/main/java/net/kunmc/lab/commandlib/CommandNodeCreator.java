@@ -54,7 +54,6 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
             return builder.executes(new CommandExecutor<>(platformAdapter,
                                                           null,
                                                           command.prerequisite(),
-                                                          command::isContextActionUndefined,
                                                           helpAction,
                                                           command.preprocess(),
                                                           command.contextAction()))
@@ -68,7 +67,6 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                                 .executes(new CommandExecutor<>(platformAdapter,
                                                                 arguments,
                                                                 command.prerequisite(),
-                                                                command::isContextActionUndefined,
                                                                 helpAction,
                                                                 command.preprocess(),
                                                                 command.contextAction()));

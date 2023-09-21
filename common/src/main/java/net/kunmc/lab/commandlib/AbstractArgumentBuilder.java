@@ -525,7 +525,7 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
     final List<CommonArgument<?, C>> build() {
         if (!arguments.isEmpty()) {
             CommonArgument<?, C> last = arguments.get(arguments.size() - 1);
-            if (last.isContextActionUndefined()) {
+            if (last.contextAction() == null) {
                 last.setContextAction(contextAction);
             }
         }
