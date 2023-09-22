@@ -6,6 +6,7 @@ import net.kunmc.lab.commandlib.CommonArgument;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -30,7 +31,7 @@ public class CommonObjectArgument<T, C extends AbstractCommandContext<?, ?>> ext
                                 Supplier<Map<String, ? extends T>> mapSupplier,
                                 Consumer<Option<T, C>> options) {
         super(name, StringArgumentType.string());
-        this.mapSupplier = mapSupplier;
+        this.mapSupplier = Objects.requireNonNull(mapSupplier);
 
         setSuggestionAction(sb -> {
             mapSupplier.get()

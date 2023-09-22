@@ -17,10 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class CommandLib implements Listener {
     private final Plugin plugin;
@@ -36,8 +33,11 @@ public final class CommandLib implements Listener {
     }
 
     private CommandLib(Plugin plugin, Collection<? extends Command> commands) {
-        this.plugin = plugin;
-        this.commands = commands;
+        this.plugin = Objects.requireNonNull(plugin);
+        this.commands = Objects.requireNonNull(commands);
+        for (Command command : commands) {
+            Objects.requireNonNull(command);
+        }
 
         enable();
         Bukkit.getPluginManager()

@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public abstract class Command extends CommonCommand<CommandContext, ArgumentBuilder, Command> {
@@ -16,7 +17,7 @@ public abstract class Command extends CommonCommand<CommandContext, ArgumentBuil
     }
 
     public final void setPermission(@NotNull PermissionDefault defaultPermission) {
-        this.defaultPermission = defaultPermission;
+        this.defaultPermission = Objects.requireNonNull(defaultPermission);
     }
 
     public final String permissionName() {

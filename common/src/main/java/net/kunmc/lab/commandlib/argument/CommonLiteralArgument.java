@@ -7,6 +7,7 @@ import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -33,7 +34,7 @@ public class CommonLiteralArgument<C extends AbstractCommandContext<?, ?>> exten
                                  Supplier<Collection<String>> literalsSupplier,
                                  Consumer<CommonArgument.Option<String, C>> options) {
         super(name, StringArgumentType.string());
-        this.literalsSupplier = literalsSupplier;
+        this.literalsSupplier = Objects.requireNonNull(literalsSupplier);
 
         setSuggestionAction(sb -> {
             literalsSupplier.get()

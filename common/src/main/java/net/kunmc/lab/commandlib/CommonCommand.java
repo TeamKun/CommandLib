@@ -3,11 +3,9 @@ package net.kunmc.lab.commandlib;
 import com.google.common.collect.Lists;
 import net.kunmc.lab.commandlib.util.fucntion.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -28,6 +26,10 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     private final PlatformAdapter<?, ?, C, B, T> platformAdapter = (PlatformAdapter<?, ?, C, B, T>) PlatformAdapter.get();
 
     protected CommonCommand(@NotNull String name) {
+        Objects.requireNonNull(name);
+        if (name.equals("")) {
+            throw new IllegalArgumentException("name is not expected to empty.");
+        }
         this.name = name;
     }
 
@@ -40,7 +42,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     }
 
     public final void setDescription(@NotNull String description) {
-        this.description = description;
+        this.description = Objects.requireNonNull(description);
     }
 
     @SafeVarargs
@@ -50,6 +52,10 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
 
     @SuppressWarnings("unchecked")
     public final void addChildren(@NotNull Collection<? extends T> children) {
+        Objects.requireNonNull(children);
+        for (T child : children) {
+            Objects.requireNonNull(child);
+        }
         this.children.addAll(children);
 
         for (CommonCommand<C, B, T> child : children) {
@@ -62,6 +68,10 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     }
 
     public final void addAliases(@NotNull Collection<String> aliases) {
+        Objects.requireNonNull(aliases);
+        for (String alias : aliases) {
+            Objects.requireNonNull(alias);
+        }
         this.aliases.addAll(aliases);
     }
 
@@ -217,11 +227,13 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         });
     }
 
-    public final void addPrerequisite(Predicate<C> prerequisite) {
-        this.prerequisite = this.prerequisite.and(prerequisite);
+    public final void addPrerequisite(@NotNull Predicate<C> prerequisite) {
+        this.prerequisite = this.prerequisite.and(Objects.requireNonNull(prerequisite));
     }
 
-    public final void addPreprocess(Consumer<C> preprocess) {
+    public final void addPreprocess(@NotNull Consumer<C> preprocess) {
+        Objects.requireNonNull(preprocess);
+
         addPreprocess(ctx -> {
             preprocess.accept(ctx);
             return true;
@@ -231,11 +243,11 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     /**
      * @param preprocess return false if cancel executing command.
      */
-    public final void addPreprocess(Predicate<C> preprocess) {
-        this.preprocess = this.preprocess.and(preprocess);
+    public final void addPreprocess(@NotNull Predicate<C> preprocess) {
+        this.preprocess = this.preprocess.and(Objects.requireNonNull(preprocess));
     }
 
-    public final void execute(@NotNull ContextAction<C> execute) {
+    public final void execute(@Nullable ContextAction<C> execute) {
         this.contextAction = execute;
     }
 

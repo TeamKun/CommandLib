@@ -12,6 +12,7 @@ import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public final class CommandContext extends AbstractCommandContext<Object, Component> {
@@ -41,7 +42,7 @@ public final class CommandContext extends AbstractCommandContext<Object, Compone
     }
 
     public void sendMessage(@NotNull Component component) {
-        getSender().sendMessage(component);
+        getSender().sendMessage(Objects.requireNonNull(component));
     }
 
     @Override

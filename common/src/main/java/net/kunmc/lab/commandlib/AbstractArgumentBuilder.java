@@ -4,10 +4,7 @@ import net.kunmc.lab.commandlib.argument.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -18,7 +15,7 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
 
     @SuppressWarnings("unchecked")
     protected final T addArgument(@NotNull CommonArgument<?, C> argument) {
-        arguments.add(argument);
+        arguments.add(Objects.requireNonNull(argument));
         return (T) this;
     }
 
@@ -518,7 +515,7 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
      * Set command's process.<br>
      * If arguments are not added, process set by this wouldn't work. Then you should use {@link net.kunmc.lab.commandlib.CommonCommand#execute(ContextAction)}
      */
-    public final void execute(@NotNull ContextAction<C> contextAction) {
+    public final void execute(@Nullable ContextAction<C> contextAction) {
         this.contextAction = contextAction;
     }
 

@@ -12,8 +12,8 @@ public abstract class AbstractCommandContext<S, C> {
     private final Map<String, String> argumentNameToInputArgMap = new LinkedHashMap<>();
     private final LinkedHashMap<String, Object> parsedArgMap = new LinkedHashMap<>();
 
-    protected AbstractCommandContext(com.mojang.brigadier.context.CommandContext<S> ctx) {
-        this.handle = ctx;
+    protected AbstractCommandContext(@NotNull com.mojang.brigadier.context.CommandContext<S> ctx) {
+        this.handle = Objects.requireNonNull(ctx);
 
         ctx.getNodes()
            .forEach(x -> {
@@ -24,44 +24,58 @@ public abstract class AbstractCommandContext<S, C> {
            });
     }
 
+    @NotNull
     public final com.mojang.brigadier.context.CommandContext<S> getHandle() {
         return handle;
     }
 
+    @NotNull
     public final String getInput(String name) {
         return argumentNameToInputArgMap.getOrDefault(name, "");
     }
 
+    /**
+     * @throws IndexOutOfBoundsException - if the index is out of range (index < 0 || index >= size())n
+     */
+    @NotNull
     public final String getArg(int index) {
         return getArgs().get(index);
     }
 
+    @NotNull
     public final List<String> getArgs() {
         return new ArrayList<>(argumentNameToInputArgMap.values());
     }
 
+    @NotNull
     public final List<Object> getParsedArgs() {
         return Arrays.asList(parsedArgMap.values()
                                          .toArray());
     }
 
+    /**
+     * @throws IndexOutOfBoundsException - if the index is out of range (index < 0 || index >= size())n
+     */
+    @NotNull
     public final Object getParsedArg(int index) {
         return getParsedArgs().get(index);
     }
 
+    @Nullable
     public final Object getParsedArg(String name) {
         return parsedArgMap.get(name);
     }
 
+    /**
+     * @throws IndexOutOfBoundsException - if the index is out of range (index < 0 || index >= size())n
+     */
+    @NotNull
     public final <T> T getParsedArg(int index, Class<T> clazz) {
         Object parsedArg = getParsedArg(index);
-        if (parsedArg == null) {
-            return null;
-        }
-
         return clazz.cast(parsedArg);
     }
 
+    @Nullable
     public final <T> T getParsedArg(String name, Class<T> clazz) {
         Object parsedArg = getParsedArg(name);
         if (parsedArg == null) {
@@ -126,8 +140,8 @@ public abstract class AbstractCommandContext<S, C> {
             return this;
         }
 
-        public MessageOption hoverText(String hoverText) {
-            this.hoverText = hoverText;
+        public MessageOption hoverText(@NotNull String hoverText) {
+            this.hoverText = Objects.requireNonNull(hoverText);
             return this;
         }
     }

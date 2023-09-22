@@ -7,6 +7,7 @@ import net.kunmc.lab.commandlib.Nameable;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -33,7 +34,7 @@ public class CommonNameableObjectArgument<T extends Nameable, C extends Abstract
                                         Supplier<Collection<? extends T>> candidatesSupplier,
                                         Consumer<Option<T, C>> options) {
         super(name, StringArgumentType.string());
-        this.candidatesSupplier = candidatesSupplier;
+        this.candidatesSupplier = Objects.requireNonNull(candidatesSupplier);
 
         setSuggestionAction(sb -> {
             candidatesSupplier.get()

@@ -5,6 +5,8 @@ import net.kunmc.lab.commandlib.util.ReflectionUtil;
 import net.kunmc.lab.commandlib.util.nms.exception.MethodNotFoundException;
 import net.kunmc.lab.commandlib.util.nms.exception.NMSClassNotAssignableException;
 import net.kunmc.lab.commandlib.util.nms.exception.UncheckedCommandSyntaxException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -19,12 +21,13 @@ public abstract class NMSClass {
     private final Object handle;
     protected final Class<?> clazz;
 
-    public NMSClass(Object handle, Class<?> clazz) {
+    public NMSClass(@Nullable Object handle, @NotNull Class<?> clazz) {
+        this.handle = handle;
+        this.clazz = Objects.requireNonNull(clazz);
+
         if (handle != null && !clazz.isAssignableFrom(handle.getClass())) {
             throw new NMSClassNotAssignableException(handle, clazz);
         }
-        this.handle = handle;
-        this.clazz = clazz;
     }
 
     public final Object getHandle() {

@@ -9,6 +9,7 @@ import net.minecraft.world.server.ServerWorld;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public final class CommandContext extends AbstractCommandContext<CommandSource, ITextComponent> {
@@ -64,7 +65,7 @@ public final class CommandContext extends AbstractCommandContext<CommandSource, 
     }
 
     public void sendMessage(@NotNull ITextComponent component, boolean allowLogging) {
-        getSender().sendFeedback(component, allowLogging);
+        getSender().sendFeedback(Objects.requireNonNull(component), allowLogging);
     }
 
     @Override

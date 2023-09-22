@@ -4,8 +4,10 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.exception.InvalidArgumentException;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -23,19 +25,19 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
     private Predicate<? super T> filter;
     private Function<? super T, ? extends T> shaper;
 
-    protected CommonArgument(String name, ArgumentType<?> type) {
-        this.name = name;
-        this.type = type;
+    protected CommonArgument(@NotNull String name, @NotNull ArgumentType<?> type) {
+        this.name = Objects.requireNonNull(name);
+        this.type = Objects.requireNonNull(type);
     }
 
-    protected CommonArgument(String name,
-                             SuggestionAction<C> suggestionAction,
-                             ContextAction<C> contextAction,
-                             ArgumentType<?> type) {
-        this.name = name;
+    protected CommonArgument(@NotNull String name,
+                             @Nullable SuggestionAction<C> suggestionAction,
+                             @Nullable ContextAction<C> contextAction,
+                             @NotNull ArgumentType<?> type) {
+        this.name = Objects.requireNonNull(name);
         this.suggestionAction = suggestionAction;
         this.contextAction = contextAction;
-        this.type = type;
+        this.type = Objects.requireNonNull(type);
     }
 
     public final String name() {
@@ -65,15 +67,15 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         };
     }
 
-    protected final void setSuggestionAction(SuggestionAction<C> suggestionAction) {
+    protected final void setSuggestionAction(@Nullable SuggestionAction<C> suggestionAction) {
         this.suggestionAction = suggestionAction;
     }
 
-    protected final void setAdditionalSuggestionAction(SuggestionAction<C> additionalSuggestionAction) {
+    protected final void setAdditionalSuggestionAction(@Nullable SuggestionAction<C> additionalSuggestionAction) {
         this.additionalSuggestionAction = additionalSuggestionAction;
     }
 
-    protected final void setAdditionalParser(BiFunction<C, String, T> parser) {
+    protected final void setAdditionalParser(@Nullable BiFunction<C, String, T> parser) {
         this.additionalParser = parser;
     }
 
@@ -82,7 +84,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         return contextAction;
     }
 
-    protected final void setContextAction(ContextAction<C> contextAction) {
+    protected final void setContextAction(@Nullable ContextAction<C> contextAction) {
         this.contextAction = contextAction;
     }
 
@@ -100,7 +102,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         this.shaper = shaper;
     }
 
-    protected final void applyOptions(Consumer<Option<T, C>> options) {
+    protected final void applyOptions(@Nullable Consumer<Option<T, C>> options) {
         if (options == null) {
             return;
         }
@@ -109,7 +111,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         applyOption(option);
     }
 
-    protected final void applyOption(Option<T, C> option) {
+    protected final void applyOption(@NotNull Option<T, C> option) {
         setDisplayDefaultSuggestions(option.isDisplayDefaultSuggestions());
         option.suggestionAction()
               .ifPresent(this::setSuggestionAction);
@@ -125,6 +127,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
               .ifPresent(this::setShaper);
     }
 
+    @NotNull
     protected final Predicate<? super T> filter() {
         if (filter == null) {
             return x -> true;
@@ -138,10 +141,11 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         };
     }
 
+    @NotNull
     final T parse(C ctx) throws IncorrectArgumentInputException {
         T t = null;
         try {
-            t = parseImpl(ctx);
+            t = Objects.requireNonNull(parseImpl(ctx));
         } catch (CommandSyntaxException e) {
             if (additionalParser != null) {
                 t = additionalParser.apply(ctx, ctx.getInput(name));
@@ -198,7 +202,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
             return displayDefaultSuggestions;
         }
 
-        public Option<T, C> suggestionAction(SuggestionAction<C> suggestionAction) {
+        public Option<T, C> suggestionAction(@Nullable SuggestionAction<C> suggestionAction) {
             this.suggestionAction = suggestionAction;
             return this;
         }
@@ -207,7 +211,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
             return Optional.ofNullable(suggestionAction);
         }
 
-        public Option<T, C> additionalSuggestionAction(SuggestionAction<C> additionalSuggestionAction) {
+        public Option<T, C> additionalSuggestionAction(@Nullable SuggestionAction<C> additionalSuggestionAction) {
             this.additionalSuggestionAction = additionalSuggestionAction;
             return this;
         }
@@ -216,7 +220,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
             return Optional.ofNullable(additionalSuggestionAction);
         }
 
-        public Option<T, C> additionalParser(BiFunction<C, String, T> additionalParser) {
+        public Option<T, C> additionalParser(@Nullable BiFunction<C, String, T> additionalParser) {
             this.additionalParser = additionalParser;
             return this;
         }
@@ -229,9 +233,11 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
          * Filtering values on tab completion and after parsing.<br>
          * Throwing {@link net.kunmc.lab.commandlib.exception.InvalidArgumentException}, you can customize the error message.
          */
-        public Option<T, C> filter(Consumer<? super T> filter) {
+        public Option<T, C> filter(@Nullable Consumer<? super T> filter) {
             return filter(x -> {
-                filter.accept(x);
+                if (filter != null) {
+                    filter.accept(x);
+                }
                 return true;
             });
         }
@@ -240,7 +246,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
          * Filtering values on tab completion and after parsing.<br>
          * Throwing {@link net.kunmc.lab.commandlib.exception.InvalidArgumentException}, you can customize the error message.
          */
-        public Option<T, C> filter(Predicate<? super T> filter) {
+        public Option<T, C> filter(@Nullable Predicate<? super T> filter) {
             this.filter = filter;
             return this;
         }
@@ -249,7 +255,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
             return Optional.ofNullable(filter);
         }
 
-        public Option<T, C> shaper(Function<? super T, ? extends T> shaper) {
+        public Option<T, C> shaper(@Nullable Function<? super T, ? extends T> shaper) {
             this.shaper = shaper;
             return this;
         }
@@ -258,7 +264,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
             return Optional.ofNullable(shaper);
         }
 
-        public Option<T, C> contextAction(ContextAction<C> contextAction) {
+        public Option<T, C> contextAction(@Nullable ContextAction<C> contextAction) {
             this.contextAction = contextAction;
             return this;
         }

@@ -7,15 +7,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public final class SuggestionBuilder<C extends AbstractCommandContext<?, ?>> {
     private final List<Suggestion> suggestions = new ArrayList<>();
     private final C ctx;
 
-    public SuggestionBuilder(C ctx) {
-        this.ctx = ctx;
+    public SuggestionBuilder(@NotNull C ctx) {
+        this.ctx = Objects.requireNonNull(ctx);
     }
 
+    @NotNull
     public C getContext() {
         return ctx;
     }
@@ -25,6 +27,7 @@ public final class SuggestionBuilder<C extends AbstractCommandContext<?, ?>> {
                   .getInput();
     }
 
+    @NotNull
     public String getLatestInput() {
         String input = getInput();
 

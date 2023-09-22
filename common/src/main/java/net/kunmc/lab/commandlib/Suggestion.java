@@ -2,13 +2,17 @@ package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public final class Suggestion {
     private final String text;
     private final String tooltip;
 
-    public Suggestion(String text, String tooltip) {
-        this.text = text;
+    public Suggestion(@NotNull String text, @Nullable String tooltip) {
+        this.text = Objects.requireNonNull(text);
         this.tooltip = tooltip;
     }
 

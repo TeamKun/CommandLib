@@ -6,6 +6,7 @@ import net.kunmc.lab.commandlib.CommonArgument;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class CommonEnumArgument<T extends Enum<T>, C extends AbstractCommandContext<?, ?>> extends CommonArgument<T, C> {
@@ -19,7 +20,7 @@ public class CommonEnumArgument<T extends Enum<T>, C extends AbstractCommandCont
     public CommonEnumArgument(String name, Class<T> clazz, Consumer<CommonArgument.Option<T, C>> options) {
         super(name, StringArgumentType.string());
 
-        this.clazz = clazz;
+        this.clazz = Objects.requireNonNull(clazz);
         setSuggestionAction(sb -> {
             Arrays.stream(clazz.getEnumConstants())
                   .filter(filter())
