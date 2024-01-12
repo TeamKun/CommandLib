@@ -6,17 +6,18 @@ import net.kunmc.lab.commandlib.util.text.TextComponentBuilder;
 import net.kunmc.lab.commandlib.util.text.TranslatableComponentBuilder;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.NoSuchElementException;
-import java.util.ServiceLoader;
+import java.lang.reflect.InvocationTargetException;
 
 public interface PlatformAdapter<S, T, C extends AbstractCommandContext<S, T>, B extends AbstractArgumentBuilder<C, B>, U extends CommonCommand<C, B, U>> {
     @SuppressWarnings("unchecked")
     static <S, T, C extends AbstractCommandContext<S, T>, B extends AbstractArgumentBuilder<C, B>, U extends CommonCommand<C, B, U>> PlatformAdapter<S, T, C, B, U> get() {
         try {
-            return ServiceLoader.load(PlatformAdapter.class, PlatformAdapter.class.getClassLoader())
-                                .iterator()
-                                .next();
-        } catch (NoSuchElementException e) {
+            Class<PlatformAdapter<S, T, C, B, U>> platformAdapterImplClass = (Class<PlatformAdapter<S, T, C, B, U>>) Class.forName(
+                    "net.kunmc.lab.commandlib.PlatformAdapterImpl");
+            return platformAdapterImplClass.getConstructor()
+                                           .newInstance();
+        } catch (ClassNotFoundException | InvocationTargetException | InstantiationException | IllegalAccessException |
+                 NoSuchMethodException e) {
             throw new IllegalStateException("Could not find PlatformAdapter", e);
         }
     }
