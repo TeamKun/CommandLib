@@ -36,7 +36,7 @@ public class UUIDsArgument extends Argument<List<UUID>> {
               .stream()
               .map(getPlayerProfileCache()::getGameProfileForUsername)
               .filter(Objects::nonNull)
-              .filter(x -> filter().test(Collections.singletonList(x.getId())))
+              .filter(x -> filter().apply(Collections.singletonList(x.getId()), sb.getContext()))
               .filter(x -> {
                   if (input.isEmpty()) {
                       return true;
