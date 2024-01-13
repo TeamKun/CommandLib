@@ -37,7 +37,7 @@ public class CommonObjectArgument<T, C extends AbstractCommandContext<?, ?>> ext
             mapSupplier.get()
                        .entrySet()
                        .stream()
-                       .filter(x -> filter().test(x.getValue()))
+                       .filter(x -> filter().apply(x.getValue(), sb.getContext()))
                        .map(Map.Entry::getKey)
                        .filter(x -> sb.getLatestInput()
                                       .isEmpty() || x.contains(sb.getLatestInput()))

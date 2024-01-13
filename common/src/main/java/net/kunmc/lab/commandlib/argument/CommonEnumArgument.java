@@ -23,7 +23,7 @@ public class CommonEnumArgument<T extends Enum<T>, C extends AbstractCommandCont
         this.clazz = Objects.requireNonNull(clazz);
         setSuggestionAction(sb -> {
             Arrays.stream(clazz.getEnumConstants())
-                  .filter(filter())
+                  .filter(x -> filter().apply(x, sb.getContext()))
                   .map(Enum::name)
                   .map(String::toLowerCase)
                   .filter(x -> sb.getLatestInput()

@@ -30,7 +30,7 @@ public class UUIDsArgument extends Argument<List<UUID>> {
 
             Map<UUID, String> uuidToNameMap = new HashMap<>();
             Arrays.stream(Bukkit.getOfflinePlayers())
-                  .filter(x -> filter().test(Collections.singletonList(x.getUniqueId())))
+                  .filter(x -> filter().apply(Collections.singletonList(x.getUniqueId()), sb.getContext()))
                   .filter(x -> {
                       if (input.isEmpty()) {
                           return true;
