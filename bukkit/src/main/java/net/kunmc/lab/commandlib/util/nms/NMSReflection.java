@@ -21,13 +21,26 @@ public class NMSReflection {
                                                           .getClassLoader();
 
     static {
-        VERSION = Bukkit.getServer()
+        String ver;
+        try {
+            ver = Bukkit.getServer()
                         .getClass()
                         .getPackage()
                         .getName()
                         .split("\\.")[3];
-        NMS_PACKAGE_PREFIX = "net.minecraft.server." + VERSION;
-        CRAFT_BUKKIT_PACKAGE_PREFIX = "org.bukkit.craftbukkit." + VERSION;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // 1.20.6からはバージョンがパッケージ名から消えていた
+            ver = null;
+        }
+        VERSION = ver;
+
+        if (VERSION != null) {
+            NMS_PACKAGE_PREFIX = "net.minecraft.server." + VERSION;
+            CRAFT_BUKKIT_PACKAGE_PREFIX = "org.bukkit.craftbukkit." + VERSION;
+        } else {
+            NMS_PACKAGE_PREFIX = "net.minecraft.server";
+            CRAFT_BUKKIT_PACKAGE_PREFIX = "org.bukkit.craftbukkit";
+        }
     }
 
     @NotNull

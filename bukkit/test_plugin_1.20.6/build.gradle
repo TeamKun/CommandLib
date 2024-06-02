@@ -1,0 +1,128 @@
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardCopyOption
+
+plugins {
+    id "java"
+    id "com.github.johnrengelman.shadow" version "8.1.1"
+}
+
+group = "net.kunmc.lab"
+version = "1.0.0"
+
+repositories {
+    mavenCentral()
+    maven { url = "https://repo.papermc.io/repository/maven-public/" }
+    maven {
+        name = "sonatype"
+        url = "https://oss.sonatype.org/content/groups/public/"
+    }
+    flatDir { dirs "server/cache", "libs" }
+}
+
+dependencies {
+    compileOnly "io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT"
+    compileOnly "com.mojang:brigadier:1.0.18"
+}
+
+def targetJavaVersion = 17
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release = targetJavaVersion
+    }
+}
+
+jar {
+    doFirst {
+        copy {
+            from '.'
+            into buildDir.name + '/resources/main/'
+            include 'LICENSE*'
+        }
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs += ["../src/main/java", "../../common/src/main/java"]
+        }
+
+        resources {
+            srcDirs += ["../src/main/resources"]
+        }
+    }
+}
+
+shadowJar {
+    mergeServiceFiles()
+    archiveFileName = "${rootProject.name}-${project.version}.jar"
+    relocate "net.kunmc.lab.commandlib", "${project.group}.${project.name.toLowerCase()}.commandlib"
+    relocate "net.kunmc.lab.configlib", "${project.group}.${project.name.toLowerCase()}.configlib"
+}
+tasks.build.dependsOn tasks.shadowJar
+
+processResources {
+    def props = [name: rootProject.name, version: version, MainClass: getMainClassFQDN(projectDir.toPath())]
+    inputs.properties props
+    filteringCharset "UTF-8"
+    filesMatching("plugin.yml") {
+        expand props
+    }
+}
+
+shadowJar {
+    exclude "net/minecraft"
+    exclude "org/bukkit"
+    exclude "com/mojang"
+}
+jar.finalizedBy("shadowJar")
+
+jar {
+    exclude "net/minecraft"
+    exclude "org/bukkit"
+    exclude "com/mojang"
+}
+
+task copyToServer {
+    mustRunAfter build
+
+    copy {
+        from new File(buildDir.absolutePath, "libs/${rootProject.name}-${version}.jar")
+        into "./server/plugins"
+    }
+}
+
+task buildAndCopy(group: "build") {
+    dependsOn build, copyToServer
+}
+
+task downloadServerJar {
+    String buildNumber = '81';
+    URL url = new URL("https://api.papermc.io/v2/projects/paper/versions/1.20.6/builds/" + buildNumber + "/downloads/paper-1.20.6-" + buildNumber + ".jar")
+    File file = new File(projectDir.toPath().toAbsolutePath().toString() + "/server/server.jar")
+    if (!file.exists()) {
+        try (InputStream stream = url.openStream()) {
+            Files.copy(stream, file.toPath(), StandardCopyOption.REPLACE_EXISTING)
+        }
+    }
+}
+
+static String getMainClassFQDN(Path projectPath) {
+    Path mainClassFile = Files.walk(projectPath)
+            .filter(x -> x.getFileName().toString().endsWith(".java"))
+            .filter(path -> Files.lines(path).anyMatch(str -> str.contains("extends JavaPlugin")))
+            .findFirst()
+            .get()
+    return mainClassFile.toString().replace("\\", ".").replace("/", ".").replaceAll(".*src.main.java.|.java\$", "")
+}

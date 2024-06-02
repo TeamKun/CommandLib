@@ -2,6 +2,7 @@ package net.kunmc.lab.commandlib.util.nms.argument;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import net.kunmc.lab.commandlib.util.bukkit.VersionUtil;
 import net.kunmc.lab.commandlib.util.nms.command.NMSCommandBuildContext;
 import net.kunmc.lab.commandlib.util.nms.core.NMSHolder;
 import net.kunmc.lab.commandlib.util.nms.core.NMSRegistries;
@@ -32,6 +33,10 @@ public class NMSArgumentEnchantment extends NMSArgument<NMSEnchantment> {
 
     @Override
     protected NMSEnchantment parseImpl(CommandContext<?> ctx, String name) {
+        if (VersionUtil.is1_20_x()) {
+            return new NMSEnchantment(new NMSHolder.NMSReference(invokeMethod("g", ctx, name)).value());
+        }
+
         try {
             return new NMSEnchantment(invokeMethod("a", ctx, name));
         } catch (MethodNotFoundException e) {

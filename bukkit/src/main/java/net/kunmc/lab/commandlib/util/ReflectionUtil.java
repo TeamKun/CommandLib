@@ -4,9 +4,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 public class ReflectionUtil {
-    private ReflectionUtil() {
-    }
-
     public static Field getFieldIncludingSuperclasses(Class<?> clazz, String name) throws NoSuchFieldException {
         Field field;
 
@@ -39,5 +36,8 @@ public class ReflectionUtil {
         }
 
         return method;
+    }
+
+    private ReflectionUtil() {
     }
 }

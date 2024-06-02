@@ -69,6 +69,10 @@ public abstract class NMSClass {
         return invokeMethod(methodNames, argClasses, args);
     }
 
+    protected final Object invokeMethod(String methodName, Class<?>[] parameterClasses, Object... args) {
+        return invokeMethod(new String[]{methodName}, parameterClasses, args);
+    }
+
     protected final Object invokeMethod(String[] methodNames, Class<?>[] parameterClasses, Object... args) {
         Method method = null;
         for (String methodName : methodNames) {
