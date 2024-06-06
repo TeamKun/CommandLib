@@ -5,6 +5,8 @@ import org.bukkit.Bukkit;
 import java.util.regex.Pattern;
 
 public class VersionUtil {
+    // パッチバージョンが0の時、1.20のような形式となる
+    private static final Pattern MINECRAFT_WITHOUT_PATCH_VERSION_PATTERN = Pattern.compile("\\d+.\\d+");
     private static final Pattern MINECRAFT_VERSION_PATTERN = Pattern.compile("\\d+.\\d+.\\d+");
 
     private static void checkMinecraftVersionFormat(String s) {
@@ -30,11 +32,16 @@ public class VersionUtil {
      * a value greater than {@code 0} if {@code x > y}
      */
     public static int compareMinecraftVersion(String x, String y) {
-        checkMinecraftVersionFormat(x);
-        checkMinecraftVersionFormat(y);
+        String normalizedX = MINECRAFT_WITHOUT_PATCH_VERSION_PATTERN.matcher(x)
+                                                                    .matches() ? x + ".0" : x;
+        String normalizedY = MINECRAFT_WITHOUT_PATCH_VERSION_PATTERN.matcher(y)
+                                                                    .matches() ? y + ".0" : y;
 
-        String[] xUnits = x.split("\\.");
-        String[] yUnits = y.split("\\.");
+        checkMinecraftVersionFormat(normalizedX);
+        checkMinecraftVersionFormat(normalizedY);
+
+        String[] xUnits = normalizedX.split("\\.");
+        String[] yUnits = normalizedY.split("\\.");
         for (int i = 0; i < xUnits.length; i++) {
             int xn = Integer.parseInt(xUnits[i]);
             int yn = Integer.parseInt(yUnits[i]);

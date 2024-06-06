@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 public class NMSReflection {
-    private static final String VERSION;
     private static final String MINECRAFT_PACKAGE_PREFIX = "net.minecraft";
     private static final String NMS_PACKAGE_PREFIX;
     private static final String CRAFT_BUKKIT_PACKAGE_PREFIX;
@@ -21,25 +20,24 @@ public class NMSReflection {
                                                           .getClassLoader();
 
     static {
-        String ver;
+        String version;
         try {
-            ver = Bukkit.getServer()
-                        .getClass()
-                        .getPackage()
-                        .getName()
-                        .split("\\.")[3];
+            version = Bukkit.getServer()
+                            .getClass()
+                            .getPackage()
+                            .getName()
+                            .split("\\.")[3];
         } catch (ArrayIndexOutOfBoundsException e) {
-            // 1.20.6からはバージョンがパッケージ名から消えていた
-            ver = null;
+            // 1.20.5からはバージョンがパッケージ名から消えている
+            version = null;
         }
-        VERSION = ver;
 
-        if (VERSION != null) {
-            NMS_PACKAGE_PREFIX = "net.minecraft.server." + VERSION;
-            CRAFT_BUKKIT_PACKAGE_PREFIX = "org.bukkit.craftbukkit." + VERSION;
-        } else {
+        if (version == null) {
             NMS_PACKAGE_PREFIX = "net.minecraft.server";
             CRAFT_BUKKIT_PACKAGE_PREFIX = "org.bukkit.craftbukkit";
+        } else {
+            NMS_PACKAGE_PREFIX = "net.minecraft.server." + version;
+            CRAFT_BUKKIT_PACKAGE_PREFIX = "org.bukkit.craftbukkit." + version;
         }
     }
 

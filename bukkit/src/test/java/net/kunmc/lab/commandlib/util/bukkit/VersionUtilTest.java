@@ -27,5 +27,12 @@ class VersionUtilTest {
             Assertions.assertThat(res)
                       .isGreaterThan(0);
         }
+
+        @Test
+        void without_patch_version() {
+            int res = VersionUtil.compareMinecraftVersion("1.16", "1.16");
+            Assertions.assertThat(res)
+                      .isEqualTo(0);
+        }
     }
 }
