@@ -17,7 +17,9 @@ public class BlockDataArgument extends Argument<BlockData> {
     }
 
     public BlockDataArgument(String name, Consumer<Option<BlockData, CommandContext>> options) {
-        super(name, new NMSArgumentTile().argument());
+        super(name,
+              NMSArgumentTile.create()
+                             .argument());
         applyOptions(options);
     }
 
@@ -28,7 +30,9 @@ public class BlockDataArgument extends Argument<BlockData> {
 
     @Override
     protected BlockData parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return new NMSCraftBlockData().createData(new NMSArgumentTile().parse(ctx.getHandle(), name())
-                                                                       .getBlockData());
+        return NMSCraftBlockData.create()
+                                .createData(NMSArgumentTile.create()
+                                                           .parse(ctx.getHandle(), name())
+                                                           .getBlockData());
     }
 }

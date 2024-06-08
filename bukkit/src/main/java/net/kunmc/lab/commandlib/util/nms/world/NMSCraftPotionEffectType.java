@@ -1,25 +1,37 @@
 package net.kunmc.lab.commandlib.util.nms.world;
 
-import net.kunmc.lab.commandlib.util.bukkit.VersionUtil;
 import net.kunmc.lab.commandlib.util.nms.CraftBukkitClass;
+import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
+import net.kunmc.lab.commandlib.util.nms.world.v1_16_0.NMSCraftPotionEffectType_v1_16_0;
+import net.kunmc.lab.commandlib.util.nms.world.v1_20_4.NMSCraftPotionEffectType_v1_20_4;
+import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 import org.bukkit.potion.PotionEffectType;
 
-public class NMSCraftPotionEffectType extends CraftBukkitClass {
-    public NMSCraftPotionEffectType() {
-        super(null, "potion.CraftPotionEffectType");
+public abstract class NMSCraftPotionEffectType extends CraftBukkitClass {
+    public static NMSCraftPotionEffectType create() {
+        return ReflectionUtil.getConstructor(NMSClassRegistry.findClass(NMSCraftPotionEffectType.class))
+                             .newInstance();
     }
 
-    public NMSCraftPotionEffectType(Object handle) {
-        super(handle, "potion.CraftPotionEffectType");
+    public static NMSCraftPotionEffectType create(Object handle) {
+        return ReflectionUtil.getConstructor(NMSClassRegistry.findClass(NMSCraftPotionEffectType.class), Object.class)
+                             .newInstance(handle);
     }
 
-    public PotionEffectType createInstance(NMSMobEffectList nms) {
-        if (VersionUtil.is1_20_x()) {
-            return ((PotionEffectType) invokeMethod("minecraftToBukkit",
-                                                    new Class[]{nms.getFoundClass()},
-                                                    nms.getHandle()));
-        }
+    public NMSCraftPotionEffectType(Object handle, String className) {
+        super(handle, className);
+    }
 
-        return ((PotionEffectType) newInstance(new Class[]{nms.getFoundClass()}, new Object[]{nms.getHandle()}));
+    public abstract PotionEffectType createInstance(NMSMobEffectList nms);
+
+    static {
+        NMSClassRegistry.register(NMSCraftPotionEffectType.class,
+                                  NMSCraftPotionEffectType_v1_16_0.class,
+                                  "1.16.0",
+                                  "1.20.3");
+        NMSClassRegistry.register(NMSCraftPotionEffectType.class,
+                                  NMSCraftPotionEffectType_v1_20_4.class,
+                                  "1.20.4",
+                                  "1.20.4");
     }
 }

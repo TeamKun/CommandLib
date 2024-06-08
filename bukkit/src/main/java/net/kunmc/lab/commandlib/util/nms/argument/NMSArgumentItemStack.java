@@ -1,31 +1,24 @@
 package net.kunmc.lab.commandlib.util.nms.argument;
 
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import net.kunmc.lab.commandlib.util.nms.command.NMSCommandBuildContext;
-import net.kunmc.lab.commandlib.util.nms.exception.MethodNotFoundException;
-import net.kunmc.lab.commandlib.util.nms.server.NMSCraftServer;
+import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_16_0.NMSArgumentItemStack_v1_16_0;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_17_0.NMSArgumentItemStack_v1_17_0;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_19_0.NMSArgumentItemStack_v1_19_0;
+import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 
-public class NMSArgumentItemStack extends NMSArgument<NMSArgumentPredicateItemStack> {
-    public NMSArgumentItemStack() {
-        super("ArgumentItemStack", "commands.arguments.item.ArgumentItemStack", "commands.arguments.item.ItemArgument");
+public abstract class NMSArgumentItemStack extends NMSArgument<NMSArgumentPredicateItemStack> {
+    public static NMSArgumentItemStack create() {
+        return ReflectionUtil.getConstructor(NMSClassRegistry.findClass(NMSArgumentItemStack.class))
+                             .newInstance();
     }
 
-    @Override
-    public ArgumentType<?> argument() {
-        try {
-            return ((ArgumentType<?>) invokeMethod("a"));
-        } catch (MethodNotFoundException e) {
-            NMSCommandBuildContext commandBuildContext = new NMSCraftServer().getServer()
-                                                                             .getDataPackResources()
-                                                                             .getCommandBuildContext();
-            return ((ArgumentType<?>) newInstance(new Class<?>[]{commandBuildContext.getFoundClass()},
-                                                  new Object[]{commandBuildContext.getHandle()}));
-        }
+    public NMSArgumentItemStack(Object handle, String className, String... classNames) {
+        super(handle, className, classNames);
     }
 
-    @Override
-    protected NMSArgumentPredicateItemStack parseImpl(CommandContext<?> ctx, String name) {
-        return new NMSArgumentPredicateItemStack(invokeMethod("a", "getItem", ctx, name));
+    static {
+        NMSClassRegistry.register(NMSArgumentItemStack.class, NMSArgumentItemStack_v1_16_0.class, "1.16.0", "1.16.5");
+        NMSClassRegistry.register(NMSArgumentItemStack.class, NMSArgumentItemStack_v1_17_0.class, "1.17.0", "1.18.2");
+        NMSClassRegistry.register(NMSArgumentItemStack.class, NMSArgumentItemStack_v1_19_0.class, "1.19.0", "1.20.4");
     }
 }

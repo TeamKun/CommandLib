@@ -21,19 +21,23 @@ public final class CommandContext extends AbstractCommandContext<Object, Compone
     }
 
     public Entity getEntity() {
-        return new NMSCommandListenerWrapper(handle.getSource()).getBukkitEntity();
+        return NMSCommandListenerWrapper.create(handle.getSource())
+                                        .getBukkitEntity();
     }
 
     public World getWorld() {
-        return new NMSCommandListenerWrapper(handle.getSource()).getBukkitWorld();
+        return NMSCommandListenerWrapper.create(handle.getSource())
+                                        .getBukkitWorld();
     }
 
     public Location getLocation() {
-        return new NMSCommandListenerWrapper(handle.getSource()).getBukkitLocation();
+        return NMSCommandListenerWrapper.create(handle.getSource())
+                                        .getBukkitLocation();
     }
 
     public CommandSender getSender() {
-        return new NMSCommandListenerWrapper(handle.getSource()).getBukkitSender();
+        return NMSCommandListenerWrapper.create(handle.getSource())
+                                        .getBukkitSender();
     }
 
     @Override

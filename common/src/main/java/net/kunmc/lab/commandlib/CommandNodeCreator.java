@@ -56,7 +56,8 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                                                           command.prerequisite(),
                                                           helpAction,
                                                           command.preprocess(),
-                                                          command.contextAction()))
+                                                          command.contextAction(),
+                                                          command.uncaughtExceptionHandlers()))
                           .build();
         }
 
@@ -69,7 +70,8 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                                                                 command.prerequisite(),
                                                                 helpAction,
                                                                 command.preprocess(),
-                                                                command.contextAction()));
+                                                                command.contextAction(),
+                                                                command.uncaughtExceptionHandlers()));
                      });
 
         return builder.build();

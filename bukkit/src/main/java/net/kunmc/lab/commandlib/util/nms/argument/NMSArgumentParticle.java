@@ -1,31 +1,25 @@
 package net.kunmc.lab.commandlib.util.nms.argument;
 
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import net.kunmc.lab.commandlib.util.nms.command.NMSCommandBuildContext;
+import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_16_0.NMSArgumentParticle_v1_16_0;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_17_0.NMSArgumentParticle_v1_17_0;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_19_3.NMSArgumentParticle_v1_19_3;
 import net.kunmc.lab.commandlib.util.nms.core.NMSParticleParam;
-import net.kunmc.lab.commandlib.util.nms.server.NMSCraftServer;
+import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 
-public class NMSArgumentParticle extends NMSArgument<NMSParticleParam> {
-    public NMSArgumentParticle() {
-        super("ArgumentParticle", "commands.arguments.ArgumentParticle", "commands.arguments.ParticleArgument");
+public abstract class NMSArgumentParticle extends NMSArgument<NMSParticleParam> {
+    public static NMSArgumentParticle create() {
+        return ReflectionUtil.getConstructor(NMSClassRegistry.findClass(NMSArgumentParticle.class))
+                             .newInstance();
     }
 
-    @Override
-    public ArgumentType<?> argument() {
-        try {
-            return (ArgumentType<?>) newInstance(new Class<?>[]{}, new Object[]{});
-        } catch (Exception e) {
-            NMSCommandBuildContext commandBuildContext = new NMSCraftServer().getServer()
-                                                                             .getDataPackResources()
-                                                                             .getCommandBuildContext();
-            return (ArgumentType<?>) newInstance(new Class<?>[]{commandBuildContext.getFoundClass()},
-                                                 new Object[]{commandBuildContext.getHandle()});
-        }
+    public NMSArgumentParticle(Object handle, String className, String... classNames) {
+        super(handle, className, classNames);
     }
 
-    @Override
-    protected NMSParticleParam parseImpl(CommandContext<?> ctx, String name) {
-        return new NMSParticleParam(invokeMethod("a", "getParticle", ctx, name));
+    static {
+        NMSClassRegistry.register(NMSArgumentParticle.class, NMSArgumentParticle_v1_16_0.class, "1.16.0", "1.16.5");
+        NMSClassRegistry.register(NMSArgumentParticle.class, NMSArgumentParticle_v1_17_0.class, "1.17.0", "1.19.2");
+        NMSClassRegistry.register(NMSArgumentParticle.class, NMSArgumentParticle_v1_19_3.class, "1.19.3", "1.20.4");
     }
 }

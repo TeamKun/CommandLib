@@ -18,7 +18,9 @@ public class LocationArgument extends Argument<Location> {
     }
 
     public LocationArgument(String name, Consumer<Option<Location, CommandContext>> options) {
-        super(name, new NMSArgumentVec3D().argument());
+        super(name,
+              NMSArgumentVec3D.create()
+                              .argument());
         applyOptions(options);
     }
 
@@ -29,8 +31,10 @@ public class LocationArgument extends Argument<Location> {
 
     @Override
     protected Location parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        NMSVec3D vec = new NMSArgumentVec3D().parse(ctx.getHandle(), name());
-        return new Location(new NMSCommandListenerWrapper(ctx.getHandle()
-                                                             .getSource()).getBukkitWorld(), vec.x(), vec.y(), vec.z());
+        NMSVec3D vec = NMSArgumentVec3D.create()
+                                       .parse(ctx.getHandle(), name());
+        return new Location(NMSCommandListenerWrapper.create(ctx.getHandle()
+                                                                .getSource())
+                                                     .getBukkitWorld(), vec.x(), vec.y(), vec.z());
     }
 }

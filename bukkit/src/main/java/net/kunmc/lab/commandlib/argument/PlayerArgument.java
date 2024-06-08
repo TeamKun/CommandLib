@@ -16,7 +16,9 @@ public class PlayerArgument extends Argument<Player> {
     }
 
     public PlayerArgument(String name, Consumer<Option<Player, CommandContext>> options) {
-        super(name, new NMSArgumentPlayer().argument());
+        super(name,
+              NMSArgumentPlayer.create()
+                               .argument());
         applyOptions(options);
     }
 
@@ -27,6 +29,7 @@ public class PlayerArgument extends Argument<Player> {
 
     @Override
     protected Player parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return new NMSArgumentPlayer().parse(ctx.getHandle(), name());
+        return NMSArgumentPlayer.create()
+                                .parse(ctx.getHandle(), name());
     }
 }

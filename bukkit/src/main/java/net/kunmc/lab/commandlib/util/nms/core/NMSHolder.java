@@ -1,23 +1,45 @@
 package net.kunmc.lab.commandlib.util.nms.core;
 
 import net.kunmc.lab.commandlib.util.nms.MinecraftClass;
+import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
+import net.kunmc.lab.commandlib.util.nms.core.v1_19_0.NMSHolder_v1_19_0;
+import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 
 
 /**
- * 1.16.5には存在しない
+ * for after 1.19.0
  */
-public class NMSHolder extends MinecraftClass {
-    public NMSHolder(Object handle) {
-        super(handle, "core.Holder");
+public abstract class NMSHolder extends MinecraftClass {
+    public static NMSHolder create(Object handle) {
+        return ReflectionUtil.getConstructor(NMSClassRegistry.findClass(NMSHolder.class), Object.class)
+                             .newInstance(handle);
     }
 
-    public static class NMSReference extends MinecraftClass {
-        public NMSReference(Object handle) {
-            super(handle, "core.Holder$c", "core.Holder$Reference");
+    public NMSHolder(Object handle, String className, String... classNames) {
+        super(handle, className, classNames);
+    }
+
+    static {
+        NMSClassRegistry.register(NMSHolder.class, NMSHolder_v1_19_0.class, "1.19.0", "1.20.4");
+    }
+
+    public static abstract class NMSReference extends MinecraftClass {
+        public static NMSReference create(Object handle) {
+            return ReflectionUtil.getConstructor(NMSClassRegistry.findClass(NMSReference.class), Object.class)
+                                 .newInstance(handle);
         }
 
-        public Object value() {
-            return invokeMethod("a", "value");
+        public NMSReference(Object handle, String className, String... classNames) {
+            super(handle, className, classNames);
+        }
+
+        public abstract Object value();
+
+        static {
+            NMSClassRegistry.register(NMSReference.class,
+                                      NMSHolder_v1_19_0.NMSReference_v1_19_0.class,
+                                      "1.19.0",
+                                      "1.20.4");
         }
     }
 }

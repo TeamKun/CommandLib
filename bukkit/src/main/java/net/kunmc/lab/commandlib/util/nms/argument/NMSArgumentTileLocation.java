@@ -1,17 +1,32 @@
 package net.kunmc.lab.commandlib.util.nms.argument;
 
 import net.kunmc.lab.commandlib.util.nms.MinecraftClass;
+import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_16_0.NMSArgumentTileLocation_v1_16_0;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_17_0.NMSArgumentTileLocation_v1_17_0;
 import net.kunmc.lab.commandlib.util.nms.world.NMSIBlockData;
+import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 
-public class NMSArgumentTileLocation extends MinecraftClass {
-    public NMSArgumentTileLocation(Object handle) {
-        super(handle,
-              "ArgumentTileLocation",
-              "commands.arguments.blocks.ArgumentTileLocation",
-              "commands.arguments.blocks.BlockInput");
+public abstract class NMSArgumentTileLocation extends MinecraftClass {
+    public static NMSArgumentTileLocation create(Object handle) {
+        return ReflectionUtil.getConstructor(NMSClassRegistry.findClass(NMSArgumentTileLocation.class), Object.class)
+                             .newInstance(handle);
     }
 
-    public NMSIBlockData getBlockData() {
-        return new NMSIBlockData(invokeMethod("a", "getState"));
+    public NMSArgumentTileLocation(Object handle, String className, String... classNames) {
+        super(handle, className, classNames);
+    }
+
+    public abstract NMSIBlockData getBlockData();
+
+    static {
+        NMSClassRegistry.register(NMSArgumentTileLocation.class,
+                                  NMSArgumentTileLocation_v1_16_0.class,
+                                  "1.16.0",
+                                  "1.16.5");
+        NMSClassRegistry.register(NMSArgumentTileLocation.class,
+                                  NMSArgumentTileLocation_v1_17_0.class,
+                                  "1.17.0",
+                                  "1.20.4");
     }
 }

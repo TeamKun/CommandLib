@@ -3,8 +3,10 @@ package net.kunmc.lab.commandlib;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.util.UncaughtExceptionHandler;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Predicate;
 
 final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implements Command<S> {
@@ -14,6 +16,7 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
     private final ContextAction<C> helpAction;
     private final Predicate<C> preprocess;
     private final ContextAction<C> contextAction;
+    private final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers;
 
 
     CommandExecutor(PlatformAdapter<S, ?, C, ?, ?> platformAdapter,
@@ -21,13 +24,15 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
                     Predicate<C> prerequisite,
                     ContextAction<C> helpAction,
                     Predicate<C> preprocess,
-                    ContextAction<C> contextAction) {
+                    ContextAction<C> contextAction,
+                    List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers) {
         this.platformAdapter = platformAdapter;
         this.arguments = arguments;
         this.prerequisite = prerequisite;
         this.helpAction = helpAction;
         this.preprocess = preprocess;
         this.contextAction = contextAction;
+        this.uncaughtExceptionHandlers = uncaughtExceptionHandlers;
     }
 
     @Override
@@ -35,28 +40,34 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
         try {
             C ctx = platformAdapter.createCommandContext(context);
 
-            if (arguments != null) {
-                try {
-                    arguments.parse(ctx);
-                } catch (IncorrectArgumentInputException e) {
-                    e.sendMessage(ctx);
-                    return 1;
+            try {
+                if (arguments != null) {
+                    try {
+                        arguments.parse(ctx);
+                    } catch (IncorrectArgumentInputException e) {
+                        e.sendMessage(ctx);
+                        return 1;
+                    }
                 }
-            }
 
-            if (!prerequisite.test(ctx)) {
-                return 0;
-            }
+                if (!prerequisite.test(ctx)) {
+                    return 0;
+                }
 
-            if (contextAction == null) {
-                return executeWithStackTrace(ctx, helpAction);
-            }
+                if (contextAction == null) {
+                    return executeWithStackTrace(ctx, helpAction);
+                }
 
-            if (!preprocess.test(ctx)) {
-                return 0;
-            }
+                if (!preprocess.test(ctx)) {
+                    return 0;
+                }
 
-            return executeWithStackTrace(ctx, contextAction);
+                return executeWithStackTrace(ctx, contextAction);
+            } catch (Throwable e) {
+                e.printStackTrace();
+                uncaughtExceptionHandlers.forEach(x -> x.uncaughtException(e, ctx));
+                throw e;
+            }
         } catch (Throwable e) {
             e.printStackTrace();
             throw e;

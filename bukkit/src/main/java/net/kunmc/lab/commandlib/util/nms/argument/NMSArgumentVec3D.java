@@ -1,23 +1,23 @@
 package net.kunmc.lab.commandlib.util.nms.argument;
 
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import net.kunmc.lab.commandlib.util.nms.MinecraftClass;
+import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_16_0.NMSArgumentVec3D_v1_16_0;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_17_0.NMSArgumentVec3D_v1_17_0;
 import net.kunmc.lab.commandlib.util.nms.world.NMSVec3D;
+import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 
-public class NMSArgumentVec3D extends MinecraftClass {
-    public NMSArgumentVec3D() {
-        super(null,
-              "ArgumentVec3",
-              "commands.arguments.coordinates.Vec3Argument",
-              "commands.arguments.coordinates.ArgumentVec3");
+public abstract class NMSArgumentVec3D extends NMSArgument<NMSVec3D> {
+    public static NMSArgumentVec3D create() {
+        return ReflectionUtil.getConstructor(NMSClassRegistry.findClass(NMSArgumentVec3D.class))
+                             .newInstance();
     }
 
-    public ArgumentType<?> argument() {
-        return ((ArgumentType<?>) invokeMethod("a", "vec3"));
+    public NMSArgumentVec3D(Object handle, String className, String... classNames) {
+        super(handle, className, classNames);
     }
 
-    public NMSVec3D parse(CommandContext<?> ctx, String name) {
-        return new NMSVec3D(invokeMethod("a", "getVec3", ctx, name));
+    static {
+        NMSClassRegistry.register(NMSArgumentVec3D.class, NMSArgumentVec3D_v1_16_0.class, "1.16.0", "1.16.5");
+        NMSClassRegistry.register(NMSArgumentVec3D.class, NMSArgumentVec3D_v1_17_0.class, "1.17.0", "1.20.4");
     }
 }

@@ -1,49 +1,34 @@
 package net.kunmc.lab.commandlib.util.nms.argument;
 
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import net.kunmc.lab.commandlib.util.bukkit.VersionUtil;
-import net.kunmc.lab.commandlib.util.nms.command.NMSCommandBuildContext;
-import net.kunmc.lab.commandlib.util.nms.core.NMSHolder;
-import net.kunmc.lab.commandlib.util.nms.core.NMSRegistries;
-import net.kunmc.lab.commandlib.util.nms.exception.MethodNotFoundException;
-import net.kunmc.lab.commandlib.util.nms.resources.NMSResourceKey;
-import net.kunmc.lab.commandlib.util.nms.server.NMSCraftServer;
+import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_16_0.NMSArgumentEnchantment_v1_16_0;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_17_0.NMSArgumentEnchantment_v1_17_0;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_19_3.NMSArgumentEnchantment_v1_19_3;
 import net.kunmc.lab.commandlib.util.nms.world.NMSEnchantment;
+import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 
-public class NMSArgumentEnchantment extends NMSArgument<NMSEnchantment> {
-    public NMSArgumentEnchantment() {
-        super(null, "ArgumentEnchantment", "commands.arguments.ResourceArgument");
+public abstract class NMSArgumentEnchantment extends NMSArgument<NMSEnchantment> {
+    public static NMSArgumentEnchantment create() {
+        return ReflectionUtil.getConstructor(NMSClassRegistry.findClass(NMSArgumentEnchantment.class))
+                             .newInstance();
     }
 
-    @Override
-    public ArgumentType<?> argument() {
-        try {
-            return ((ArgumentType<?>) invokeMethod("a"));
-        } catch (Exception e) {
-            NMSCommandBuildContext commandBuildContext = new NMSCraftServer().getServer()
-                                                                             .getDataPackResources()
-                                                                             .getCommandBuildContext();
-            NMSResourceKey resourceKey = new NMSRegistries().enchantment();
-
-            return ((ArgumentType<?>) newInstance(new Class<?>[]{commandBuildContext.getFoundClass(), resourceKey.getFoundClass()},
-                                                  new Object[]{commandBuildContext.getHandle(), resourceKey.getHandle()}));
-        }
+    public NMSArgumentEnchantment(Object handle, String className) {
+        super(handle, className);
     }
 
-    @Override
-    protected NMSEnchantment parseImpl(CommandContext<?> ctx, String name) {
-        if (VersionUtil.is1_20_x()) {
-            return new NMSEnchantment(new NMSHolder.NMSReference(invokeMethod("g", ctx, name)).value());
-        }
-
-        try {
-            return new NMSEnchantment(invokeMethod("a", ctx, name));
-        } catch (MethodNotFoundException e) {
-            return new NMSEnchantment(new NMSHolder.NMSReference(invokeMethod("g",
-                                                                              "getEnchantment",
-                                                                              ctx,
-                                                                              name)).value());
-        }
+    static {
+        NMSClassRegistry.register(NMSArgumentEnchantment.class,
+                                  NMSArgumentEnchantment_v1_16_0.class,
+                                  "1.16.0",
+                                  "1.16.5");
+        NMSClassRegistry.register(NMSArgumentEnchantment.class,
+                                  NMSArgumentEnchantment_v1_17_0.class,
+                                  "1.17.0",
+                                  "1.19.2");
+        NMSClassRegistry.register(NMSArgumentEnchantment.class,
+                                  NMSArgumentEnchantment_v1_19_3.class,
+                                  "1.19.3",
+                                  "1.20.4");
     }
 }

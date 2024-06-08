@@ -25,7 +25,9 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
     }
 
     public OfflinePlayersArgument(String name, Consumer<Option<List<OfflinePlayer>, CommandContext>> options) {
-        super(name, new NMSArgumentProfile().argument());
+        super(name,
+              NMSArgumentProfile.create()
+                                .argument());
 
         setSuggestionAction(sb -> {
             String input = sb.getLatestInput();

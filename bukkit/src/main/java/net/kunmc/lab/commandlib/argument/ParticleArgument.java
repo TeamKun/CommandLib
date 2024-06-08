@@ -17,7 +17,9 @@ public class ParticleArgument extends Argument<Particle> {
     }
 
     public ParticleArgument(String name, Consumer<Option<Particle, CommandContext>> options) {
-        super(name, new NMSArgumentParticle().argument());
+        super(name,
+              NMSArgumentParticle.create()
+                                 .argument());
         applyOptions(options);
     }
 
@@ -28,6 +30,8 @@ public class ParticleArgument extends Argument<Particle> {
 
     @Override
     protected Particle parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return new NMSCraftParticle().toBukkit(new NMSArgumentParticle().parse(ctx.getHandle(), name()));
+        return NMSCraftParticle.create()
+                               .toBukkit(NMSArgumentParticle.create()
+                                                            .parse(ctx.getHandle(), name()));
     }
 }

@@ -17,7 +17,9 @@ public class PotionEffectArgument extends Argument<PotionEffect> {
     }
 
     public PotionEffectArgument(String name, Consumer<Option<PotionEffect, CommandContext>> options) {
-        super(name, new NMSArgumentMobEffect().argument());
+        super(name,
+              NMSArgumentMobEffect.create()
+                                  .argument());
         applyOptions(options);
     }
 
@@ -28,7 +30,9 @@ public class PotionEffectArgument extends Argument<PotionEffect> {
 
     @Override
     protected PotionEffect parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return new NMSCraftPotionEffectType().createInstance(new NMSArgumentMobEffect().parse(ctx.getHandle(), name()))
-                                             .createEffect(1, 0);
+        return NMSCraftPotionEffectType.create()
+                                       .createInstance(NMSArgumentMobEffect.create()
+                                                                           .parse(ctx.getHandle(), name()))
+                                       .createEffect(1, 0);
     }
 }

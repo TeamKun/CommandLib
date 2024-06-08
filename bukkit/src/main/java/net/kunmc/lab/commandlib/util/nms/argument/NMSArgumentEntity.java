@@ -1,22 +1,23 @@
 package net.kunmc.lab.commandlib.util.nms.argument;
 
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import net.kunmc.lab.commandlib.util.nms.world.NMSEntity;
+import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_16_0.NMSArgumentEntity_v1_16_0;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_17_0.NMSArgumentEntity_v1_17_0;
+import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 import org.bukkit.entity.Entity;
 
-public class NMSArgumentEntity extends NMSArgument<Entity> {
-    public NMSArgumentEntity() {
-        super("ArgumentEntity", "commands.arguments.ArgumentEntity", "commands.arguments.EntityArgument");
+public abstract class NMSArgumentEntity extends NMSArgument<Entity> {
+    public static NMSArgumentEntity create() {
+        return ReflectionUtil.getConstructor(NMSClassRegistry.findClass(NMSArgumentEntity.class))
+                             .newInstance();
     }
 
-    @Override
-    public ArgumentType<?> argument() {
-        return ((ArgumentType<?>) invokeMethod("a", "entity"));
+    public NMSArgumentEntity(Object handle, String className, String... classNames) {
+        super(handle, className, classNames);
     }
 
-    @Override
-    protected Entity parseImpl(CommandContext<?> ctx, String name) {
-        return new NMSEntity(invokeMethod("a", "getEntity", ctx, name)).getBukkitEntity();
+    static {
+        NMSClassRegistry.register(NMSArgumentEntity.class, NMSArgumentEntity_v1_16_0.class, "1.16.0", "1.16.5");
+        NMSClassRegistry.register(NMSArgumentEntity.class, NMSArgumentEntity_v1_17_0.class, "1.17.0", "1.20.4");
     }
 }

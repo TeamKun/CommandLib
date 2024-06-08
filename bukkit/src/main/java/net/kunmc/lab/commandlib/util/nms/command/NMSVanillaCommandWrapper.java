@@ -2,23 +2,27 @@ package net.kunmc.lab.commandlib.util.nms.command;
 
 import com.mojang.brigadier.tree.CommandNode;
 import net.kunmc.lab.commandlib.util.nms.CraftBukkitClass;
+import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
+import net.kunmc.lab.commandlib.util.nms.command.v1_16_0.NMSVanillaCommandWrapper_v1_16_0;
+import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 import org.bukkit.command.defaults.BukkitCommand;
 
-import java.lang.reflect.InvocationTargetException;
-
-public class NMSVanillaCommandWrapper extends CraftBukkitClass {
-    public NMSVanillaCommandWrapper() {
-        super(null, "command.VanillaCommandWrapper");
+public abstract class NMSVanillaCommandWrapper extends CraftBukkitClass {
+    public static NMSVanillaCommandWrapper create() {
+        return ReflectionUtil.getConstructor(NMSClassRegistry.findClass(NMSVanillaCommandWrapper.class))
+                             .newInstance();
     }
 
-    public BukkitCommand createInstance(NMSCommandDispatcher dispatcher, CommandNode<?> command) {
-        try {
-            return ((BukkitCommand) clazz.getConstructor(dispatcher.getHandle()
-                                                                   .getClass(), CommandNode.class)
-                                         .newInstance(dispatcher.getHandle(), command));
-        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
-                 IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+    public NMSVanillaCommandWrapper(Object handle, String className) {
+        super(handle, className);
+    }
+
+    public abstract BukkitCommand createInstance(NMSCommandDispatcher dispatcher, CommandNode<?> command);
+
+    static {
+        NMSClassRegistry.register(NMSVanillaCommandWrapper.class,
+                                  NMSVanillaCommandWrapper_v1_16_0.class,
+                                  "1.16.0",
+                                  "1.20.4");
     }
 }

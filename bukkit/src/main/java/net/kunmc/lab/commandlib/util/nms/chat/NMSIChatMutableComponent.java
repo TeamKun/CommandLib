@@ -1,14 +1,29 @@
 package net.kunmc.lab.commandlib.util.nms.chat;
 
 import net.kunmc.lab.commandlib.util.nms.MinecraftClass;
+import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
+import net.kunmc.lab.commandlib.util.nms.chat.v1_19_0.NMSIChatMutableComponent_v1_19_0;
+import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 
-// 1.16.5には存在しない
-public class NMSIChatMutableComponent extends MinecraftClass {
-    public NMSIChatMutableComponent(Object handle) {
-        super(handle, "network.chat.IChatMutableComponent", "network.chat.MutableComponent");
+/**
+ * for after 1.19.0
+ */
+public abstract class NMSIChatMutableComponent extends MinecraftClass {
+    public static NMSIChatMutableComponent create(Object handle) {
+        return ReflectionUtil.getConstructor(NMSClassRegistry.findClass(NMSIChatMutableComponent.class), Object.class)
+                             .newInstance(handle);
     }
 
-    public NMSTranslatableContents getContentsAsTranslatable() {
-        return new NMSTranslatableContents(invokeMethod("b", "getContents"));
+    public NMSIChatMutableComponent(Object handle, String className, String... classNames) {
+        super(handle, className, classNames);
+    }
+
+    public abstract NMSTranslatableContents getContentsAsTranslatable();
+
+    static {
+        NMSClassRegistry.register(NMSIChatMutableComponent.class,
+                                  NMSIChatMutableComponent_v1_19_0.class,
+                                  "1.19.0",
+                                  "1.20.4");
     }
 }

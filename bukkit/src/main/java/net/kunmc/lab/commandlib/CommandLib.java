@@ -51,15 +51,18 @@ public final class CommandLib implements Listener {
             @Override
             public void run() {
                 registeredCommands.addAll(new CommandNodeCreator<>(commands).build());
-                NMSCommandDispatcher dispatcher = new NMSCraftServer(plugin.getServer()).getServer()
-                                                                                        .getCommandDispatcher();
+                NMSCommandDispatcher dispatcher = NMSCraftServer.create(plugin.getServer())
+                                                                .getServer()
+                                                                .getCommandDispatcher();
                 RootCommandNode root = dispatcher.getBrigadier()
                                                  .getRoot();
                 registeredCommands.forEach(x -> {
                     root.addChild(x);
                     Bukkit.getCommandMap()
                           .getKnownCommands()
-                          .put(x.getName(), new NMSVanillaCommandWrapper().createInstance(dispatcher, x));
+                          .put(x.getName(),
+                               NMSVanillaCommandWrapper.create()
+                                                       .createInstance(dispatcher, x));
 
                     root.getChild("execute")
                         .getChild("run")
@@ -90,10 +93,11 @@ public final class CommandLib implements Listener {
 
     @SuppressWarnings("rawtypes")
     public void unregister() {
-        RootCommandNode root = new NMSCraftServer(plugin.getServer()).getServer()
-                                                                     .getCommandDispatcher()
-                                                                     .getBrigadier()
-                                                                     .getRoot();
+        RootCommandNode root = NMSCraftServer.create(plugin.getServer())
+                                             .getServer()
+                                             .getCommandDispatcher()
+                                             .getBrigadier()
+                                             .getRoot();
         Map<String, org.bukkit.command.Command> knownCommands = Bukkit.getCommandMap()
                                                                       .getKnownCommands();
         registeredCommands.stream()

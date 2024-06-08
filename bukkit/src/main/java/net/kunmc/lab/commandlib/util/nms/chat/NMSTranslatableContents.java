@@ -1,26 +1,36 @@
 package net.kunmc.lab.commandlib.util.nms.chat;
 
-import net.kunmc.lab.commandlib.util.bukkit.VersionUtil;
 import net.kunmc.lab.commandlib.util.nms.MinecraftClass;
+import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
+import net.kunmc.lab.commandlib.util.nms.chat.v1_19_0.NMSTranslatableContents_v1_19_0;
+import net.kunmc.lab.commandlib.util.nms.chat.v1_20_4.NMSTranslatableContents_v1_20_4;
+import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 
-public class NMSTranslatableContents extends MinecraftClass {
-    public NMSTranslatableContents(Object handle) {
-        super(handle, "network.chat.contents.TranslatableContents");
+/**
+ * for after 1.19.0
+ */
+public abstract class NMSTranslatableContents extends MinecraftClass {
+    public static NMSTranslatableContents create(Object handle) {
+        return ReflectionUtil.getConstructor(NMSClassRegistry.findClass(NMSTranslatableContents.class), Object.class)
+                             .newInstance(handle);
     }
 
-    public String getKey() {
-        if (VersionUtil.is1_20_x()) {
-            return ((String) invokeMethod("b"));
-        }
-
-        return ((String) invokeMethod("a", "getKey"));
+    public NMSTranslatableContents(Object handle, String className, String... classNames) {
+        super(handle, className, classNames);
     }
 
-    public Object[] getArgs() {
-        if (VersionUtil.is1_20_x()) {
-            return ((Object[]) invokeMethod("d"));
-        }
+    public abstract String getKey();
 
-        return ((Object[]) invokeMethod("c", "getArgs"));
+    public abstract Object[] getArgs();
+
+    static {
+        NMSClassRegistry.register(NMSTranslatableContents.class,
+                                  NMSTranslatableContents_v1_19_0.class,
+                                  "1.19.0",
+                                  "1.20.3");
+        NMSClassRegistry.register(NMSTranslatableContents.class,
+                                  NMSTranslatableContents_v1_20_4.class,
+                                  "1.20.4",
+                                  "1.20.4");
     }
 }

@@ -7,8 +7,8 @@ import net.kunmc.lab.commandlib.util.nms.MinecraftClass;
 import net.kunmc.lab.commandlib.util.nms.exception.UncheckedCommandSyntaxException;
 
 public abstract class NMSArgument<T> extends MinecraftClass {
-    public NMSArgument(String className, String... classNames) {
-        super(null, className, classNames);
+    public NMSArgument(Object handle, String className, String... classNames) {
+        super(handle, className, classNames);
     }
 
     public abstract ArgumentType<?> argument();

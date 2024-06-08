@@ -1,6 +1,7 @@
 package net.kunmc.lab.commandlib;
 
 import com.google.common.collect.Lists;
+import net.kunmc.lab.commandlib.util.UncaughtExceptionHandler;
 import net.kunmc.lab.commandlib.util.fucntion.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +23,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     private Predicate<C> prerequisite = ctx -> true;
     private Predicate<C> preprocess = ctx -> true;
     private ContextAction<C> contextAction;
+    private final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers = new ArrayList<>();
     @SuppressWarnings("unchecked")
     private final PlatformAdapter<?, ?, C, B, T> platformAdapter = (PlatformAdapter<?, ?, C, B, T>) PlatformAdapter.get();
 
@@ -251,6 +253,10 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         this.contextAction = execute;
     }
 
+    public final void addUncaughtExceptionHandler(UncaughtExceptionHandler<?, C> handler) {
+        this.uncaughtExceptionHandlers.add(handler);
+    }
+
     final T parent() {
         return parent;
     }
@@ -287,5 +293,9 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
 
     final ContextAction<C> contextAction() {
         return contextAction;
+    }
+
+    final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers() {
+        return Collections.unmodifiableList(uncaughtExceptionHandlers);
     }
 }

@@ -17,7 +17,9 @@ public class TeamArgument extends Argument<Team> {
     }
 
     public TeamArgument(String name, Consumer<Option<Team, CommandContext>> options) {
-        super(name, new NMSArgumentScoreboardTeam().argument());
+        super(name,
+              NMSArgumentScoreboardTeam.create()
+                                       .argument());
         applyOptions(options);
     }
 
@@ -30,7 +32,8 @@ public class TeamArgument extends Argument<Team> {
     protected Team parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
         return Bukkit.getScoreboardManager()
                      .getMainScoreboard()
-                     .getTeam(new NMSArgumentScoreboardTeam().parse(ctx.getHandle(), name())
-                                                             .getName());
+                     .getTeam(NMSArgumentScoreboardTeam.create()
+                                                       .parse(ctx.getHandle(), name())
+                                                       .getName());
     }
 }

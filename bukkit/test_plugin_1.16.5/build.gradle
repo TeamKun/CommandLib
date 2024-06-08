@@ -27,6 +27,7 @@ dependencies {
     compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
 //    compileOnly name: "patched_1.16.5"
     compileOnly "com.mojang:brigadier:1.0.18"
+    implementation 'com.opencsv:opencsv:5.9'
 }
 
 def targetJavaVersion = 8
@@ -59,7 +60,7 @@ jar {
 sourceSets {
     main {
         java {
-            srcDirs += ["../src/main/java", "../../common/src/main/java"]
+            srcDirs += ["../src/main/java", "../../common/src/main/java", "../test_plugin_common/src/main/java"]
         }
 
         resources {

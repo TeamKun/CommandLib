@@ -4,11 +4,11 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.exception.InvalidArgumentException;
+import net.kunmc.lab.commandlib.util.UncaughtExceptionHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.*;
 
 public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> {
@@ -21,6 +21,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
     private final ArgumentType<?> type;
     private BiFunction<? super T, C, Boolean> filter;
     private BiFunction<? super T, C, ? extends T> shaper;
+    private final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers = new ArrayList<>();
 
     protected CommonArgument(@NotNull String name, @NotNull ArgumentType<?> type) {
         this.name = Objects.requireNonNull(name);
@@ -81,6 +82,10 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         return contextAction;
     }
 
+    public final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers() {
+        return Collections.unmodifiableList(uncaughtExceptionHandlers);
+    }
+
     protected final void setContextAction(@Nullable ContextAction<C> contextAction) {
         this.contextAction = contextAction;
     }
@@ -132,6 +137,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
               .ifPresent(this::setFilter);
         option.shaper()
               .ifPresent(this::setShaper);
+        this.uncaughtExceptionHandlers.addAll(option.uncaughtExceptionHandlers());
     }
 
     @NotNull
@@ -199,6 +205,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         protected BiFunction<? super T, C, Boolean> filter;
         protected BiFunction<? super T, C, ? extends T> shaper;
         protected ContextAction<C> contextAction;
+        protected final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers = new ArrayList<>();
 
         public Option<T, C> displayDefaultSuggestions(boolean displayDefaultSuggestions) {
             this.displayDefaultSuggestions = displayDefaultSuggestions;
@@ -325,6 +332,15 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
 
         protected Optional<ContextAction<C>> contextAction() {
             return Optional.ofNullable(contextAction);
+        }
+
+        public Option<T, C> addUncaughtExceptionHandler(UncaughtExceptionHandler<?, C> handler) {
+            this.uncaughtExceptionHandlers.add(handler);
+            return this;
+        }
+
+        protected List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers() {
+            return uncaughtExceptionHandlers;
         }
     }
 }

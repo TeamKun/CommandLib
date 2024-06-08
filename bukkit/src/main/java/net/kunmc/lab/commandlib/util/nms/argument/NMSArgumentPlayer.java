@@ -1,22 +1,23 @@
 package net.kunmc.lab.commandlib.util.nms.argument;
 
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import net.kunmc.lab.commandlib.util.nms.world.NMSEntity;
+import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_16_0.NMSArgumentPlayer_v1_16_0;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_17_0.NMSArgumentPlayer_v1_17_0;
+import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 import org.bukkit.entity.Player;
 
-public class NMSArgumentPlayer extends NMSArgument<Player> {
-    public NMSArgumentPlayer() {
-        super("ArgumentEntity", "commands.arguments.ArgumentEntity", "commands.arguments.EntityArgument");
+public abstract class NMSArgumentPlayer extends NMSArgument<Player> {
+    public static NMSArgumentPlayer create() {
+        return ReflectionUtil.getConstructor(NMSClassRegistry.findClass(NMSArgumentPlayer.class))
+                             .newInstance();
     }
 
-    @Override
-    public ArgumentType<?> argument() {
-        return ((ArgumentType<?>) invokeMethod("c", "player"));
+    public NMSArgumentPlayer(Object handle, String className, String... classNames) {
+        super(handle, className, classNames);
     }
 
-    @Override
-    protected Player parseImpl(CommandContext<?> ctx, String name) {
-        return ((Player) new NMSEntity(invokeMethod("e", "getPlayer", ctx, name)).getBukkitEntity());
+    static {
+        NMSClassRegistry.register(NMSArgumentPlayer.class, NMSArgumentPlayer_v1_16_0.class, "1.16.0", "1.16.5");
+        NMSClassRegistry.register(NMSArgumentPlayer.class, NMSArgumentPlayer_v1_17_0.class, "1.17.0", "1.20.4");
     }
 }

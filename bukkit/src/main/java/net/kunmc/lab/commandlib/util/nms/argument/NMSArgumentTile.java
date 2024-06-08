@@ -1,30 +1,24 @@
 package net.kunmc.lab.commandlib.util.nms.argument;
 
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import net.kunmc.lab.commandlib.util.nms.command.NMSCommandBuildContext;
-import net.kunmc.lab.commandlib.util.nms.server.NMSCraftServer;
+import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_16_0.NMSArgumentTile_v1_16_0;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_17_0.NMSArgumentTile_v1_17_0;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_19_3.NMSArgumentTile_v1_19_3;
+import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 
-public class NMSArgumentTile extends NMSArgument<NMSArgumentTileLocation> {
-    public NMSArgumentTile() {
-        super("ArgumentTile", "commands.arguments.blocks.ArgumentTile", "commands.arguments.blocks.BlockStateArgument");
+public abstract class NMSArgumentTile extends NMSArgument<NMSArgumentTileLocation> {
+    public static NMSArgumentTile create() {
+        return ReflectionUtil.getConstructor(NMSClassRegistry.findClass(NMSArgumentTile.class))
+                             .newInstance();
     }
 
-    @Override
-    public ArgumentType<?> argument() {
-        try {
-            return ((ArgumentType<?>) invokeMethod("a"));
-        } catch (Exception e) {
-            NMSCommandBuildContext commandBuildContext = new NMSCraftServer().getServer()
-                                                                             .getDataPackResources()
-                                                                             .getCommandBuildContext();
-            return ((ArgumentType<?>) newInstance(new Class<?>[]{commandBuildContext.getFoundClass()},
-                                                  new Object[]{commandBuildContext.getHandle()}));
-        }
+    public NMSArgumentTile(Object handle, String className, String... classNames) {
+        super(handle, className, classNames);
     }
 
-    @Override
-    protected NMSArgumentTileLocation parseImpl(CommandContext<?> ctx, String name) {
-        return new NMSArgumentTileLocation(invokeMethod("a", "getBlock", ctx, name));
+    static {
+        NMSClassRegistry.register(NMSArgumentTile.class, NMSArgumentTile_v1_16_0.class, "1.16.0", "1.16.5");
+        NMSClassRegistry.register(NMSArgumentTile.class, NMSArgumentTile_v1_17_0.class, "1.17.0", "1.19.2");
+        NMSClassRegistry.register(NMSArgumentTile.class, NMSArgumentTile_v1_19_3.class, "1.19.3", "1.20.4");
     }
 }

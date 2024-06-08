@@ -60,7 +60,8 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
                                                parent.prerequisite(),
                                                helpAction,
                                                parent.preprocess(),
-                                               argument.contextAction()));
+                                               argument.contextAction(),
+                                               argument.uncaughtExceptionHandlers()));
 
         return builder;
     }

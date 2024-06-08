@@ -23,7 +23,9 @@ public class UUIDsArgument extends Argument<List<UUID>> {
     }
 
     public UUIDsArgument(String name, Consumer<Option<List<UUID>, CommandContext>> options) {
-        super(name, new NMSArgumentProfile().argument());
+        super(name,
+              NMSArgumentProfile.create()
+                                .argument());
 
         setSuggestionAction(sb -> {
             String input = sb.getLatestInput();

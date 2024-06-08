@@ -1,29 +1,27 @@
 package net.kunmc.lab.commandlib.util.nms.argument;
 
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import net.kunmc.lab.commandlib.util.nms.world.NMSEntity;
+import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_16_0.NMSArgumentEntities_v1_16_0;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_17_0.NMSArgumentEntities_v1_17_0;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_18_0.NMSArgumentEntities_v1_18_0;
+import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 import org.bukkit.entity.Entity;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class NMSArgumentEntities extends NMSArgument<List<Entity>> {
-    public NMSArgumentEntities() {
-        super("ArgumentEntity", "commands.arguments.ArgumentEntity", "commands.arguments.EntityArgument");
+public abstract class NMSArgumentEntities extends NMSArgument<List<Entity>> {
+    public static NMSArgumentEntities create() {
+        return ReflectionUtil.getConstructor(NMSClassRegistry.findClass(NMSArgumentEntities.class))
+                             .newInstance();
     }
 
-    @Override
-    public ArgumentType<?> argument() {
-        return ((ArgumentType<?>) invokeMethod("multipleEntities", "b", "entities"));
+    public NMSArgumentEntities(Object handle, String className) {
+        super(handle, className);
     }
 
-    @Override
-    protected List<Entity> parseImpl(CommandContext<?> ctx, String name) {
-        return ((Collection<?>) invokeMethod("b", "getEntities", ctx, name)).stream()
-                                                                            .map(NMSEntity::new)
-                                                                            .map(NMSEntity::getBukkitEntity)
-                                                                            .collect(Collectors.toList());
+    static {
+        NMSClassRegistry.register(NMSArgumentEntities.class, NMSArgumentEntities_v1_16_0.class, "1.16.0", "1.16.5");
+        NMSClassRegistry.register(NMSArgumentEntities.class, NMSArgumentEntities_v1_17_0.class, "1.17.0", "1.17.1");
+        NMSClassRegistry.register(NMSArgumentEntities.class, NMSArgumentEntities_v1_18_0.class, "1.18.0", "1.20.4");
     }
 }

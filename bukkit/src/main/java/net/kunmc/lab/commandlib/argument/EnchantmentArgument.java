@@ -17,7 +17,9 @@ public class EnchantmentArgument extends Argument<Enchantment> {
     }
 
     public EnchantmentArgument(String name, Consumer<Option<Enchantment, CommandContext>> options) {
-        super(name, new NMSArgumentEnchantment().argument());
+        super(name,
+              NMSArgumentEnchantment.create()
+                                    .argument());
         applyOptions(options);
     }
 
@@ -28,6 +30,8 @@ public class EnchantmentArgument extends Argument<Enchantment> {
 
     @Override
     protected Enchantment parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return new NMSCraftEnchantment().createInstance(new NMSArgumentEnchantment().parse(ctx.getHandle(), name()));
+        return NMSCraftEnchantment.create()
+                                  .createInstance(NMSArgumentEnchantment.create()
+                                                                        .parse(ctx.getHandle(), name()));
     }
 }

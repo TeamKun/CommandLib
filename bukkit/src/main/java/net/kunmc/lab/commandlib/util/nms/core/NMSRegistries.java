@@ -1,27 +1,31 @@
 package net.kunmc.lab.commandlib.util.nms.core;
 
-import net.kunmc.lab.commandlib.util.bukkit.VersionUtil;
 import net.kunmc.lab.commandlib.util.nms.MinecraftClass;
+import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
+import net.kunmc.lab.commandlib.util.nms.core.v1_19_3.NMSRegistries_v1_19_3;
+import net.kunmc.lab.commandlib.util.nms.core.v1_20_4.NMSRegistries_v1_20_4;
 import net.kunmc.lab.commandlib.util.nms.resources.NMSResourceKey;
+import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 
-public class NMSRegistries extends MinecraftClass {
-    public NMSRegistries() {
-        super(null, "core.registries.Registries");
+/**
+ * for after 1.19.3
+ */
+public abstract class NMSRegistries extends MinecraftClass {
+    public static NMSRegistries create() {
+        return ReflectionUtil.getConstructor(NMSClassRegistry.findClass(NMSRegistries.class))
+                             .newInstance();
     }
 
-    public NMSResourceKey enchantment() {
-        if (VersionUtil.is1_20_x()) {
-            return new NMSResourceKey(getValue(Object.class, "t", "ENCHANTMENT"));
-        }
-
-        return new NMSResourceKey(getValue(Object.class, "q", "ENCHANTMENT"));
+    public NMSRegistries(Object handle, String className) {
+        super(handle, className);
     }
 
-    public NMSResourceKey mobEffect() {
-        if (VersionUtil.is1_20_x()) {
-            return new NMSResourceKey(getValue(Object.class, "Q", "MOB_EFFECT"));
-        }
+    public abstract NMSResourceKey enchantment();
 
-        return new NMSResourceKey(getValue(Object.class, "N", "MOB_EFFECT"));
+    public abstract NMSResourceKey mobEffect();
+
+    static {
+        NMSClassRegistry.register(NMSRegistries.class, NMSRegistries_v1_19_3.class, "1.19.3", "1.19.4");
+        NMSClassRegistry.register(NMSRegistries.class, NMSRegistries_v1_20_4.class, "1.20.4", "1.20.4");
     }
 }

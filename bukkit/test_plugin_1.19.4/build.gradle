@@ -23,6 +23,7 @@ repositories {
 dependencies {
     compileOnly "io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT"
     compileOnly "com.mojang:brigadier:1.0.18"
+    implementation 'com.opencsv:opencsv:5.9'
 }
 
 def targetJavaVersion = 17
@@ -55,7 +56,7 @@ jar {
 sourceSets {
     main {
         java {
-            srcDirs += ["../src/main/java", "../../common/src/main/java"]
+            srcDirs += ["../src/main/java", "../../common/src/main/java", "../test_plugin_common/src/main/java"]
         }
 
         resources {

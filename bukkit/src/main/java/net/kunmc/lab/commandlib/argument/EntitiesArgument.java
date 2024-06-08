@@ -17,7 +17,9 @@ public class EntitiesArgument extends Argument<List<Entity>> {
     }
 
     public EntitiesArgument(String name, Consumer<Option<List<Entity>, CommandContext>> options) {
-        super(name, new NMSArgumentEntities().argument());
+        super(name,
+              NMSArgumentEntities.create()
+                                 .argument());
         applyOptions(options);
     }
 
@@ -28,6 +30,7 @@ public class EntitiesArgument extends Argument<List<Entity>> {
 
     @Override
     protected List<Entity> parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
-        return new NMSArgumentEntities().parse(ctx.getHandle(), name());
+        return NMSArgumentEntities.create()
+                                  .parse(ctx.getHandle(), name());
     }
 }

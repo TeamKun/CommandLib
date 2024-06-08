@@ -1,49 +1,27 @@
 package net.kunmc.lab.commandlib.util.nms.argument;
 
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import net.kunmc.lab.commandlib.util.bukkit.VersionUtil;
-import net.kunmc.lab.commandlib.util.nms.command.NMSCommandBuildContext;
-import net.kunmc.lab.commandlib.util.nms.core.NMSHolder;
-import net.kunmc.lab.commandlib.util.nms.core.NMSRegistries;
-import net.kunmc.lab.commandlib.util.nms.exception.MethodNotFoundException;
-import net.kunmc.lab.commandlib.util.nms.resources.NMSResourceKey;
-import net.kunmc.lab.commandlib.util.nms.server.NMSCraftServer;
+import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_16_0.NMSArgumentMobEffect_v1_16_0;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_17_0.NMSArgumentMobEffect_v1_17_0;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_18_0.NMSArgumentMobEffect_v1_18_0;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_19_3.NMSArgumentMobEffect_v1_19_3;
 import net.kunmc.lab.commandlib.util.nms.world.NMSMobEffectList;
+import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 
-public class NMSArgumentMobEffect extends NMSArgument<NMSMobEffectList> {
-    public NMSArgumentMobEffect() {
-        super("ArgumentMobEffect", "commands.arguments.ResourceArgument");
+public abstract class NMSArgumentMobEffect extends NMSArgument<NMSMobEffectList> {
+    public static NMSArgumentMobEffect create() {
+        return ReflectionUtil.getConstructor(NMSClassRegistry.findClass(NMSArgumentMobEffect.class))
+                             .newInstance();
     }
 
-    @Override
-    public ArgumentType<?> argument() {
-        try {
-            return ((ArgumentType<?>) newInstance(new Class[]{}, new Object[]{}));
-        } catch (Exception e) {
-            NMSCommandBuildContext commandBuildContext = new NMSCraftServer().getServer()
-                                                                             .getDataPackResources()
-                                                                             .getCommandBuildContext();
-            NMSResourceKey resourceKey = new NMSRegistries().mobEffect();
-
-            return ((ArgumentType<?>) newInstance(new Class<?>[]{commandBuildContext.getFoundClass(), resourceKey.getFoundClass()},
-                                                  new Object[]{commandBuildContext.getHandle(), resourceKey.getHandle()}));
-        }
+    public NMSArgumentMobEffect(Object handle, String className, String... classNames) {
+        super(handle, className, classNames);
     }
 
-    @Override
-    protected NMSMobEffectList parseImpl(CommandContext<?> ctx, String name) {
-        if (VersionUtil.is1_20_x()) {
-            return new NMSMobEffectList(new NMSHolder.NMSReference(invokeMethod("f", ctx, name)).value());
-        }
-
-        try {
-            return new NMSMobEffectList(invokeMethod("a", ctx, name));
-        } catch (MethodNotFoundException e) {
-            return new NMSMobEffectList(new NMSHolder.NMSReference(invokeMethod("f",
-                                                                                "getMobEffect",
-                                                                                ctx,
-                                                                                name)).value());
-        }
+    static {
+        NMSClassRegistry.register(NMSArgumentMobEffect.class, NMSArgumentMobEffect_v1_16_0.class, "1.16.0", "1.16.5");
+        NMSClassRegistry.register(NMSArgumentMobEffect.class, NMSArgumentMobEffect_v1_17_0.class, "1.17.0", "1.17.1");
+        NMSClassRegistry.register(NMSArgumentMobEffect.class, NMSArgumentMobEffect_v1_18_0.class, "1.18.0", "1.19.2");
+        NMSClassRegistry.register(NMSArgumentMobEffect.class, NMSArgumentMobEffect_v1_19_3.class, "1.19.3", "1.20.4");
     }
 }

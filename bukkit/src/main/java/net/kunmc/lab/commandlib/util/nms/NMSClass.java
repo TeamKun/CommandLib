@@ -1,10 +1,10 @@
 package net.kunmc.lab.commandlib.util.nms;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kunmc.lab.commandlib.util.ReflectionUtil;
 import net.kunmc.lab.commandlib.util.nms.exception.MethodNotFoundException;
 import net.kunmc.lab.commandlib.util.nms.exception.NMSClassNotAssignableException;
 import net.kunmc.lab.commandlib.util.nms.exception.UncheckedCommandSyntaxException;
+import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,12 +53,27 @@ public abstract class NMSClass {
         return invokeMethod(new String[]{methodName}, args);
     }
 
+    protected final Object invokeStaticMethod(String methodName, Object... args) {
+        return invokeStaticMethod(new String[]{methodName}, args);
+    }
+
     protected final Object invokeMethod(String methodName, String methodName2, Object... args) {
         return invokeMethod(new String[]{methodName, methodName2}, args);
     }
 
+    protected final Object invokeStaticMethod(String methodName, String methodName2, Object... args) {
+        return invokeStaticMethod(new String[]{methodName, methodName2}, args);
+    }
+
     protected final Object invokeMethod(String methodName, String methodName2, String methodName3, Object... args) {
         return invokeMethod(new String[]{methodName, methodName2, methodName3}, args);
+    }
+
+    protected final Object invokeStaticMethod(String methodName,
+                                              String methodName2,
+                                              String methodName3,
+                                              Object... args) {
+        return invokeStaticMethod(new String[]{methodName, methodName2, methodName3}, args);
     }
 
     protected final Object invokeMethod(String[] methodNames, Object... args) {
@@ -69,11 +84,34 @@ public abstract class NMSClass {
         return invokeMethod(methodNames, argClasses, args);
     }
 
+    protected final Object invokeStaticMethod(String[] methodNames, Object... args) {
+        Class<?>[] argClasses = Arrays.stream(args)
+                                      .map(Object::getClass)
+                                      .toArray(Class[]::new);
+
+        return invokeStaticMethod(methodNames, argClasses, args);
+    }
+
     protected final Object invokeMethod(String methodName, Class<?>[] parameterClasses, Object... args) {
         return invokeMethod(new String[]{methodName}, parameterClasses, args);
     }
 
+    protected final Object invokeStaticMethod(String methodName, Class<?>[] parameterClasses, Object... args) {
+        return invokeStaticMethod(new String[]{methodName}, parameterClasses, args);
+    }
+
     protected final Object invokeMethod(String[] methodNames, Class<?>[] parameterClasses, Object... args) {
+        return invokeMethod(handle, methodNames, parameterClasses, args);
+    }
+
+    protected final Object invokeStaticMethod(String[] methodNames, Class<?>[] parameterClasses, Object... args) {
+        return invokeMethod(null, methodNames, parameterClasses, args);
+    }
+
+    private final Object invokeMethod(Object handle,
+                                      String[] methodNames,
+                                      Class<?>[] parameterClasses,
+                                      Object... args) {
         Method method = null;
         for (String methodName : methodNames) {
             try {
