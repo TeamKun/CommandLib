@@ -10,11 +10,11 @@ public class NMSRegistries_v1_19_3 extends NMSRegistries {
 
     @Override
     public NMSResourceKey enchantment() {
-        return NMSResourceKey.create(getValue(Object.class, "q", "ENCHANTMENT"));
+        return NMSResourceKey.create(getValue(Object.class, "q"));
     }
 
     @Override
     public NMSResourceKey mobEffect() {
-        return NMSResourceKey.create(getValue(Object.class, "N", "MOB_EFFECT"));
+        return NMSResourceKey.create(getValue(Object.class, "N"));
     }
 }

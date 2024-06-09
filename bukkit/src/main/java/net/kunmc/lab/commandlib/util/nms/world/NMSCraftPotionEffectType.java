@@ -32,6 +32,6 @@ public abstract class NMSCraftPotionEffectType extends CraftBukkitClass {
         NMSClassRegistry.register(NMSCraftPotionEffectType.class,
                                   NMSCraftPotionEffectType_v1_20_4.class,
                                   "1.20.4",
-                                  "1.20.4");
+                                  "9.9.9");
     }
 }

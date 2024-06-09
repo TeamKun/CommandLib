@@ -4,6 +4,7 @@ import net.kunmc.lab.commandlib.util.nms.MinecraftClass;
 import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
 import net.kunmc.lab.commandlib.util.nms.argument.v1_16_0.NMSArgumentPredicateItemStack_v1_16_0;
 import net.kunmc.lab.commandlib.util.nms.argument.v1_17_0.NMSArgumentPredicateItemStack_v1_17_0;
+import net.kunmc.lab.commandlib.util.nms.argument.v1_20_5.NMSArgumentPredicateItemStack_v1_20_5;
 import net.kunmc.lab.commandlib.util.nms.world.NMSItemStack;
 import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 
@@ -29,5 +30,9 @@ public abstract class NMSArgumentPredicateItemStack extends MinecraftClass {
                                   NMSArgumentPredicateItemStack_v1_17_0.class,
                                   "1.17.0",
                                   "1.20.4");
+        NMSClassRegistry.register(NMSArgumentPredicateItemStack.class,
+                                  NMSArgumentPredicateItemStack_v1_20_5.class,
+                                  "1.20.5",
+                                  "9.9.9");
     }
 }

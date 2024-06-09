@@ -4,6 +4,8 @@ import net.kunmc.lab.commandlib.util.nms.MinecraftClass;
 import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
 import net.kunmc.lab.commandlib.util.nms.command.v1_16_0.NMSCommandListenerWrapper_v1_16_0;
 import net.kunmc.lab.commandlib.util.nms.command.v1_17_0.NMSCommandListenerWrapper_v1_17_0;
+import net.kunmc.lab.commandlib.util.nms.command.v1_20_5.NMSCommandListenerWrapper_v1_20_5;
+import net.kunmc.lab.commandlib.util.nms.command.v1_20_6.NMSCommandListenerWrapper_v1_20_6;
 import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -37,5 +39,13 @@ public abstract class NMSCommandListenerWrapper extends MinecraftClass {
                                   NMSCommandListenerWrapper_v1_17_0.class,
                                   "1.17.0",
                                   "1.20.4");
+        NMSClassRegistry.register(NMSCommandListenerWrapper.class,
+                                  NMSCommandListenerWrapper_v1_20_5.class,
+                                  "1.20.5",
+                                  "1.20.5");
+        NMSClassRegistry.register(NMSCommandListenerWrapper.class,
+                                  NMSCommandListenerWrapper_v1_20_6.class,
+                                  "1.20.6",
+                                  "9.9.9");
     }
 }

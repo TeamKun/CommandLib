@@ -3,6 +3,7 @@ package net.kunmc.lab.commandlib.util.nms.core;
 import net.kunmc.lab.commandlib.util.nms.MinecraftClass;
 import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
 import net.kunmc.lab.commandlib.util.nms.core.v1_19_0.NMSHolder_v1_19_0;
+import net.kunmc.lab.commandlib.util.nms.core.v1_20_5.NMSHolder_v1_20_5;
 import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 
 
@@ -21,6 +22,7 @@ public abstract class NMSHolder extends MinecraftClass {
 
     static {
         NMSClassRegistry.register(NMSHolder.class, NMSHolder_v1_19_0.class, "1.19.0", "1.20.4");
+        NMSClassRegistry.register(NMSHolder.class, NMSHolder_v1_20_5.class, "1.20.5", "9.9.9");
     }
 
     public static abstract class NMSReference extends MinecraftClass {
@@ -40,6 +42,10 @@ public abstract class NMSHolder extends MinecraftClass {
                                       NMSHolder_v1_19_0.NMSReference_v1_19_0.class,
                                       "1.19.0",
                                       "1.20.4");
+            NMSClassRegistry.register(NMSReference.class,
+                                      NMSHolder_v1_20_5.NMSReference_v1_20_5.class,
+                                      "1.20.5",
+                                      "9.9.9");
         }
     }
 }

@@ -3,6 +3,7 @@ package net.kunmc.lab.commandlib.util.nms.chat;
 import net.kunmc.lab.commandlib.util.nms.MinecraftClass;
 import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
 import net.kunmc.lab.commandlib.util.nms.chat.v1_19_0.NMSIChatMutableComponent_v1_19_0;
+import net.kunmc.lab.commandlib.util.nms.chat.v1_20_5.NMSIChatMutableComponent_v1_20_5;
 import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 
 /**
@@ -25,5 +26,9 @@ public abstract class NMSIChatMutableComponent extends MinecraftClass {
                                   NMSIChatMutableComponent_v1_19_0.class,
                                   "1.19.0",
                                   "1.20.4");
+        NMSClassRegistry.register(NMSIChatMutableComponent.class,
+                                  NMSIChatMutableComponent_v1_20_5.class,
+                                  "1.20.5",
+                                  "9.9.9");
     }
 }

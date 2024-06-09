@@ -19,6 +19,6 @@ public abstract class NMSCraftBlockData extends CraftBukkitClass {
     public abstract BlockData createData(NMSIBlockData nms);
 
     static {
-        NMSClassRegistry.register(NMSCraftBlockData.class, NMSCraftBlockData_v1_16_0.class, "1.16.0", "1.20.4");
+        NMSClassRegistry.register(NMSCraftBlockData.class, NMSCraftBlockData_v1_16_0.class, "1.16.0", "9.9.9");
     }
 }

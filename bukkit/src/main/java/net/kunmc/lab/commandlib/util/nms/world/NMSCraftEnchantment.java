@@ -21,6 +21,6 @@ public abstract class NMSCraftEnchantment extends CraftBukkitClass {
 
     static {
         NMSClassRegistry.register(NMSCraftEnchantment.class, NMSCraftEnchantment_v1_16_0.class, "1.16.0", "1.20.3");
-        NMSClassRegistry.register(NMSCraftEnchantment.class, NMSCraftEnchantment_v1_20_4.class, "1.20.4", "1.20.4");
+        NMSClassRegistry.register(NMSCraftEnchantment.class, NMSCraftEnchantment_v1_20_4.class, "1.20.4", "9.9.9");
     }
 }

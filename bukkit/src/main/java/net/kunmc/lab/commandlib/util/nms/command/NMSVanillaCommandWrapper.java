@@ -23,6 +23,6 @@ public abstract class NMSVanillaCommandWrapper extends CraftBukkitClass {
         NMSClassRegistry.register(NMSVanillaCommandWrapper.class,
                                   NMSVanillaCommandWrapper_v1_16_0.class,
                                   "1.16.0",
-                                  "1.20.4");
+                                  "9.9.9");
     }
 }

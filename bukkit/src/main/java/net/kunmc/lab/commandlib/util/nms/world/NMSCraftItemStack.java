@@ -19,6 +19,6 @@ public abstract class NMSCraftItemStack extends CraftBukkitClass {
     public abstract ItemStack asCraftMirror(NMSItemStack nms);
 
     static {
-        NMSClassRegistry.register(NMSCraftItemStack.class, NMSCraftItemStack_1_16_0.class, "1.16.0", "1.20.4");
+        NMSClassRegistry.register(NMSCraftItemStack.class, NMSCraftItemStack_1_16_0.class, "1.16.0", "9.9.9");
     }
 }

@@ -38,7 +38,7 @@ public abstract class NMSClass {
         return clazz;
     }
 
-    protected final Object newInstance(Class<?>[] parameterTypes, Object[] args) {
+    public final Object newInstance(Class<?>[] parameterTypes, Object[] args) {
         try {
             Constructor<?> constructor = clazz.getDeclaredConstructor(parameterTypes);
             constructor.setAccessible(true);
@@ -49,34 +49,31 @@ public abstract class NMSClass {
         }
     }
 
-    protected final Object invokeMethod(String methodName, Object... args) {
+    public final Object invokeMethod(String methodName, Object... args) {
         return invokeMethod(new String[]{methodName}, args);
     }
 
-    protected final Object invokeStaticMethod(String methodName, Object... args) {
+    public final Object invokeStaticMethod(String methodName, Object... args) {
         return invokeStaticMethod(new String[]{methodName}, args);
     }
 
-    protected final Object invokeMethod(String methodName, String methodName2, Object... args) {
+    public final Object invokeMethod(String methodName, String methodName2, Object... args) {
         return invokeMethod(new String[]{methodName, methodName2}, args);
     }
 
-    protected final Object invokeStaticMethod(String methodName, String methodName2, Object... args) {
+    public final Object invokeStaticMethod(String methodName, String methodName2, Object... args) {
         return invokeStaticMethod(new String[]{methodName, methodName2}, args);
     }
 
-    protected final Object invokeMethod(String methodName, String methodName2, String methodName3, Object... args) {
+    public final Object invokeMethod(String methodName, String methodName2, String methodName3, Object... args) {
         return invokeMethod(new String[]{methodName, methodName2, methodName3}, args);
     }
 
-    protected final Object invokeStaticMethod(String methodName,
-                                              String methodName2,
-                                              String methodName3,
-                                              Object... args) {
+    public final Object invokeStaticMethod(String methodName, String methodName2, String methodName3, Object... args) {
         return invokeStaticMethod(new String[]{methodName, methodName2, methodName3}, args);
     }
 
-    protected final Object invokeMethod(String[] methodNames, Object... args) {
+    public final Object invokeMethod(String[] methodNames, Object... args) {
         Class<?>[] argClasses = Arrays.stream(args)
                                       .map(Object::getClass)
                                       .toArray(Class[]::new);
@@ -84,7 +81,7 @@ public abstract class NMSClass {
         return invokeMethod(methodNames, argClasses, args);
     }
 
-    protected final Object invokeStaticMethod(String[] methodNames, Object... args) {
+    public final Object invokeStaticMethod(String[] methodNames, Object... args) {
         Class<?>[] argClasses = Arrays.stream(args)
                                       .map(Object::getClass)
                                       .toArray(Class[]::new);
@@ -92,19 +89,19 @@ public abstract class NMSClass {
         return invokeStaticMethod(methodNames, argClasses, args);
     }
 
-    protected final Object invokeMethod(String methodName, Class<?>[] parameterClasses, Object... args) {
+    public final Object invokeMethod(String methodName, Class<?>[] parameterClasses, Object... args) {
         return invokeMethod(new String[]{methodName}, parameterClasses, args);
     }
 
-    protected final Object invokeStaticMethod(String methodName, Class<?>[] parameterClasses, Object... args) {
+    public final Object invokeStaticMethod(String methodName, Class<?>[] parameterClasses, Object... args) {
         return invokeStaticMethod(new String[]{methodName}, parameterClasses, args);
     }
 
-    protected final Object invokeMethod(String[] methodNames, Class<?>[] parameterClasses, Object... args) {
+    public final Object invokeMethod(String[] methodNames, Class<?>[] parameterClasses, Object... args) {
         return invokeMethod(handle, methodNames, parameterClasses, args);
     }
 
-    protected final Object invokeStaticMethod(String[] methodNames, Class<?>[] parameterClasses, Object... args) {
+    public final Object invokeStaticMethod(String[] methodNames, Class<?>[] parameterClasses, Object... args) {
         return invokeMethod(null, methodNames, parameterClasses, args);
     }
 
@@ -140,7 +137,11 @@ public abstract class NMSClass {
         }
     }
 
-    protected final <T> T getValue(Class<T> tClass, String name, String... names) {
+    public final Object getValue(String name, String... names) {
+        return getValue(Object.class, name, names);
+    }
+
+    public final <T> T getValue(Class<T> tClass, String name, String... names) {
         List<String> list = Stream.concat(Stream.of(name), Stream.of(names))
                                   .collect(Collectors.toList());
         return list.stream()

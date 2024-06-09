@@ -22,6 +22,6 @@ public abstract class NMSCommandBuildContext extends MinecraftClass {
         NMSClassRegistry.register(NMSCommandBuildContext.class,
                                   NMSCommandBuildContext_v1_19_0.class,
                                   "1.19.0",
-                                  "1.20.4");
+                                  "9.9.9");
     }
 }

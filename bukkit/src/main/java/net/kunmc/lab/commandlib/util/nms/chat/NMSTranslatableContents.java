@@ -4,6 +4,7 @@ import net.kunmc.lab.commandlib.util.nms.MinecraftClass;
 import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
 import net.kunmc.lab.commandlib.util.nms.chat.v1_19_0.NMSTranslatableContents_v1_19_0;
 import net.kunmc.lab.commandlib.util.nms.chat.v1_20_4.NMSTranslatableContents_v1_20_4;
+import net.kunmc.lab.commandlib.util.nms.chat.v1_20_5.NMSTranslatableContents_v1_20_5;
 import net.kunmc.lab.commandlib.util.reflection.ReflectionUtil;
 
 /**
@@ -32,5 +33,9 @@ public abstract class NMSTranslatableContents extends MinecraftClass {
                                   NMSTranslatableContents_v1_20_4.class,
                                   "1.20.4",
                                   "1.20.4");
+        NMSClassRegistry.register(NMSTranslatableContents.class,
+                                  NMSTranslatableContents_v1_20_5.class,
+                                  "1.20.5",
+                                  "9.9.9");
     }
 }

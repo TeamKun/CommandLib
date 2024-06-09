@@ -18,6 +18,6 @@ public abstract class NMSEnchantment extends MinecraftClass {
 
     static {
         NMSClassRegistry.register(NMSEnchantment.class, NMSEnchantment_v1_16_0.class, "1.16.0", "1.16.5");
-        NMSClassRegistry.register(NMSEnchantment.class, NMSEnchantment_v1_17_0.class, "1.17.0", "1.20.4");
+        NMSClassRegistry.register(NMSEnchantment.class, NMSEnchantment_v1_17_0.class, "1.17.0", "9.9.9");
     }
 }

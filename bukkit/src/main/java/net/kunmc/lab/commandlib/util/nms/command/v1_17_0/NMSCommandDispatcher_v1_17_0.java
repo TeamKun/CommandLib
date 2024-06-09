@@ -10,6 +10,6 @@ public class NMSCommandDispatcher_v1_17_0 extends NMSCommandDispatcher {
 
     @Override
     public CommandDispatcher<?> getBrigadier() {
-        return ((CommandDispatcher<?>) invokeMethod("a", "getDispatcher"));
+        return ((CommandDispatcher<?>) invokeMethod("a"));
     }
 }

@@ -2,6 +2,9 @@ package net.kunmc.lab.commandlib.util.reflection;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ReflectionUtil {
     public static Field getFieldIncludingSuperclasses(Class<?> clazz, String name) throws NoSuchFieldException {
@@ -28,6 +31,22 @@ public class ReflectionUtil {
             }
             return getMethodIncludingSuperclasses(superclass, name, parameterTypes);
         }
+    }
+
+    public static List<Method> getMethodsByNameIncludingSuperclasses(Class<?> clazz, String name) {
+        List<Method> list = new ArrayList<>();
+
+        Class<?> target = clazz;
+        while (target != null) {
+            Arrays.stream(target.getDeclaredMethods())
+                  .filter(x -> x.getName()
+                                .equals(name))
+                  .forEach(list::add);
+
+            target = target.getSuperclass();
+        }
+
+        return list;
     }
 
     public static <T> ConstructorWrapper<T> getConstructor(Class<T> clazz, Class<?>... parameterClasses) {
