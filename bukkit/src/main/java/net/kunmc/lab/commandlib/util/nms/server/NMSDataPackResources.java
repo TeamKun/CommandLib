@@ -29,7 +29,7 @@ public abstract class NMSDataPackResources extends MinecraftClass {
     static {
         NMSClassRegistry.register(NMSDataPackResources.class, NMSDataPackResources_v1_16_0.class, "1.16.0", "1.16.5");
         NMSClassRegistry.register(NMSDataPackResources.class, NMSDataPackResources_v1_17_0.class, "1.17.0", "1.18.2");
-        NMSClassRegistry.register(NMSDataPackResources.class, NMSDataPackResources_v1_19_0.class, "1.19.0", "1.19.4");
+        NMSClassRegistry.register(NMSDataPackResources.class, NMSDataPackResources_v1_19_0.class, "1.19.0", "1.20.3");
         NMSClassRegistry.register(NMSDataPackResources.class, NMSDataPackResources_v1_20_4.class, "1.20.4", "1.20.4");
         NMSClassRegistry.register(NMSDataPackResources.class, NMSDataPackResources_v1_20_5.class, "1.20.5", "1.20.5");
         NMSClassRegistry.register(NMSDataPackResources.class, NMSDataPackResources_v1_20_6.class, "1.20.6", "9.9.9");

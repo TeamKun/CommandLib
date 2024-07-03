@@ -29,7 +29,7 @@ public abstract class NMSDedicatedServer extends MinecraftClass {
         NMSClassRegistry.register(NMSDedicatedServer.class, NMSDedicatedServer_v1_16_0.class, "1.16.0", "1.16.5");
         NMSClassRegistry.register(NMSDedicatedServer.class, NMSDedicatedServer_v1_17_0.class, "1.17.0", "1.17.1");
         NMSClassRegistry.register(NMSDedicatedServer.class, NMSDedicatedServer_v1_18_0.class, "1.18.0", "1.18.2");
-        NMSClassRegistry.register(NMSDedicatedServer.class, NMSDedicatedServer_v1_19_0.class, "1.19.0", "1.19.4");
+        NMSClassRegistry.register(NMSDedicatedServer.class, NMSDedicatedServer_v1_19_0.class, "1.19.0", "1.20.3");
         NMSClassRegistry.register(NMSDedicatedServer.class, NMSDedicatedServer_v1_20_4.class, "1.20.4", "1.20.4");
         NMSClassRegistry.register(NMSDedicatedServer.class, NMSDedicatedServer_v1_20_5.class, "1.20.5", "9.9.9");
     }
@@ -53,7 +53,7 @@ public abstract class NMSDedicatedServer extends MinecraftClass {
             NMSClassRegistry.register(NMSDedicatedServer.NMSReloadableResources.class,
                                       NMSDedicatedServer_v1_19_0.NMSReloadableResources_v1_19_0.class,
                                       "1.19.0",
-                                      "1.19.4");
+                                      "1.20.3");
             NMSClassRegistry.register(NMSDedicatedServer.NMSReloadableResources.class,
                                       NMSDedicatedServer_v1_20_4.NMSReloadableResources_v1_20_4.class,
                                       "1.20.4",
