@@ -6,8 +6,8 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class MinecraftVersion implements Comparable<MinecraftVersion> {
-    private static final Pattern MINECRAFT_WITHOUT_PATCH_VERSION_PATTERN = Pattern.compile("\\d+.\\d+");
-    private static final Pattern MINECRAFT_VERSION_PATTERN = Pattern.compile("\\d+.\\d+.\\d+");
+    private static final Pattern MINECRAFT_WITHOUT_PATCH_VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+");
+    private static final Pattern MINECRAFT_VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+");
 
     private final String version;
 

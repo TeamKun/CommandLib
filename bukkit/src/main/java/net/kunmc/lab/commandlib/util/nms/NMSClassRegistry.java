@@ -1,8 +1,8 @@
 package net.kunmc.lab.commandlib.util.nms;
 
+import net.kunmc.lab.commandlib.util.bukkit.BukkitUtil;
 import net.kunmc.lab.commandlib.util.bukkit.MinecraftVersion;
 import net.kunmc.lab.commandlib.util.nms.exception.UnregisteredNMSClassException;
-import org.bukkit.Bukkit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class NMSClassRegistry {
     private static final Logger logger = LoggerFactory.getLogger(NMSClassRegistry.class);
-    private static final Map<Class<? extends NMSClass>, Deque<RegisteredClass>> map = new ConcurrentHashMap<>();
+    private static final Map<Class<? extends NMSClass>, Deque<RegisteredClass>> CLASS_TO_DEQUE_MAP = new ConcurrentHashMap<>();
 
     public static <T extends NMSClass> void register(Class<T> lookUpClass,
                                                      Class<? extends T> targetClass,
@@ -23,22 +23,22 @@ public class NMSClassRegistry {
         Objects.requireNonNull(lookUpClass);
         Objects.requireNonNull(targetClass);
 
-        Deque<RegisteredClass> deque = map.getOrDefault(lookUpClass, new ConcurrentLinkedDeque<>());
+        Deque<RegisteredClass> deque = CLASS_TO_DEQUE_MAP.getOrDefault(lookUpClass, new ConcurrentLinkedDeque<>());
         deque.addFirst(new RegisteredClass(targetClass,
                                            new MinecraftVersion(lowerVersion),
                                            new MinecraftVersion(upperVersion)));
-        map.put(lookUpClass, deque);
+        CLASS_TO_DEQUE_MAP.put(lookUpClass, deque);
     }
 
     public static <T extends Class<? extends NMSClass>> T findClass(T clazz) {
-        Deque<RegisteredClass> deque = map.get(clazz);
+        Deque<RegisteredClass> deque = CLASS_TO_DEQUE_MAP.get(clazz);
         if (deque == null) {
             throw new UnregisteredNMSClassException(clazz + " is unregistered.");
         }
 
         for (RegisteredClass registeredClass : deque) {
-            boolean isWithin = new MinecraftVersion(Bukkit.getMinecraftVersion()).isWithin(registeredClass.lowerVersion,
-                                                                                           registeredClass.upperVersion);
+            boolean isWithin = new MinecraftVersion(BukkitUtil.getMinecraftVersion()).isWithin(registeredClass.lowerVersion,
+                                                                                               registeredClass.upperVersion);
             if (isWithin) {
                 return ((T) registeredClass.clazz);
             }

@@ -5,6 +5,7 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import net.kunmc.lab.commandlib.Command;
 import net.kunmc.lab.commandlib.CommandLib;
+import net.kunmc.lab.commandlib.util.bukkit.BukkitUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
@@ -70,8 +71,7 @@ public class TestMain {
     }
 
     public void outputResultsToCsv(List<TestResult> results) {
-        Path path = Paths.get("../../test_plugin_common/test_results/" + Bukkit.getServer()
-                                                                               .getMinecraftVersion() + ".csv");
+        Path path = Paths.get("../../test_plugin_common/test_results/" + BukkitUtil.getMinecraftVersion() + ".csv");
         try (Writer writer = Files.newBufferedWriter(path)) {
             StatefulBeanToCsv<TestResult> csv = new StatefulBeanToCsvBuilder<TestResult>(writer).build();
             csv.write(results);
