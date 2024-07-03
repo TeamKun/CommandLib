@@ -1,50 +1,32 @@
 package net.kunmc.lab.commandlib.util.text;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TranslatableComponent;
-import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.awt.*;
 
-public class TranslatableComponentBuilderImpl extends TranslatableComponentBuilder<Component, TranslatableComponent, TranslatableComponentBuilderImpl> {
+public class TranslatableComponentBuilderImpl extends TranslatableComponentBuilder<BaseComponent, TranslatableComponent, TranslatableComponentBuilderImpl> {
     public TranslatableComponentBuilderImpl(@NotNull String key) {
-        super(Component.translatable(key));
+        super(new TranslatableComponent(key));
     }
 
     @Override
     public TranslatableComponentBuilderImpl color(int rgb) {
-        component = component.color(TextColor.color(rgb));
+        component.setColor(ChatColor.of(new Color(rgb)));
         return this;
     }
 
     @Override
     public TranslatableComponentBuilderImpl italic() {
-        component = component.style(Style.style(TextDecoration.ITALIC));
+        component.setItalic(true);
         return this;
     }
 
     @Override
-    public TranslatableComponentBuilderImpl append(Component component) {
-        this.component = this.component.append(component);
-        return this;
-    }
-
-    @Override
-    public TranslatableComponentBuilderImpl key(@NotNull String key) {
-        component = component.key(key);
-        return this;
-    }
-
-    @Override
-    public TranslatableComponentBuilderImpl args(@NotNull Object... args) {
-        component = component.args(Arrays.stream(args)
-                                         .map(Object::toString)
-                                         .map(Component::text)
-                                         .collect(Collectors.toList()));
+    public TranslatableComponentBuilderImpl append(BaseComponent component) {
+        this.component.addExtra(component);
         return this;
     }
 }

@@ -7,7 +7,6 @@ import net.kunmc.lab.commandlib.util.ExceptionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -364,8 +363,6 @@ public final class ArgumentTest extends TestBase {
     public List<String> playerArgument() {
         String name = getMethodName();
         String key = getKey();
-        Player player = Bukkit.getOnlinePlayers()
-                              .toArray(new Player[]{})[0];
 
         putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
         command.addChildren(new Command(name) {{
@@ -378,14 +375,12 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " " + player.getName()));
+        return Lists.newArrayList(buildCommand(command, name + " " + TestMain.TEST_PLAYER_NAME));
     }
 
     public List<String> playersArgument() {
         String name = getMethodName();
         String key = getKey();
-        Player player = Bukkit.getOnlinePlayers()
-                              .toArray(new Player[]{})[0];
 
         putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
         command.addChildren(new Command(name) {{
@@ -398,7 +393,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " " + player.getName()));
+        return Lists.newArrayList(buildCommand(command, name + " " + TestMain.TEST_PLAYER_NAME));
     }
 
     public List<String> potionEffectArgument() {

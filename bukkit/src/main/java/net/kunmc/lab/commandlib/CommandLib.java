@@ -7,6 +7,8 @@ import net.kunmc.lab.commandlib.util.nms.command.NMSCommandDispatcher;
 import net.kunmc.lab.commandlib.util.nms.command.NMSVanillaCommandWrapper;
 import net.kunmc.lab.commandlib.util.nms.server.NMSCraftServer;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -18,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public final class CommandLib implements Listener {
     private final Plugin plugin;
@@ -58,11 +61,20 @@ public final class CommandLib implements Listener {
                                                  .getRoot();
                 registeredCommands.forEach(x -> {
                     root.addChild(x);
-                    Bukkit.getCommandMap()
-                          .getKnownCommands()
-                          .put(x.getName(),
-                               NMSVanillaCommandWrapper.create()
-                                                       .createInstance(dispatcher, x));
+
+                    try {
+                        CommandMap commandMap = ((CommandMap) NMSCraftServer.create()
+                                                                            .getValue("commandMap"));
+                        Field knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
+                        knownCommandsField.setAccessible(true);
+                        Map<String, org.bukkit.command.Command> knownCommands = ((Map<String, org.bukkit.command.Command>) knownCommandsField.get(
+                                commandMap));
+                        knownCommands.put(x.getName(),
+                                          NMSVanillaCommandWrapper.create()
+                                                                  .createInstance(dispatcher, x));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
 
                     root.getChild("execute")
                         .getChild("run")
@@ -98,20 +110,28 @@ public final class CommandLib implements Listener {
                                              .getCommandDispatcher()
                                              .getBrigadier()
                                              .getRoot();
-        Map<String, org.bukkit.command.Command> knownCommands = Bukkit.getCommandMap()
-                                                                      .getKnownCommands();
-        registeredCommands.stream()
-                          .map(CommandNode::getName)
-                          .forEach(s -> {
-                              removeCommand(root, s);
-                              removeCommand(root, "minecraft:" + s);
-                              knownCommands.remove(s);
-                              knownCommands.remove("minecraft:" + s);
+        try {
+            CommandMap commandMap = ((CommandMap) NMSCraftServer.create()
+                                                                .getValue("commandMap"));
+            Field knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
+            knownCommandsField.setAccessible(true);
+            Map<String, org.bukkit.command.Command> knownCommands = ((Map<String, org.bukkit.command.Command>) knownCommandsField.get(
+                    commandMap));
+            for (String s : registeredCommands.stream()
+                                              .map(CommandNode::getName)
+                                              .collect(Collectors.toList())) {
+                removeCommand(root, s);
+                removeCommand(root, "minecraft:" + s);
+                knownCommands.remove(s);
+                knownCommands.remove("minecraft:" + s);
 
-                              removeCommand(root.getChild("execute")
-                                                .getChild("run")
-                                                .getRedirect(), s);
-                          });
+                removeCommand(root.getChild("execute")
+                                  .getChild("run")
+                                  .getRedirect(), s);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         registeredCommands.clear();
         HandlerList.unregisterAll(this);
@@ -126,23 +146,19 @@ public final class CommandLib implements Listener {
     }
 
     @SuppressWarnings("rawtypes")
-    private static void removeCommand(CommandNode<?> commandNode, String name) {
+    private static void removeCommand(CommandNode<?> commandNode, String name) throws Exception {
         Class<?> clazz = CommandNode.class;
 
-        try {
-            Field children = clazz.getDeclaredField("children");
-            children.setAccessible(true);
-            ((Map) children.get(commandNode)).remove(name);
+        Field children = clazz.getDeclaredField("children");
+        children.setAccessible(true);
+        ((Map) children.get(commandNode)).remove(name);
 
-            Field literals = clazz.getDeclaredField("literals");
-            literals.setAccessible(true);
-            ((Map) literals.get(commandNode)).remove(name);
+        Field literals = clazz.getDeclaredField("literals");
+        literals.setAccessible(true);
+        ((Map) literals.get(commandNode)).remove(name);
 
-            Field arguments = clazz.getDeclaredField("arguments");
-            arguments.setAccessible(true);
-            ((Map) arguments.get(commandNode)).remove(name);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Field arguments = clazz.getDeclaredField("arguments");
+        arguments.setAccessible(true);
+        ((Map) arguments.get(commandNode)).remove(name);
     }
 }

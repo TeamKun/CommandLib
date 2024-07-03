@@ -29,20 +29,4 @@ public class TranslatableComponentBuilderImpl extends TranslatableComponentBuild
         this.component.appendSibling(component);
         return this;
     }
-
-    @Override
-    public TranslatableComponentBuilderImpl key(@NotNull String key) {
-        TranslationTextComponent newComponent = new TranslationTextComponent(key, component.getFormatArgs());
-        newComponent.setStyle(component.getStyle());
-        component = newComponent;
-        return this;
-    }
-
-    @Override
-    public TranslatableComponentBuilderImpl args(@NotNull Object... args) {
-        TranslationTextComponent newComponent = new TranslationTextComponent(component.getKey(), args);
-        newComponent.setStyle(component.getStyle());
-        component = newComponent;
-        return this;
-    }
 }

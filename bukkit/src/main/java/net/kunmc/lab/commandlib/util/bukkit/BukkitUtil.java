@@ -1,7 +1,10 @@
 package net.kunmc.lab.commandlib.util.bukkit;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,6 +15,21 @@ public class BukkitUtil {
         Matcher matcher = PATTERN.matcher(Bukkit.getBukkitVersion());
         matcher.find();
         return matcher.group();
+    }
+
+    @Nullable
+    public static OfflinePlayer getOfflinePlayerIfEverPlayed(String name) {
+        return Arrays.stream(Bukkit.getOfflinePlayers())
+                     .filter(x -> {
+                         if (x.getName() == null) {
+                             return false;
+                         }
+
+                         return x.getName()
+                                 .equals(name);
+                     })
+                     .findFirst()
+                     .orElse(null);
     }
 
     private BukkitUtil() {

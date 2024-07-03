@@ -6,6 +6,7 @@ import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.StringUtil;
+import net.kunmc.lab.commandlib.util.bukkit.BukkitUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -63,7 +64,7 @@ public class UUIDArgument extends Argument<UUID> {
     protected UUID parseImpl(CommandContext ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
         String s = StringArgumentType.getString(ctx.getHandle(), name());
 
-        OfflinePlayer p = Bukkit.getOfflinePlayerIfCached(s);
+        OfflinePlayer p = BukkitUtil.getOfflinePlayerIfEverPlayed(s);
         if (p != null) {
             return p.getUniqueId();
         }

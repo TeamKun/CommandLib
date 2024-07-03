@@ -1,6 +1,10 @@
 repositories {
     mavenCentral()
     maven {
+        name = "spigotmc-repo"
+        url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+    }
+    maven {
         name = "papermc-repo"
         url = "https://papermc.io/repo/repository/maven-public/"
     }
@@ -11,7 +15,9 @@ repositories {
 
 dependencies {
     implementation project(":common")
-    compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
+    compileOnly "org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT"
+    compileOnly "org.jetbrains:annotations:16.0.2"
+//    compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
     compileOnly "com.mojang:brigadier:1.0.18"
 //    compileOnly fileTree(dir: "./test_plugin_1.16.5/", include: "server/cache/patched*.jar")
 //    compileOnly fileTree(dir: "./test_plugin_1.19.4/", include: ["server/versions/1.19.4/paper*.jar", "server_mojmap/versions/1.19.4/paper*jar"])

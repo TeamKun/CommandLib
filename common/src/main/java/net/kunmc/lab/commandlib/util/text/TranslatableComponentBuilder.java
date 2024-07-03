@@ -6,8 +6,4 @@ public abstract class TranslatableComponentBuilder<B, E extends B, T extends Tra
     public TranslatableComponentBuilder(@NotNull E component) {
         super(component);
     }
-
-    public abstract T key(@NotNull String key);
-
-    public abstract T args(@NotNull Object... args);
 }

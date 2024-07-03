@@ -11,6 +11,6 @@ public class NMSCraftBlockData_v1_16_0 extends NMSCraftBlockData {
 
     @Override
     public BlockData createData(NMSIBlockData nms) {
-        return ((BlockData) invokeStaticMethod("createData", nms.getHandle()));
+        return ((BlockData) invokeStaticMethod("createData", "fromData", nms.getHandle()));
     }
 }

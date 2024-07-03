@@ -3,8 +3,6 @@ package net.kunmc.lab.commandlib.util.nms;
 import net.kunmc.lab.commandlib.util.bukkit.BukkitUtil;
 import net.kunmc.lab.commandlib.util.bukkit.MinecraftVersion;
 import net.kunmc.lab.commandlib.util.nms.exception.UnregisteredNMSClassException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Deque;
 import java.util.Map;
@@ -13,7 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class NMSClassRegistry {
-    private static final Logger logger = LoggerFactory.getLogger(NMSClassRegistry.class);
     private static final Map<Class<? extends NMSClass>, Deque<RegisteredClass>> CLASS_TO_DEQUE_MAP = new ConcurrentHashMap<>();
 
     public static <T extends NMSClass> void register(Class<T> lookUpClass,

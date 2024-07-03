@@ -8,13 +8,11 @@ import net.kunmc.lab.commandlib.util.nms.chat.NMSTranslatableContents;
 import net.kunmc.lab.commandlib.util.nms.command.NMSCommandListenerWrapper;
 import net.kunmc.lab.commandlib.util.text.TextComponentBuilderImpl;
 import net.kunmc.lab.commandlib.util.text.TranslatableComponentBuilderImpl;
-import net.kyori.adventure.text.Component;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
-public final class PlatformAdapterImpl implements PlatformAdapter<Object, Component, CommandContext, ArgumentBuilder, Command> {
+public final class PlatformAdapterImpl implements PlatformAdapter<Object, BaseComponent, CommandContext, ArgumentBuilder, Command> {
     @Override
     public CommandContext createCommandContext(com.mojang.brigadier.context.CommandContext<Object> ctx) {
         return new CommandContext(ctx);
@@ -43,22 +41,16 @@ public final class PlatformAdapterImpl implements PlatformAdapter<Object, Compon
         if (NMSChatMessage.isSupportedVersion()) {
             NMSChatMessage msg = NMSChatMessage.create(e.getRawMessage());
             return new IncorrectArgumentInputException(ctx -> {
-                ((CommandContext) ctx).sendFailure(Component.translatable(msg.getKey())
-                                                            .args(Arrays.stream(msg.getArgs())
-                                                                        .map(String::valueOf)
-                                                                        .map(Component::text)
-                                                                        .collect(Collectors.toList())));
+                TranslatableComponent component = new TranslatableComponent(msg.getKey(), msg.getArgs());
+                ((CommandContext) ctx).sendFailure(component);
             });
         }
 
         NMSTranslatableContents contents = NMSIChatMutableComponent.create(e.getRawMessage())
                                                                    .getContentsAsTranslatable();
         return new IncorrectArgumentInputException(ctx -> {
-            ((CommandContext) ctx).sendFailure(Component.translatable(contents.getKey())
-                                                        .args(Arrays.stream(contents.getArgs())
-                                                                    .map(String::valueOf)
-                                                                    .map(Component::text)
-                                                                    .collect(Collectors.toList())));
+            TranslatableComponent component = new TranslatableComponent(contents.getKey(), contents.getArgs());
+            ((CommandContext) ctx).sendFailure(component);
         });
     }
 

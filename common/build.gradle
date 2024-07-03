@@ -2,9 +2,6 @@ plugins {
     id 'java'
 }
 
-group 'net.kunmc.lab'
-version '0.11.0'
-
 repositories {
     mavenCentral()
     maven {

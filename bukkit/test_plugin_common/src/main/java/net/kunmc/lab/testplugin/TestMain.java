@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class TestMain {
+    public static final String TEST_PLAYER_NAME = "Maru32768";
     private final Plugin plugin;
     private final Logger logger;
 

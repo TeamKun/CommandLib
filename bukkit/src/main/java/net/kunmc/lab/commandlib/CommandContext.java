@@ -1,10 +1,9 @@
 package net.kunmc.lab.commandlib;
 
-import net.kunmc.lab.commandlib.util.TextColorUtil;
 import net.kunmc.lab.commandlib.util.nms.command.NMSCommandListenerWrapper;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.TextColor;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -13,9 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
-import java.util.function.Consumer;
 
-public final class CommandContext extends AbstractCommandContext<Object, Component> {
+public final class CommandContext extends AbstractCommandContext<Object, BaseComponent> {
     public CommandContext(com.mojang.brigadier.context.CommandContext<Object> ctx) {
         super(ctx);
     }
@@ -42,55 +40,46 @@ public final class CommandContext extends AbstractCommandContext<Object, Compone
 
     @Override
     public void sendMessage(@Nullable String message) {
-        sendMessage(Component.text(String.valueOf(message)));
+        sendMessage(new TextComponent(String.valueOf(message)));
     }
 
-    public void sendMessage(@NotNull Component component) {
-        getSender().sendMessage(Objects.requireNonNull(component));
-    }
-
-    @Override
-    public void sendMessageWithOption(@Nullable String message, @NotNull Consumer<MessageOption> options) {
-        Component messageComponent = MessageOption.createMessage(options,
-                                                                 (rgb, hoverText) -> Component.text(String.valueOf(
-                                                                                                      message))
-                                                                                              .hoverEvent(HoverEvent.showText(
-                                                                                                      Component.text(
-                                                                                                              hoverText)))
-                                                                                              .color(TextColor.color(rgb)));
-
-        sendMessage(messageComponent);
+    public void sendMessage(@NotNull BaseComponent component) {
+        getSender().spigot()
+                   .sendMessage(Objects.requireNonNull(component));
     }
 
     @Override
     public void sendSuccess(@Nullable String message) {
-        sendSuccess(Component.text(String.valueOf(message)));
+        sendSuccess(new TextComponent(message));
     }
 
-    public void sendSuccess(@NotNull Component component) {
-        sendMessage(component.color(TextColorUtil.GREEN));
+    public void sendSuccess(@NotNull BaseComponent component) {
+        component.setColor(ChatColor.GREEN);
+        sendMessage(component);
     }
 
     @Override
     public void sendWarn(@Nullable String message) {
-        sendWarn(Component.text(String.valueOf(message)));
+        sendWarn(new TextComponent(String.valueOf(message)));
     }
 
-    public void sendWarn(@NotNull Component component) {
-        sendMessage(component.color(TextColorUtil.YELLOW));
+    public void sendWarn(@NotNull BaseComponent component) {
+        component.setColor(ChatColor.YELLOW);
+        sendMessage(component);
     }
 
     @Override
     public void sendFailure(@Nullable String message) {
-        sendFailure(Component.text(String.valueOf(message)));
+        sendFailure(new TextComponent(String.valueOf(message)));
     }
 
-    public void sendFailure(@NotNull Component component) {
-        sendMessage(component.color(TextColorUtil.RED));
+    public void sendFailure(@NotNull BaseComponent component) {
+        component.setColor(ChatColor.RED);
+        sendMessage(component);
     }
 
     @Override
-    public void sendComponent(Component component) {
+    public void sendComponent(BaseComponent component) {
         sendMessage(component);
     }
 }

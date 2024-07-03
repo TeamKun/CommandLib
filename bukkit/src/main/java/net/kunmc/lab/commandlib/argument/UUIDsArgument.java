@@ -6,8 +6,9 @@ import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.StringUtil;
+import net.kunmc.lab.commandlib.util.bukkit.BukkitUtil;
 import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentProfile;
-import net.kyori.adventure.text.Component;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -79,7 +80,7 @@ public class UUIDsArgument extends Argument<List<UUID>> {
                 if (!uuids.isEmpty()) {
                     return uuids;
                 }
-                throw new IncorrectArgumentInputException(x -> ((CommandContext) x).sendFailure(Component.text(
+                throw new IncorrectArgumentInputException(x -> ((CommandContext) x).sendFailure(new TextComponent(
                         "no player found")));
             }
             if (s.equals("@r")) {
@@ -87,13 +88,13 @@ public class UUIDsArgument extends Argument<List<UUID>> {
                 return Collections.singletonList(uuids.stream()
                                                       .findFirst()
                                                       .orElseThrow(() -> new IncorrectArgumentInputException(x -> ((CommandContext) x).sendFailure(
-                                                              Component.text("no player found")))));
+                                                              new TextComponent("no player found")))));
             }
 
-            throw new IncorrectArgumentInputException(x -> ((CommandContext) x).sendFailure(Component.text(s + " is invalid selector")));
+            throw new IncorrectArgumentInputException(x -> ((CommandContext) x).sendFailure(new TextComponent(s + " is invalid selector")));
         }
 
-        OfflinePlayer p = Bukkit.getOfflinePlayerIfCached(s);
+        OfflinePlayer p = BukkitUtil.getOfflinePlayerIfEverPlayed(s);
         if (p != null) {
             return Collections.singletonList(p.getUniqueId());
         }
@@ -102,7 +103,7 @@ public class UUIDsArgument extends Argument<List<UUID>> {
             return Collections.singletonList(UUID.fromString(s));
         } catch (IllegalArgumentException e) {
             throw new IncorrectArgumentInputException(x -> {
-                ((CommandContext) x).sendFailure(Component.text(s + " is not found or not valid UUID"));
+                ((CommandContext) x).sendFailure(new TextComponent(s + " is not found or not valid UUID"));
             });
         }
     }
