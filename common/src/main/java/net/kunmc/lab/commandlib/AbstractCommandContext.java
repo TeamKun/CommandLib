@@ -4,6 +4,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public abstract class AbstractCommandContext<S, C> {
     protected final com.mojang.brigadier.context.CommandContext<S> handle;
@@ -107,9 +109,40 @@ public abstract class AbstractCommandContext<S, C> {
 
     public abstract void sendFailure(@Nullable String message);
 
+    public final void sendMessageWithOption(@Nullable Object obj, @NotNull Consumer<MessageOption> options) {
+        sendMessageWithOption(Objects.toString(obj), options);
+    }
+
+    public abstract void sendMessageWithOption(@Nullable String message, @NotNull Consumer<MessageOption> options);
+
     public abstract void sendComponent(C component);
 
     final void addParsedArgument(String name, Object parsedArgument) {
         parsedArgMap.put(name, parsedArgument);
+    }
+
+    public static class MessageOption {
+        private int rgb = 0xFFFFFF;
+        private String hoverText = "";
+
+        protected static <T> T createMessage(Consumer<MessageOption> optionConsumer,
+                                             BiFunction<Integer, String, T> messageCreator) {
+            MessageOption option = new MessageOption();
+            optionConsumer.accept(option);
+            return messageCreator.apply(option.rgb, option.hoverText);
+        }
+
+        private MessageOption() {
+        }
+
+        public MessageOption rgb(int rgb) {
+            this.rgb = rgb;
+            return this;
+        }
+
+        public MessageOption hoverText(@NotNull String hoverText) {
+            this.hoverText = Objects.requireNonNull(hoverText);
+            return this;
+        }
     }
 }

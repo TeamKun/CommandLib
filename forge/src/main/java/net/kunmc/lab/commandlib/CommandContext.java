@@ -4,11 +4,13 @@ import net.kunmc.lab.commandlib.util.Location;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.text.*;
+import net.minecraft.util.text.event.HoverEvent;
 import net.minecraft.world.server.ServerWorld;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public final class CommandContext extends AbstractCommandContext<CommandSource, ITextComponent> {
     public CommandContext(com.mojang.brigadier.context.CommandContext<CommandSource> ctx) {
@@ -87,6 +89,19 @@ public final class CommandContext extends AbstractCommandContext<CommandSource, 
         component.setStyle(component.getStyle()
                                     .setColor(Color.fromInt(TextFormatting.RED.getColor())));
         sendMessage(component, allowLogging);
+    }
+
+    @Override
+    public void sendMessageWithOption(@Nullable String message, @NotNull Consumer<MessageOption> options) {
+        ITextComponent messageComponent = MessageOption.createMessage(options, (rgb, hoverText) -> {
+            TextComponent c = new StringTextComponent(String.valueOf(message));
+            return c.setStyle(c.getStyle()
+                               .setColor(Color.fromInt(rgb))
+                               .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                                             new StringTextComponent(hoverText))));
+        });
+
+        sendMessage(messageComponent);
     }
 
     @Override

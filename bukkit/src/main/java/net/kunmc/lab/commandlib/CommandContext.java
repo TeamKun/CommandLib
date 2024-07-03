@@ -3,7 +3,9 @@ package net.kunmc.lab.commandlib;
 import net.kunmc.lab.commandlib.util.nms.command.NMSCommandListenerWrapper;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -11,7 +13,9 @@ import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public final class CommandContext extends AbstractCommandContext<Object, BaseComponent> {
     public CommandContext(com.mojang.brigadier.context.CommandContext<Object> ctx) {
@@ -76,6 +80,19 @@ public final class CommandContext extends AbstractCommandContext<Object, BaseCom
     public void sendFailure(@NotNull BaseComponent component) {
         component.setColor(ChatColor.RED);
         sendMessage(component);
+    }
+
+    @Override
+    public void sendMessageWithOption(@Nullable String message, @NotNull Consumer<MessageOption> options) {
+        TextComponent messageComponent = MessageOption.createMessage(options, (rgb, hoverText) -> {
+            TextComponent component = new TextComponent(String.valueOf(message));
+            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hoverText)));
+            component.setColor(ChatColor.of(new Color(rgb)));
+
+            return component;
+        });
+
+        sendMessage(messageComponent);
     }
 
     @Override
