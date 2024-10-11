@@ -5,7 +5,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
 
-
 public final class TestPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
