@@ -43,4 +43,8 @@ public abstract class TestBase {
     public final List<TestResult> results() {
         return new ArrayList<>(Collections.unmodifiableCollection(resultMap.values()));
     }
+
+    public final void clearResults() {
+        resultMap.clear();
+    }
 }

@@ -1,8 +1,11 @@
 package net.kunmc.lab.commandlib;
 
 import com.google.common.collect.Lists;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
+import net.kunmc.lab.commandlib.util.bukkit.BukkitUtil;
+import net.kunmc.lab.commandlib.util.bukkit.MinecraftVersion;
 import net.kunmc.lab.commandlib.util.nms.command.NMSCommandDispatcher;
 import net.kunmc.lab.commandlib.util.nms.command.NMSVanillaCommandWrapper;
 import net.kunmc.lab.commandlib.util.nms.server.NMSCraftServer;
@@ -54,14 +57,7 @@ public final class CommandLib implements Listener {
             @Override
             public void run() {
                 registeredCommands.addAll(new CommandNodeCreator<>(commands).build());
-                NMSCommandDispatcher dispatcher = NMSCraftServer.create(plugin.getServer())
-                                                                .getServer()
-                                                                .getCommandDispatcher();
-                RootCommandNode root = dispatcher.getBrigadier()
-                                                 .getRoot();
                 registeredCommands.forEach(x -> {
-                    root.addChild(x);
-
                     try {
                         CommandMap commandMap = ((CommandMap) NMSCraftServer.create()
                                                                             .getValue("commandMap"));
@@ -69,17 +65,39 @@ public final class CommandLib implements Listener {
                         knownCommandsField.setAccessible(true);
                         Map<String, org.bukkit.command.Command> knownCommands = ((Map<String, org.bukkit.command.Command>) knownCommandsField.get(
                                 commandMap));
-                        knownCommands.put(x.getName(),
-                                          NMSVanillaCommandWrapper.create()
-                                                                  .createInstance(dispatcher, x));
+
+                        if (new MinecraftVersion(BukkitUtil.getMinecraftVersion()).isLessThan(new MinecraftVersion(
+                                "1.21.0"))) {
+                            NMSCommandDispatcher dispatcher = NMSCraftServer.create(plugin.getServer())
+                                                                            .getServer()
+                                                                            .getCommandDispatcher();
+                            RootCommandNode root = dispatcher.getBrigadier()
+                                                             .getRoot();
+
+                            root.addChild(x);
+                            knownCommands.put(x.getName(),
+                                              NMSVanillaCommandWrapper.create()
+                                                                      .createInstance(dispatcher, x));
+
+                            root.getChild("execute")
+                                .getChild("run")
+                                .getRedirect()
+                                .addChild(x);
+                        } else {
+                            CommandNode shadowBrigNode = (CommandNode) Class.forName(
+                                                                                    "io.papermc.paper.command.brigadier.ShadowBrigNode")
+                                                                            .getConstructor(CommandNode.class)
+                                                                            .newInstance(x);
+                            CommandDispatcher dispatcher = ((CommandDispatcher) knownCommands.getClass()
+                                                                                             .getDeclaredMethod(
+                                                                                                     "getDispatcher")
+                                                                                             .invoke(knownCommands));
+                            dispatcher.getRoot()
+                                      .addChild(shadowBrigNode);
+                        }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
-
-                    root.getChild("execute")
-                        .getChild("run")
-                        .getRedirect()
-                        .addChild(x);
                 });
 
                 commands.stream()

@@ -59,6 +59,8 @@ public class TestMain {
                                  .flatMap(x -> x.results()
                                                 .stream())
                                  .collect(Collectors.toList()));
+
+            tests.forEach(TestBase::clearResults);
         };
 
         mainCommand.addChildren(new Command("rerun") {{
