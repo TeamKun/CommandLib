@@ -22,15 +22,7 @@ configurations {
 }
 
 dependencies {
-    implementation project(":common")
+    api project(":common")
     minecraft 'net.minecraftforge:forge:1.16.5-36.2.20'
     implementation "org.jetbrains:annotations:16.0.2"
 }
-
-shadowJar {
-    dependencies {
-        include(dependency("org.jetbrains:annotations:.*"))
-        include(project(":common"))
-    }
-}
-jar.finalizedBy("shadowJar")
