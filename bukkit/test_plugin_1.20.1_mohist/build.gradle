@@ -99,10 +99,15 @@ jar {
     exclude "com/mojang"
 }
 
-task copyToServer(group: "copy", type: Copy) {
+task copyToServer {
     mustRunAfter build
-    from new File(buildDir.absolutePath, "libs/${rootProject.name}-${version}.jar")
-    into "./server/plugins"
+
+    doLast {
+        copy {
+            from new File(buildDir.absolutePath, "libs/${rootProject.name}-${version}.jar")
+            into "./server/plugins"
+        }
+    }
 }
 
 task copyProtocolLibToServer(group: "copy", type: Copy) {

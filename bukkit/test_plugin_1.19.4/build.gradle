@@ -98,14 +98,16 @@ jar {
 task copyToServer {
     mustRunAfter build
 
-    copy {
-        from new File(buildDir.absolutePath, "libs/${rootProject.name}-${version}.jar")
-        into "./server/plugins"
-    }
+    doLast {
+        copy {
+            from new File(buildDir.absolutePath, "libs/${rootProject.name}-${version}.jar")
+            into "./server/plugins"
+        }
 
-    copy {
-        from new File(buildDir.absolutePath, "libs/${rootProject.name}-${version}.jar")
-        into "./server_mojmap/plugins"
+        copy {
+            from new File(buildDir.absolutePath, "libs/${rootProject.name}-${version}.jar")
+            into "./server_mojmap/plugins"
+        }
     }
 }
 
