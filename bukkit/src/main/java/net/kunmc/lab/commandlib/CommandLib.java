@@ -67,7 +67,7 @@ public final class CommandLib implements Listener {
                                 commandMap));
 
                         if (new MinecraftVersion(BukkitUtil.getMinecraftVersion()).isLessThan(new MinecraftVersion(
-                                "1.21.0"))) {
+                                "1.20.6"))) {
                             NMSCommandDispatcher dispatcher = NMSCraftServer.create(plugin.getServer())
                                                                             .getServer()
                                                                             .getCommandDispatcher();
