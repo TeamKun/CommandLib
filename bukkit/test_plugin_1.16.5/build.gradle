@@ -14,7 +14,7 @@ repositories {
     mavenCentral()
     maven {
         name = "papermc-repo"
-        url = "https://papermc.io/repo/repository/maven-public/"
+        url = "https://repo.papermc.io/repository/maven-public/"
     }
     maven {
         name = "sonatype"
@@ -125,7 +125,7 @@ task buildAndCopy(group: "build") {
 }
 
 task downloadServerJar {
-    URL url = new URL("https://papermc.io/api/v2/projects/paper/versions/1.16.5/builds/794/downloads/paper-1.16.5-794.jar ")
+    URL url = new URL("https://api.papermc.io/v2/projects/paper/versions/1.16.5/builds/794/downloads/paper-1.16.5-794.jar ")
     File file = new File(projectDir.toPath().toAbsolutePath().toString() + "/server/server.jar")
 
     if (!file.exists()) {

@@ -6,7 +6,7 @@ repositories {
     }
     maven {
         name = "papermc-repo"
-        url = "https://papermc.io/repo/repository/maven-public/"
+        url = "https://repo.papermc.io/repository/maven-public/"
     }
     maven {
         url "https://libraries.minecraft.net"
