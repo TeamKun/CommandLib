@@ -2,7 +2,7 @@
 
 [![](https://jitpack.io/v/TeamKun/CommandLib.svg)](https://jitpack.io/#TeamKun/CommandLib)
 
-CommandLib is an advanced, type-safe API designed for Bukkit developers. It abstracts and enhances the Minecraft 1.13
+CommandLib is an advanced, type-safe Command API for Bukkit developers. It abstracts and enhances the Minecraft 1.13
 command APIs, simplifying command implementation. With features like customizable argument suggestions, seamless
 validation, improved usability, and extensibility, CommandLib empowers developers to build better commands with ease.
 
