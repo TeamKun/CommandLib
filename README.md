@@ -14,7 +14,7 @@ validation, improved usability, and extensibility, CommandLib empowers developer
 | **Forge**  | `1.16.5`                                                   | Currently supports only `1.16.5` and works fully.  |
 | **Mohist** | `1.16.5`, `1.20.1`                                         | Works on Mohist since it's compatible with Spigot. |
 
-## Purpose
+## Purposes
 
 1. **Type safe arguments**  
    Use arguments in a type-safe manner directly within your code, reducing potential runtime errors.
