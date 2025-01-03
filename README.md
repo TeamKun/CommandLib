@@ -16,13 +16,14 @@ validation, improved usability, and extensibility, CommandLib empowers developer
 
 ## Features
 
-1. **Type safe arguments**  
-   Use arguments in a type-safe manner directly within your code, reducing potential runtime errors.
-2. **No need for Brigadier and NMS dependency**  
-   Simplify your setup by avoiding Brigadier and NMS in your project.
-3. **Powerful suggestion generation**  
+1. **Type-Safe Arguments Handling**  
+   Use arguments in a type-safe manner directly within your code, reducing potential runtime errors and improving
+   maintainability.
+2. **No Need for Brigadier and NMS Dependency**  
+   Simplify your setup and ensure compatibility across multiple Minecraft versions.
+3. **Powerful Suggestion Generation**  
    Automatically generate argument suggestions with customizable options for enhanced flexibility.
-4. **Support for the `/execute` command**   
+4. **Seamless Integration with the `/execute` command**   
    Allow your commands to be executed seamlessly from the `/execute` command, just like built-in commands.  
    ![execute_as](./images/fireworks_execute_as.gif)
 
@@ -94,7 +95,7 @@ reobf {
 ## Code Examples
 
 <details>
-<summary>Simple command</summary>
+<summary>Defining Commands</summary>
 
 ```java
 public final class TestPlugin extends JavaPlugin {
@@ -108,10 +109,28 @@ public final class TestPlugin extends JavaPlugin {
 }
 ```
 
+```java
+// Also you can define commands by extending Command
+public final class MessageCommand extends Command {
+    public MessageCommand() {
+        super("message");
+        argument(new PlayerArgument("target"), new StringArgument("message"), (target, message, ctx) -> {
+            target.sendMessage(message);
+        });
+    }
+}
+
+public final class TestPlugin extends JavaPlugin {
+    public void onEnable() {
+        CommandLib.register(this, new MessageCommand());
+    }
+}
+```
+
 </details>
 
 <details>
-<summary>Subcommands</summary>
+<summary>Appending Subcommands</summary>
 
 ```java
 public final class TestPlugin extends JavaPlugin {
@@ -135,7 +154,7 @@ public final class TestPlugin extends JavaPlugin {
 
 
 <details>
-<summary>Suggesting materials that is block</summary>
+<summary>Suggesting Block Materials</summary>
 
 ```java
 public final class TestPlugin extends JavaPlugin {
@@ -144,7 +163,7 @@ public final class TestPlugin extends JavaPlugin {
             argument(new EnumArgument<>("block", Material.class, option -> {
                 option.filter(x -> {
                     if (!x.isBlock()) {
-                        // Shows the sender this error message
+                        // Displays an error message to the sender if the argument is not a block material.
                         throw new InvalidArgumentException(x.name() + " is not block.");
                     }
                 });
@@ -159,7 +178,7 @@ public final class TestPlugin extends JavaPlugin {
 </details>
 
 <details>
-<summary>Variable length arguments</summary>
+<summary>Defining Variable Length Arguments</summary>
 
 ```java
 public final class TestPlugin extends JavaPlugin {
