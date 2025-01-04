@@ -102,6 +102,7 @@ public final class TestPlugin extends JavaPlugin {
     public void onEnable() {
         CommandLib.register(this, new Command("message") {{
             argument(new PlayerArgument("target"), new StringArgument("message"), (target, message, ctx) -> {
+                // 'target' is inferred as 'org.bukkit.entity.Player'. No need to cast.
                 target.sendMessage(message);
             });
         }});
