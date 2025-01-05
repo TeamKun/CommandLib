@@ -2,7 +2,7 @@
 
 [![](https://jitpack.io/v/TeamKun/CommandLib.svg)](https://jitpack.io/#TeamKun/CommandLib)
 
-CommandLib is an advanced, type-safe Command API for Bukkit developers. It abstracts and enhances the Minecraft 1.13
+CommandLib is an advanced, type-safe Command API for Bukkit(Spigot/Paper) developers. It abstracts and enhances the Minecraft 1.13
 command APIs, simplifying command implementation. With features like customizable argument suggestions, seamless
 validation, improved usability, and extensibility, CommandLib empowers developers to build better commands with ease.
 
@@ -10,7 +10,7 @@ validation, improved usability, and extensibility, CommandLib empowers developer
 
 | Platform   | Tested Versions                                            | Notes                                              |
 |------------|------------------------------------------------------------|----------------------------------------------------|
-| **Bukkit** | `1.16.5`, `1.19.4`, `1.20.1`, `1.20.4`, `1.20.6`, `1.21.0` | Expected to work on intermediate versions.         |
+| **Bukkit(Spigot/Paper)** | `1.16.5`, `1.19.4`, `1.20.1`, `1.20.4`, `1.20.6`, `1.21.0` | Expected to work on intermediate versions.         |
 | **Forge**  | `1.16.5`                                                   | Currently supports only `1.16.5` and works fully.  |
 | **Mohist** | `1.16.5`, `1.20.1`                                         | Works on Mohist since it's compatible with Spigot. |
 
