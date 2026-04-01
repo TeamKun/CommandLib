@@ -20,7 +20,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     private final List<T> children = new ArrayList<>();
     private final List<String> aliases = new ArrayList<>();
     private final List<Arguments<C>> argumentsList = new ArrayList<>();
-    private Predicate<C> prerequisite = ctx -> true;
+    private Prerequisite<C> prerequisite = ctx -> {};
     private Predicate<C> preprocess = ctx -> true;
     private ContextAction<C> contextAction;
     private final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers = new ArrayList<>();
@@ -229,7 +229,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         });
     }
 
-    public final void addPrerequisite(@NotNull Predicate<C> prerequisite) {
+    public final void addPrerequisite(@NotNull Prerequisite<C> prerequisite) {
         this.prerequisite = this.prerequisite.and(Objects.requireNonNull(prerequisite));
     }
 
@@ -265,7 +265,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         return Collections.unmodifiableList(children);
     }
 
-    final Predicate<C> prerequisite() {
+    final Prerequisite<C> prerequisite() {
         if (!inheritParentPrerequisite || parent == null) {
             return prerequisite;
         }

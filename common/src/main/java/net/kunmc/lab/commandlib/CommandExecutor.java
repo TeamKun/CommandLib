@@ -2,6 +2,7 @@ package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
+import net.kunmc.lab.commandlib.exception.CommandPrerequisiteException;
 import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
 import net.kunmc.lab.commandlib.util.UncaughtExceptionHandler;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +13,7 @@ import java.util.function.Predicate;
 final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implements Command<S> {
     private final PlatformAdapter<S, ?, C, ?, ?> platformAdapter;
     private final Arguments<C> arguments;
-    private final Predicate<C> prerequisite;
+    private final Prerequisite<C> prerequisite;
     private final ContextAction<C> helpAction;
     private final Predicate<C> preprocess;
     private final ContextAction<C> contextAction;
@@ -21,7 +22,7 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
 
     CommandExecutor(PlatformAdapter<S, ?, C, ?, ?> platformAdapter,
                     @Nullable Arguments<C> arguments,
-                    Predicate<C> prerequisite,
+                    Prerequisite<C> prerequisite,
                     ContextAction<C> helpAction,
                     Predicate<C> preprocess,
                     ContextAction<C> contextAction,
@@ -50,7 +51,10 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
                     }
                 }
 
-                if (!prerequisite.test(ctx)) {
+                try {
+                    prerequisite.check(ctx);
+                } catch (CommandPrerequisiteException e) {
+                    e.sendMessage(ctx);
                     return 0;
                 }
 
