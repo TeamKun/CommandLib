@@ -2,7 +2,7 @@ package net.kunmc.lab.commandlib;
 
 import com.google.common.collect.Lists;
 import net.kunmc.lab.commandlib.util.UncaughtExceptionHandler;
-import net.kunmc.lab.commandlib.util.fucntion.*;
+import net.kunmc.lab.commandlib.util.function.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -1,4 +1,4 @@
-package net.kunmc.lab.commandlib.util.fucntion;
+package net.kunmc.lab.commandlib.util.function;
 
 
 public interface OctoConsumer<A, B, C, D, E, F, G, H> {
