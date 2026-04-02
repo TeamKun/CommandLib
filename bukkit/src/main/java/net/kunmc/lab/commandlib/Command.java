@@ -16,7 +16,7 @@ public abstract class Command extends CommonCommand<CommandContext, ArgumentBuil
         super(name);
     }
 
-    public final void setPermission(@NotNull PermissionDefault defaultPermission) {
+    public final void permission(@NotNull PermissionDefault defaultPermission) {
         this.defaultPermission = Objects.requireNonNull(defaultPermission);
     }
 

@@ -43,7 +43,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         return description;
     }
 
-    public final void setDescription(@NotNull String description) {
+    public final void description(@NotNull String description) {
         this.description = Objects.requireNonNull(description);
     }
 

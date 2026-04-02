@@ -9,7 +9,7 @@ public abstract class Command extends CommonCommand<CommandContext, ArgumentBuil
         super(name);
     }
 
-    public final void setPermissionLevel(int level) {
+    public final void permissionLevel(int level) {
         this.permissionLevel = level;
     }
 
