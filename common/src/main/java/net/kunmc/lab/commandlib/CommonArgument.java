@@ -23,7 +23,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
     private ContextAction<C> contextAction;
     private final ArgumentType<?> type;
     private ArgumentValidator<? super T, C> validator;
-    private BiFunction<? super T, C, ? extends T> shaper;
+    private BiFunction<? super T, C, ? extends T> transformer;
     private final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers = new ArrayList<>();
 
     protected CommonArgument(@NotNull String name, @NotNull ArgumentType<?> type) {
@@ -103,12 +103,12 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         this.validator = validator;
     }
 
-    protected final void shaper(Function<? super T, ? extends T> shaper) {
-        shaper((value, ctx) -> shaper.apply(value));
+    protected final void transformer(Function<? super T, ? extends T> transformer) {
+        transformer((value, ctx) -> transformer.apply(value));
     }
 
-    protected final void shaper(BiFunction<? super T, C, ? extends T> shaper) {
-        this.shaper = shaper;
+    protected final void transformer(BiFunction<? super T, C, ? extends T> transformer) {
+        this.transformer = transformer;
     }
 
     protected final void applyOptions(@Nullable Consumer<Option<T, C>> options) {
@@ -132,8 +132,8 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
               .ifPresent(this::contextAction);
         option.validator()
               .ifPresent(this::validator);
-        option.shaper()
-              .ifPresent(this::shaper);
+        option.transformer()
+              .ifPresent(this::transformer);
         this.uncaughtExceptionHandlers.addAll(option.uncaughtExceptionHandlers());
     }
 
@@ -180,10 +180,10 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
             validator.validate(t, ctx);
         }
 
-        if (shaper == null) {
+        if (transformer == null) {
             return t;
         }
-        return shaper.apply(t, ctx);
+        return transformer.apply(t, ctx);
     }
 
     protected abstract T parseImpl(C ctx) throws CommandSyntaxException, ArgumentParseException;
@@ -197,7 +197,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         protected SuggestionAction<C> additionalSuggestionAction;
         protected BiFunction<C, String, T> additionalParser;
         protected ArgumentValidator<? super T, C> validator;
-        protected BiFunction<? super T, C, ? extends T> shaper;
+        protected BiFunction<? super T, C, ? extends T> transformer;
         protected ContextAction<C> contextAction;
         protected final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers = new ArrayList<>();
         private final CommonArgument<T, C> argument;
@@ -289,23 +289,23 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
             return Optional.ofNullable(validator);
         }
 
-        public Option<T, C> shaper(@Nullable Function<? super T, ? extends T> shaper) {
-            if (shaper == null) {
-                this.shaper = null;
+        public Option<T, C> transformer(@Nullable Function<? super T, ? extends T> transformer) {
+            if (transformer == null) {
+                this.transformer = null;
             } else {
-                shaper((x, ctx) -> shaper.apply(x));
+                transformer((x, ctx) -> transformer.apply(x));
             }
 
             return this;
         }
 
-        public Option<T, C> shaper(@Nullable BiFunction<? super T, C, ? extends T> shaper) {
-            this.shaper = shaper;
+        public Option<T, C> transformer(@Nullable BiFunction<? super T, C, ? extends T> transformer) {
+            this.transformer = transformer;
             return this;
         }
 
-        protected Optional<BiFunction<? super T, C, ? extends T>> shaper() {
-            return Optional.ofNullable(shaper);
+        protected Optional<BiFunction<? super T, C, ? extends T>> transformer() {
+            return Optional.ofNullable(transformer);
         }
 
         public Option<T, C> contextAction(@Nullable ContextAction<C> contextAction) {
