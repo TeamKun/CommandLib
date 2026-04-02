@@ -20,7 +20,8 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     private final List<T> children = new ArrayList<>();
     private final List<String> aliases = new ArrayList<>();
     private final List<Arguments<C>> argumentsList = new ArrayList<>();
-    private Prerequisite<C> prerequisite = ctx -> {};
+    private Prerequisite<C> prerequisite = ctx -> {
+    };
     private Predicate<C> preprocess = ctx -> true;
     private ContextAction<C> contextAction;
     private final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers = new ArrayList<>();
@@ -29,7 +30,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
 
     protected CommonCommand(@NotNull String name) {
         Objects.requireNonNull(name);
-        if (name.equals("")) {
+        if (name.isEmpty()) {
             throw new IllegalArgumentException("name is not expected to empty.");
         }
         this.name = name;
