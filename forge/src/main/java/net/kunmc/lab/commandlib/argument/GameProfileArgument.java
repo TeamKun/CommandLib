@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.StringUtil;
 import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
@@ -21,7 +21,7 @@ public class GameProfileArgument extends Argument<GameProfile> {
     public GameProfileArgument(String name, Consumer<Option<GameProfile, CommandContext>> options) {
         super(name, StringArgumentType.string());
 
-        setSuggestionAction(sb -> {
+        suggestionAction(sb -> {
             sb.getContext()
               .getHandle()
               .getSource()
@@ -30,7 +30,7 @@ public class GameProfileArgument extends Argument<GameProfile> {
               .map(getPlayerProfileCache()::getGameProfileForUsername)
               .filter(Objects::nonNull)
               .filter(x -> Objects.nonNull(x.getName()))
-              .filter(x -> filter().apply(x, sb.getContext()))
+              .filter(filter(sb.getContext()))
               .map(GameProfile::getName)
               .filter(x -> sb.getLatestInput()
                              .isEmpty() || StringUtil.containsIgnoreCase(x, sb.getLatestInput()))
@@ -45,7 +45,7 @@ public class GameProfileArgument extends Argument<GameProfile> {
     }
 
     @Override
-    protected GameProfile parseImpl(CommandContext ctx) throws IncorrectArgumentInputException {
+    protected GameProfile parseImpl(CommandContext ctx) throws ArgumentParseException {
         String s = StringArgumentType.getString(ctx.getHandle(), name());
         return ctx.getHandle()
                   .getSource()
@@ -56,7 +56,7 @@ public class GameProfileArgument extends Argument<GameProfile> {
                   .filter(x -> x.getName()
                                 .equalsIgnoreCase(s))
                   .findFirst()
-                  .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
+                  .orElseThrow(() -> new ArgumentParseException(this, ctx, s));
     }
 
     private static PlayerProfileCache getPlayerProfileCache() {

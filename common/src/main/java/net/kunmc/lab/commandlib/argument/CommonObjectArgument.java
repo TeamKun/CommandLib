@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 
 import java.util.Map;
 import java.util.Objects;
@@ -33,11 +33,11 @@ public class CommonObjectArgument<T, C extends AbstractCommandContext<?, ?>> ext
         super(name, StringArgumentType.string());
         this.mapSupplier = Objects.requireNonNull(mapSupplier);
 
-        setSuggestionAction(sb -> {
+        suggestionAction(sb -> {
             mapSupplier.get()
                        .entrySet()
                        .stream()
-                       .filter(x -> filter().apply(x.getValue(), sb.getContext()))
+                       .filter(x -> filter(sb.getContext()).test(x.getValue()))
                        .map(Map.Entry::getKey)
                        .filter(x -> sb.getLatestInput()
                                       .isEmpty() || x.contains(sb.getLatestInput()))
@@ -52,7 +52,7 @@ public class CommonObjectArgument<T, C extends AbstractCommandContext<?, ?>> ext
     }
 
     @Override
-    protected final T parseImpl(C ctx) throws IncorrectArgumentInputException {
+    protected final T parseImpl(C ctx) throws ArgumentParseException {
         String s = StringArgumentType.getString(ctx.getHandle(), name());
         return mapSupplier.get()
                           .entrySet()
@@ -61,6 +61,6 @@ public class CommonObjectArgument<T, C extends AbstractCommandContext<?, ?>> ext
                                         .equals(s))
                           .map(Map.Entry::getValue)
                           .findFirst()
-                          .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
+                          .orElseThrow(() -> new ArgumentParseException(this, ctx, s));
     }
 }

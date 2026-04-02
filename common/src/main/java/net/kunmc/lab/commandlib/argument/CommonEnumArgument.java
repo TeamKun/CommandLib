@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -21,9 +21,9 @@ public class CommonEnumArgument<T extends Enum<T>, C extends AbstractCommandCont
         super(name, StringArgumentType.string());
 
         this.clazz = Objects.requireNonNull(clazz);
-        setSuggestionAction(sb -> {
+        suggestionAction(sb -> {
             Arrays.stream(clazz.getEnumConstants())
-                  .filter(x -> filter().apply(x, sb.getContext()))
+                  .filter(filter(sb.getContext()))
                   .map(Enum::name)
                   .map(String::toLowerCase)
                   .filter(x -> sb.getLatestInput()
@@ -39,12 +39,12 @@ public class CommonEnumArgument<T extends Enum<T>, C extends AbstractCommandCont
     }
 
     @Override
-    protected final T parseImpl(C ctx) throws IncorrectArgumentInputException {
+    protected final T parseImpl(C ctx) throws ArgumentParseException {
         String s = StringArgumentType.getString(ctx.getHandle(), name());
         return Arrays.stream(clazz.getEnumConstants())
                      .filter(x -> x.name()
                                    .equalsIgnoreCase(s))
                      .findFirst()
-                     .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
+                     .orElseThrow(() -> new ArgumentParseException(this, ctx, s));
     }
 }

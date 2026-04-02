@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -21,9 +21,9 @@ public class OfflinePlayerArgument extends Argument<OfflinePlayer> {
     public OfflinePlayerArgument(String name, Consumer<Option<OfflinePlayer, CommandContext>> options) {
         super(name, StringArgumentType.string());
 
-        setSuggestionAction(sb -> {
+        suggestionAction(sb -> {
             Arrays.stream(Bukkit.getOfflinePlayers())
-                  .filter(x -> filter().apply(x, sb.getContext()))
+                  .filter(filter(sb.getContext()))
                   .map(OfflinePlayer::getName)
                   .filter(Objects::nonNull)
                   .filter(x -> sb.getLatestInput()
@@ -39,12 +39,12 @@ public class OfflinePlayerArgument extends Argument<OfflinePlayer> {
     }
 
     @Override
-    protected OfflinePlayer parseImpl(CommandContext ctx) throws IncorrectArgumentInputException {
+    protected OfflinePlayer parseImpl(CommandContext ctx) throws ArgumentParseException {
         String s = StringArgumentType.getString(ctx.getHandle(), name());
         return Arrays.stream(Bukkit.getOfflinePlayers())
                      .filter(x -> x.getName() != null && x.getName()
                                                           .equalsIgnoreCase(s))
                      .findFirst()
-                     .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
+                     .orElseThrow(() -> new ArgumentParseException(this, ctx, s));
     }
 }

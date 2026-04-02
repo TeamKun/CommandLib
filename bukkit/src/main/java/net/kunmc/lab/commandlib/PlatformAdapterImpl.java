@@ -1,7 +1,7 @@
 package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.nms.chat.NMSChatMessage;
 import net.kunmc.lab.commandlib.util.nms.chat.NMSIChatMutableComponent;
 import net.kunmc.lab.commandlib.util.nms.chat.NMSTranslatableContents;
@@ -37,10 +37,10 @@ public final class PlatformAdapterImpl implements PlatformAdapter<Object, BaseCo
     }
 
     @Override
-    public IncorrectArgumentInputException convertCommandSyntaxException(CommandSyntaxException e) {
+    public ArgumentParseException convertCommandSyntaxException(CommandSyntaxException e) {
         if (NMSChatMessage.isSupportedVersion()) {
             NMSChatMessage msg = NMSChatMessage.create(e.getRawMessage());
-            return new IncorrectArgumentInputException(ctx -> {
+            return new ArgumentParseException(ctx -> {
                 TranslatableComponent component = new TranslatableComponent(msg.getKey(), msg.getArgs());
                 ((CommandContext) ctx).sendFailure(component);
             });
@@ -48,7 +48,7 @@ public final class PlatformAdapterImpl implements PlatformAdapter<Object, BaseCo
 
         NMSTranslatableContents contents = NMSIChatMutableComponent.create(e.getRawMessage())
                                                                    .getContentsAsTranslatable();
-        return new IncorrectArgumentInputException(ctx -> {
+        return new ArgumentParseException(ctx -> {
             TranslatableComponent component = new TranslatableComponent(contents.getKey(), contents.getArgs());
             ((CommandContext) ctx).sendFailure(component);
         });

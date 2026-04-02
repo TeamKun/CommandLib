@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.Location;
 import net.minecraft.command.arguments.Vec3Argument;
 import net.minecraft.entity.Entity;
@@ -28,7 +28,7 @@ public class LocationArgument extends Argument<Location> {
     }
 
     @Override
-    protected Location parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
+    protected Location parseImpl(CommandContext ctx) throws ArgumentParseException, CommandSyntaxException {
         Vector3d vec = Vec3Argument.getVec3(ctx.getHandle(), name());
         Location loc = new Location(ctx.getWorld(), vec.x, vec.y, vec.z);
 

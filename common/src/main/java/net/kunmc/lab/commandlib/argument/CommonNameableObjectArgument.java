@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 import net.kunmc.lab.commandlib.Nameable;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -36,10 +36,10 @@ public class CommonNameableObjectArgument<T extends Nameable, C extends Abstract
         super(name, StringArgumentType.string());
         this.candidatesSupplier = Objects.requireNonNull(candidatesSupplier);
 
-        setSuggestionAction(sb -> {
+        suggestionAction(sb -> {
             candidatesSupplier.get()
                               .stream()
-                              .filter(x -> filter().apply(x, sb.getContext()))
+                              .filter(filter(sb.getContext()))
                               .map(Nameable::tabCompleteName)
                               .filter(x -> sb.getLatestInput()
                                              .isEmpty() || x.contains(sb.getLatestInput()))
@@ -54,13 +54,13 @@ public class CommonNameableObjectArgument<T extends Nameable, C extends Abstract
     }
 
     @Override
-    protected final T parseImpl(C ctx) throws IncorrectArgumentInputException {
+    protected final T parseImpl(C ctx) throws ArgumentParseException {
         String s = StringArgumentType.getString(ctx.getHandle(), name());
         return candidatesSupplier.get()
                                  .stream()
                                  .filter(x -> x.tabCompleteName()
                                                .equals(s))
                                  .findFirst()
-                                 .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
+                                 .orElseThrow(() -> new ArgumentParseException(this, ctx, s));
     }
 }

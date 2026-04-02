@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.minecraft.entity.Entity;
 
 import java.util.function.Consumer;
@@ -25,7 +25,7 @@ public class EntityArgument extends Argument<Entity> {
     }
 
     @Override
-    protected Entity parseImpl(CommandContext ctx) throws IncorrectArgumentInputException, CommandSyntaxException {
+    protected Entity parseImpl(CommandContext ctx) throws ArgumentParseException, CommandSyntaxException {
         return net.minecraft.command.arguments.EntityArgument.getEntity(ctx.getHandle(), name());
     }
 }

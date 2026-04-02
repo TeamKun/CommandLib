@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.StringUtil;
 import net.kunmc.lab.commandlib.util.bukkit.BukkitUtil;
 import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentProfile;
@@ -30,11 +30,11 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
               NMSArgumentProfile.create()
                                 .argument());
 
-        setSuggestionAction(sb -> {
+        suggestionAction(sb -> {
             String input = sb.getLatestInput();
 
             Arrays.stream(Bukkit.getOfflinePlayers())
-                  .filter(x -> filter().apply(Collections.singletonList(x), sb.getContext()))
+                  .filter(x -> filter(sb.getContext()).test(Collections.singletonList(x)))
                   .filter(x -> {
                       if (input.isEmpty()) {
                           return true;
@@ -45,7 +45,6 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
                   .map(OfflinePlayer::getName)
                   .filter(Objects::nonNull)
                   .forEach(sb::suggest);
-            String s;
 
             Lists.newArrayList("@a", "@r")
                  .stream()
@@ -61,7 +60,7 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
     }
 
     @Override
-    protected List<OfflinePlayer> parseImpl(CommandContext ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
+    protected List<OfflinePlayer> parseImpl(CommandContext ctx) throws CommandSyntaxException, ArgumentParseException {
         String s = ctx.getInput(name());
 
         if (s.startsWith("@")) {
@@ -71,22 +70,22 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
                 if (!players.isEmpty()) {
                     return players;
                 }
-                throw new IncorrectArgumentInputException(x -> x.sendFailure("no player found."));
+                throw new ArgumentParseException(x -> x.sendFailure("no player found."));
             }
             if (s.equals("@r")) {
                 Collections.shuffle(players, ThreadLocalRandom.current());
                 return Collections.singletonList(players.stream()
                                                         .findFirst()
-                                                        .orElseThrow(() -> new IncorrectArgumentInputException(x -> x.sendFailure(
+                                                        .orElseThrow(() -> new ArgumentParseException(x -> x.sendFailure(
                                                                 "no player found."))));
             }
 
-            throw new IncorrectArgumentInputException(x -> x.sendFailure(s + " is invalid selector."));
+            throw new ArgumentParseException(x -> x.sendFailure(s + " is invalid selector."));
         }
 
         OfflinePlayer p = BukkitUtil.getOfflinePlayerIfEverPlayed(s);
         if (p == null) {
-            throw new IncorrectArgumentInputException(this, ctx, s);
+            throw new ArgumentParseException(this, ctx, s);
         }
 
         return Collections.singletonList(p);

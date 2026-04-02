@@ -252,7 +252,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
                                                  @Nullable Predicate<? super OfflinePlayer> filter,
                                                  @Nullable ContextAction<CommandContext> contextAction) {
         return offlinePlayerArgumentWith(name, option -> {
-            option.filter(filter)
+            option.validator(filter)
                   .contextAction(contextAction);
         });
     }

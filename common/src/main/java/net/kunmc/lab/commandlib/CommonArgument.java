@@ -2,14 +2,17 @@ package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
-import net.kunmc.lab.commandlib.exception.InvalidArgumentException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
+import net.kunmc.lab.commandlib.exception.ArgumentValidationException;
 import net.kunmc.lab.commandlib.util.UncaughtExceptionHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> {
     private final String name;
@@ -19,7 +22,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
     private BiFunction<C, String, T> additionalParser;
     private ContextAction<C> contextAction;
     private final ArgumentType<?> type;
-    private BiFunction<? super T, C, Boolean> filter;
+    private ArgumentValidator<? super T, C> validator;
     private BiFunction<? super T, C, ? extends T> shaper;
     private final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers = new ArrayList<>();
 
@@ -46,7 +49,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         return displayDefaultSuggestions;
     }
 
-    protected final void setDisplayDefaultSuggestions(boolean display) {
+    protected final void displayDefaultSuggestions(boolean display) {
         this.displayDefaultSuggestions = display;
     }
 
@@ -65,15 +68,15 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         };
     }
 
-    protected final void setSuggestionAction(@Nullable SuggestionAction<C> suggestionAction) {
+    protected final void suggestionAction(@Nullable SuggestionAction<C> suggestionAction) {
         this.suggestionAction = suggestionAction;
     }
 
-    protected final void setAdditionalSuggestionAction(@Nullable SuggestionAction<C> additionalSuggestionAction) {
+    protected final void additionalSuggestionAction(@Nullable SuggestionAction<C> additionalSuggestionAction) {
         this.additionalSuggestionAction = additionalSuggestionAction;
     }
 
-    protected final void setAdditionalParser(@Nullable BiFunction<C, String, T> parser) {
+    protected final void additionalParser(@Nullable BiFunction<C, String, T> parser) {
         this.additionalParser = parser;
     }
 
@@ -86,7 +89,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         return Collections.unmodifiableList(uncaughtExceptionHandlers);
     }
 
-    protected final void setContextAction(@Nullable ContextAction<C> contextAction) {
+    protected final void contextAction(@Nullable ContextAction<C> contextAction) {
         this.contextAction = contextAction;
     }
 
@@ -96,21 +99,15 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
 
     public abstract T cast(Object parsedArgument);
 
-    protected final void setFilter(Predicate<? super T> filter) {
-        setFilter((value, ctx) -> {
-            return filter.test(value);
-        });
+    protected final void validator(ArgumentValidator<? super T, C> validator) {
+        this.validator = validator;
     }
 
-    protected final void setFilter(BiFunction<? super T, C, Boolean> filter) {
-        this.filter = filter;
+    protected final void shaper(Function<? super T, ? extends T> shaper) {
+        shaper((value, ctx) -> shaper.apply(value));
     }
 
-    protected final void setShaper(Function<? super T, ? extends T> shaper) {
-        setShaper((value, ctx) -> shaper.apply(value));
-    }
-
-    protected final void setShaper(BiFunction<? super T, C, ? extends T> shaper) {
+    protected final void shaper(BiFunction<? super T, C, ? extends T> shaper) {
         this.shaper = shaper;
     }
 
@@ -118,44 +115,45 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         if (options == null) {
             return;
         }
-        Option<T, C> option = new Option<>();
+        Option<T, C> option = new Option<>(this);
         options.accept(option);
         applyOption(option);
     }
 
     protected final void applyOption(@NotNull Option<T, C> option) {
-        setDisplayDefaultSuggestions(option.isDisplayDefaultSuggestions());
+        displayDefaultSuggestions(option.isDisplayDefaultSuggestions());
         option.suggestionAction()
-              .ifPresent(this::setSuggestionAction);
+              .ifPresent(this::suggestionAction);
         option.additionalSuggestionAction()
-              .ifPresent(this::setAdditionalSuggestionAction);
+              .ifPresent(this::additionalSuggestionAction);
         option.additionalParser()
-              .ifPresent(this::setAdditionalParser);
+              .ifPresent(this::additionalParser);
         option.contextAction()
-              .ifPresent(this::setContextAction);
-        option.filter()
-              .ifPresent(this::setFilter);
+              .ifPresent(this::contextAction);
+        option.validator()
+              .ifPresent(this::validator);
         option.shaper()
-              .ifPresent(this::setShaper);
+              .ifPresent(this::shaper);
         this.uncaughtExceptionHandlers.addAll(option.uncaughtExceptionHandlers());
     }
 
     @NotNull
-    protected final BiFunction<? super T, C, Boolean> filter() {
-        if (filter == null) {
-            return (x, ctx) -> true;
+    protected final Predicate<? super T> filter(C ctx) {
+        if (validator == null) {
+            return (x) -> true;
         }
-        return (x, ctx) -> {
+        return (x) -> {
             try {
-                return filter.apply(x, ctx);
-            } catch (InvalidArgumentException e) {
+                validator.validate(x, ctx);
+                return true;
+            } catch (ArgumentValidationException e) {
                 return false;
             }
         };
     }
 
     @NotNull
-    final T parse(C ctx) throws IncorrectArgumentInputException {
+    final T parse(C ctx) throws ArgumentParseException {
         T t = null;
         try {
             t = Objects.requireNonNull(parseImpl(ctx));
@@ -168,7 +166,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
                 throw PlatformAdapter.get()
                                      .convertCommandSyntaxException(e);
             }
-        } catch (IncorrectArgumentInputException e) {
+        } catch (ArgumentParseException e) {
             if (additionalParser != null) {
                 t = additionalParser.apply(ctx, ctx.getInput(name));
             }
@@ -178,12 +176,8 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
             }
         }
 
-        try {
-            if (filter != null && !filter.apply(t, ctx)) {
-                throw new IncorrectArgumentInputException(this, ctx, ctx.getInput(name));
-            }
-        } catch (InvalidArgumentException e) {
-            throw e.toIncorrectArgumentInputException();
+        if (validator != null) {
+            validator.validate(t, ctx);
         }
 
         if (shaper == null) {
@@ -192,7 +186,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         return shaper.apply(t, ctx);
     }
 
-    protected abstract T parseImpl(C ctx) throws CommandSyntaxException, IncorrectArgumentInputException;
+    protected abstract T parseImpl(C ctx) throws CommandSyntaxException, ArgumentParseException;
 
     public static class Option<T, C extends AbstractCommandContext<?, ?>> {
         protected boolean displayDefaultSuggestions = true;
@@ -202,10 +196,15 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
          */
         protected SuggestionAction<C> additionalSuggestionAction;
         protected BiFunction<C, String, T> additionalParser;
-        protected BiFunction<? super T, C, Boolean> filter;
+        protected ArgumentValidator<? super T, C> validator;
         protected BiFunction<? super T, C, ? extends T> shaper;
         protected ContextAction<C> contextAction;
         protected final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers = new ArrayList<>();
+        private final CommonArgument<T, C> argument;
+
+        public Option(CommonArgument<T, C> argument) {
+            this.argument = argument;
+        }
 
         public Option<T, C> displayDefaultSuggestions(boolean displayDefaultSuggestions) {
             this.displayDefaultSuggestions = displayDefaultSuggestions;
@@ -244,16 +243,16 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         }
 
         /**
-         * Filtering values on tab completion and after parsing.<br>
-         * Throwing {@link net.kunmc.lab.commandlib.exception.InvalidArgumentException}, you can customize the error message.
+         * Validates values on tab completion and after parsing.<br>
          */
-        public Option<T, C> filter(@Nullable Consumer<? super T> filter) {
-            if (filter == null) {
-                this.filter = null;
+        public Option<T, C> validator(@Nullable Predicate<? super T> validator) {
+            if (validator == null) {
+                this.validator = null;
             } else {
-                filter(x -> {
-                    filter.accept(x);
-                    return true;
+                validator((x, ctx) -> {
+                    if (!validator.test(x)) {
+                        throw new ArgumentValidationException(argument, ctx, ctx.getInput(argument.name()));
+                    }
                 });
             }
 
@@ -261,16 +260,16 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         }
 
         /**
-         * Filtering values on tab completion and after parsing.<br>
-         * Throwing {@link net.kunmc.lab.commandlib.exception.InvalidArgumentException}, you can customize the error message.
+         * Validates values on tab completion and after parsing.<br>
          */
-        public Option<T, C> filter(@Nullable BiConsumer<? super T, C> filter) {
-            if (filter == null) {
-                this.filter = null;
+        public Option<T, C> validator(@Nullable BiFunction<? super T, C, Boolean> validator) {
+            if (validator == null) {
+                this.validator = null;
             } else {
-                filter((x, ctx) -> {
-                    filter.accept(x, ctx);
-                    return true;
+                validator((x, ctx) -> {
+                    if (!validator.apply(x, ctx)) {
+                        throw new ArgumentValidationException(argument, ctx, ctx.getInput(argument.name()));
+                    }
                 });
             }
 
@@ -278,32 +277,16 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         }
 
         /**
-         * Filtering values on tab completion and after parsing.<br>
-         * Throwing {@link net.kunmc.lab.commandlib.exception.InvalidArgumentException}, you can customize the error message.
+         * Validates values on tab completion and after parsing.<br>
+         * Throwing {@link net.kunmc.lab.commandlib.exception.ArgumentValidationException}, you can customize the error message.
          */
-        public Option<T, C> filter(@Nullable Predicate<? super T> filter) {
-            if (filter == null) {
-                this.filter = null;
-            } else {
-                filter((x, ctx) -> {
-                    return filter.test(x);
-                });
-            }
-
+        public Option<T, C> validator(@Nullable ArgumentValidator<? super T, C> validator) {
+            this.validator = validator;
             return this;
         }
 
-        /**
-         * Filtering values on tab completion and after parsing.<br>
-         * Throwing {@link net.kunmc.lab.commandlib.exception.InvalidArgumentException}, you can customize the error message.
-         */
-        public Option<T, C> filter(@Nullable BiFunction<? super T, C, Boolean> filter) {
-            this.filter = filter;
-            return this;
-        }
-
-        protected Optional<BiFunction<? super T, C, Boolean>> filter() {
-            return Optional.ofNullable(filter);
+        protected Optional<ArgumentValidator<? super T, C>> validator() {
+            return Optional.ofNullable(validator);
         }
 
         public Option<T, C> shaper(@Nullable Function<? super T, ? extends T> shaper) {

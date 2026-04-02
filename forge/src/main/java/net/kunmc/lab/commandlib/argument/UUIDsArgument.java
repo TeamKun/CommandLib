@@ -5,7 +5,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.StringUtil;
 import net.minecraft.command.arguments.GameProfileArgument;
 import net.minecraft.server.management.PlayerProfileCache;
@@ -25,7 +25,7 @@ public class UUIDsArgument extends Argument<List<UUID>> {
     public UUIDsArgument(String name, Consumer<Option<List<UUID>, CommandContext>> options) {
         super(name, GameProfileArgument.gameProfile());
 
-        setSuggestionAction(sb -> {
+        suggestionAction(sb -> {
             String input = sb.getLatestInput();
 
             Map<UUID, String> uuidToNameMap = new HashMap<>();
@@ -36,7 +36,7 @@ public class UUIDsArgument extends Argument<List<UUID>> {
               .stream()
               .map(getPlayerProfileCache()::getGameProfileForUsername)
               .filter(Objects::nonNull)
-              .filter(x -> filter().apply(Collections.singletonList(x.getId()), sb.getContext()))
+              .filter(x -> filter(sb.getContext()).test(Collections.singletonList(x.getId())))
               .filter(x -> {
                   if (input.isEmpty()) {
                       return true;
@@ -63,7 +63,7 @@ public class UUIDsArgument extends Argument<List<UUID>> {
                  .filter(x -> input.isEmpty() || x.startsWith(input))
                  .forEach(sb::suggest);
         });
-        setDisplayDefaultSuggestions(false);
+        displayDefaultSuggestions(false);
         applyOptions(options);
     }
 
@@ -73,7 +73,7 @@ public class UUIDsArgument extends Argument<List<UUID>> {
     }
 
     @Override
-    protected List<UUID> parseImpl(CommandContext ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
+    protected List<UUID> parseImpl(CommandContext ctx) throws CommandSyntaxException, ArgumentParseException {
         String s = ctx.getInput(name());
 
         if (s.startsWith("@")) {
@@ -89,17 +89,17 @@ public class UUIDsArgument extends Argument<List<UUID>> {
                 if (!uuids.isEmpty()) {
                     return uuids;
                 }
-                throw new IncorrectArgumentInputException(x -> x.sendFailure("no player found"));
+                throw new ArgumentParseException(x -> x.sendFailure("no player found"));
             }
             if (s.equals("@r")) {
                 Collections.shuffle(uuids, ThreadLocalRandom.current());
                 return Collections.singletonList(uuids.stream()
                                                       .findFirst()
-                                                      .orElseThrow(() -> new IncorrectArgumentInputException(x -> x.sendFailure(
+                                                      .orElseThrow(() -> new ArgumentParseException(x -> x.sendFailure(
                                                               "no player found"))));
             }
 
-            throw new IncorrectArgumentInputException(x -> x.sendFailure(s + " is invalid selector"));
+            throw new ArgumentParseException(x -> x.sendFailure(s + " is invalid selector"));
         }
 
         GameProfile gameProfile = getPlayerProfileCache().getGameProfileForUsername(s);
@@ -110,7 +110,7 @@ public class UUIDsArgument extends Argument<List<UUID>> {
         try {
             return Collections.singletonList(UUID.fromString(s));
         } catch (IllegalArgumentException e) {
-            throw new IncorrectArgumentInputException(x -> x.sendFailure(s + " is not found or not valid UUID"));
+            throw new ArgumentParseException(x -> x.sendFailure(s + " is not found or not valid UUID"));
         }
     }
 

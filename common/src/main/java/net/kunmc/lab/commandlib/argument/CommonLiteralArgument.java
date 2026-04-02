@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 import net.kunmc.lab.commandlib.ContextAction;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -36,7 +36,7 @@ public class CommonLiteralArgument<C extends AbstractCommandContext<?, ?>> exten
         super(name, StringArgumentType.string());
         this.literalsSupplier = Objects.requireNonNull(literalsSupplier);
 
-        setSuggestionAction(sb -> {
+        suggestionAction(sb -> {
             literalsSupplier.get()
                             .stream()
                             .filter(x -> sb.getLatestInput()
@@ -66,12 +66,12 @@ public class CommonLiteralArgument<C extends AbstractCommandContext<?, ?>> exten
     }
 
     @Override
-    protected final String parseImpl(C ctx) throws IncorrectArgumentInputException {
+    protected final String parseImpl(C ctx) throws ArgumentParseException {
         String s = StringArgumentType.getString(ctx.getHandle(), name());
         return literalsSupplier.get()
                                .stream()
                                .filter(s::equals)
                                .findFirst()
-                               .orElseThrow(() -> new IncorrectArgumentInputException(this, ctx, s));
+                               .orElseThrow(() -> new ArgumentParseException(this, ctx, s));
     }
 }

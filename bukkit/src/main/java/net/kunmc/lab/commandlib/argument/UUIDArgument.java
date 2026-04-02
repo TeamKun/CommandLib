@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.StringUtil;
 import net.kunmc.lab.commandlib.util.bukkit.BukkitUtil;
 import org.bukkit.Bukkit;
@@ -25,10 +25,10 @@ public class UUIDArgument extends Argument<UUID> {
     public UUIDArgument(String name, Consumer<Option<UUID, CommandContext>> options) {
         super(name, StringArgumentType.string());
 
-        setSuggestionAction(sb -> {
+        suggestionAction(sb -> {
             Map<UUID, String> uuidToNameMap = new HashMap<>();
             Arrays.stream(Bukkit.getOfflinePlayers())
-                  .filter(x -> filter().apply(x.getUniqueId(), sb.getContext()))
+                  .filter(x -> filter(sb.getContext()).test(x.getUniqueId()))
                   .filter(x -> {
                       String input = sb.getLatestInput();
                       if (input.isEmpty()) {
@@ -51,7 +51,7 @@ public class UUIDArgument extends Argument<UUID> {
                 }
             });
         });
-        setDisplayDefaultSuggestions(false);
+        displayDefaultSuggestions(false);
         applyOptions(options);
     }
 
@@ -61,7 +61,7 @@ public class UUIDArgument extends Argument<UUID> {
     }
 
     @Override
-    protected UUID parseImpl(CommandContext ctx) throws CommandSyntaxException, IncorrectArgumentInputException {
+    protected UUID parseImpl(CommandContext ctx) throws CommandSyntaxException, ArgumentParseException {
         String s = StringArgumentType.getString(ctx.getHandle(), name());
 
         OfflinePlayer p = BukkitUtil.getOfflinePlayerIfEverPlayed(s);
@@ -72,7 +72,7 @@ public class UUIDArgument extends Argument<UUID> {
         try {
             return UUID.fromString(s);
         } catch (IllegalArgumentException e) {
-            throw new IncorrectArgumentInputException(x -> {
+            throw new ArgumentParseException(x -> {
                 x.sendFailure(s + " is not found or not valid UUID");
             });
         }

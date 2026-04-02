@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib.argument;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.SuggestionAction;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentProfile;
 
 import java.util.function.Consumer;
@@ -19,8 +19,8 @@ public class UnparsedArgument extends Argument<String> {
         super(name,
               NMSArgumentProfile.create()
                                 .argument());
-        setDisplayDefaultSuggestions(false);
-        setSuggestionAction(((Supplier<SuggestionAction<CommandContext>>) () -> {
+        displayDefaultSuggestions(false);
+        suggestionAction(((Supplier<SuggestionAction<CommandContext>>) () -> {
             if (suggestionAction() == null) {
                 return sb -> {
                 };
@@ -36,7 +36,7 @@ public class UnparsedArgument extends Argument<String> {
     }
 
     @Override
-    protected String parseImpl(CommandContext ctx) throws IncorrectArgumentInputException {
+    protected String parseImpl(CommandContext ctx) throws ArgumentParseException {
         return ctx.getInput(name());
     }
 }

@@ -16,8 +16,8 @@ public class UnparsedArgument extends Argument<String> {
 
     public UnparsedArgument(String name, Consumer<Option<String, CommandContext>> options) {
         super(name, GameProfileArgument.gameProfile());
-        setDisplayDefaultSuggestions(false);
-        setSuggestionAction(((Supplier<SuggestionAction<CommandContext>>) () -> {
+        displayDefaultSuggestions(false);
+        suggestionAction(((Supplier<SuggestionAction<CommandContext>>) () -> {
             if (suggestionAction() == null) {
                 return sb -> {
                 };

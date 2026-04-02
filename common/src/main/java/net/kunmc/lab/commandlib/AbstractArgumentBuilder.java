@@ -140,7 +140,7 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
      */
     public final <E> T customArgument(@NotNull CommonArgument<E, C> argument,
                                       @Nullable ContextAction<C> contextAction) {
-        argument.setContextAction(contextAction);
+        argument.contextAction(contextAction);
         return addArgument(argument);
     }
 
@@ -168,7 +168,7 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
                                                     @Nullable Predicate<? super E> filter,
                                                     @Nullable ContextAction<C> contextAction) {
         return enumArgumentWith(name, clazz, option -> {
-            option.filter(filter)
+            option.validator(filter)
                   .contextAction(contextAction);
         });
     }
@@ -396,7 +396,7 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
                                                                @Nullable Predicate<? super E> filter,
                                                                @Nullable ContextAction<C> contextAction) {
         return nameableObjectArgumentWith(name, candidates, option -> {
-            option.filter(filter)
+            option.validator(filter)
                   .contextAction(contextAction);
         });
     }
@@ -428,7 +428,7 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
                                       @Nullable Predicate<? super E> filter,
                                       @Nullable ContextAction<C> contextAction) {
         return objectArgumentWith(name, nameToObjectMap, option -> {
-            option.filter(filter)
+            option.validator(filter)
                   .contextAction(contextAction);
         });
     }
@@ -523,7 +523,7 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
         if (!arguments.isEmpty()) {
             CommonArgument<?, C> last = arguments.get(arguments.size() - 1);
             if (last.contextAction() == null) {
-                last.setContextAction(contextAction);
+                last.contextAction(contextAction);
             }
         }
 

@@ -2,7 +2,7 @@ package net.kunmc.lab.commandlib.argument;
 
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.minecraft.enchantment.Enchantment;
 
 import java.util.function.Consumer;
@@ -24,7 +24,7 @@ public class EnchantmentArgument extends Argument<Enchantment> {
     }
 
     @Override
-    protected Enchantment parseImpl(CommandContext ctx) throws IncorrectArgumentInputException {
+    protected Enchantment parseImpl(CommandContext ctx) throws ArgumentParseException {
         return net.minecraft.command.arguments.EnchantmentArgument.getEnchantment(ctx.getHandle(), name());
     }
 }

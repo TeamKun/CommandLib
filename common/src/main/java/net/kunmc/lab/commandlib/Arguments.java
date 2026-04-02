@@ -2,7 +2,7 @@ package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.ChatColorUtil;
 
 import java.util.List;
@@ -16,7 +16,7 @@ final class Arguments<C extends AbstractCommandContext<?, ?>> {
         this.arguments = arguments;
     }
 
-    void parse(C ctx) throws IncorrectArgumentInputException {
+    void parse(C ctx) throws ArgumentParseException {
         long count = ctx.getHandle()
                         .getNodes()
                         .stream()

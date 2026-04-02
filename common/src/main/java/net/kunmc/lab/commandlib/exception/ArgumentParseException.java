@@ -9,13 +9,13 @@ import net.kunmc.lab.commandlib.util.ChatColorUtil;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public final class IncorrectArgumentInputException extends Exception {
+public class ArgumentParseException extends Exception {
     private final Consumer<AbstractCommandContext<?, ?>> sendMessages;
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public <C extends AbstractCommandContext<?, ?>> IncorrectArgumentInputException(CommonArgument<?, C> argument,
-                                                                                    C ctx,
-                                                                                    String incorrectInput) {
+    public <C extends AbstractCommandContext<?, ?>> ArgumentParseException(CommonArgument<?, C> argument,
+                                                                           C ctx,
+                                                                           String incorrectInput) {
         String input = ctx.getHandle()
                           .getInput();
         StringRange range = ctx.getHandle()
@@ -50,7 +50,7 @@ public final class IncorrectArgumentInputException extends Exception {
         };
     }
 
-    public IncorrectArgumentInputException(Consumer<AbstractCommandContext<?, ?>> sendMessages) {
+    public ArgumentParseException(Consumer<AbstractCommandContext<?, ?>> sendMessages) {
         this.sendMessages = sendMessages;
     }
 

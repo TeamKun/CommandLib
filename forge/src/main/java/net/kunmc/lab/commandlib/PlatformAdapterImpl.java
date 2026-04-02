@@ -1,7 +1,7 @@
 package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.text.TextComponentBuilderImpl;
 import net.kunmc.lab.commandlib.util.text.TranslatableComponentBuilderImpl;
 import net.minecraft.command.CommandSource;
@@ -31,8 +31,8 @@ public final class PlatformAdapterImpl implements PlatformAdapter<CommandSource,
     }
 
     @Override
-    public IncorrectArgumentInputException convertCommandSyntaxException(CommandSyntaxException e) {
-        return new IncorrectArgumentInputException(ctx -> {
+    public ArgumentParseException convertCommandSyntaxException(CommandSyntaxException e) {
+        return new ArgumentParseException(ctx -> {
             ((CommandContext) ctx).sendMessage(((ITextComponent) e.getRawMessage()));
         });
     }

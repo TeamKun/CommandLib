@@ -2,7 +2,7 @@ package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +26,7 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
                     C ctx = platformAdapter.createCommandContext(context);
                     try {
                         arguments.parse(ctx);
-                    } catch (IncorrectArgumentInputException ignored) {
+                    } catch (ArgumentParseException ignored) {
                     }
 
                     SuggestionBuilder<C> suggestionBuilder = new SuggestionBuilder<>(ctx);

@@ -2,7 +2,7 @@ package net.kunmc.lab.commandlib.argument;
 
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.minecraft.particles.IParticleData;
 
 import java.util.function.Consumer;
@@ -24,7 +24,7 @@ public class ParticleArgument extends Argument<IParticleData> {
     }
 
     @Override
-    protected IParticleData parseImpl(CommandContext ctx) throws IncorrectArgumentInputException {
+    protected IParticleData parseImpl(CommandContext ctx) throws ArgumentParseException {
         return net.minecraft.command.arguments.ParticleArgument.getParticle(ctx.getHandle(), name());
     }
 }

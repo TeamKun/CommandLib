@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import net.kunmc.lab.commandlib.exception.CommandPrerequisiteException;
-import net.kunmc.lab.commandlib.exception.IncorrectArgumentInputException;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.UncaughtExceptionHandler;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,7 +45,7 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
                 if (arguments != null) {
                     try {
                         arguments.parse(ctx);
-                    } catch (IncorrectArgumentInputException e) {
+                    } catch (ArgumentParseException e) {
                         e.sendMessage(ctx);
                         return 1;
                     }
