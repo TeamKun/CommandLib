@@ -45,6 +45,6 @@ public class OfflinePlayerArgument extends Argument<OfflinePlayer> {
                      .filter(x -> x.getName() != null && x.getName()
                                                           .equalsIgnoreCase(s))
                      .findFirst()
-                     .orElseThrow(() -> new ArgumentParseException(this, ctx, s));
+                     .orElseThrow(() -> ArgumentParseException.ofIncorrectInput(this.name(), ctx, s));
     }
 }

@@ -146,7 +146,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
             try {
                 validator.validate(x, ctx);
                 return true;
-            } catch (ArgumentValidationException e) {
+            } catch (ArgumentParseException e) {
                 return false;
             }
         };
@@ -251,7 +251,9 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
             } else {
                 validator((x, ctx) -> {
                     if (!validator.test(x)) {
-                        throw new ArgumentValidationException(argument, ctx, ctx.getInput(argument.name()));
+                        throw ArgumentValidationException.ofIncorrectInput(argument.name(),
+                                                                           ctx,
+                                                                           ctx.getInput(argument.name()));
                     }
                 });
             }
@@ -268,7 +270,9 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
             } else {
                 validator((x, ctx) -> {
                     if (!validator.apply(x, ctx)) {
-                        throw new ArgumentValidationException(argument, ctx, ctx.getInput(argument.name()));
+                        throw ArgumentValidationException.ofIncorrectInput(argument.name(),
+                                                                           ctx,
+                                                                           ctx.getInput(argument.name()));
                     }
                 });
             }

@@ -45,6 +45,6 @@ public class CommonEnumArgument<T extends Enum<T>, C extends AbstractCommandCont
                      .filter(x -> x.name()
                                    .equalsIgnoreCase(s))
                      .findFirst()
-                     .orElseThrow(() -> new ArgumentParseException(this, ctx, s));
+                     .orElseThrow(() -> ArgumentParseException.ofIncorrectInput(this.name(), ctx, s));
     }
 }

@@ -17,7 +17,8 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
     protected final T addArgument(@NotNull CommonArgument<?, C> argument) {
         Objects.requireNonNull(argument);
         boolean duplicated = arguments.stream()
-                                      .anyMatch(x -> x.name().equals(argument.name()));
+                                      .anyMatch(x -> x.name()
+                                                      .equals(argument.name()));
         if (duplicated) {
             throw new IllegalArgumentException("Duplicate argument name: " + argument.name());
         }

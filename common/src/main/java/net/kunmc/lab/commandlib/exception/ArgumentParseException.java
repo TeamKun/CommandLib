@@ -2,7 +2,6 @@ package net.kunmc.lab.commandlib.exception;
 
 import com.mojang.brigadier.context.StringRange;
 import net.kunmc.lab.commandlib.AbstractCommandContext;
-import net.kunmc.lab.commandlib.CommonArgument;
 import net.kunmc.lab.commandlib.PlatformAdapter;
 import net.kunmc.lab.commandlib.util.ChatColorUtil;
 
@@ -13,9 +12,10 @@ public class ArgumentParseException extends Exception {
     private final Consumer<AbstractCommandContext<?, ?>> sendMessages;
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public <C extends AbstractCommandContext<?, ?>> ArgumentParseException(CommonArgument<?, C> argument,
-                                                                           C ctx,
-                                                                           String incorrectInput) {
+    protected static <C extends AbstractCommandContext<?, ?>> Consumer<AbstractCommandContext<?, ?>> buildIncorrectInputMessage(
+            String argumentName,
+            C ctx,
+            String incorrectInput) {
         String input = ctx.getHandle()
                           .getInput();
         StringRange range = ctx.getHandle()
@@ -23,7 +23,7 @@ public class ArgumentParseException extends Exception {
                                .stream()
                                .filter(n -> n.getNode()
                                              .getName()
-                                             .equals(argument.name()))
+                                             .equals(argumentName))
                                .findFirst()
                                .orElseThrow(IllegalStateException::new)
                                .getRange();
@@ -35,7 +35,7 @@ public class ArgumentParseException extends Exception {
         }
 
         String finalStr = str;
-        this.sendMessages = context -> {
+        return context -> {
             AbstractCommandContext c = context;
             c.sendComponent(platformAdapter.createTranslatableComponentBuilder("command.unknown.argument")
                                            .color(Objects.requireNonNull(ChatColorUtil.RED.getRGB()))
@@ -48,6 +48,21 @@ public class ArgumentParseException extends Exception {
                                                                   .build())
                                            .build());
         };
+    }
+
+    public static <C extends AbstractCommandContext<?, ?>> ArgumentParseException ofIncorrectInput(String argumentName,
+                                                                                                   C ctx,
+                                                                                                   String incorrectInput) {
+        return new ArgumentParseException(buildIncorrectInputMessage(argumentName, ctx, incorrectInput));
+    }
+
+    public ArgumentParseException(String message, String... messages) {
+        this(ctx -> {
+            ctx.sendFailure(message);
+            for (String s : messages) {
+                ctx.sendFailure(s);
+            }
+        });
     }
 
     public ArgumentParseException(Consumer<AbstractCommandContext<?, ?>> sendMessages) {

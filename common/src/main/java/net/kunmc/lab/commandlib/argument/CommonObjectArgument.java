@@ -61,6 +61,6 @@ public class CommonObjectArgument<T, C extends AbstractCommandContext<?, ?>> ext
                                         .equals(s))
                           .map(Map.Entry::getValue)
                           .findFirst()
-                          .orElseThrow(() -> new ArgumentParseException(this, ctx, s));
+                          .orElseThrow(() -> ArgumentParseException.ofIncorrectInput(this.name(), ctx, s));
     }
 }

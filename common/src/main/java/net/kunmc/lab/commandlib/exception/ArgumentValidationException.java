@@ -1,28 +1,22 @@
 package net.kunmc.lab.commandlib.exception;
 
 import net.kunmc.lab.commandlib.AbstractCommandContext;
-import net.kunmc.lab.commandlib.CommonArgument;
 
 import java.util.function.Consumer;
 
 public class ArgumentValidationException extends ArgumentParseException {
-    public ArgumentValidationException() {
-        this("不正な値です");
+    public static <C extends AbstractCommandContext<?, ?>> ArgumentValidationException ofIncorrectInput(String argumentName,
+                                                                                                        C ctx,
+                                                                                                        String incorrectInput) {
+        return new ArgumentValidationException(buildIncorrectInputMessage(argumentName, ctx, incorrectInput));
     }
 
-    public <C extends AbstractCommandContext<?, ?>> ArgumentValidationException(CommonArgument<?, C> argument,
-                                                                                C ctx,
-                                                                                String incorrectInput) {
-        super(argument, ctx, incorrectInput);
+    public ArgumentValidationException() {
+        super("不正な値です");
     }
 
     public ArgumentValidationException(String message, String... messages) {
-        this(ctx -> {
-            ctx.sendFailure(message);
-            for (String s : messages) {
-                ctx.sendFailure(s);
-            }
-        });
+        super(message, messages);
     }
 
     public ArgumentValidationException(Consumer<AbstractCommandContext<?, ?>> sendMessages) {

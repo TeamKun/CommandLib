@@ -72,6 +72,6 @@ public class CommonLiteralArgument<C extends AbstractCommandContext<?, ?>> exten
                                .stream()
                                .filter(s::equals)
                                .findFirst()
-                               .orElseThrow(() -> new ArgumentParseException(this, ctx, s));
+                               .orElseThrow(() -> ArgumentParseException.ofIncorrectInput(this.name(), ctx, s));
     }
 }

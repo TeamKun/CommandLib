@@ -61,6 +61,6 @@ public class CommonNameableObjectArgument<T extends Nameable, C extends Abstract
                                  .filter(x -> x.tabCompleteName()
                                                .equals(s))
                                  .findFirst()
-                                 .orElseThrow(() -> new ArgumentParseException(this, ctx, s));
+                                 .orElseThrow(() -> ArgumentParseException.ofIncorrectInput(this.name(), ctx, s));
     }
 }

@@ -2,8 +2,8 @@ package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
-import net.kunmc.lab.commandlib.exception.CommandPrerequisiteException;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
+import net.kunmc.lab.commandlib.exception.CommandPrerequisiteException;
 import net.kunmc.lab.commandlib.util.UncaughtExceptionHandler;
 import org.jetbrains.annotations.Nullable;
 

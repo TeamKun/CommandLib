@@ -85,7 +85,7 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
 
         OfflinePlayer p = BukkitUtil.getOfflinePlayerIfEverPlayed(s);
         if (p == null) {
-            throw new ArgumentParseException(this, ctx, s);
+            throw ArgumentParseException.ofIncorrectInput(this.name(), ctx, s);
         }
 
         return Collections.singletonList(p);

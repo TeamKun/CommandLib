@@ -56,7 +56,7 @@ public class GameProfileArgument extends Argument<GameProfile> {
                   .filter(x -> x.getName()
                                 .equalsIgnoreCase(s))
                   .findFirst()
-                  .orElseThrow(() -> new ArgumentParseException(this, ctx, s));
+                  .orElseThrow(() -> ArgumentParseException.ofIncorrectInput(this.name(), ctx, s));
     }
 
     private static PlayerProfileCache getPlayerProfileCache() {
