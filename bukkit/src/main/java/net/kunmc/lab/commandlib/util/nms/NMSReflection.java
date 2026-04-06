@@ -28,7 +28,7 @@ public class NMSReflection {
                             .getName()
                             .split("\\.")[3];
         } catch (ArrayIndexOutOfBoundsException e) {
-            // 1.20.5からはバージョンがパッケージ名から消えている
+            // Since 1.20.5, the version is no longer included in the package name
             version = null;
         }
 

@@ -75,7 +75,7 @@ public final class CommandLib implements Listener {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void enable() {
-        // 1ティック遅延させないとreload confirmの時にバグる
+        // Delay by 1 tick to avoid a bug with reload confirm
         new BukkitRunnable() {
             @Override
             public void run() {

@@ -12,7 +12,7 @@ public class ArgumentValidationException extends ArgumentParseException {
     }
 
     public ArgumentValidationException() {
-        super("不正な値です");
+        super("Invalid value.");
     }
 
     public ArgumentValidationException(String message, String... messages) {
