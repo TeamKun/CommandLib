@@ -86,7 +86,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
     }
 
     public final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers() {
-        return Collections.unmodifiableList(uncaughtExceptionHandlers);
+        return List.copyOf(uncaughtExceptionHandlers);
     }
 
     protected final void contextAction(@Nullable ContextAction<C> contextAction) {

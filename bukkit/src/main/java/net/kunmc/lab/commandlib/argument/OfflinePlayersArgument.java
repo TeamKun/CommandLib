@@ -1,6 +1,5 @@
 package net.kunmc.lab.commandlib.argument;
 
-import com.google.common.collect.Lists;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
@@ -34,7 +33,7 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
             String input = sb.getLatestInput();
 
             Arrays.stream(Bukkit.getOfflinePlayers())
-                  .filter(x -> filter(sb.getContext()).test(Collections.singletonList(x)))
+                  .filter(x -> filter(sb.getContext()).test(List.of(x)))
                   .filter(x -> {
                       if (input.isEmpty()) {
                           return true;
@@ -46,10 +45,10 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
                   .filter(Objects::nonNull)
                   .forEach(sb::suggest);
 
-            Lists.newArrayList("@a", "@r")
-                 .stream()
-                 .filter(x -> input.isEmpty() || x.startsWith(input))
-                 .forEach(sb::suggest);
+            List.of("@a", "@r")
+                .stream()
+                .filter(x -> input.isEmpty() || x.startsWith(input))
+                .forEach(sb::suggest);
         });
         applyOptions(options);
     }
@@ -74,10 +73,10 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
             }
             if (s.equals("@r")) {
                 Collections.shuffle(players, ThreadLocalRandom.current());
-                return Collections.singletonList(players.stream()
-                                                        .findFirst()
-                                                        .orElseThrow(() -> new ArgumentParseException(x -> x.sendFailure(
-                                                                "no player found."))));
+                return List.of(players.stream()
+                                      .findFirst()
+                                      .orElseThrow(() -> new ArgumentParseException(x -> x.sendFailure(
+                                              "no player found."))));
             }
 
             throw new ArgumentParseException(x -> x.sendFailure(s + " is invalid selector."));
@@ -88,6 +87,6 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
             throw ArgumentParseException.ofIncorrectInput(this.name(), ctx, s);
         }
 
-        return Collections.singletonList(p);
+        return List.of(p);
     }
 }

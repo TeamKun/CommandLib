@@ -4,7 +4,7 @@ import java.nio.file.StandardCopyOption
 
 plugins {
     id "java"
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "com.gradleup.shadow" version "9.1.0"
 }
 
 group = "net.kunmc.lab"
@@ -30,7 +30,7 @@ dependencies {
     implementation 'com.opencsv:opencsv:5.9'
 }
 
-def targetJavaVersion = 8
+def targetJavaVersion = 11
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion

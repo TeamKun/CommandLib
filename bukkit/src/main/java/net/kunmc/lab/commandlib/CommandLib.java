@@ -1,6 +1,5 @@
 package net.kunmc.lab.commandlib;
 
-import com.google.common.collect.Lists;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
@@ -32,10 +31,13 @@ public final class CommandLib implements Listener {
     private final List<CommandNode<?>> registeredCommands = new ArrayList<>();
 
     public static CommandLib register(@NotNull Plugin plugin, @NotNull Command command, @NotNull Command... commands) {
-        return register(plugin, Lists.asList(command, commands));
+        List<Command> list = new ArrayList<>();
+        list.add(command);
+        Collections.addAll(list, commands);
+        return register(plugin, list);
     }
 
-    public static CommandLib register(@NotNull Plugin plugin, @NotNull Collection<? extends Command> commands) {
+    public static CommandLib register(@NotNull Plugin plugin, @NotNull Collection<Command> commands) {
         return new CommandLib(plugin, commands, "minecraft.command");
     }
 
@@ -43,7 +45,10 @@ public final class CommandLib implements Listener {
                                       @NotNull String permissionPrefix,
                                       @NotNull Command command,
                                       @NotNull Command... commands) {
-        return register(plugin, permissionPrefix, Lists.asList(command, commands));
+        List<Command> list = new ArrayList<>();
+        list.add(command);
+        Collections.addAll(list, commands);
+        return register(plugin, permissionPrefix, list);
     }
 
     public static CommandLib register(@NotNull Plugin plugin,

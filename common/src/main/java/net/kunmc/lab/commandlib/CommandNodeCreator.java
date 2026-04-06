@@ -3,12 +3,12 @@ package net.kunmc.lab.commandlib;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import net.kunmc.lab.commandlib.util.ChatColorUtil;
-import net.kunmc.lab.commandlib.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -99,8 +99,8 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
 
     private ContextAction<C> createSendHelpAction(U command) {
         return ctx -> {
-            String border = ChatColorUtil.GRAY + StringUtil.repeat("-", 50);
-            String padding = StringUtil.repeat(" ", 2);
+            String border = ChatColorUtil.GRAY + "-".repeat(50);
+            String padding = " ".repeat(2);
 
             String literalConcatName = ((Supplier<String>) () -> {
                 LinkedList<U> commands = new LinkedList<>();
@@ -149,7 +149,7 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
             List<String> concatenatedTagNames = command.argumentsList()
                                                        .stream()
                                                        .map(Arguments::concatTagNames)
-                                                       .filter(x -> !x.isEmpty())
+                                                       .filter(Predicate.not(String::isEmpty))
                                                        .map(x -> padding + ChatColorUtil.AQUA + "/" + literalConcatName + " " + x)
                                                        .collect(Collectors.toList());
             if (!permissibleChildren.isEmpty() && !concatenatedTagNames.isEmpty()) {

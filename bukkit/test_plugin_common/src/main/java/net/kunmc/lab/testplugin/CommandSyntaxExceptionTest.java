@@ -1,6 +1,5 @@
 package net.kunmc.lab.testplugin;
 
-import com.google.common.collect.Lists;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
@@ -53,6 +52,6 @@ public class CommandSyntaxExceptionTest extends TestBase {
         }});
         putResult(new TestResult(key, TestStatus.SUCCEEDED, "Succeeded converting CommandSyntaxException"));
 
-        return Lists.newArrayList(buildCommand(command, name + " true"));
+        return List.of(buildCommand(command, name + " true"));
     }
 }

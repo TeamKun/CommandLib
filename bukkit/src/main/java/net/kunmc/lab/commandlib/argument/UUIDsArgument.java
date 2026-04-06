@@ -1,6 +1,5 @@
 package net.kunmc.lab.commandlib.argument;
 
-import com.google.common.collect.Lists;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
@@ -33,7 +32,7 @@ public class UUIDsArgument extends Argument<List<UUID>> {
 
             Map<UUID, String> uuidToNameMap = new HashMap<>();
             Arrays.stream(Bukkit.getOfflinePlayers())
-                  .filter(x -> filter(sb.getContext()).test(Collections.singletonList(x.getUniqueId())))
+                  .filter(x -> filter(sb.getContext()).test(List.of(x.getUniqueId())))
                   .filter(x -> {
                       if (input.isEmpty()) {
                           return true;
@@ -54,7 +53,7 @@ public class UUIDsArgument extends Argument<List<UUID>> {
                 }
             });
 
-            Lists.newArrayList("@a", "@r")
+            List.of("@a", "@r")
                  .stream()
                  .filter(x -> input.isEmpty() || x.startsWith(input))
                  .forEach(sb::suggest);
@@ -85,7 +84,7 @@ public class UUIDsArgument extends Argument<List<UUID>> {
             }
             if (s.equals("@r")) {
                 Collections.shuffle(uuids, ThreadLocalRandom.current());
-                return Collections.singletonList(uuids.stream()
+                return List.of(uuids.stream()
                                                       .findFirst()
                                                       .orElseThrow(() -> new ArgumentParseException(x -> ((CommandContext) x).sendFailure(
                                                               new TextComponent("no player found")))));
@@ -96,11 +95,11 @@ public class UUIDsArgument extends Argument<List<UUID>> {
 
         OfflinePlayer p = BukkitUtil.getOfflinePlayerIfEverPlayed(s);
         if (p != null) {
-            return Collections.singletonList(p.getUniqueId());
+            return List.of(p.getUniqueId());
         }
 
         try {
-            return Collections.singletonList(UUID.fromString(s));
+            return List.of(UUID.fromString(s));
         } catch (IllegalArgumentException e) {
             throw new ArgumentParseException(x -> {
                 ((CommandContext) x).sendFailure(new TextComponent(s + " is not found or not valid UUID"));

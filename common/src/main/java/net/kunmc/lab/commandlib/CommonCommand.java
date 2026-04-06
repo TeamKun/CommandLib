@@ -1,6 +1,5 @@
 package net.kunmc.lab.commandlib;
 
-import com.google.common.collect.Lists;
 import net.kunmc.lab.commandlib.util.UncaughtExceptionHandler;
 import net.kunmc.lab.commandlib.util.function.*;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +49,10 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
 
     @SafeVarargs
     public final void addChildren(@NotNull T child, @NotNull T... children) {
-        addChildren(Lists.asList(child, children));
+        List<T> list = new ArrayList<>();
+        list.add(child);
+        Collections.addAll(list, children);
+        addChildren(list);
     }
 
     @SuppressWarnings("unchecked")
@@ -67,7 +69,10 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     }
 
     public final void addAliases(@NotNull String alias, @NotNull String... aliases) {
-        addAliases(Lists.asList(alias, aliases));
+        List<String> list = new ArrayList<>();
+        list.add(alias);
+        Collections.addAll(list, aliases);
+        addAliases(list);
     }
 
     public final void addAliases(@NotNull Collection<String> aliases) {
@@ -263,7 +268,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     }
 
     final List<T> children() {
-        return Collections.unmodifiableList(children);
+        return List.copyOf(children);
     }
 
     final Prerequisite<C> prerequisite() {
@@ -285,11 +290,11 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     }
 
     final List<Arguments<C>> argumentsList() {
-        return Collections.unmodifiableList(argumentsList);
+        return List.copyOf(argumentsList);
     }
 
     final List<String> aliases() {
-        return Collections.unmodifiableList(aliases);
+        return List.copyOf(aliases);
     }
 
     final ContextAction<C> contextAction() {
@@ -297,6 +302,6 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     }
 
     final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers() {
-        return Collections.unmodifiableList(uncaughtExceptionHandlers);
+        return List.copyOf(uncaughtExceptionHandlers);
     }
 }

@@ -49,8 +49,7 @@ public abstract class AbstractCommandContext<S, C> {
 
     @NotNull
     public final List<Object> getParsedArgs() {
-        return Arrays.asList(parsedArgMap.values()
-                                         .toArray());
+        return List.copyOf(parsedArgMap.values());
     }
 
     /**

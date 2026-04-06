@@ -1,6 +1,5 @@
 package net.kunmc.lab.testplugin;
 
-import com.google.common.collect.Lists;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import net.kunmc.lab.commandlib.Command;
@@ -42,7 +41,7 @@ public class TestMain {
         Command mainCommand = new MainCommand();
         ArgumentTest argumentTest = new ArgumentTest(mainCommand);
         CommandSyntaxExceptionTest commandSyntaxExceptionTest = new CommandSyntaxExceptionTest(mainCommand);
-        List<TestBase> tests = Lists.newArrayList(argumentTest, commandSyntaxExceptionTest);
+        List<TestBase> tests = List.of(argumentTest, commandSyntaxExceptionTest);
         List<String> commands = tests.stream()
                                      .flatMap(x -> x.build()
                                                     .stream())

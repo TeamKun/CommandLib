@@ -1,6 +1,5 @@
 package net.kunmc.lab.testplugin;
 
-import com.google.common.collect.Lists;
 import net.kunmc.lab.commandlib.Command;
 import net.kunmc.lab.commandlib.argument.*;
 import net.kunmc.lab.commandlib.util.ExceptionUtil;
@@ -65,7 +64,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " minecraft:stone"));
+        return List.of(buildCommand(command, name + " minecraft:stone"));
     }
 
     public List<String> booleanArgument() {
@@ -83,7 +82,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " true"));
+        return List.of(buildCommand(command, name + " true"));
     }
 
     public List<String> doubleArgument() {
@@ -101,7 +100,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " 1.0"));
+        return List.of(buildCommand(command, name + " 1.0"));
     }
 
     public List<String> enchantmentArgument() {
@@ -119,7 +118,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " minecraft:flame"));
+        return List.of(buildCommand(command, name + " minecraft:flame"));
     }
 
     public List<String> entitiesArgument() {
@@ -137,7 +136,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " @r"));
+        return List.of(buildCommand(command, name + " @r"));
     }
 
     public List<String> entityArgument() {
@@ -155,7 +154,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " @r"));
+        return List.of(buildCommand(command, name + " @r"));
     }
 
     public List<String> enumArgument() {
@@ -173,7 +172,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " air"));
+        return List.of(buildCommand(command, name + " air"));
     }
 
     public List<String> floatArgument() {
@@ -191,7 +190,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " 1.0"));
+        return List.of(buildCommand(command, name + " 1.0"));
     }
 
     public List<String> integerArgument() {
@@ -209,7 +208,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " 1"));
+        return List.of(buildCommand(command, name + " 1"));
     }
 
     public List<String> itemStackArgument() {
@@ -227,7 +226,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " minecraft:dirt"));
+        return List.of(buildCommand(command, name + " minecraft:dirt"));
     }
 
     public List<String> literalArgument() {
@@ -236,7 +235,7 @@ public final class ArgumentTest extends TestBase {
 
         putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
         command.addChildren(new Command(name) {{
-            argument(new LiteralArgument("a", Lists.newArrayList("a"), option -> {
+            argument(new LiteralArgument("a", List.of("a"), option -> {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
@@ -245,7 +244,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " a"));
+        return List.of(buildCommand(command, name + " a"));
     }
 
     public List<String> locationArgument() {
@@ -263,7 +262,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " 0 0 0"));
+        return List.of(buildCommand(command, name + " 0 0 0"));
     }
 
     public List<String> nameableObjectArgument() {
@@ -272,7 +271,7 @@ public final class ArgumentTest extends TestBase {
 
         putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
         command.addChildren(new Command(name) {{
-            argument(new NameableObjectArgument<>("a", Lists.newArrayList(() -> "a"), option -> {
+            argument(new NameableObjectArgument<>("a", List.of(() -> "a"), option -> {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
@@ -281,7 +280,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " a"));
+        return List.of(buildCommand(command, name + " a"));
     }
 
     public List<String> objectArgument() {
@@ -301,7 +300,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " a"));
+        return List.of(buildCommand(command, name + " a"));
     }
 
     public List<String> offlinePlayerArgument() {
@@ -320,7 +319,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " " + offlinePlayer.getName()));
+        return List.of(buildCommand(command, name + " " + offlinePlayer.getName()));
     }
 
     public List<String> offlinePlayersArgument() {
@@ -339,7 +338,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " " + offlinePlayer.getName()));
+        return List.of(buildCommand(command, name + " " + offlinePlayer.getName()));
     }
 
     public List<String> particleArgument() {
@@ -357,7 +356,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " minecraft:flame"));
+        return List.of(buildCommand(command, name + " minecraft:flame"));
     }
 
     public List<String> playerArgument() {
@@ -375,7 +374,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " " + TestMain.TEST_PLAYER_NAME));
+        return List.of(buildCommand(command, name + " " + TestMain.TEST_PLAYER_NAME));
     }
 
     public List<String> playersArgument() {
@@ -393,7 +392,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " " + TestMain.TEST_PLAYER_NAME));
+        return List.of(buildCommand(command, name + " " + TestMain.TEST_PLAYER_NAME));
     }
 
     public List<String> potionEffectArgument() {
@@ -411,7 +410,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " minecraft:speed"));
+        return List.of(buildCommand(command, name + " minecraft:speed"));
     }
 
     public List<String> stringArgument() {
@@ -429,7 +428,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " a"));
+        return List.of(buildCommand(command, name + " a"));
     }
 
     public List<String> teamArgument() {
@@ -456,7 +455,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " " + team.getName()));
+        return List.of(buildCommand(command, name + " " + team.getName()));
     }
 
     public List<String> unparsedArgument() {
@@ -474,7 +473,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " a"));
+        return List.of(buildCommand(command, name + " a"));
     }
 
     public List<String> uuidArgument() {
@@ -492,7 +491,7 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " " + UUID.randomUUID()));
+        return List.of(buildCommand(command, name + " " + UUID.randomUUID()));
     }
 
 
@@ -511,6 +510,6 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return Lists.newArrayList(buildCommand(command, name + " " + UUID.randomUUID()));
+        return List.of(buildCommand(command, name + " " + UUID.randomUUID()));
     }
 }

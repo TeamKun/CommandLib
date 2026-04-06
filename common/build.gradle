@@ -8,5 +8,4 @@ repositories {
 dependencies {
     compileOnly "com.mojang:brigadier:1.0.18"
     compileOnly "org.jetbrains:annotations:16.0.2"
-    api "com.google.guava:guava:31.1-jre"
 }
