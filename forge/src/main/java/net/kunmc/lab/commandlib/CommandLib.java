@@ -45,7 +45,7 @@ public final class CommandLib {
                                                                   .getDispatcher()
                                                                   .getRoot();
 
-        new CommandNodeCreator<>(commands).build()
-                                          .forEach(root::addChild);
+        new CommandNodeCreator<>(commands, "").build()
+                                              .forEach(root::addChild);
     }
 }
