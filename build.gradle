@@ -25,7 +25,7 @@ subprojects {
         }
     }
 
-    def targetJavaVersion = 8
+    def targetJavaVersion = 11
     java {
         def javaVersion = JavaVersion.toVersion(targetJavaVersion)
         sourceCompatibility = javaVersion

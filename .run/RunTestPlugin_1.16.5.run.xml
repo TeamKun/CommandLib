@@ -5,7 +5,7 @@
         <option name="PROGRAM_PARAMETERS" value="nogui"/>
         <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/bukkit/test_plugin_1.16.5/server"/>
         <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true"/>
-        <option name="ALTERNATIVE_JRE_PATH" value="1.8"/>
+        <option name="ALTERNATIVE_JRE_PATH" value="11"/>
         <method v="2">
             <option name="Gradle.BeforeRunTask" enabled="false" tasks="downloadServerJar"
                     externalProjectPath="$PROJECT_DIR$/bukkit/test_plugin_1.16.5" vmOptions="" scriptParameters=""/>

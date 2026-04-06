@@ -15,6 +15,8 @@ validation, improved usability, and extensibility, CommandLib empowers developer
 | **Forge**                | `1.16.5`                                                   | Currently supports only `1.16.5` and works fully.  |
 | **Mohist**               | `1.16.5`, `1.20.1`                                         | Works on Mohist since it's compatible with Spigot. |
 
+**Requires Java 11 or later.**
+
 ## Features
 
 1. **Type-Safe Arguments Handling**  
