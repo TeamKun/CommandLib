@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
+import net.kunmc.lab.commandlib.util.StringUtil;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -27,7 +28,7 @@ public class CommonEnumArgument<T extends Enum<T>, C extends AbstractCommandCont
                   .map(Enum::name)
                   .map(String::toLowerCase)
                   .filter(x -> sb.getLatestInput()
-                                 .isEmpty() || x.contains(sb.getLatestInput()))
+                                 .isEmpty() || StringUtil.containsIgnoreCase(x, sb.getLatestInput()))
                   .forEach(sb::suggest);
         });
         applyOptions(options);

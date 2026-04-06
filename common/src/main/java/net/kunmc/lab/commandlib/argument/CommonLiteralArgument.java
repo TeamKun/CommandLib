@@ -5,6 +5,7 @@ import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 import net.kunmc.lab.commandlib.ContextAction;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
+import net.kunmc.lab.commandlib.util.StringUtil;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -40,7 +41,7 @@ public class CommonLiteralArgument<C extends AbstractCommandContext<?, ?>> exten
             literalsSupplier.get()
                             .stream()
                             .filter(x -> sb.getLatestInput()
-                                           .isEmpty() || x.contains(sb.getLatestInput()))
+                                           .isEmpty() || StringUtil.containsIgnoreCase(x, sb.getLatestInput()))
                             .forEach(sb::suggest);
         });
         applyOptions(options);
@@ -53,7 +54,7 @@ public class CommonLiteralArgument<C extends AbstractCommandContext<?, ?>> exten
             literalsSupplier.get()
                             .stream()
                             .filter(x -> sb.getLatestInput()
-                                           .isEmpty() || x.contains(sb.getLatestInput()))
+                                           .isEmpty() || StringUtil.containsIgnoreCase(x, sb.getLatestInput()))
                             .forEach(sb::suggest);
         }, contextAction, StringArgumentType.string());
 

@@ -18,7 +18,8 @@ import java.util.List;
 
 class CommandPermissionTest {
     private static Command command(String name) {
-        return new Command(name) {};
+        return new Command(name) {
+        };
     }
 
     @Nested
@@ -70,10 +71,12 @@ class CommandPermissionTest {
             Mockito.when(mockPluginManager.getPermissionSubscriptions(Mockito.anyString()))
                    .thenReturn(Collections.emptySet());
             Server mockServer = Mockito.mock(Server.class);
-            Mockito.when(mockServer.getPluginManager()).thenReturn(mockPluginManager);
+            Mockito.when(mockServer.getPluginManager())
+                   .thenReturn(mockPluginManager);
 
             mockedBukkit = Mockito.mockStatic(Bukkit.class);
-            mockedBukkit.when(Bukkit::getServer).thenReturn(mockServer);
+            mockedBukkit.when(Bukkit::getServer)
+                        .thenReturn(mockServer);
         }
 
         @AfterEach
@@ -85,8 +88,11 @@ class CommandPermissionTest {
         void includes_self() {
             Command cmd = command("spawn");
             List<Permission> perms = cmd.permissions("myplugin.command");
-            Assertions.assertThat(perms).hasSize(1);
-            Assertions.assertThat(perms.get(0).getName()).isEqualTo("myplugin.command.spawn");
+            Assertions.assertThat(perms)
+                      .hasSize(1);
+            Assertions.assertThat(perms.get(0)
+                                       .getName())
+                      .isEqualTo("myplugin.command.spawn");
         }
 
         @Test
@@ -97,36 +103,42 @@ class CommandPermissionTest {
             root.addChildren(start, stop);
 
             List<Permission> perms = root.permissions("myplugin.command");
-            Assertions.assertThat(perms.stream().map(Permission::getName))
-                      .containsExactlyInAnyOrder(
-                              "myplugin.command.game",
-                              "myplugin.command.game.start",
-                              "myplugin.command.game.stop"
-                      );
+            Assertions.assertThat(perms.stream()
+                                       .map(Permission::getName))
+                      .containsExactlyInAnyOrder("myplugin.command.game",
+                                                 "myplugin.command.game.start",
+                                                 "myplugin.command.game.stop");
         }
 
         @Test
         void uses_op_default_by_default() {
             Command cmd = command("spawn");
-            Permission perm = cmd.permissions("myplugin.command").get(0);
-            Assertions.assertThat(perm.getDefault()).isEqualTo(PermissionDefault.OP);
+            Permission perm = cmd.permissions("myplugin.command")
+                                 .get(0);
+            Assertions.assertThat(perm.getDefault())
+                      .isEqualTo(PermissionDefault.OP);
         }
 
         @Test
         void uses_custom_default_when_set() {
             Command cmd = command("spawn");
             cmd.permission(PermissionDefault.TRUE);
-            Permission perm = cmd.permissions("myplugin.command").get(0);
-            Assertions.assertThat(perm.getDefault()).isEqualTo(PermissionDefault.TRUE);
+            Permission perm = cmd.permissions("myplugin.command")
+                                 .get(0);
+            Assertions.assertThat(perm.getDefault())
+                      .isEqualTo(PermissionDefault.TRUE);
         }
 
         @Test
         void uses_custom_node_and_default_when_set() {
             Command cmd = command("spawn");
             cmd.permission("myplugin.admin", PermissionDefault.FALSE);
-            Permission perm = cmd.permissions("myplugin.command").get(0);
-            Assertions.assertThat(perm.getName()).isEqualTo("myplugin.admin");
-            Assertions.assertThat(perm.getDefault()).isEqualTo(PermissionDefault.FALSE);
+            Permission perm = cmd.permissions("myplugin.command")
+                                 .get(0);
+            Assertions.assertThat(perm.getName())
+                      .isEqualTo("myplugin.admin");
+            Assertions.assertThat(perm.getDefault())
+                      .isEqualTo(PermissionDefault.FALSE);
         }
     }
 }

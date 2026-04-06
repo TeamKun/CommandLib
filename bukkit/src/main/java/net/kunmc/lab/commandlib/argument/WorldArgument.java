@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
+import net.kunmc.lab.commandlib.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
@@ -25,7 +26,7 @@ public class WorldArgument extends Argument<World> {
                   .stream()
                   .filter(x -> filter(sb.getContext()).test(x))
                   .map(World::getName)
-                  .filter(x -> input.isEmpty() || x.contains(input))
+                  .filter(x -> input.isEmpty() || StringUtil.containsIgnoreCase(x, input))
                   .forEach(sb::suggest);
         });
         applyOptions(options);

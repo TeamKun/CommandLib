@@ -5,6 +5,7 @@ import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 import net.kunmc.lab.commandlib.Nameable;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
+import net.kunmc.lab.commandlib.util.StringUtil;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -42,7 +43,7 @@ public class CommonNameableObjectArgument<T extends Nameable, C extends Abstract
                               .filter(filter(sb.getContext()))
                               .map(Nameable::tabCompleteName)
                               .filter(x -> sb.getLatestInput()
-                                             .isEmpty() || x.contains(sb.getLatestInput()))
+                                             .isEmpty() || StringUtil.containsIgnoreCase(x, sb.getLatestInput()))
                               .forEach(sb::suggest);
         });
         applyOptions(options);

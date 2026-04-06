@@ -58,9 +58,9 @@ public class UUIDsArgument extends Argument<List<UUID>> {
             });
 
             List.of("@a", "@r")
-                 .stream()
-                 .filter(x -> input.isEmpty() || x.startsWith(input))
-                 .forEach(sb::suggest);
+                .stream()
+                .filter(x -> input.isEmpty() || x.startsWith(input))
+                .forEach(sb::suggest);
         });
         displayDefaultSuggestions(false);
         applyOptions(options);
@@ -93,9 +93,8 @@ public class UUIDsArgument extends Argument<List<UUID>> {
             if (s.equals("@r")) {
                 Collections.shuffle(uuids, ThreadLocalRandom.current());
                 return List.of(uuids.stream()
-                                                      .findFirst()
-                                                      .orElseThrow(() -> new ArgumentParseException(x -> x.sendFailure(
-                                                              "no player found"))));
+                                    .findFirst()
+                                    .orElseThrow(() -> new ArgumentParseException(x -> x.sendFailure("no player found"))));
             }
 
             throw new ArgumentParseException(x -> x.sendFailure(s + " is invalid selector"));
