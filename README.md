@@ -25,8 +25,7 @@ validation, improved usability, and extensibility, CommandLib empowers developer
 3. **Powerful Suggestion Generation**  
    Automatically generate argument suggestions with customizable options for enhanced flexibility.
 4. **Seamless Integration with the `/execute` command**   
-   Allow your commands to be executed seamlessly from the `/execute` command, just like built-in commands.  
-   ![execute_as](./images/fireworks_execute_as.gif)
+   Allow your commands to be executed seamlessly from the `/execute` command, just like built-in commands.
 
 ## Installation
 
@@ -210,7 +209,9 @@ Pass a custom prefix to `CommandLib.register()` to use your own namespace:
 
 ```java
 // Generates "myplugin.command.spawn", "myplugin.command.game.start", etc.
-CommandLib.register(this, "myplugin.command", new SpawnCommand(), new GameCommand());
+CommandLib.register(this,"myplugin.command",new SpawnCommand(), new
+
+GameCommand());
 ```
 
 The prefix is applied to all commands and their subcommands recursively.
@@ -235,14 +236,17 @@ Control who has the permission by default:
 
 ```java
 permission(PermissionDefault.OP);    // default — only operators
+
 permission(PermissionDefault.TRUE);  // everyone
+
 permission(PermissionDefault.FALSE); // no one (must be granted explicitly)
 ```
 
 ### LuckPerms Compatibility
 
 CommandLib uses Bukkit's standard `sender.hasPermission()` for all permission checks.  
-LuckPerms integrates with Bukkit's permission system, so **no additional configuration is needed** — LuckPerms permissions work out of the box.
+LuckPerms integrates with Bukkit's permission system, so **no additional configuration is needed** — LuckPerms
+permissions work out of the box.
 
 ## Sample Projects
 
