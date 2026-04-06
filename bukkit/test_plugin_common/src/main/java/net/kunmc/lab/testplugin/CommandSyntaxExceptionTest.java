@@ -32,7 +32,7 @@ public class CommandSyntaxExceptionTest extends TestBase {
         command.addChildren(new Command(name) {{
             argument(new Argument<Object>("a", BoolArgumentType.bool()) {
                 {
-                    applyOption(new Option<Object, CommandContext>().addUncaughtExceptionHandler((e, ctx) -> {
+                    applyOption(new Option<Object, CommandContext>(this).addUncaughtExceptionHandler((e, ctx) -> {
                         putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                     }));
                 }
