@@ -26,9 +26,9 @@ public interface PlatformAdapter<S, T, C extends AbstractCommandContext<S, T>, B
 
     B createArgumentBuilder();
 
-    boolean hasPermission(U command, S commandSource);
+    boolean hasPermission(U command, S commandSource, String permissionPrefix);
 
-    boolean hasPermission(U command, C ctx);
+    boolean hasPermission(U command, C ctx, String permissionPrefix);
 
     ArgumentParseException convertCommandSyntaxException(CommandSyntaxException e);
 

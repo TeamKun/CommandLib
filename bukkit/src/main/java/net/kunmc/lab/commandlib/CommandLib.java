@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 public final class CommandLib implements Listener {
     private final Plugin plugin;
     private final Collection<? extends Command> commands;
+    private final String permissionPrefix;
     private final List<CommandNode<?>> registeredCommands = new ArrayList<>();
 
     public static CommandLib register(@NotNull Plugin plugin, @NotNull Command command, @NotNull Command... commands) {
@@ -35,12 +36,29 @@ public final class CommandLib implements Listener {
     }
 
     public static CommandLib register(@NotNull Plugin plugin, @NotNull Collection<? extends Command> commands) {
-        return new CommandLib(plugin, commands);
+        return new CommandLib(plugin, commands, "minecraft.command");
     }
 
-    private CommandLib(Plugin plugin, Collection<? extends Command> commands) {
+    public static CommandLib register(@NotNull Plugin plugin,
+                                      @NotNull String permissionPrefix,
+                                      @NotNull Command command,
+                                      @NotNull Command... commands) {
+        return register(plugin, permissionPrefix, Lists.asList(command, commands));
+    }
+
+    public static CommandLib register(@NotNull Plugin plugin,
+                                      @NotNull String permissionPrefix,
+                                      @NotNull Collection<? extends Command> commands) {
+        return new CommandLib(plugin, commands, permissionPrefix);
+    }
+
+    private CommandLib(Plugin plugin, Collection<? extends Command> commands, String permissionPrefix) {
         this.plugin = Objects.requireNonNull(plugin);
         this.commands = Objects.requireNonNull(commands);
+        this.permissionPrefix = Objects.requireNonNull(permissionPrefix);
+        if (permissionPrefix.isEmpty()) {
+            throw new IllegalArgumentException("permissionPrefix must not be empty");
+        }
         for (Command command : commands) {
             Objects.requireNonNull(command);
         }
@@ -56,7 +74,7 @@ public final class CommandLib implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                registeredCommands.addAll(new CommandNodeCreator<>(commands).build());
+                registeredCommands.addAll(new CommandNodeCreator<>(commands, permissionPrefix).build());
                 registeredCommands.forEach(x -> {
                     try {
                         CommandMap commandMap = ((CommandMap) NMSCraftServer.create()
@@ -101,7 +119,7 @@ public final class CommandLib implements Listener {
                 });
 
                 commands.stream()
-                        .flatMap(x -> x.permissions()
+                        .flatMap(x -> x.permissions(permissionPrefix)
                                        .stream())
                         .forEach(Bukkit.getPluginManager()::addPermission);
 
@@ -155,7 +173,7 @@ public final class CommandLib implements Listener {
         HandlerList.unregisterAll(this);
 
         commands.stream()
-                .flatMap(x -> x.permissions()
+                .flatMap(x -> x.permissions(permissionPrefix)
                                .stream())
                 .forEach(Bukkit.getPluginManager()::removePermission);
 

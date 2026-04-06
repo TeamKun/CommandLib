@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public abstract class Command extends CommonCommand<CommandContext, ArgumentBuilder, Command> {
+    private String permissionNode = null;
     private PermissionDefault defaultPermission = PermissionDefault.OP;
 
     public Command(@NotNull String name) {
@@ -20,8 +21,20 @@ public abstract class Command extends CommonCommand<CommandContext, ArgumentBuil
         this.defaultPermission = Objects.requireNonNull(defaultPermission);
     }
 
-    public final String permissionName() {
-        return "minecraft.command." + permissionNameWithoutPrefix();
+    public final void permission(@NotNull String node) {
+        this.permissionNode = Objects.requireNonNull(node);
+    }
+
+    public final void permission(@NotNull String node, @NotNull PermissionDefault defaultPermission) {
+        this.permissionNode = Objects.requireNonNull(node);
+        this.defaultPermission = Objects.requireNonNull(defaultPermission);
+    }
+
+    public final String permissionName(@NotNull String prefix) {
+        if (permissionNode != null) {
+            return permissionNode;
+        }
+        return prefix + "." + permissionNameWithoutPrefix();
     }
 
     private String permissionNameWithoutPrefix() {
@@ -31,11 +44,11 @@ public abstract class Command extends CommonCommand<CommandContext, ArgumentBuil
         return parent().permissionNameWithoutPrefix() + "." + name();
     }
 
-    final List<Permission> permissions() {
+    final List<Permission> permissions(@NotNull String prefix) {
         List<Permission> permissions = new ArrayList<>();
-        permissions.add(new Permission(permissionName(), defaultPermission));
+        permissions.add(new Permission(permissionName(prefix), defaultPermission));
         permissions.addAll(children().stream()
-                                     .flatMap(x -> x.permissions()
+                                     .flatMap(x -> x.permissions(prefix)
                                                     .stream())
                                      .collect(Collectors.toList()));
         return permissions;

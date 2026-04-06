@@ -15,9 +15,11 @@ import java.util.stream.Collectors;
 final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B extends AbstractArgumentBuilder<C, B>, U extends CommonCommand<C, B, U>> {
     private final PlatformAdapter<S, T, C, B, U> platformAdapter = PlatformAdapter.get();
     private final Collection<? extends U> commands;
+    private final String permissionPrefix;
 
-    public CommandNodeCreator(Collection<? extends U> commands) {
+    public CommandNodeCreator(Collection<? extends U> commands, String permissionPrefix) {
         this.commands = commands;
+        this.permissionPrefix = permissionPrefix;
     }
 
     public List<CommandNode<S>> build() {
@@ -45,7 +47,7 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
 
     private CommandNode<S> toCommandNode(U command) {
         LiteralArgumentBuilder<S> builder = LiteralArgumentBuilder.literal(command.name());
-        builder.requires(x -> platformAdapter.hasPermission(command, x));
+        builder.requires(x -> platformAdapter.hasPermission(command, x, permissionPrefix));
 
         List<Arguments<C>> argumentsList = command.argumentsList();
         ContextAction<C> helpAction = createSendHelpAction(command);
@@ -83,7 +85,8 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                      .map(s -> {
                          CommandNode<S> node = LiteralArgumentBuilder.<S>literal(s)
                                                                      .requires(x -> platformAdapter.hasPermission(source,
-                                                                                                                  x))
+                                                                                                                  x,
+                                                                                                                  permissionPrefix))
                                                                      .executes(x -> redirectTarget.getCommand()
                                                                                                   .run(x))
                                                                      .build();
@@ -125,13 +128,13 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
 
             List<U> permissibleChildren = command.children()
                                                  .stream()
-                                                 .filter(x -> platformAdapter.hasPermission(x, ctx))
+                                                 .filter(x -> platformAdapter.hasPermission(x, ctx, permissionPrefix))
                                                  .collect(Collectors.toList());
             if (!permissibleChildren.isEmpty()) {
                 ctx.sendMessage(ChatColorUtil.AQUA + padding + "/" + literalConcatName);
 
                 permissibleChildren.stream()
-                                   .filter(x -> platformAdapter.hasPermission(x, ctx))
+                                   .filter(x -> platformAdapter.hasPermission(x, ctx, permissionPrefix))
                                    .map(x -> {
                                        String s = ChatColorUtil.YELLOW + padding + padding + x.name();
                                        if (x.description()

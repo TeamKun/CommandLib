@@ -199,6 +199,51 @@ public final class TestPlugin extends JavaPlugin {
 
 </details>
 
+## Permissions (Bukkit)
+
+CommandLib automatically generates and registers Bukkit permission nodes for each command.
+
+### Permission Prefix
+
+By default, permission nodes are generated as `minecraft.command.<name>`.  
+Pass a custom prefix to `CommandLib.register()` to use your own namespace:
+
+```java
+// Generates "myplugin.command.spawn", "myplugin.command.game.start", etc.
+CommandLib.register(this, "myplugin.command", new SpawnCommand(), new GameCommand());
+```
+
+The prefix is applied to all commands and their subcommands recursively.
+
+### Custom Permission Node
+
+To assign a specific permission node to a command instead of the auto-generated one:
+
+```java
+public final class SpawnCommand extends Command {
+    public SpawnCommand() {
+        super("spawn");
+        permission("myplugin.admin");           // fixed node, ignores prefix
+        permission("myplugin.admin", PermissionDefault.FALSE); // with default
+    }
+}
+```
+
+### Permission Default
+
+Control who has the permission by default:
+
+```java
+permission(PermissionDefault.OP);    // default — only operators
+permission(PermissionDefault.TRUE);  // everyone
+permission(PermissionDefault.FALSE); // no one (must be granted explicitly)
+```
+
+### LuckPerms Compatibility
+
+CommandLib uses Bukkit's standard `sender.hasPermission()` for all permission checks.  
+LuckPerms integrates with Bukkit's permission system, so **no additional configuration is needed** — LuckPerms permissions work out of the box.
+
 ## Sample Projects
 
 [Bukkit](./sample/bukkit)  
