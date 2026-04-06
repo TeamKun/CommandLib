@@ -9,7 +9,9 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,6 +42,24 @@ public final class CommandContext extends AbstractCommandContext<Object, BaseCom
     public CommandSender getSender() {
         return NMSCommandListenerWrapper.create(handle.getSource())
                                         .getBukkitSender();
+    }
+
+    @NotNull
+    public Player getPlayer() {
+        CommandSender sender = getSender();
+        if (!(sender instanceof Player)) {
+            throw new IllegalStateException("sender is not a player");
+        }
+        return (Player) sender;
+    }
+
+    @NotNull
+    public ConsoleCommandSender getConsole() {
+        CommandSender sender = getSender();
+        if (!(sender instanceof ConsoleCommandSender)) {
+            throw new IllegalStateException("sender is not a console");
+        }
+        return (ConsoleCommandSender) sender;
     }
 
     @Override

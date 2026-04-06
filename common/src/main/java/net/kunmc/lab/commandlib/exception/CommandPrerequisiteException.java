@@ -8,8 +8,15 @@ public final class CommandPrerequisiteException extends Exception {
     private final Consumer<AbstractCommandContext<?, ?>> sendMessage;
 
     public CommandPrerequisiteException() {
+        this("権限がありません");
+    }
+
+    public CommandPrerequisiteException(String message, String... additionalMessages) {
         this.sendMessage = ctx -> {
-            ctx.sendFailure("権限がありません");
+            ctx.sendFailure(message);
+            for (String additionalMessage : additionalMessages) {
+                ctx.sendFailure(additionalMessage);
+            }
         };
     }
 
