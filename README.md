@@ -248,6 +248,33 @@ CommandLib uses Bukkit's standard `sender.hasPermission()` for all permission ch
 LuckPerms integrates with Bukkit's permission system, so **no additional configuration is needed** — LuckPerms
 permissions work out of the box.
 
+## Claude Code Skill
+
+A Claude Code skill is available at `.claude/skills/commandlib/`. It loads the CommandLib API from your Gradle source cache and generates or explains code on demand.
+
+### Setup
+
+1. Copy the `.claude/skills/commandlib/` directory to your project's `.claude/skills/` directory.
+
+2. Download sources via Gradle so the skill has something to read:
+
+```bash
+./gradlew dependencies --configuration compileClasspath
+```
+
+Or in IntelliJ: **View > Tool Windows > Gradle > Download Sources**.
+
+### Usage
+
+```
+/commandlib <request>
+```
+
+```
+/commandlib I want a command that sends a message to a player. Args: player and string. Permission: myplugin.message
+/commandlib プレイヤーにメッセージを送るコマンドを作りたい。引数はプレイヤーと文字列、権限は myplugin.message
+```
+
 ## Sample Projects
 
 [Bukkit](./sample/bukkit)  

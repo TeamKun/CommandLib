@@ -60,4 +60,12 @@ subprojects {
             }
         }
     }
+
+    java {
+        withSourcesJar()
+    }
+
+    tasks.named('sourcesJar') {
+        from(rootProject.file('README.md'))
+    }
 }
