@@ -276,10 +276,13 @@ By default, permission nodes are generated as `minecraft.command.<name>`.
 Pass a custom prefix to `CommandLib.register()` to use your own namespace:
 
 ```java
-// Generates "myplugin.command.spawn", "myplugin.command.game.start", etc.
-CommandLib.register(this,"myplugin.command",new SpawnCommand(), new
-
-GameCommand());
+public final class TestPlugin extends JavaPlugins {
+    @Override
+    public void onEnable() {
+        // Generates "myplugin.command.spawn", "myplugin.command.game.start", etc.
+        CommandLib.register(this, "myplugin.command", new SpawnCommand(), new GameCommand());
+    }
+}
 ```
 
 The prefix is applied to all commands and their subcommands recursively.
@@ -303,11 +306,17 @@ public final class SpawnCommand extends Command {
 Control who has the permission by default:
 
 ```java
-permission(PermissionDefault.OP);    // default — only operators
+public final class TestCommand extends Command {
+    public TestCommand() {
+        super("test");
 
-permission(PermissionDefault.TRUE);  // everyone
+        permission(PermissionDefault.OP);    // default — only operators
 
-permission(PermissionDefault.FALSE); // no one (must be granted explicitly)
+        permission(PermissionDefault.TRUE);  // everyone
+
+        permission(PermissionDefault.FALSE); // no one (must be granted explicitly)
+    }
+}
 ```
 
 ### LuckPerms Compatibility
