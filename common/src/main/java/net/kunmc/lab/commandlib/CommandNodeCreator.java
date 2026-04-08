@@ -64,7 +64,8 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
         }
 
         argumentsList.stream()
-                     .sorted((x, y) -> Integer.compare(y.size(), x.size())) // Sort in descending order to handle variable-length arguments
+                     .sorted((x, y) -> Integer.compare(y.size(),
+                                                       x.size())) // Sort in descending order to handle variable-length arguments
                      .forEach(arguments -> {
                          builder.then(new ArgumentCommandNodeCreator<>(arguments).build(helpAction, command))
                                 .executes(new CommandExecutor<>(platformAdapter,

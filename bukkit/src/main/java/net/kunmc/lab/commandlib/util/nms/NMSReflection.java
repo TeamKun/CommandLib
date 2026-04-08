@@ -15,21 +15,24 @@ public class NMSReflection {
     private static final String NMS_PACKAGE_PREFIX;
     private static final String CRAFT_BUKKIT_PACKAGE_PREFIX;
     private static final Map<String, Class<?>> CACHE = new ConcurrentHashMap<>();
-    private static final ClassLoader CLASS_LOADER = Bukkit.getServer()
-                                                          .getClass()
-                                                          .getClassLoader();
+    private static final ClassLoader CLASS_LOADER;
 
     static {
-        String version;
-        try {
-            version = Bukkit.getServer()
-                            .getClass()
-                            .getPackage()
-                            .getName()
-                            .split("\\.")[3];
-        } catch (ArrayIndexOutOfBoundsException e) {
-            // Since 1.20.5, the version is no longer included in the package name
-            version = null;
+        org.bukkit.Server server = Bukkit.getServer();
+        CLASS_LOADER = server != null ? server.getClass()
+                                              .getClassLoader() : Thread.currentThread()
+                                                                        .getContextClassLoader();
+
+        String version = null;
+        if (server != null) {
+            try {
+                version = server.getClass()
+                                .getPackage()
+                                .getName()
+                                .split("\\.")[3];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                // Since 1.20.5, the version is no longer included in the package name
+            }
         }
 
         if (version == null) {
