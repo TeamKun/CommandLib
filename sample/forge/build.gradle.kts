@@ -1,0 +1,120 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import java.text.SimpleDateFormat
+import java.util.Date
+
+buildscript {
+    repositories {
+        maven { url = uri("https://maven.minecraftforge.net") }
+        mavenCentral()
+    }
+    dependencies {
+        classpath(group = "net.minecraftforge.gradle", name = "ForgeGradle", version = "5.1.+") {
+            isChanging = true
+        }
+    }
+}
+
+plugins {
+    java
+    id("com.github.johnrengelman.shadow") version "6.1.0"
+}
+
+apply(plugin = "net.minecraftforge.gradle")
+
+group = "net.kunmc.lab"
+version = "1.0.0"
+
+base.archivesName.set("samplemod")
+
+configure<JavaPluginExtension> {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+}
+
+configure<net.minecraftforge.gradle.userdev.UserDevExtension> {
+    mappings("snapshot", "20210309-1.16.5")
+
+    runs {
+        create("client") {
+            workingDirectory(project.file("run"))
+            property("forge.logging.markers", "REGISTRIES")
+            property("forge.logging.console.level", "debug")
+            mods {
+                create("samplemod") {
+                    source(sourceSets["main"])
+                }
+            }
+        }
+
+        create("server") {
+            workingDirectory(project.file("run"))
+            property("forge.logging.markers", "REGISTRIES")
+            property("forge.logging.console.level", "debug")
+            mods {
+                create("samplemod") {
+                    source(sourceSets["main"])
+                }
+            }
+        }
+
+        create("data") {
+            workingDirectory(project.file("run"))
+            property("forge.logging.markers", "REGISTRIES")
+            property("forge.logging.console.level", "debug")
+            args(
+                "--mod",
+                "samplemod",
+                "--all",
+                "--output",
+                file("src/generated/resources/"),
+                "--existing",
+                file("src/main/resources/")
+            )
+            mods {
+                create("samplemod") {
+                    source(sourceSets["main"])
+                }
+            }
+        }
+    }
+}
+
+sourceSets["main"].resources.srcDir("src/generated/resources")
+
+repositories {
+    maven { url = uri("https://jitpack.io") }
+}
+
+dependencies {
+    "minecraft"("net.minecraftforge:forge:1.16.5-36.2.20")
+    implementation("com.github.TeamKun.CommandLib:forge:0.12.2")
+}
+
+tasks.named<Jar>("jar") {
+    manifest {
+        attributes(
+            mapOf(
+                "Specification-Title" to "samplemod",
+                "Specification-Version" to "1",
+                "Implementation-Title" to project.name,
+                "Implementation-Version" to archiveVersion.get(),
+                "Implementation-Timestamp" to SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+                    .format(Date())
+            )
+        )
+    }
+    finalizedBy("reobfJar")
+}
+
+val projectGroup = project.group.toString()
+val projectNameLower = project.name.toLowerCase()
+tasks.named<ShadowJar>("shadowJar") {
+    archiveFileName.set("${rootProject.name}-${project.version}.jar")
+    dependencies {
+        include(dependency("com.github.TeamKun.CommandLib:forge:.*"))
+    }
+    relocate("net.kunmc.lab.commandlib", "$projectGroup.$projectNameLower.commandlib")
+    finalizedBy("reobfShadowJar")
+}
+
+@Suppress("UNCHECKED_CAST")
+(extensions.getByName("reobf") as NamedDomainObjectContainer<Any>).create("shadowJar")

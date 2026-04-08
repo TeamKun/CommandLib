@@ -35,7 +35,7 @@ To ensure stability, we recommend replacing `latest.release` with a specific ver
 You can find the latest version on the [releases page](https://github.com/TeamKun/CommandLib/releases).
 
 <details>
-<summary>Bukkit</summary>
+<summary>Bukkit (Groovy DSL)</summary>
 
 ```groovy
 plugins {
@@ -61,7 +61,37 @@ tasks.build.dependsOn tasks.shadowJar
 </details>
 
 <details>
-<summary>Forge</summary>
+<summary>Bukkit (Kotlin DSL)</summary>
+
+```kotlin
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+plugins {
+    id("com.gradleup.shadow") version "8.3.5"
+}
+
+repositories {
+    maven { url = uri("https://jitpack.io") }
+}
+
+dependencies {
+    implementation("com.github.TeamKun.CommandLib:bukkit:latest.release")
+}
+
+val projectGroup = project.group.toString()
+val projectNameLower = project.name.lowercase()
+tasks.named<ShadowJar>("shadowJar") {
+    archiveFileName.set("${rootProject.name}-${project.version}.jar")
+    // Avoid package conflicts
+    relocate("net.kunmc.lab.commandlib", "$projectGroup.$projectNameLower.commandlib")
+}
+tasks.named("build") { dependsOn(tasks.named("shadowJar")) }
+```
+
+</details>
+
+<details>
+<summary>Forge (Groovy DSL)</summary>
 
 ```groovy
 plugins {
@@ -90,6 +120,42 @@ reobf {
     shadowJar {
     }
 }
+```
+
+</details>
+
+<details>
+<summary>Forge (Kotlin DSL)</summary>
+
+```kotlin
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+plugins {
+    id("com.gradleup.shadow") version "8.3.5"
+}
+
+repositories {
+    maven { url = uri("https://jitpack.io") }
+}
+
+dependencies {
+    implementation("com.github.TeamKun.CommandLib:forge:latest.release")
+}
+
+val projectGroup = project.group.toString()
+val projectNameLower = project.name.lowercase()
+tasks.named<ShadowJar>("shadowJar") {
+    archiveFileName.set("${rootProject.name}-${project.version}.jar")
+    dependencies {
+        include(dependency("com.github.TeamKun.CommandLib:forge:.*"))
+    }
+    // Avoid package conflicts
+    relocate("net.kunmc.lab.commandlib", "$projectGroup.$projectNameLower.commandlib")
+    finalizedBy("reobfShadowJar")
+}
+
+@Suppress("UNCHECKED_CAST")
+(extensions.getByName("reobf") as NamedDomainObjectContainer<Any>).create("shadowJar")
 ```
 
 </details>
@@ -252,7 +318,8 @@ permissions work out of the box.
 
 ## Claude Code Skill
 
-A Claude Code skill is available at `.claude/skills/commandlib/`. It loads the CommandLib API from your Gradle source cache and generates or explains code on demand.
+A Claude Code skill is available at `.claude/skills/commandlib/`. It loads the CommandLib API from your Gradle source
+cache and generates or explains code on demand.
 
 ### Setup
 
