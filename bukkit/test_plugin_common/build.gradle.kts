@@ -1,8 +1,6 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 plugins {
     java
-    id("com.gradleup.shadow") version "9.1.0"
+    id("com.gradleup.shadow") version "9.4.1"
 }
 
 group = "net.kunmc.lab"
@@ -27,21 +25,12 @@ dependencies {
     implementation("com.opencsv:opencsv:5.9")
 }
 
-val targetJavaVersion = 11
 java {
-    val javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
-    }
+    toolchain.languageVersion = JavaLanguageVersion.of(11)
 }
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible) {
-        options.release.set(targetJavaVersion)
-    }
 }
 
 tasks.named<Jar>("jar") {

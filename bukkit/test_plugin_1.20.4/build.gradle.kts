@@ -2,11 +2,10 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.StandardCopyOption
 
 plugins {
     java
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.gradleup.shadow") version "9.4.1"
 }
 
 group = "net.kunmc.lab"
@@ -28,21 +27,12 @@ dependencies {
     implementation("com.opencsv:opencsv:5.9")
 }
 
-val targetJavaVersion = 17
 java {
-    val javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
-    }
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
 }
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible) {
-        options.release.set(targetJavaVersion)
-    }
 }
 
 tasks.named<Jar>("jar") {
@@ -67,7 +57,7 @@ sourceSets {
 }
 
 val projectGroup = project.group.toString()
-val projectNameLower = project.name.toLowerCase()
+val projectNameLower = project.name.lowercase()
 tasks.named<ShadowJar>("shadowJar") {
     mergeServiceFiles()
     archiveFileName.set("${rootProject.name}-${project.version}.jar")
@@ -110,7 +100,8 @@ tasks.register("buildAndCopy") {
 
 tasks.register("downloadServerJar") {
     val buildNumber = "496"
-    val url = URL("https://api.papermc.io/v2/projects/paper/versions/1.20.4/builds/$buildNumber/downloads/paper-1.20.4-$buildNumber.jar")
+    val url =
+        URL("https://api.papermc.io/v2/projects/paper/versions/1.20.4/builds/$buildNumber/downloads/paper-1.20.4-$buildNumber.jar")
     val file = File(projectDir.toPath().toAbsolutePath().toString() + "/server/server.jar")
     if (!file.exists()) {
         url.openStream().use { it.copyTo(file.outputStream()) }
