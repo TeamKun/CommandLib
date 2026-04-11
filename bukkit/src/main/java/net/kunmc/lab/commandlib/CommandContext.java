@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -60,6 +61,20 @@ public final class CommandContext extends AbstractCommandContext<Object, BaseCom
             throw new IllegalStateException("sender is not a console");
         }
         return (ConsoleCommandSender) sender;
+    }
+
+    @Override
+    @NotNull
+    public String getLanguage() {
+        CommandSender sender = getSender();
+        if (sender instanceof Player) {
+            String language = ((Player) sender).getLocale();
+            if (language != null && !language.isEmpty()) {
+                return language.toLowerCase(Locale.ROOT);
+            }
+        }
+
+        return super.getLanguage();
     }
 
     @Override

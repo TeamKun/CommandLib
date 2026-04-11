@@ -9,6 +9,9 @@ import net.minecraft.world.server.ServerWorld;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -35,6 +38,49 @@ public final class CommandContext extends AbstractCommandContext<CommandSource, 
 
     public CommandSource getSender() {
         return handle.getSource();
+    }
+
+    @Override
+    @NotNull
+    public String getLanguage() {
+        String language = findLanguage(getSender());
+        if (language == null) {
+            language = findLanguage(getEntity());
+        }
+        if (language == null || language.isEmpty()) {
+            return super.getLanguage();
+        }
+
+        return language.toLowerCase(Locale.ROOT);
+    }
+
+    @Nullable
+    private static String findLanguage(@Nullable Object source) {
+        if (source == null) {
+            return null;
+        }
+
+        for (String methodName : new String[]{"getLanguage", "getLocale"}) {
+            try {
+                Method method = source.getClass()
+                                      .getMethod(methodName);
+                Object value = method.invoke(source);
+                if (value != null) {
+                    return value.toString();
+                }
+            } catch (ReflectiveOperationException ignored) {
+            }
+        }
+
+        try {
+            Field field = source.getClass()
+                                .getDeclaredField("language");
+            field.setAccessible(true);
+            Object value = field.get(source);
+            return value == null ? null : value.toString();
+        } catch (ReflectiveOperationException ignored) {
+            return null;
+        }
     }
 
     @Override

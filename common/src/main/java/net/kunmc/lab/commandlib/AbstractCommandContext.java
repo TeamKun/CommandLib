@@ -116,6 +116,28 @@ public abstract class AbstractCommandContext<S, C> {
 
     public abstract void sendComponent(C component);
 
+    /**
+     * Returns the sender's Minecraft language code.
+     * <p>
+     * Player senders should return a code such as {@code ja_jp} or {@code en_us}.
+     * Non-player senders fall back to the JVM default locale.
+     */
+    @NotNull
+    public String getLanguage() {
+        return Locale.getDefault()
+                     .toLanguageTag()
+                     .toLowerCase(Locale.ROOT)
+                     .replace('-', '_');
+    }
+
+    /**
+     * Returns the sender's locale converted from {@link #getLanguage()}.
+     */
+    @NotNull
+    public Locale getLocale() {
+        return Locale.forLanguageTag(getLanguage().replace('_', '-'));
+    }
+
     final void addParsedArgument(String name, Object parsedArgument) {
         parsedArgMap.put(name, parsedArgument);
     }
