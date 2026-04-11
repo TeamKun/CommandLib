@@ -3,10 +3,11 @@ allprojects {
     version = "0.17.2"
 }
 
+val publishedProjects = setOf("common", "bukkit", "bukkit-test", "forge")
+
 subprojects {
     apply(plugin = "java")
     apply(plugin = "java-library")
-    apply(plugin = "maven-publish")
     apply(plugin = "idea")
 
     extensions.configure<org.gradle.plugins.ide.idea.model.IdeaModel> {
@@ -25,14 +26,18 @@ subprojects {
         options.encoding = "UTF-8"
     }
 
-    extensions.configure<PublishingExtension> {
-        publications {
-            create<MavenPublication>("maven") {
-                groupId = project.group.toString()
-                artifactId = project.name
-                version = project.version.toString()
+    if (project.name in publishedProjects) {
+        apply(plugin = "maven-publish")
 
-                from(components["java"])
+        extensions.configure<PublishingExtension> {
+            publications {
+                create<MavenPublication>("maven") {
+                    groupId = project.group.toString()
+                    artifactId = project.name
+                    version = project.version.toString()
+
+                    from(components["java"])
+                }
             }
         }
     }

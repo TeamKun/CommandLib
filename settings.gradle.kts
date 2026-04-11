@@ -13,3 +13,4 @@ rootProject.name = "CommandLib"
 include("forge", "bukkit")
 include("common")
 include("bukkit-test")
+include("bukkit-integration-test")
