@@ -86,7 +86,7 @@ repositories {
 
 dependencies {
     "minecraft"("net.minecraftforge:forge:1.16.5-36.2.20")
-    implementation("com.github.TeamKun.CommandLib:forge:0.12.2")
+    implementation("com.github.Maru32768.CommandLib:forge:0.12.2")
 }
 
 tasks.named<Jar>("jar") {
@@ -110,7 +110,7 @@ val projectNameLower = project.name.toLowerCase()
 tasks.named<ShadowJar>("shadowJar") {
     archiveFileName.set("${rootProject.name}-${project.version}.jar")
     dependencies {
-        include(dependency("com.github.TeamKun.CommandLib:forge:.*"))
+        include(dependency("com.github.Maru32768.CommandLib:forge:.*"))
     }
     relocate("net.kunmc.lab.commandlib", "$projectGroup.$projectNameLower.commandlib")
     finalizedBy("reobfShadowJar")

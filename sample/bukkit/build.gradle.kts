@@ -23,7 +23,7 @@ repositories {
 
 dependencies {
     compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT")
-    implementation("com.github.TeamKun.CommandLib:bukkit:0.12.2")
+    implementation("com.github.Maru32768.CommandLib:bukkit:0.12.2")
 }
 
 val targetJavaVersion = 8

@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation "com.github.TeamKun.CommandLib:bukkit-test:latest.release"
+    testImplementation "com.github.Maru32768.CommandLib:bukkit-test:latest.release"
 }
 ```
 
@@ -96,11 +96,11 @@ class HealCommandTest {
 
 ### `CommandTester`
 
-| Constructor                                                                      | Description                |
-|----------------------------------------------------------------------------------|----------------------------|
-| `CommandTester(Command command, String permissionPrefix)`                        | Register a single command  |
+| Constructor                                                                           | Description                                                                                                                                                                                                                        |
+|---------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `CommandTester(Command command, String permissionPrefix)`                             | Register a single command                                                                                                                                                                                                          |
 | `CommandTester(Supplier<? extends Command> commandSupplier, String permissionPrefix)` | Register a single command using a supplier — **required when the command contains NMS-backed arguments** (e.g. `PlayerArgument`, `EnchantmentArgument`) whose constructors call into `NMSClassRegistry` before the tester is ready |
-| `CommandTester(Collection<? extends Command> commands, String permissionPrefix)` | Register multiple commands |
+| `CommandTester(Collection<? extends Command> commands, String permissionPrefix)`      | Register multiple commands                                                                                                                                                                                                         |
 
 | Method                                                     | Description                                                                                                          |
 |------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
@@ -140,14 +140,16 @@ class HealCommandTest {
   Mockito.when(player.asSender().hasPermission(Mockito.anyString())).thenReturn(false);
   ```
 - `requirePlayer()` and `requireConsole()` work correctly — `FakeSender.player()` passes `instanceof Player` checks.
-- **NMS-backed arguments** (`PlayerArgument`, `EnchantmentArgument`, `ItemStackArgument`, etc.) call into `NMSClassRegistry` at construction time. Always use the `Supplier<Command>` constructor form for these:
+- **NMS-backed arguments** (`PlayerArgument`, `EnchantmentArgument`, `ItemStackArgument`, etc.) call into
+  `NMSClassRegistry` at construction time. Always use the `Supplier<Command>` constructor form for these:
   ```java
   // Correct — NMS mocks are active when the supplier is called inside the constructor
   new CommandTester(() -> new Command("enchant") {{
       argument(new EnchantmentArgument("type"), (ench, ctx) -> { ... });
   }}, "test.command")
   ```
-- **Arguments that call Bukkit static methods** (`WorldArgument`, `OfflinePlayerArgument`, `TeamArgument`, etc.) require `MockedStatic<Bukkit>` from `mockito-inline`. Open it in the same try-with-resources block as `CommandTester`:
+- **Arguments that call Bukkit static methods** (`WorldArgument`, `OfflinePlayerArgument`, `TeamArgument`, etc.) require
+  `MockedStatic<Bukkit>` from `mockito-inline`. Open it in the same try-with-resources block as `CommandTester`:
   ```java
   try (MockedStatic<Bukkit> bukkit = Mockito.mockStatic(Bukkit.class);
        CommandTester tester = new CommandTester(new Command("tp") {{

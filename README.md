@@ -1,6 +1,6 @@
 # CommandLib - A Feature-Rich Minecraft Command API for Bukkit
 
-[![](https://jitpack.io/v/TeamKun/CommandLib.svg)](https://jitpack.io/#TeamKun/CommandLib)
+[![](https://jitpack.io/v/Maru32768/CommandLib.svg)](https://jitpack.io/#Maru32768/CommandLib)
 
 CommandLib is an advanced, type-safe Command API for Bukkit(Spigot/Paper) developers. It abstracts and enhances the
 Minecraft 1.13
@@ -32,7 +32,7 @@ validation, improved usability, and extensibility, CommandLib empowers developer
 ## Installation
 
 To ensure stability, we recommend replacing `latest.release` with a specific version such as `0.16.0`.  
-You can find the latest version on the [releases page](https://github.com/TeamKun/CommandLib/releases).
+You can find the latest version on the [releases page](https://github.com/Maru32768/CommandLib/releases).
 
 <details>
 <summary>Bukkit (Groovy DSL)</summary>
@@ -47,7 +47,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.TeamKun.CommandLib:bukkit:latest.release"
+    implementation "com.github.Maru32768.CommandLib:bukkit:latest.release"
 }
 
 shadowJar {
@@ -75,7 +75,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.TeamKun.CommandLib:bukkit:latest.release")
+    implementation("com.github.Maru32768.CommandLib:bukkit:latest.release")
 }
 
 val projectGroup = project.group.toString()
@@ -103,13 +103,13 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.TeamKun.CommandLib:forge:latest.release"
+    implementation "com.github.Maru32768.CommandLib:forge:latest.release"
 }
 
 shadowJar {
     archiveFileName = "${rootProject.name}-${project.version}.jar"
     dependencies {
-        include(dependency("com.github.TeamKun.CommandLib:forge:.*"))
+        include(dependency("com.github.Maru32768.CommandLib:forge:.*"))
     }
     // Avoid package conflicts
     relocate "net.kunmc.lab.commandlib", "${project.group}.${project.name.toLowerCase()}.commandlib"
@@ -139,7 +139,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.TeamKun.CommandLib:forge:latest.release")
+    implementation("com.github.Maru32768.CommandLib:forge:latest.release")
 }
 
 val projectGroup = project.group.toString()
@@ -147,7 +147,7 @@ val projectNameLower = project.name.lowercase()
 tasks.named<ShadowJar>("shadowJar") {
     archiveFileName.set("${rootProject.name}-${project.version}.jar")
     dependencies {
-        include(dependency("com.github.TeamKun.CommandLib:forge:.*"))
+        include(dependency("com.github.Maru32768.CommandLib:forge:.*"))
     }
     // Avoid package conflicts
     relocate("net.kunmc.lab.commandlib", "$projectGroup.$projectNameLower.commandlib")
