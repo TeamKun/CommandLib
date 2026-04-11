@@ -32,6 +32,12 @@ class CommandTesterTest {
         }
 
         @Test
+        void player_locale_is_set() {
+            FakeSender sender = FakeSender.player("Steve", "ja_jp");
+            assertThat(((Player) sender.asSender()).getLocale()).isEqualTo("ja_jp");
+        }
+
+        @Test
         void sent_messages_are_empty_before_execution() {
             FakeSender sender = FakeSender.player("Steve");
             assertThat(sender.getSentMessages()).isEmpty();
@@ -100,6 +106,29 @@ class CommandTesterTest {
                 FakeSender sender = FakeSender.player("Steve");
                 tester.execute("greet World", sender);
                 assertThat(sender.getSentMessageTexts()).containsExactly("Hello, World!");
+            }
+        }
+
+        @Test
+        void command_context_returns_player_language() {
+            try (CommandTester tester = new CommandTester(new Command("locale") {{
+                execute(ctx -> ctx.sendMessage(ctx.getLanguage()));
+            }}, "test.command")) {
+                FakeSender sender = FakeSender.player("Steve", "ja_jp");
+                tester.execute("locale", sender);
+                assertThat(sender.getSentMessageTexts()).containsExactly("ja_jp");
+            }
+        }
+
+        @Test
+        void command_context_returns_player_locale() {
+            try (CommandTester tester = new CommandTester(new Command("locale") {{
+                execute(ctx -> ctx.sendMessage(ctx.getLocale()
+                                                  .toLanguageTag()));
+            }}, "test.command")) {
+                FakeSender sender = FakeSender.player("Steve", "ja_jp");
+                tester.execute("locale", sender);
+                assertThat(sender.getSentMessageTexts()).containsExactly("ja-JP");
             }
         }
 

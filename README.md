@@ -310,7 +310,7 @@ public final class TestCommand extends Command {
     public TestCommand() {
         super("test");
 
-        permission(PermissionDefault.OP);    // default — only operators
+        permission(PermissionDefault.OP);    // default - only operators
 
         permission(PermissionDefault.TRUE);  // everyone
 

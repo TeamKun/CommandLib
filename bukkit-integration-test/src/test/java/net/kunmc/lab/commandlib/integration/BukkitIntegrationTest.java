@@ -346,7 +346,8 @@ class BukkitIntegrationTest {
             }
         }
 
-        private Object tryCreateSignedCommandPacket(String className, String command) throws ReflectiveOperationException {
+        private Object tryCreateSignedCommandPacket(String className,
+                                                    String command) throws ReflectiveOperationException {
             try {
                 return Class.forName(className)
                             .getConstructor(String.class,

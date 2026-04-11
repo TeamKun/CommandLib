@@ -16,10 +16,16 @@ public class FakeSender {
     private final List<BaseComponent> sentMessages = new ArrayList<>();
 
     public static FakeSender player(String name) {
+        return player(name, "en_us");
+    }
+
+    public static FakeSender player(String name, String locale) {
         Player player = Mockito.mock(Player.class);
         Player.Spigot spigot = Mockito.mock(Player.Spigot.class);
         Mockito.when(player.getName())
                .thenReturn(name);
+        Mockito.when(player.getLocale())
+               .thenReturn(locale);
         Mockito.when(player.spigot())
                .thenReturn(spigot);
         Mockito.when(player.hasPermission(Mockito.anyString()))

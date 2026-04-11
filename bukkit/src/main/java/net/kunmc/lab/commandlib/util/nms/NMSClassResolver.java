@@ -33,13 +33,17 @@ public class NMSClassResolver {
 
     @NotNull
     public static NMSClassResolver fromServer(@Nullable Server server) {
-        ClassLoader classLoader = server != null ? server.getClass().getClassLoader()
-                                                 : Thread.currentThread().getContextClassLoader();
+        ClassLoader classLoader = server != null ? server.getClass()
+                                                         .getClassLoader() : Thread.currentThread()
+                                                                                   .getContextClassLoader();
 
         String version = null;
         if (server != null) {
             try {
-                version = server.getClass().getPackage().getName().split("\\.")[3];
+                version = server.getClass()
+                                .getPackage()
+                                .getName()
+                                .split("\\.")[3];
             } catch (ArrayIndexOutOfBoundsException ignored) {
                 // Since 1.20.5, the version is no longer included in the package name.
             }

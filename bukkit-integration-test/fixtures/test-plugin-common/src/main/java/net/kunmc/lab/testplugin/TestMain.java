@@ -4,8 +4,8 @@ import net.kunmc.lab.commandlib.Command;
 import net.kunmc.lab.commandlib.CommandLib;
 import net.kunmc.lab.commandlib.util.bukkit.BukkitUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.Plugin;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
