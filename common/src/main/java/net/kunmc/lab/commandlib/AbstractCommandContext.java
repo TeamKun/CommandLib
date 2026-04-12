@@ -12,6 +12,7 @@ public abstract class AbstractCommandContext<S, C> {
     private final Map<String, String> argumentNameToInputArgMap = new LinkedHashMap<>();
     private final LinkedHashMap<String, Object> parsedArgMap = new LinkedHashMap<>();
     private final Map<CommandOption<?, ?>, Object> optionValues = new LinkedHashMap<>();
+    private final Set<CommandOption<?, ?>> presentOptions = new LinkedHashSet<>();
 
     protected AbstractCommandContext(@NotNull com.mojang.brigadier.context.CommandContext<S> ctx) {
         this.handle = Objects.requireNonNull(ctx);
@@ -101,6 +102,11 @@ public abstract class AbstractCommandContext<S, C> {
         return option.cast(value);
     }
 
+    public final boolean hasOption(@NotNull CommandOption<?, ?> option) {
+        Objects.requireNonNull(option);
+        return presentOptions.contains(option);
+    }
+
     public final void sendMessage(@Nullable Object obj) {
         sendMessage(Objects.toString(obj));
     }
@@ -161,6 +167,7 @@ public abstract class AbstractCommandContext<S, C> {
 
     final void setOptionValue(CommandOption<?, ?> option, Object value) {
         optionValues.put(option, value);
+        presentOptions.add(option);
     }
 
     public static class MessageOption {

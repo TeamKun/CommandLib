@@ -245,6 +245,7 @@ public final class ScanCommand extends Command {
             boolean isForce = ctx.getOption(force);
             boolean isVerbose = ctx.getOption(verbose);
             int maxCount = ctx.getOption(limit);
+            boolean limitWasSpecified = ctx.hasOption(limit);
 
             // Do something
         });
@@ -319,6 +320,49 @@ Value options use the separated form, such as `--limit 20` or `-n 20`. Forms lik
 supported.
 
 Option descriptions are optional. When present, they are shown in the command help message.
+
+Use `ctx.hasOption(option)` when you need to distinguish an explicitly specified option from its default value.
+
+Options can also depend on other options:
+
+```java
+public final class ExportCommand extends Command {
+    public ExportCommand() {
+        super("export");
+
+        CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f')
+                                                                     .description("Overwrite existing files."));
+        CommandOption<String, CommandContext> reason = option(Options.string("reason", 'r', "")
+                                                                     .description("Reason for forcing.")
+                                                                     .requires(force));
+        CommandOption<String, CommandContext> mode = option(Options.string("mode", 'm', "normal"));
+        CommandOption<Integer, CommandContext> threads = option(Options.integer("threads", 't', 1, 1, 16)
+                                                                       .requires(mode, "parallel"));
+
+        argument(new StringArgument("target"), (target, ctx) -> {
+            // --reason can be used only with --force.
+            // --threads can be used only when ctx.getOption(mode) is parallel.
+        });
+    }
+}
+```
+
+Valid:
+
+```text
+/export -f -r cleanup data
+/export -t 4 -m parallel data
+```
+
+Invalid:
+
+```text
+/export -r cleanup data
+/export -m normal -t 4 data
+```
+
+`requires(otherOption)` checks whether the other option was explicitly specified. `requires(otherOption, value)` checks
+the value returned by `ctx.getOption(otherOption)`, so the other option's default value can also satisfy the condition.
 
 </details>
 

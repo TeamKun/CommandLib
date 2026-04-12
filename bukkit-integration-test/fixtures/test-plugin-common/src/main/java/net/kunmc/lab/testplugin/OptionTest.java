@@ -21,6 +21,9 @@ public final class OptionTest extends TestBase {
         commands.addAll(flagAndValueOptions());
         commands.addAll(defaultOptionValues());
         commands.addAll(combinedShortFlags());
+        commands.addAll(requiredOption());
+        commands.addAll(requiredOptionValue());
+        commands.addAll(requiredOptionValueInvalid());
         commands.addAll(valueOptionWithoutValue());
         commands.addAll(optionAfterArgument());
 
@@ -85,6 +88,63 @@ public final class OptionTest extends TestBase {
         }});
 
         return List.of(buildCommand(command, name + " -fv alex"));
+    }
+
+    public List<String> requiredOption() {
+        String name = getMethodName();
+        String key = getKey();
+
+        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        command.addChildren(new Command(name) {{
+            CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f'));
+            CommandOption<String, CommandContext> reason = option(Options.string("reason", 'r', "")
+                                                                         .requires(force));
+
+            argument(new StringArgument("target", StringArgument.Type.WORD), (target, ctx) -> {
+                putResult(key, ctx.getOption(force) + ":" + ctx.getOption(reason) + ":" + target, "true:cleanup:alex");
+            });
+        }});
+
+        return List.of(buildCommand(command, name + " -f -r cleanup alex"));
+    }
+
+    public List<String> requiredOptionValue() {
+        String name = getMethodName();
+        String key = getKey();
+
+        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        command.addChildren(new Command(name) {{
+            CommandOption<String, CommandContext> mode = option(Options.string("mode", 'm', "normal"));
+            CommandOption<Integer, CommandContext> limit = option(Options.integer("limit", 'n', 10)
+                                                                         .requires(mode, "parallel"));
+
+            argument(new StringArgument("target", StringArgument.Type.WORD), (target, ctx) -> {
+                putResult(key, ctx.getOption(mode) + ":" + ctx.getOption(limit) + ":" + target, "parallel:20:alex");
+            });
+        }});
+
+        return List.of(buildCommand(command, name + " -n 20 -m parallel alex"));
+    }
+
+    public List<String> requiredOptionValueInvalid() {
+        String name = getMethodName();
+        String key = getKey();
+
+        putResult(new TestResult(key, TestStatus.SUCCEEDED, "Command was not executed."));
+        command.addChildren(new Command(name) {{
+            CommandOption<String, CommandContext> mode = option(Options.string("mode", 'm', "normal"));
+            CommandOption<Integer, CommandContext> limit = option(Options.integer("limit", 'n', 10)
+                                                                         .requires(mode, "parallel"));
+
+            argument(new StringArgument("target", StringArgument.Type.WORD), (target, ctx) -> {
+                putResult(new TestResult(key,
+                                         TestStatus.FAILED,
+                                         "Command was executed with mode=" + ctx.getOption(mode) + ", limit=" + ctx.getOption(
+                                                 limit)));
+            });
+        }});
+
+        return List.of(buildCommand(command, name + " -m normal -n 20 alex"));
     }
 
     public List<String> valueOptionWithoutValue() {

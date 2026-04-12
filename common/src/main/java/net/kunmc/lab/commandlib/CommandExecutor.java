@@ -47,7 +47,13 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
             C ctx = platformAdapter.createCommandContext(context);
 
             try {
-                parseOptions(ctx);
+                try {
+                    parseOptions(ctx);
+                    validateOptions(ctx);
+                } catch (ArgumentParseException e) {
+                    e.sendMessage(ctx);
+                    return 1;
+                }
 
                 if (arguments != null) {
                     try {
@@ -147,5 +153,11 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
                                                  .equals(name))
                                    .findFirst()
                                    .ifPresent(x -> ctx.setOptionValue(x, x.parse(ctx))));
+    }
+
+    private void validateOptions(C ctx) throws ArgumentParseException {
+        for (CommandOption<?, C> option : options) {
+            option.validate(ctx);
+        }
     }
 }

@@ -1,11 +1,15 @@
 package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.arguments.ArgumentType;
+import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 public final class CommandOption<T, C extends AbstractCommandContext<?, ?>> {
     static final String INTERNAL_NAME_PREFIX = "__commandlib_option_";
@@ -16,6 +20,7 @@ public final class CommandOption<T, C extends AbstractCommandContext<?, ?>> {
     private final ArgumentType<?> type;
     private final BiFunction<C, String, T> parser;
     private final String internalName;
+    private final List<OptionValidator<C>> validators = new ArrayList<>();
     private String description = "";
 
     public CommandOption(@NotNull String name, @Nullable Character shortName, @NotNull T defaultValue) {
@@ -51,6 +56,41 @@ public final class CommandOption<T, C extends AbstractCommandContext<?, ?>> {
         return description;
     }
 
+    public CommandOption<T, C> requires(@NotNull CommandOption<?, ?> option) {
+        Objects.requireNonNull(option);
+        validators.add(ctx -> {
+            if (!ctx.hasOption(option)) {
+                throw new ArgumentParseException(x -> {
+                    x.sendFailure(formatName() + " requires " + option.formatName() + ".");
+                });
+            }
+        });
+        return this;
+    }
+
+    public <E> CommandOption<T, C> requires(@NotNull CommandOption<E, ?> option, @NotNull E expectedValue) {
+        Objects.requireNonNull(option);
+        Objects.requireNonNull(expectedValue);
+        return requires(option, x -> Objects.equals(x, expectedValue), Objects.toString(expectedValue));
+    }
+
+    public <E> CommandOption<T, C> requires(@NotNull CommandOption<E, ?> option,
+                                            @NotNull Predicate<? super E> predicate,
+                                            @NotNull String expectedDescription) {
+        Objects.requireNonNull(option);
+        Objects.requireNonNull(predicate);
+        Objects.requireNonNull(expectedDescription);
+        validators.add(ctx -> {
+            E value = ctx.getOption(option);
+            if (!predicate.test(value)) {
+                throw new ArgumentParseException(x -> {
+                    x.sendFailure(formatName() + " requires " + option.formatName() + " to be " + expectedDescription + ".");
+                });
+            }
+        });
+        return this;
+    }
+
     @Nullable
     public Character shortName() {
         return shortName;
@@ -77,8 +117,26 @@ public final class CommandOption<T, C extends AbstractCommandContext<?, ?>> {
                       .apply(ctx, internalName);
     }
 
+    void validate(C ctx) throws ArgumentParseException {
+        if (!ctx.hasOption(this)) {
+            return;
+        }
+
+        for (OptionValidator<C> validator : validators) {
+            validator.validate(ctx);
+        }
+    }
+
+    String formatName() {
+        return "--" + name;
+    }
+
     @SuppressWarnings("unchecked")
     T cast(Object value) {
         return (T) value;
+    }
+
+    private interface OptionValidator<C extends AbstractCommandContext<?, ?>> {
+        void validate(C ctx) throws ArgumentParseException;
     }
 }

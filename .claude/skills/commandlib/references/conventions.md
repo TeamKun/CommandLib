@@ -54,17 +54,18 @@ class ScanCommand extends Command {
         super("scan");
 
         CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f')
-                                                                    .description("Force execution"));
+                                                                     .description("Force execution"));
         CommandOption<Integer, CommandContext> limit = option(Options.integer("limit", 'n', 10, 1, 100)
-                                                                    .description("Maximum count"));
+                                                                     .description("Maximum count"));
         CommandOption<String, CommandContext> format = option(Options.string("format", 'F', "text")
-                                                                    .description("Output format"));
+                                                                     .description("Output format"));
 
         argument(new StringArgument("target", StringArgument.Type.WORD), (target, ctx) -> {
             boolean isForce = ctx.getOption(force);
             int maxCount = ctx.getOption(limit);
             String outputFormat = ctx.getOption(format);
-            ctx.sendMessage(target + ":" + isForce + ":" + maxCount + ":" + outputFormat);
+            boolean limitWasSpecified = ctx.hasOption(limit);
+            ctx.sendMessage(target + ":" + isForce + ":" + maxCount + ":" + outputFormat + ":" + limitWasSpecified);
         });
     }
 }
@@ -85,21 +86,65 @@ Supported forms:
 Important constraints:
 
 - Options must appear immediately after the command or subcommand name, before regular arguments.
-- For child commands, options belong to the most specific child command: `/game start -f arena`, not `/game -f start arena`.
+- For child commands, options belong to the most specific child command: `/game start -f arena`, not
+  `/game -f start arena`.
 - Value options use separated values only: `--limit 20` and `-n 20`; do not generate `--limit=20` or `-n20`.
-- Prefer typed option keys over `ctx.getParsedArg(...)`; `ctx.getOption(limit)` is type-safe and returns the default when omitted.
+- Prefer typed option keys over `ctx.getParsedArg(...)`; `ctx.getOption(limit)` is type-safe and returns the default
+  when omitted.
+- Use `ctx.hasOption(option)` when code must distinguish an explicit option from its default value.
 - Add `.description(...)` when generating user-facing commands so options appear clearly in help output.
+- Use `.requires(...)` for option dependencies; validation happens after all options are parsed, so dependency order
+  does not matter.
+- `requires(otherOption)` checks explicit presence; `requires(otherOption, value)` checks `ctx.getOption(otherOption)`,
+  including defaults.
+
+Dependency examples:
+
+```java
+class ExportCommand extends Command {
+    ExportCommand() {
+        super("export");
+
+        CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f'));
+        CommandOption<String, CommandContext> reason = option(Options.string("reason", 'r', "")
+                                                                     .requires(force));
+        CommandOption<String, CommandContext> mode = option(Options.string("mode", 'm', "normal"));
+        CommandOption<Integer, CommandContext> threads = option(Options.integer("threads", 't', 1, 1, 16)
+                                                                       .requires(mode, "parallel"));
+
+        argument(new StringArgument("target", StringArgument.Type.WORD), (target, ctx) -> {
+            // /export -f -r cleanup data is valid.
+            // /export -r cleanup data is invalid.
+            // /export -t 4 -m parallel data is valid; order does not matter.
+            // /export -m normal -t 4 data is invalid.
+            // A value requirement checks ctx.getOption(...), so default values can satisfy it.
+        });
+    }
+}
+```
 
 Available factories:
 
 ```java
-Options.flag("force", 'f')             // boolean flag, false when omitted
-Options.bool("enabled", 'e', true)
-Options.integer("limit", 'n', 10)
-Options.longValue("size", 's', 0L)
-Options.floatValue("speed", 'S', 1.0f)
-Options.doubleValue("radius", 'r', 5.0)
-Options.string("format", 'F', "text")
+Options.flag("force",'f')             // boolean flag, false when omitted
+Options.
+
+bool("enabled",'e',true)
+Options.
+
+integer("limit",'n',10)
+Options.
+
+longValue("size",'s',0L)
+Options.
+
+floatValue("speed",'S',1.0f)
+Options.
+
+doubleValue("radius",'r',5.0)
+Options.
+
+string("format",'F',"text")
 ```
 
 ## Registration
