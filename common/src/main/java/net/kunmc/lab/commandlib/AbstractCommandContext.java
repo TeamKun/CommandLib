@@ -11,14 +11,20 @@ public abstract class AbstractCommandContext<S, C> {
     protected final com.mojang.brigadier.context.CommandContext<S> handle;
     private final Map<String, String> argumentNameToInputArgMap = new LinkedHashMap<>();
     private final LinkedHashMap<String, Object> parsedArgMap = new LinkedHashMap<>();
+    private final Map<CommandOption<?, ?>, Object> optionValues = new LinkedHashMap<>();
 
     protected AbstractCommandContext(@NotNull com.mojang.brigadier.context.CommandContext<S> ctx) {
         this.handle = Objects.requireNonNull(ctx);
 
         ctx.getNodes()
            .forEach(x -> {
-               argumentNameToInputArgMap.put(x.getNode()
-                                              .getName(),
+               String name = x.getNode()
+                              .getName();
+               if (name.startsWith("-") || name.startsWith(CommandOption.INTERNAL_NAME_PREFIX)) {
+                   return;
+               }
+
+               argumentNameToInputArgMap.put(name,
                                              x.getRange()
                                               .get(ctx.getInput()));
            });
@@ -32,6 +38,10 @@ public abstract class AbstractCommandContext<S, C> {
     @NotNull
     public final String getInput(String name) {
         return argumentNameToInputArgMap.getOrDefault(name, "");
+    }
+
+    final boolean hasInput(String name) {
+        return argumentNameToInputArgMap.containsKey(name);
     }
 
     /**
@@ -82,6 +92,13 @@ public abstract class AbstractCommandContext<S, C> {
         }
 
         return clazz.cast(parsedArg);
+    }
+
+    @NotNull
+    public final <T> T getOption(@NotNull CommandOption<T, ?> option) {
+        Objects.requireNonNull(option);
+        Object value = optionValues.getOrDefault(option, option.defaultValue());
+        return option.cast(value);
     }
 
     public final void sendMessage(@Nullable Object obj) {
@@ -138,8 +155,12 @@ public abstract class AbstractCommandContext<S, C> {
         return Locale.forLanguageTag(getLanguage().replace('_', '-'));
     }
 
-    final void addParsedArgument(String name, Object parsedArgument) {
+    final void setParsedArgument(String name, Object parsedArgument) {
         parsedArgMap.put(name, parsedArgument);
+    }
+
+    final void setOptionValue(CommandOption<?, ?> option, Object value) {
+        optionValues.put(option, value);
     }
 
     public static class MessageOption {

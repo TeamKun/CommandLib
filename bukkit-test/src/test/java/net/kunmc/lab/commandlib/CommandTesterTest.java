@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CommandTesterTest {
     @Nested
@@ -178,6 +179,185 @@ class CommandTesterTest {
                 FakeSender sender = FakeSender.player("Steve");
                 tester.execute("game start", sender);
                 assertThat(sender.getSentMessageTexts()).containsExactly("started");
+            }
+        }
+
+        @Test
+        void command_option_flag_is_available_from_context() {
+            try (CommandTester tester = new CommandTester(new Command("scan") {{
+                CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f'));
+                argument(new StringArgument("target"), (target, ctx) -> {
+                    ctx.sendMessage(target + ":" + ctx.getOption(force));
+                });
+            }}, "test.command")) {
+                FakeSender sender = FakeSender.player("Steve");
+                tester.execute("scan -f Alex", sender);
+                assertThat(sender.getSentMessageTexts()).containsExactly("Alex:true");
+            }
+        }
+
+        @Test
+        void command_option_flag_defaults_to_false() {
+            try (CommandTester tester = new CommandTester(new Command("scan") {{
+                CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f'));
+                argument(new StringArgument("target"), (target, ctx) -> {
+                    ctx.sendMessage(target + ":" + ctx.getOption(force));
+                });
+            }}, "test.command")) {
+                FakeSender sender = FakeSender.player("Steve");
+                tester.execute("scan Alex", sender);
+                assertThat(sender.getSentMessageTexts()).containsExactly("Alex:false");
+            }
+        }
+
+        @Test
+        void command_option_combined_short_flags_are_available_from_context() {
+            try (CommandTester tester = new CommandTester(new Command("scan") {{
+                CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f'));
+                CommandOption<Boolean, CommandContext> verbose = option(Options.flag("verbose", 'v'));
+                argument(new StringArgument("target"), (target, ctx) -> {
+                    ctx.sendMessage(target + ":" + ctx.getOption(force) + ":" + ctx.getOption(verbose));
+                });
+            }}, "test.command")) {
+                FakeSender sender = FakeSender.player("Steve");
+                tester.execute("scan -fv Alex", sender);
+                assertThat(sender.getSentMessageTexts()).containsExactly("Alex:true:true");
+            }
+        }
+
+        @Test
+        void command_option_long_flag_is_available_from_context() {
+            try (CommandTester tester = new CommandTester(new Command("scan") {{
+                CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f'));
+                argument(new StringArgument("target"), (target, ctx) -> {
+                    ctx.sendMessage(target + ":" + ctx.getOption(force));
+                });
+            }}, "test.command")) {
+                FakeSender sender = FakeSender.player("Steve");
+                tester.execute("scan --force Alex", sender);
+                assertThat(sender.getSentMessageTexts()).containsExactly("Alex:true");
+            }
+        }
+
+        @Test
+        void command_value_option_is_available_from_context() {
+            try (CommandTester tester = new CommandTester(new Command("scan") {{
+                CommandOption<Integer, CommandContext> limit = option(Options.integer("limit", 'n', 10, 1, 100));
+                argument(new StringArgument("target"), (target, ctx) -> {
+                    ctx.sendMessage(target + ":" + ctx.getOption(limit));
+                });
+            }}, "test.command")) {
+                FakeSender sender = FakeSender.player("Steve");
+                tester.execute("scan -n 20 Alex", sender);
+                assertThat(sender.getSentMessageTexts()).containsExactly("Alex:20");
+            }
+        }
+
+        @Test
+        void command_value_option_long_name_is_available_from_context() {
+            try (CommandTester tester = new CommandTester(new Command("scan") {{
+                CommandOption<Integer, CommandContext> limit = option(Options.integer("limit", 'n', 10, 1, 100));
+                argument(new StringArgument("target"), (target, ctx) -> {
+                    ctx.sendMessage(target + ":" + ctx.getOption(limit));
+                });
+            }}, "test.command")) {
+                FakeSender sender = FakeSender.player("Steve");
+                tester.execute("scan --limit 20 Alex", sender);
+                assertThat(sender.getSentMessageTexts()).containsExactly("Alex:20");
+            }
+        }
+
+        @Test
+        void command_value_option_defaults_when_omitted() {
+            try (CommandTester tester = new CommandTester(new Command("scan") {{
+                CommandOption<Integer, CommandContext> limit = option(Options.integer("limit", 'n', 10, 1, 100));
+                argument(new StringArgument("target"), (target, ctx) -> {
+                    ctx.sendMessage(target + ":" + ctx.getOption(limit));
+                });
+            }}, "test.command")) {
+                FakeSender sender = FakeSender.player("Steve");
+                tester.execute("scan Alex", sender);
+                assertThat(sender.getSentMessageTexts()).containsExactly("Alex:10");
+            }
+        }
+
+        @Test
+        void command_string_value_option_defaults_when_omitted() {
+            try (CommandTester tester = new CommandTester(new Command("scan") {{
+                CommandOption<String, CommandContext> format = option(Options.string("format", 'F', "text"));
+                argument(new StringArgument("target"), (target, ctx) -> {
+                    ctx.sendMessage(target + ":" + ctx.getOption(format));
+                });
+            }}, "test.command")) {
+                FakeSender sender = FakeSender.player("Steve");
+                tester.execute("scan Alex", sender);
+                assertThat(sender.getSentMessageTexts()).containsExactly("Alex:text");
+            }
+        }
+
+        @Test
+        void command_string_value_option_without_value_is_rejected() {
+            try (CommandTester tester = new CommandTester(new Command("scan") {{
+                CommandOption<String, CommandContext> format = option(Options.string("format", 'F', "text"));
+                argument(new StringArgument("target"), (target, ctx) -> {
+                    ctx.sendMessage(target + ":" + ctx.getOption(format));
+                });
+            }}, "test.command")) {
+                FakeSender sender = FakeSender.player("Steve");
+                assertThatThrownBy(() -> tester.execute("scan --format", sender)).isInstanceOf(RuntimeException.class);
+            }
+        }
+
+        @Test
+        void command_option_after_argument_is_rejected() {
+            try (CommandTester tester = new CommandTester(new Command("scan") {{
+                CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f'));
+                argument(new StringArgument("target", StringArgument.Type.WORD), (target, ctx) -> {
+                    ctx.sendMessage(target + ":" + ctx.getOption(force));
+                });
+            }}, "test.command")) {
+                FakeSender sender = FakeSender.player("Steve");
+                assertThatThrownBy(() -> tester.execute("scan Alex -f", sender)).isInstanceOf(RuntimeException.class);
+            }
+        }
+
+        @Test
+        void child_command_uses_child_options_after_child_name() {
+            try (CommandTester tester = new CommandTester(new Command("game") {{
+                addChildren(new Command("start") {{
+                    CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f'));
+                    argument(new StringArgument("target"), (target, ctx) -> {
+                        ctx.sendMessage(target + ":" + ctx.getOption(force));
+                    });
+                }});
+            }}, "test.command")) {
+                FakeSender sender = FakeSender.player("Steve");
+                tester.execute("game start -f Alex", sender);
+                assertThat(sender.getSentMessageTexts()).containsExactly("Alex:true");
+            }
+        }
+
+        @Test
+        void help_message_includes_options() {
+            try (CommandTester tester = new CommandTester(new Command("scan") {{
+                option(Options.flag("force", 'f')
+                              .description("Force execution"));
+                option(Options.integer("limit", 'n', 10, 1, 100)
+                              .description("Maximum count"));
+
+                argument(new StringArgument("target"), (target, ctx) -> {
+                });
+            }}, "test.command")) {
+                FakeSender sender = FakeSender.player("Steve");
+                tester.execute("scan", sender);
+                assertThat(sender.getSentMessageTexts()).anyMatch(x -> x.contains("Usage:"))
+                                                        .anyMatch(x -> x.contains("/scan") && x.contains("options") && x.contains(
+                                                                "target"))
+                                                        .anyMatch(x -> x.contains("Options:"))
+                                                        .anyMatch(x -> x.contains("-f") && x.contains("--force") && x.contains(
+                                                                "Force execution"))
+                                                        .anyMatch(x -> x.contains("-n") && x.contains("--limit") && x.contains(
+                                                                "Maximum count"));
             }
         }
     }

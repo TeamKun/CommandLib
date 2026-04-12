@@ -22,6 +22,15 @@ public abstract class TestBase {
         resultMap.put(result.key(), result);
     }
 
+    protected final void putResult(String key, String actual, String expected) {
+        if (expected.equals(actual)) {
+            putResult(new TestResult(key, TestStatus.SUCCEEDED, actual));
+            return;
+        }
+
+        putResult(new TestResult(key, TestStatus.FAILED, "Expected " + expected + " but was " + actual));
+    }
+
     protected final String buildCommand(Command command, String subCommand) {
         return command.name() + " " + subCommand;
     }

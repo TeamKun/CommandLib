@@ -43,8 +43,9 @@ public class TestMain {
         AtomicBoolean running = new AtomicBoolean(false);
 
         ArgumentTest argumentTest = new ArgumentTest(mainCommand, TEST_PLAYER_NAME);
+        OptionTest optionTest = new OptionTest(mainCommand);
         CommandSyntaxExceptionTest commandSyntaxExceptionTest = new CommandSyntaxExceptionTest(mainCommand);
-        List<TestBase> tests = List.of(argumentTest, commandSyntaxExceptionTest);
+        List<TestBase> tests = List.of(argumentTest, optionTest, commandSyntaxExceptionTest);
         List<String> commands = tests.stream()
                                      .flatMap(x -> x.build()
                                                     .stream())

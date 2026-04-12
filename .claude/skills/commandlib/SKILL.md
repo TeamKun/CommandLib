@@ -1,4 +1,5 @@
 ---
+name: commandlib
 description: Load CommandLib API from the Gradle source cache and generate or explain CommandLib code. Usage: /commandlib <request>
 allowed-tools: Bash Read Glob Grep
 ---
@@ -24,6 +25,8 @@ The script prints one of:
 - `net/kunmc/lab/commandlib/Command.java`
 - `net/kunmc/lab/commandlib/CommandContext.java`
 - `net/kunmc/lab/commandlib/CommonCommand.java`
+- `net/kunmc/lab/commandlib/CommandOption.java`
+- `net/kunmc/lab/commandlib/Options.java`
 - `net/kunmc/lab/commandlib/AbstractArgumentBuilder.java`
 - `net/kunmc/lab/commandlib/ArgumentBuilder.java`
 - `net/kunmc/lab/commandlib/CommonArgument.java`
@@ -36,6 +39,8 @@ The script prints one of:
 - `bukkit/src/main/java/net/kunmc/lab/commandlib/Command.java`
 - `bukkit/src/main/java/net/kunmc/lab/commandlib/CommandContext.java`
 - `common/src/main/java/net/kunmc/lab/commandlib/CommonCommand.java`
+- `common/src/main/java/net/kunmc/lab/commandlib/CommandOption.java`
+- `common/src/main/java/net/kunmc/lab/commandlib/Options.java`
 - `common/src/main/java/net/kunmc/lab/commandlib/AbstractArgumentBuilder.java`
 - `bukkit/src/main/java/net/kunmc/lab/commandlib/ArgumentBuilder.java`
 - `common/src/main/java/net/kunmc/lab/commandlib/CommonArgument.java`

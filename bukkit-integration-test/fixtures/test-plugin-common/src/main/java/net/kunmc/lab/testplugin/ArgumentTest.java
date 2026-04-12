@@ -81,7 +81,7 @@ public final class ArgumentTest extends TestBase {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
             }), (a, ctx) -> {
-                putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
+                putResult(key, a.toString(), "true");
             });
         }});
 
@@ -99,7 +99,7 @@ public final class ArgumentTest extends TestBase {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
             }), (a, ctx) -> {
-                putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
+                putResult(key, a.toString(), "1.0");
             });
         }});
 
@@ -135,7 +135,7 @@ public final class ArgumentTest extends TestBase {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
             }), (a, ctx) -> {
-                putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
+                putResult(key, Integer.toString(a.size()), "1");
             });
         }});
 
@@ -171,7 +171,7 @@ public final class ArgumentTest extends TestBase {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
             }), (a, ctx) -> {
-                putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
+                putResult(key, a.toString(), "AIR");
             });
         }});
 
@@ -189,7 +189,7 @@ public final class ArgumentTest extends TestBase {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
             }), (a, ctx) -> {
-                putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
+                putResult(key, a.toString(), "1.0");
             });
         }});
 
@@ -207,7 +207,7 @@ public final class ArgumentTest extends TestBase {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
             }), (a, ctx) -> {
-                putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
+                putResult(key, a.toString(), "1");
             });
         }});
 
@@ -243,7 +243,7 @@ public final class ArgumentTest extends TestBase {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
             }), (a, ctx) -> {
-                putResult(new TestResult(key, TestStatus.SUCCEEDED, a));
+                putResult(key, a, "a");
             });
         }});
 
@@ -279,7 +279,7 @@ public final class ArgumentTest extends TestBase {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
             }), (a, ctx) -> {
-                putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
+                putResult(key, a.tabCompleteName(), "a");
             });
         }});
 
@@ -299,7 +299,7 @@ public final class ArgumentTest extends TestBase {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
             }), (a, ctx) -> {
-                putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
+                putResult(key, a.toString(), "1");
             });
         }});
 
@@ -318,7 +318,7 @@ public final class ArgumentTest extends TestBase {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
             }), (a, ctx) -> {
-                putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
+                putResult(key, a.getName(), offlinePlayer.getName());
             });
         }});
 
@@ -337,7 +337,11 @@ public final class ArgumentTest extends TestBase {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
             }), (a, ctx) -> {
-                putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
+                putResult(key,
+                          a.stream()
+                           .map(OfflinePlayer::getName)
+                           .collect(java.util.stream.Collectors.joining(",")),
+                          offlinePlayer.getName());
             });
         }});
 
@@ -373,7 +377,7 @@ public final class ArgumentTest extends TestBase {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
             }), (a, ctx) -> {
-                putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
+                putResult(key, a.getName(), playerName);
             });
         }});
 
@@ -391,7 +395,11 @@ public final class ArgumentTest extends TestBase {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
             }), (a, ctx) -> {
-                putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
+                putResult(key,
+                          a.stream()
+                           .map(x -> x.getName())
+                           .collect(java.util.stream.Collectors.joining(",")),
+                          playerName);
             });
         }});
 
@@ -427,7 +435,7 @@ public final class ArgumentTest extends TestBase {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
             }), (a, ctx) -> {
-                putResult(new TestResult(key, TestStatus.SUCCEEDED, a));
+                putResult(key, a, "a");
             });
         }});
 
@@ -454,7 +462,7 @@ public final class ArgumentTest extends TestBase {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
             }), (a, ctx) -> {
-                putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
+                putResult(key, a.getName(), team.getName());
             });
         }});
 
@@ -472,7 +480,7 @@ public final class ArgumentTest extends TestBase {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
             }), (a, ctx) -> {
-                putResult(new TestResult(key, TestStatus.SUCCEEDED, a));
+                putResult(key, a, "a");
             });
         }});
 
@@ -482,6 +490,7 @@ public final class ArgumentTest extends TestBase {
     public List<String> uuidArgument() {
         String name = getMethodName();
         String key = getKey();
+        UUID uuid = UUID.fromString("00000000-0000-0000-0000-000000000001");
 
         putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
         command.addChildren(new Command(name) {{
@@ -490,17 +499,18 @@ public final class ArgumentTest extends TestBase {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
             }), (a, ctx) -> {
-                putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
+                putResult(key, a.toString(), uuid.toString());
             });
         }});
 
-        return List.of(buildCommand(command, name + " " + UUID.randomUUID()));
+        return List.of(buildCommand(command, name + " " + uuid));
     }
 
 
     public List<String> uuidsArgument() {
         String name = getMethodName();
         String key = getKey();
+        UUID uuid = UUID.fromString("00000000-0000-0000-0000-000000000002");
 
         putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
         command.addChildren(new Command(name) {{
@@ -509,10 +519,13 @@ public final class ArgumentTest extends TestBase {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
             }), (a, ctx) -> {
-                putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
+                putResult(key,
+                          a.toString(),
+                          List.of(uuid)
+                              .toString());
             });
         }});
 
-        return List.of(buildCommand(command, name + " " + UUID.randomUUID()));
+        return List.of(buildCommand(command, name + " " + uuid));
     }
 }

@@ -57,6 +57,7 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
 
         builder.executes(new CommandExecutor<>(platformAdapter,
                                                arguments,
+                                               parent.options(),
                                                parent.prerequisite(),
                                                helpAction,
                                                parent.preprocess(),

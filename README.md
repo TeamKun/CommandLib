@@ -26,7 +26,10 @@ validation, improved usability, and extensibility, CommandLib empowers developer
    Simplify your setup and ensure compatibility across multiple Minecraft versions.
 3. **Powerful Suggestion Generation**  
    Automatically generate argument suggestions with customizable options for enhanced flexibility.
-4. **Seamless Integration with the `/execute` command**   
+4. **Typed Command Options**  
+   Define command options such as `-f`, `--force`, or `--limit 10` and read them from the command context in a
+   type-safe way.
+5. **Seamless Integration with the `/execute` command**   
    Allow your commands to be executed seamlessly from the `/execute` command, just like built-in commands.
 
 ## Installation
@@ -218,6 +221,104 @@ public final class TestPlugin extends JavaPlugin {
     }
 }
 ```
+
+</details>
+
+<details>
+<summary>Defining Command Options</summary>
+
+Command options can be placed immediately after the command name and before regular arguments.
+
+```java
+public final class ScanCommand extends Command {
+    public ScanCommand() {
+        super("scan");
+
+        CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f')
+                                                                     .description("Run even if safety checks fail."));
+        CommandOption<Boolean, CommandContext> verbose = option(Options.flag("verbose", 'v')
+                                                                       .description("Send detailed progress messages."));
+        CommandOption<Integer, CommandContext> limit = option(Options.integer("limit", 'n', 10, 1, 100)
+                                                                     .description("Maximum number of targets."));
+
+        argument(new PlayerArgument("target"), (target, ctx) -> {
+            boolean isForce = ctx.getOption(force);
+            boolean isVerbose = ctx.getOption(verbose);
+            int maxCount = ctx.getOption(limit);
+
+            // Do something
+        });
+    }
+}
+```
+
+Valid inputs:
+
+```text
+/scan Steve
+/scan -f Steve
+/scan --force Steve
+/scan -f -v Steve
+/scan -fv Steve
+/scan -n 20 Steve
+/scan --limit 20 Steve
+/scan -fv -n 20 Steve
+```
+
+Options must appear before regular arguments. This is invalid:
+
+```text
+/scan Steve -f
+```
+
+For subcommands, options belong to the most specific child command and are placed after that child command name:
+
+```java
+public final class GameCommand extends Command {
+    public GameCommand() {
+        super("game");
+
+        addChildren(new Command("start") {{
+            CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f'));
+
+            argument(new StringArgument("arena"), (arena, ctx) -> {
+                boolean isForce = ctx.getOption(force);
+
+                // Starts game
+            });
+        }});
+    }
+}
+```
+
+Valid:
+
+```text
+/game start -f arena1
+```
+
+Invalid:
+
+```text
+/game -f start arena1
+```
+
+Supported option types:
+
+```java
+Options.flag("force", 'f')             // boolean flag, false when omitted
+Options.bool("enabled", 'e', true)
+Options.integer("limit", 'n', 10)
+Options.longValue("size", 's', 0L)
+Options.floatValue("speed", 'S', 1.0f)
+Options.doubleValue("radius", 'r', 5.0)
+Options.string("format", 'F', "text")
+```
+
+Value options use the separated form, such as `--limit 20` or `-n 20`. Forms like `--limit=20` and `-n20` are not
+supported.
+
+Option descriptions are optional. When present, they are shown in the command help message.
 
 </details>
 

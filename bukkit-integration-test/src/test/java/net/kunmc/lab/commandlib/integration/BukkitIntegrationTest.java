@@ -86,12 +86,29 @@ class BukkitIntegrationTest {
         }
     }
 
+    @Test
+    void player_join_log_detection_accepts_bukkit_and_mohist_formats() {
+        assertThat(isPlayerJoinLog("[12:47:42 INFO]: Maru32768 joined the game")).isTrue();
+        assertThat(isPlayerJoinLog(
+                "[12:47:42 INFO]: Maru32768[/172.17.0.1:52648] logged in with entity id 127 at (-245.5, 63, 153.5)")).isTrue();
+        assertThat(isPlayerJoinLog("[12:47:42 INFO]: OtherPlayer joined the game")).isFalse();
+    }
+
     private static void waitForPlayerJoin(GenericContainer<?> container) {
         Awaitility.await()
                   .atMost(Duration.ofSeconds(30))
                   .pollInterval(Duration.ofMillis(500))
                   .until(() -> container.getLogs()
-                                        .contains(TEST_PLAYER_NAME + " joined the game"));
+                                        .lines()
+                                        .anyMatch(BukkitIntegrationTest::isPlayerJoinLog));
+    }
+
+    private static boolean isPlayerJoinLog(String line) {
+        if (!line.contains(TEST_PLAYER_NAME)) {
+            return false;
+        }
+
+        return line.contains("joined the game") || line.contains("logged in with entity id");
     }
 
     private static void assertJUnitReportSucceeded(Path reportFile) throws ParserConfigurationException, IOException, SAXException {

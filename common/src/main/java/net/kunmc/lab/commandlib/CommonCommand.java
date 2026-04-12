@@ -19,6 +19,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     private final List<T> children = new ArrayList<>();
     private final List<String> aliases = new ArrayList<>();
     private final List<Arguments<C>> argumentsList = new ArrayList<>();
+    private final List<CommandOption<?, C>> options = new ArrayList<>();
     private Prerequisite<C> prerequisite = ctx -> {
     };
     private Predicate<C> preprocess = ctx -> true;
@@ -81,6 +82,32 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
             Objects.requireNonNull(alias);
         }
         this.aliases.addAll(aliases);
+    }
+
+    @SuppressWarnings("unchecked")
+    public final <E> CommandOption<E, C> option(@NotNull CommandOption<E, ? super C> option) {
+        Objects.requireNonNull(option);
+        boolean duplicatedName = options.stream()
+                                        .anyMatch(x -> x.name()
+                                                        .equals(option.name()));
+        if (duplicatedName) {
+            throw new IllegalArgumentException("Duplicate option name: " + option.name());
+        }
+
+        Character shortName = option.shortName();
+        if (shortName != null) {
+            boolean duplicatedShortName = options.stream()
+                                                 .map(CommandOption::shortName)
+                                                 .filter(Objects::nonNull)
+                                                 .anyMatch(x -> x.equals(shortName));
+            if (duplicatedShortName) {
+                throw new IllegalArgumentException("Duplicate option short name: " + shortName);
+            }
+        }
+
+        CommandOption<E, C> typedOption = (CommandOption<E, C>) option;
+        options.add(typedOption);
+        return typedOption;
     }
 
     public final void setInheritParentPrerequisite(boolean inherit) {
@@ -291,6 +318,10 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
 
     final List<Arguments<C>> argumentsList() {
         return List.copyOf(argumentsList);
+    }
+
+    final List<CommandOption<?, C>> options() {
+        return List.copyOf(options);
     }
 
     final List<String> aliases() {

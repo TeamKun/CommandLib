@@ -43,6 +43,65 @@ class MyCommand extends Command {
 }
 ```
 
+## Command options
+
+Use `CommandOption<T, CommandContext>` for command options such as `-f`, `--force`, and `--limit 10`.
+Register options on the `Command`, then read them with `ctx.getOption(option)`.
+
+```java
+class ScanCommand extends Command {
+    ScanCommand() {
+        super("scan");
+
+        CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f')
+                                                                    .description("Force execution"));
+        CommandOption<Integer, CommandContext> limit = option(Options.integer("limit", 'n', 10, 1, 100)
+                                                                    .description("Maximum count"));
+        CommandOption<String, CommandContext> format = option(Options.string("format", 'F', "text")
+                                                                    .description("Output format"));
+
+        argument(new StringArgument("target", StringArgument.Type.WORD), (target, ctx) -> {
+            boolean isForce = ctx.getOption(force);
+            int maxCount = ctx.getOption(limit);
+            String outputFormat = ctx.getOption(format);
+            ctx.sendMessage(target + ":" + isForce + ":" + maxCount + ":" + outputFormat);
+        });
+    }
+}
+```
+
+Supported forms:
+
+```text
+/scan alex
+/scan -f alex
+/scan --force alex
+/scan -fv alex
+/scan -n 20 alex
+/scan --limit 20 alex
+/scan -f -n 20 --format json alex
+```
+
+Important constraints:
+
+- Options must appear immediately after the command or subcommand name, before regular arguments.
+- For child commands, options belong to the most specific child command: `/game start -f arena`, not `/game -f start arena`.
+- Value options use separated values only: `--limit 20` and `-n 20`; do not generate `--limit=20` or `-n20`.
+- Prefer typed option keys over `ctx.getParsedArg(...)`; `ctx.getOption(limit)` is type-safe and returns the default when omitted.
+- Add `.description(...)` when generating user-facing commands so options appear clearly in help output.
+
+Available factories:
+
+```java
+Options.flag("force", 'f')             // boolean flag, false when omitted
+Options.bool("enabled", 'e', true)
+Options.integer("limit", 'n', 10)
+Options.longValue("size", 's', 0L)
+Options.floatValue("speed", 'S', 1.0f)
+Options.doubleValue("radius", 'r', 5.0)
+Options.string("format", 'F', "text")
+```
+
 ## Registration
 
 Always specify a permission prefix that matches the plugin's namespace:
