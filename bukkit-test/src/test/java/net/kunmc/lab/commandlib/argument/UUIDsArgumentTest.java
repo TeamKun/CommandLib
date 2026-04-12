@@ -1,6 +1,8 @@
-package net.kunmc.lab.commandlib;
+package net.kunmc.lab.commandlib.argument;
 
-import net.kunmc.lab.commandlib.argument.UUIDsArgument;
+import net.kunmc.lab.commandlib.Command;
+import net.kunmc.lab.commandlib.CommandTester;
+import net.kunmc.lab.commandlib.FakeSender;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.junit.jupiter.api.Test;

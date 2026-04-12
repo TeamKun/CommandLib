@@ -1,6 +1,9 @@
-package net.kunmc.lab.commandlib;
+package net.kunmc.lab.commandlib.argument;
 
-import net.kunmc.lab.commandlib.argument.NameableObjectArgument;
+import net.kunmc.lab.commandlib.Command;
+import net.kunmc.lab.commandlib.CommandTester;
+import net.kunmc.lab.commandlib.FakeSender;
+import net.kunmc.lab.commandlib.Nameable;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

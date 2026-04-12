@@ -1,6 +1,8 @@
-package net.kunmc.lab.commandlib;
+package net.kunmc.lab.commandlib.argument;
 
-import net.kunmc.lab.commandlib.argument.ObjectArgument;
+import net.kunmc.lab.commandlib.Command;
+import net.kunmc.lab.commandlib.CommandTester;
+import net.kunmc.lab.commandlib.FakeSender;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;

@@ -1,6 +1,8 @@
-package net.kunmc.lab.commandlib;
+package net.kunmc.lab.commandlib.argument;
 
-import net.kunmc.lab.commandlib.argument.PotionEffectArgument;
+import net.kunmc.lab.commandlib.Command;
+import net.kunmc.lab.commandlib.CommandTester;
+import net.kunmc.lab.commandlib.FakeSender;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.junit.jupiter.api.Test;

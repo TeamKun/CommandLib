@@ -1,4 +1,4 @@
-package net.kunmc.lab.commandlib;
+package net.kunmc.lab.commandlib.argument;
 
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
  */
 class ArgumentCoverageTest {
     private static final String ARGUMENT_PACKAGE = "net.kunmc.lab.commandlib.argument";
-    private static final String TEST_PACKAGE = "net.kunmc.lab.commandlib";
+    private static final String TEST_PACKAGE = "net.kunmc.lab.commandlib.argument";
 
     /**
      * Argument classes that intentionally have no standalone *Test class.
@@ -109,7 +109,7 @@ class ArgumentCoverageTest {
     private void addIfConcreteArgument(String className, ClassLoader classLoader, List<Class<?>> result) {
         try {
             Class<?> cls = Class.forName(className, false, classLoader);
-            if (!Modifier.isAbstract(cls.getModifiers()) && Argument.class.isAssignableFrom(cls) && !EXCLUDED_ARGUMENTS.contains(
+            if (!Modifier.isAbstract(cls.getModifiers()) && net.kunmc.lab.commandlib.Argument.class.isAssignableFrom(cls) && !EXCLUDED_ARGUMENTS.contains(
                     cls)) {
                 result.add(cls);
             }

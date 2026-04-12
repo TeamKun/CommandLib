@@ -1,6 +1,8 @@
-package net.kunmc.lab.commandlib;
+package net.kunmc.lab.commandlib.argument;
 
-import net.kunmc.lab.commandlib.argument.UnparsedArgument;
+import net.kunmc.lab.commandlib.Command;
+import net.kunmc.lab.commandlib.CommandTester;
+import net.kunmc.lab.commandlib.FakeSender;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
