@@ -1,0 +1,197 @@
+package net.kunmc.lab.commandlib;
+
+import net.kunmc.lab.commandlib.argument.*;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class CommonArgumentTest {
+    @Test
+    void primitive_arguments_are_parsed() throws Exception {
+        TestCommandRunner runner = new TestCommandRunner(new TestCommand("set") {{
+            argument(new CommonBooleanArgument<>("enabled"),
+                     new CommonIntegerArgument<>("amount"),
+                     new CommonLongArgument<>("ticks"),
+                     new CommonFloatArgument<>("speed"),
+                     new CommonDoubleArgument<>("ratio"),
+                     (enabled, amount, ticks, speed, ratio, ctx) -> {
+                         ctx.sendMessage(enabled + ":" + amount + ":" + ticks + ":" + speed + ":" + ratio);
+                     });
+        }});
+
+        TestCommandContext ctx = runner.execute("set true -5 9999999999 1.5 3.14");
+
+        assertThat(ctx.messages()).containsExactly("true:-5:9999999999:1.5:3.14");
+    }
+
+    @Test
+    void string_argument_parses_word_quoted_phrase_and_greedy_phrase() throws Exception {
+        TestCommandRunner runner = new TestCommandRunner(new TestCommand("say") {{
+            argument(new CommonStringArgument<>("word", CommonStringArgument.Type.WORD),
+                     new CommonStringArgument<>("quoted", CommonStringArgument.Type.PHRASE_QUOTED),
+                     new CommonStringArgument<>("rest", CommonStringArgument.Type.PHRASE),
+                     (word, quoted, rest, ctx) -> {
+                         ctx.sendMessage(word + "|" + quoted + "|" + rest);
+                     });
+        }});
+
+        TestCommandContext ctx = runner.execute("say hello \"good morning\" this is rest");
+
+        assertThat(ctx.messages()).containsExactly("hello|good morning|this is rest");
+    }
+
+    @Test
+    void enum_argument_resolves_case_insensitively_and_rejects_unknown_value() throws Exception {
+        TestCommandRunner runner = new TestCommandRunner(new TestCommand("go") {{
+            argument(new CommonEnumArgument<>("dir", Direction.class), (dir, ctx) -> {
+                ctx.sendMessage("going " + dir.name());
+            });
+        }});
+
+        TestCommandContext passed = runner.execute("go north");
+        TestCommandContext failed = runner.execute("go up");
+
+        assertThat(passed.messages()).containsExactly("going NORTH");
+        assertThat(failed.messages()).isNotEmpty();
+        assertThat(failed.messages()).doesNotContain("going NORTH");
+    }
+
+    @Test
+    void object_argument_resolves_by_name_and_rejects_unknown_value() throws Exception {
+        Map<String, Integer> items = Map.of("sword", 1, "bow", 2);
+        TestCommandRunner runner = new TestCommandRunner(new TestCommand("give") {{
+            argument(new CommonObjectArgument<>("item", items), (item, ctx) -> {
+                ctx.sendMessage("item=" + item);
+            });
+        }});
+
+        TestCommandContext passed = runner.execute("give sword");
+        TestCommandContext failed = runner.execute("give axe");
+
+        assertThat(passed.messages()).containsExactly("item=1");
+        assertThat(failed.messages()).isNotEmpty();
+        assertThat(failed.messages()).doesNotContain("item=1");
+    }
+
+    @Test
+    void nameable_object_argument_resolves_by_tab_complete_name() throws Exception {
+        List<Item> items = List.of(new Item("sword", 1), new Item("bow", 2));
+        TestCommandRunner runner = new TestCommandRunner(new TestCommand("equip") {{
+            argument(new CommonNameableObjectArgument<>("item", items), (item, ctx) -> {
+                ctx.sendMessage("equipped id=" + item.id);
+            });
+        }});
+
+        TestCommandContext ctx = runner.execute("equip bow");
+
+        assertThat(ctx.messages()).containsExactly("equipped id=2");
+    }
+
+    @Test
+    void literal_argument_accepts_only_listed_values() throws Exception {
+        TestCommandRunner runner = new TestCommandRunner(new TestCommand("mode") {{
+            argument(new CommonLiteralArgument<>("value", List.of("on", "off")), (value, ctx) -> {
+                ctx.sendMessage("mode=" + value);
+            });
+        }});
+
+        TestCommandContext passed = runner.execute("mode on");
+        TestCommandContext failed = runner.execute("mode auto");
+
+        assertThat(passed.messages()).containsExactly("mode=on");
+        assertThat(failed.messages()).isNotEmpty();
+        assertThat(failed.messages()).doesNotContain("mode=on");
+    }
+
+    @Test
+    void validator_and_transformer_are_applied_after_parsing() throws Exception {
+        TestCommandRunner runner = new TestCommandRunner(new TestCommand("set") {{
+            argument(new CommonIntegerArgument<TestCommandContext>("amount", option -> {
+                option.validator(value -> value >= 0)
+                      .transformer(value -> value * 2);
+            }), (amount, ctx) -> {
+                ctx.sendMessage("amount=" + amount);
+            });
+        }});
+
+        TestCommandContext passed = runner.execute("set 21");
+        TestCommandContext failed = runner.execute("set -1");
+
+        assertThat(passed.messages()).containsExactly("amount=42");
+        assertThat(failed.messages()).isNotEmpty();
+        assertThat(failed.messages()).doesNotContain("amount=-2");
+    }
+
+    @Test
+    void additional_parser_can_recover_from_library_parse_failure() throws Exception {
+        TestCommandRunner runner = new TestCommandRunner(new TestCommand("set") {{
+            argument(new CommonObjectArgument<Integer, TestCommandContext>("item", Map.of("sword", 1), option -> {
+                option.additionalParser((ctx, input) -> input.equals("axe") ? 2 : null);
+            }), (item, ctx) -> {
+                ctx.sendMessage("item=" + item);
+            });
+        }});
+
+        TestCommandContext ctx = runner.execute("set axe");
+
+        assertThat(ctx.messages()).containsExactly("item=2");
+    }
+
+    @Test
+    void context_exposes_raw_and_parsed_arguments() throws Exception {
+        TestCommandRunner runner = new TestCommandRunner(new TestCommand("sum") {{
+            argument(new CommonIntegerArgument<>("left"),
+                     new CommonIntegerArgument<>("right"),
+                     (left, right, ctx) -> {
+                         ctx.sendMessage(ctx.getInput("left") + ":" + ctx.getInput("right"));
+                         ctx.sendMessage(ctx.getArgs().toString());
+                         ctx.sendMessage(ctx.getParsedArgs().toString());
+                         ctx.sendMessage(ctx.getParsedArg("left", Integer.class) + right);
+                     });
+        }});
+
+        TestCommandContext ctx = runner.execute("sum 20 22");
+
+        assertThat(ctx.messages()).containsExactly("20:22", "[sum, 20, 22]", "[20, 22]", "42");
+    }
+
+    @Test
+    void suggestions_include_custom_object_and_literal_candidates() {
+        TestCommandRunner objectRunner = new TestCommandRunner(new TestCommand("give") {{
+            argument(new CommonObjectArgument<>("item", Map.of("sword", 1, "bow", 2)), (item, ctx) -> {
+            });
+        }});
+        TestCommandRunner literalRunner = new TestCommandRunner(new TestCommand("mode") {{
+            argument(new CommonLiteralArgument<>("value", List.of("on", "off")), (value, ctx) -> {
+            });
+        }});
+
+        assertThat(objectRunner.suggest("give s")).containsExactly("sword");
+        assertThat(literalRunner.suggest("mode o")).containsExactlyInAnyOrder("on", "off");
+    }
+
+    enum Direction {
+        NORTH,
+        SOUTH,
+        EAST,
+        WEST
+    }
+
+    private static class Item implements Nameable {
+        private final String name;
+        private final int id;
+
+        private Item(String name, int id) {
+            this.name = name;
+            this.id = id;
+        }
+
+        @Override
+        public String tabCompleteName() {
+            return name;
+        }
+    }
+}
