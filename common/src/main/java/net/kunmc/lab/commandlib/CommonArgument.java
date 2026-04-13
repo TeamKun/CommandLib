@@ -22,6 +22,8 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
     private boolean displayDefaultSuggestions = true;
     private SuggestionAction<C> suggestionAction;
     private SuggestionAction<C> additionalSuggestionAction;
+    private AsyncSuggestionAction<C> asyncSuggestionAction;
+    private AsyncSuggestionAction<C> additionalAsyncSuggestionAction;
     private BiFunction<C, String, T> additionalParser;
     private ContextAction<C> contextAction;
     private final ArgumentType<?> type;
@@ -71,12 +73,38 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         };
     }
 
+    public final AsyncSuggestionAction<C> asyncSuggestionAction() {
+        if (asyncSuggestionAction == null && additionalAsyncSuggestionAction == null) {
+            return null;
+        }
+
+        return sb -> {
+            java.util.concurrent.CompletionStage<Void> stage = java.util.concurrent.CompletableFuture.completedFuture(
+                    null);
+            if (asyncSuggestionAction != null) {
+                stage = stage.thenCompose(ignored -> asyncSuggestionAction.accept(sb));
+            }
+            if (additionalAsyncSuggestionAction != null) {
+                stage = stage.thenCompose(ignored -> additionalAsyncSuggestionAction.accept(sb));
+            }
+            return stage;
+        };
+    }
+
     protected final void suggestionAction(@Nullable SuggestionAction<C> suggestionAction) {
         this.suggestionAction = suggestionAction;
     }
 
     protected final void additionalSuggestionAction(@Nullable SuggestionAction<C> additionalSuggestionAction) {
         this.additionalSuggestionAction = additionalSuggestionAction;
+    }
+
+    protected final void asyncSuggestionAction(@Nullable AsyncSuggestionAction<C> asyncSuggestionAction) {
+        this.asyncSuggestionAction = asyncSuggestionAction;
+    }
+
+    protected final void additionalAsyncSuggestionAction(@Nullable AsyncSuggestionAction<C> additionalAsyncSuggestionAction) {
+        this.additionalAsyncSuggestionAction = additionalAsyncSuggestionAction;
     }
 
     protected final void additionalParser(@Nullable BiFunction<C, String, T> parser) {
@@ -129,6 +157,10 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
               .ifPresent(this::suggestionAction);
         option.additionalSuggestionAction()
               .ifPresent(this::additionalSuggestionAction);
+        option.asyncSuggestionAction()
+              .ifPresent(this::asyncSuggestionAction);
+        option.additionalAsyncSuggestionAction()
+              .ifPresent(this::additionalAsyncSuggestionAction);
         option.additionalParser()
               .ifPresent(this::additionalParser);
         option.contextAction()
@@ -198,6 +230,11 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
          * It can be used to add additional suggests to an argument that configures a suggestion action by default, such as {@link net.kunmc.lab.commandlib.argument.CommonObjectArgument}.
          */
         protected SuggestionAction<C> additionalSuggestionAction;
+        protected AsyncSuggestionAction<C> asyncSuggestionAction;
+        /**
+         * It can be used to add additional suggests to an argument that configures a suggestion action by default, such as {@link net.kunmc.lab.commandlib.argument.CommonObjectArgument}.
+         */
+        protected AsyncSuggestionAction<C> additionalAsyncSuggestionAction;
         protected BiFunction<C, String, T> additionalParser;
         protected ArgumentValidator<? super T, C> validator;
         protected BiFunction<? super T, C, ? extends T> transformer;
@@ -234,6 +271,24 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
 
         protected Optional<SuggestionAction<C>> additionalSuggestionAction() {
             return Optional.ofNullable(additionalSuggestionAction);
+        }
+
+        public Option<T, C> asyncSuggestionAction(@Nullable AsyncSuggestionAction<C> asyncSuggestionAction) {
+            this.asyncSuggestionAction = asyncSuggestionAction;
+            return this;
+        }
+
+        protected Optional<AsyncSuggestionAction<C>> asyncSuggestionAction() {
+            return Optional.ofNullable(asyncSuggestionAction);
+        }
+
+        public Option<T, C> additionalAsyncSuggestionAction(@Nullable AsyncSuggestionAction<C> additionalAsyncSuggestionAction) {
+            this.additionalAsyncSuggestionAction = additionalAsyncSuggestionAction;
+            return this;
+        }
+
+        protected Optional<AsyncSuggestionAction<C>> additionalAsyncSuggestionAction() {
+            return Optional.ofNullable(additionalAsyncSuggestionAction);
         }
 
         public Option<T, C> additionalParser(@Nullable BiFunction<C, String, T> additionalParser) {

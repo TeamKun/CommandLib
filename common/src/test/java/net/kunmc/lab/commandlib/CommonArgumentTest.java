@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -143,14 +144,14 @@ class CommonArgumentTest {
     @Test
     void context_exposes_raw_and_parsed_arguments() throws Exception {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("sum") {{
-            argument(new CommonIntegerArgument<>("left"),
-                     new CommonIntegerArgument<>("right"),
-                     (left, right, ctx) -> {
-                         ctx.sendMessage(ctx.getInput("left") + ":" + ctx.getInput("right"));
-                         ctx.sendMessage(ctx.getArgs().toString());
-                         ctx.sendMessage(ctx.getParsedArgs().toString());
-                         ctx.sendMessage(ctx.getParsedArg("left", Integer.class) + right);
-                     });
+            argument(new CommonIntegerArgument<>("left"), new CommonIntegerArgument<>("right"), (left, right, ctx) -> {
+                ctx.sendMessage(ctx.getInput("left") + ":" + ctx.getInput("right"));
+                ctx.sendMessage(ctx.getArgs()
+                                   .toString());
+                ctx.sendMessage(ctx.getParsedArgs()
+                                   .toString());
+                ctx.sendMessage(ctx.getParsedArg("left", Integer.class) + right);
+            });
         }});
 
         TestCommandContext ctx = runner.execute("sum 20 22");
@@ -171,6 +172,21 @@ class CommonArgumentTest {
 
         assertThat(objectRunner.suggest("give s")).containsExactly("sword");
         assertThat(literalRunner.suggest("mode o")).containsExactlyInAnyOrder("on", "off");
+    }
+
+    @Test
+    void suggestions_support_async_actions() {
+        TestCommandRunner runner = new TestCommandRunner(new TestCommand("search") {{
+            argument(new CommonStringArgument<>("word", option -> {
+                option.asyncSuggestionAction(sb -> CompletableFuture.runAsync(() -> {
+                    sb.suggest("alpha");
+                    sb.suggest("beta");
+                }));
+            }), (word, ctx) -> {
+            });
+        }});
+
+        assertThat(runner.suggest("search ")).containsExactlyInAnyOrder("alpha", "beta");
     }
 
     enum Direction {

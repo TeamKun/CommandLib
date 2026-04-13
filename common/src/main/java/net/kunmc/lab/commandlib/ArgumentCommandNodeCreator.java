@@ -1,10 +1,13 @@
 package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
 final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>> {
@@ -20,7 +23,9 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
                                                         CommonCommand<C, ?, ?> parent) {
         RequiredArgumentBuilder<S, ?> builder = RequiredArgumentBuilder.argument(argument.name(), argument.type());
 
-        if (argument.suggestionAction() != null) {
+        SuggestionAction<C> suggestionAction = argument.suggestionAction();
+        AsyncSuggestionAction<C> asyncSuggestionAction = argument.asyncSuggestionAction();
+        if (suggestionAction != null || asyncSuggestionAction != null) {
             builder.suggests((context, sb) -> {
                 try {
                     C ctx = platformAdapter.createCommandContext(context);
@@ -30,24 +35,25 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
                     }
 
                     SuggestionBuilder<C> suggestionBuilder = new SuggestionBuilder<>(ctx);
-                    argument.suggestionAction()
-                            .accept(suggestionBuilder);
-                    suggestionBuilder.build()
-                                     .forEach(s -> {
-                                         s.suggest(sb);
-                                     });
-                    if (argument.isDisplayDefaultSuggestions()) {
-                        argument.type()
-                                .listSuggestions(context, sb)
-                                .thenAccept(x -> {
-                                    x.getList()
-                                     .forEach(s -> {
-                                         sb.suggest(s.getText(), s.getTooltip());
-                                     });
-                                });
+                    if (suggestionAction != null) {
+                        suggestionAction.accept(suggestionBuilder);
                     }
 
-                    return sb.buildFuture();
+                    CompletionStage<Void> customStage = asyncSuggestionAction == null ? CompletableFuture.completedFuture(
+                            null) : asyncSuggestionAction.accept(suggestionBuilder);
+                    CompletableFuture<Void> customFuture = customStage.toCompletableFuture()
+                                                                      .thenRun(() -> {
+                                                                          suggestionBuilder.build()
+                                                                                           .forEach(s -> s.suggest(sb));
+                                                                      });
+
+                    CompletableFuture<Suggestions> defaultFuture = argument.isDisplayDefaultSuggestions() ? argument.type()
+                                                                                                                    .listSuggestions(
+                                                                                                                            context,
+                                                                                                                            sb)
+                                                                                                                    .toCompletableFuture() : Suggestions.empty();
+
+                    return customFuture.thenCombine(defaultFuture, (ignored, suggestions) -> sb.build());
                 } catch (Throwable e) {
                     e.printStackTrace();
                     throw e;
