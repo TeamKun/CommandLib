@@ -127,13 +127,13 @@ class CommonCommandExecutionTest {
     }
 
     @Test
-    void child_command_can_disable_parent_prerequisite_inheritance() throws Exception {
+    void child_command_can_disable_parent_prerequisite() throws Exception {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("root") {{
             addPrerequisite(ctx -> {
                 throw new CommandPrerequisiteException("parent blocked");
             });
             addChildren(new TestCommand("child") {{
-                setInheritParentPrerequisite(false);
+                disableParentPrerequisite();
                 execute(ctx -> ctx.sendMessage("executed"));
             }});
         }});
@@ -161,14 +161,14 @@ class CommonCommandExecutionTest {
     }
 
     @Test
-    void child_command_can_disable_parent_preprocess_inheritance() throws Exception {
+    void child_command_can_disable_parent_preprocess() throws Exception {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("root") {{
             addPreprocess(ctx -> {
                 ctx.sendMessage("parent preprocess");
                 return true;
             });
             addChildren(new TestCommand("child") {{
-                setInheritParentPreprocess(false);
+                disableParentPreprocess();
                 execute(ctx -> ctx.sendMessage("executed"));
             }});
         }});

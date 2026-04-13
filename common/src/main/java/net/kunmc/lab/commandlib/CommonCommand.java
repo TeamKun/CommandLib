@@ -110,12 +110,12 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         return typedOption;
     }
 
-    public final void setInheritParentPrerequisite(boolean inherit) {
-        this.inheritParentPrerequisite = inherit;
+    public final void disableParentPrerequisite() {
+        this.inheritParentPrerequisite = false;
     }
 
-    public final void setInheritParentPreprocess(boolean inherit) {
-        this.inheritParentPreprocess = inherit;
+    public final void disableParentPreprocess() {
+        this.inheritParentPreprocess = false;
     }
 
     public final void argument(@NotNull Consumer<B> buildArguments) {
