@@ -1,0 +1,40 @@
+# CommandLib Repository Notes
+
+## Scope
+
+This document is for agents editing the CommandLib repository itself. The
+Claude Code skill under `.claude/skills/commandlib` is for downstream library
+users and should not be used as the main source of repository maintenance
+instructions.
+
+## Project Structure
+
+- `common`: shared command model, arguments, options, parsing, and utilities.
+- `bukkit`: Bukkit-facing API, registration, Bukkit argument types, and NMS
+  bridges.
+- `bukkit-test`: test utilities for downstream plugins and this repository.
+- `bukkit-integration-test`: Minecraft/Bukkit integration tests.
+- `forge`: Forge-facing integration.
+- `sample`: sample usage.
+
+Prefer the existing module boundaries. Keep shared behavior in `common` when it
+does not depend on Bukkit APIs. Keep Bukkit and NMS-specific behavior in
+`bukkit`.
+
+## Implementation Guidance
+
+- Follow the public API style already used in the surrounding code.
+- Keep changes scoped to the behavior being fixed or added.
+- Avoid broad formatting-only edits.
+- Preserve binary/source compatibility unless the task explicitly calls for an
+  API break.
+- Prefer typed APIs over stringly-typed lookups when adding new public examples
+  or tests.
+- For Bukkit/NMS behavior, check both the public wrapper and the mock/test
+  support paths before changing constructor or registry behavior.
+
+## Public Usage Patterns
+
+When writing examples or tests that represent downstream user code, prefer the
+same patterns documented in `.claude/skills/commandlib/references/patterns.md`.
+Those patterns are user-facing API guidance, not repository architecture rules.
