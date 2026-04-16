@@ -13,7 +13,7 @@ class FloatArgumentTest {
         FakeSender sender = FakeSender.player("Alice");
 
         try (CommandTester tester = new CommandTester(new Command("set") {{
-            argument(new FloatArgument("value"), (value, ctx) -> {
+            argument(new FloatArgument("value")).execute((value, ctx) -> {
                 ctx.sendMessage("value=" + value);
             });
         }}, "test.command")) {

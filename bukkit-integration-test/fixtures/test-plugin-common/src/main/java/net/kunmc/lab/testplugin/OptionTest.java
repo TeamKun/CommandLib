@@ -43,7 +43,7 @@ public final class OptionTest extends TestBase {
             CommandOption<String, CommandContext> format = option(Options.string("format", 'F', "text")
                                                                          .description("Output format"));
 
-            argument(new StringArgument("str", StringArgument.Type.WORD), (target, ctx) -> {
+            argument(new StringArgument("str", StringArgument.Type.WORD)).execute((target, ctx) -> {
                 putResult(key,
                           ctx.getOption(force) + ":" + ctx.getOption(limit) + ":" + ctx.getOption(format) + ":" + target,
                           "true:20:json:alex");
@@ -63,7 +63,7 @@ public final class OptionTest extends TestBase {
             CommandOption<Integer, CommandContext> limit = option(Options.integer("limit", 'n', 10, 1, 100));
             CommandOption<String, CommandContext> format = option(Options.string("format", 'F', "text"));
 
-            argument(new StringArgument("target", StringArgument.Type.WORD), (target, ctx) -> {
+            argument(new StringArgument("target", StringArgument.Type.WORD)).execute((target, ctx) -> {
                 putResult(key,
                           ctx.getOption(force) + ":" + ctx.getOption(limit) + ":" + ctx.getOption(format) + ":" + target,
                           "false:10:text:alex");
@@ -82,7 +82,7 @@ public final class OptionTest extends TestBase {
             CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f'));
             CommandOption<Boolean, CommandContext> verbose = option(Options.flag("verbose", 'v'));
 
-            argument(new StringArgument("target", StringArgument.Type.WORD), (target, ctx) -> {
+            argument(new StringArgument("target", StringArgument.Type.WORD)).execute((target, ctx) -> {
                 putResult(key, ctx.getOption(force) + ":" + ctx.getOption(verbose) + ":" + target, "true:true:alex");
             });
         }});
@@ -100,7 +100,7 @@ public final class OptionTest extends TestBase {
             CommandOption<String, CommandContext> reason = option(Options.string("reason", 'r', "")
                                                                          .requires(force));
 
-            argument(new StringArgument("target", StringArgument.Type.WORD), (target, ctx) -> {
+            argument(new StringArgument("target", StringArgument.Type.WORD)).execute((target, ctx) -> {
                 putResult(key, ctx.getOption(force) + ":" + ctx.getOption(reason) + ":" + target, "true:cleanup:alex");
             });
         }});
@@ -118,7 +118,7 @@ public final class OptionTest extends TestBase {
             CommandOption<Integer, CommandContext> limit = option(Options.integer("limit", 'n', 10)
                                                                          .requires(mode, "parallel"));
 
-            argument(new StringArgument("target", StringArgument.Type.WORD), (target, ctx) -> {
+            argument(new StringArgument("target", StringArgument.Type.WORD)).execute((target, ctx) -> {
                 putResult(key, ctx.getOption(mode) + ":" + ctx.getOption(limit) + ":" + target, "parallel:20:alex");
             });
         }});
@@ -136,7 +136,7 @@ public final class OptionTest extends TestBase {
             CommandOption<Integer, CommandContext> limit = option(Options.integer("limit", 'n', 10)
                                                                          .requires(mode, "parallel"));
 
-            argument(new StringArgument("target", StringArgument.Type.WORD), (target, ctx) -> {
+            argument(new StringArgument("target", StringArgument.Type.WORD)).execute((target, ctx) -> {
                 putResult(new TestResult(key,
                                          TestStatus.FAILED,
                                          "Command was executed with mode=" + ctx.getOption(mode) + ", limit=" + ctx.getOption(
@@ -155,7 +155,7 @@ public final class OptionTest extends TestBase {
         command.addChildren(new Command(name) {{
             CommandOption<String, CommandContext> format = option(Options.string("format", 'F', "text"));
 
-            argument(new StringArgument("target", StringArgument.Type.WORD), (target, ctx) -> {
+            argument(new StringArgument("target", StringArgument.Type.WORD)).execute((target, ctx) -> {
                 putResult(new TestResult(key,
                                          TestStatus.FAILED,
                                          "Command was executed with format=" + ctx.getOption(format)));
@@ -173,7 +173,7 @@ public final class OptionTest extends TestBase {
         command.addChildren(new Command(name) {{
             CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f'));
 
-            argument(new StringArgument("target", StringArgument.Type.WORD), (target, ctx) -> {
+            argument(new StringArgument("target", StringArgument.Type.WORD)).execute((target, ctx) -> {
                 putResult(new TestResult(key,
                                          TestStatus.FAILED,
                                          "Command was executed with force=" + ctx.getOption(force)));

@@ -99,7 +99,7 @@ class CommandTesterTest {
         @Test
         void command_with_string_argument() {
             try (CommandTester tester = new CommandTester(new Command("greet") {{
-                argument(new StringArgument("name"), (name, ctx) -> {
+                argument(new StringArgument("name")).execute((name, ctx) -> {
                     ctx.sendMessage("Hello, " + name + "!");
                 });
             }}, "test.command")) {

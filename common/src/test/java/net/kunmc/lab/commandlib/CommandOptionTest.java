@@ -11,7 +11,7 @@ class CommandOptionTest {
     void flag_is_available_from_context() throws Exception {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("scan") {{
             CommandOption<Boolean, TestCommandContext> force = option(Options.flag("force", 'f'));
-            argument(new CommonStringArgument<>("target"), (target, ctx) -> {
+            argument(new CommonStringArgument<>("target")).execute((target, ctx) -> {
                 ctx.sendMessage(target + ":" + ctx.getOption(force));
             });
         }});
@@ -25,7 +25,7 @@ class CommandOptionTest {
     void flag_defaults_to_false() throws Exception {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("scan") {{
             CommandOption<Boolean, TestCommandContext> force = option(Options.flag("force", 'f'));
-            argument(new CommonStringArgument<>("target"), (target, ctx) -> {
+            argument(new CommonStringArgument<>("target")).execute((target, ctx) -> {
                 ctx.sendMessage(target + ":" + ctx.getOption(force));
             });
         }});
@@ -40,7 +40,7 @@ class CommandOptionTest {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("scan") {{
             CommandOption<Boolean, TestCommandContext> force = option(Options.flag("force", 'f'));
             CommandOption<Boolean, TestCommandContext> verbose = option(Options.flag("verbose", 'v'));
-            argument(new CommonStringArgument<>("target"), (target, ctx) -> {
+            argument(new CommonStringArgument<>("target")).execute((target, ctx) -> {
                 ctx.sendMessage(target + ":" + ctx.getOption(force) + ":" + ctx.getOption(verbose));
             });
         }});
@@ -54,7 +54,7 @@ class CommandOptionTest {
     void long_flag_is_available_from_context() throws Exception {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("scan") {{
             CommandOption<Boolean, TestCommandContext> force = option(Options.flag("force", 'f'));
-            argument(new CommonStringArgument<>("target"), (target, ctx) -> {
+            argument(new CommonStringArgument<>("target")).execute((target, ctx) -> {
                 ctx.sendMessage(target + ":" + ctx.getOption(force));
             });
         }});
@@ -68,7 +68,7 @@ class CommandOptionTest {
     void value_option_is_available_from_context() throws Exception {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("scan") {{
             CommandOption<Integer, TestCommandContext> limit = option(Options.integer("limit", 'n', 10, 1, 100));
-            argument(new CommonStringArgument<>("target"), (target, ctx) -> {
+            argument(new CommonStringArgument<>("target")).execute((target, ctx) -> {
                 ctx.sendMessage(target + ":" + ctx.getOption(limit));
             });
         }});
@@ -82,7 +82,7 @@ class CommandOptionTest {
     void value_option_long_name_is_available_from_context() throws Exception {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("scan") {{
             CommandOption<Integer, TestCommandContext> limit = option(Options.integer("limit", 'n', 10, 1, 100));
-            argument(new CommonStringArgument<>("target"), (target, ctx) -> {
+            argument(new CommonStringArgument<>("target")).execute((target, ctx) -> {
                 ctx.sendMessage(target + ":" + ctx.getOption(limit));
             });
         }});
@@ -96,7 +96,7 @@ class CommandOptionTest {
     void value_option_defaults_when_omitted() throws Exception {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("scan") {{
             CommandOption<Integer, TestCommandContext> limit = option(Options.integer("limit", 'n', 10, 1, 100));
-            argument(new CommonStringArgument<>("target"), (target, ctx) -> {
+            argument(new CommonStringArgument<>("target")).execute((target, ctx) -> {
                 ctx.sendMessage(target + ":" + ctx.getOption(limit));
             });
         }});
@@ -110,7 +110,7 @@ class CommandOptionTest {
     void string_value_option_defaults_when_omitted() throws Exception {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("scan") {{
             CommandOption<String, TestCommandContext> format = option(Options.string("format", 'F', "text"));
-            argument(new CommonStringArgument<>("target"), (target, ctx) -> {
+            argument(new CommonStringArgument<>("target")).execute((target, ctx) -> {
                 ctx.sendMessage(target + ":" + ctx.getOption(format));
             });
         }});
@@ -124,7 +124,7 @@ class CommandOptionTest {
     void string_value_option_without_value_is_rejected() {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("scan") {{
             CommandOption<String, TestCommandContext> format = option(Options.string("format", 'F', "text"));
-            argument(new CommonStringArgument<>("target"), (target, ctx) -> {
+            argument(new CommonStringArgument<>("target")).execute((target, ctx) -> {
                 ctx.sendMessage(target + ":" + ctx.getOption(format));
             });
         }});
@@ -137,7 +137,7 @@ class CommandOptionTest {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("scan") {{
             CommandOption<Boolean, TestCommandContext> force = option(Options.flag("force", 'f'));
             CommandOption<Integer, TestCommandContext> limit = option(Options.integer("limit", 'n', 10));
-            argument(new CommonStringArgument<>("target"), (target, ctx) -> {
+            argument(new CommonStringArgument<>("target")).execute((target, ctx) -> {
                 ctx.sendMessage(ctx.hasOption(force) + ":" + ctx.hasOption(limit) + ":" + ctx.getOption(limit));
             });
         }});
@@ -153,7 +153,7 @@ class CommandOptionTest {
             CommandOption<Boolean, TestCommandContext> force = option(Options.flag("force", 'f'));
             CommandOption<String, TestCommandContext> reason = option(Options.string("reason", 'r', "")
                                                                              .requires(force));
-            argument(new CommonStringArgument<>("target"), (target, ctx) -> {
+            argument(new CommonStringArgument<>("target")).execute((target, ctx) -> {
                 ctx.sendMessage(target + ":" + ctx.getOption(force) + ":" + ctx.getOption(reason));
             });
         }});
@@ -171,7 +171,7 @@ class CommandOptionTest {
             CommandOption<String, TestCommandContext> mode = option(Options.string("mode", 'm', "normal"));
             CommandOption<Integer, TestCommandContext> limit = option(Options.integer("limit", 'n', 10)
                                                                              .requires(mode, "parallel"));
-            argument(new CommonStringArgument<>("target"), (target, ctx) -> {
+            argument(new CommonStringArgument<>("target")).execute((target, ctx) -> {
                 ctx.sendMessage(target + ":" + ctx.getOption(mode) + ":" + ctx.getOption(limit));
             });
         }});
@@ -189,7 +189,7 @@ class CommandOptionTest {
             CommandOption<String, TestCommandContext> mode = option(Options.string("mode", 'm', "parallel"));
             CommandOption<Integer, TestCommandContext> limit = option(Options.integer("limit", 'n', 10)
                                                                              .requires(mode, "parallel"));
-            argument(new CommonStringArgument<>("target"), (target, ctx) -> {
+            argument(new CommonStringArgument<>("target")).execute((target, ctx) -> {
                 ctx.sendMessage(target + ":" + ctx.getOption(mode) + ":" + ctx.getOption(limit));
             });
         }});
@@ -203,7 +203,7 @@ class CommandOptionTest {
     void option_after_argument_is_rejected() {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("scan") {{
             CommandOption<Boolean, TestCommandContext> force = option(Options.flag("force", 'f'));
-            argument(new CommonStringArgument<>("target", CommonStringArgument.Type.WORD), (target, ctx) -> {
+            argument(new CommonStringArgument<>("target", CommonStringArgument.Type.WORD)).execute((target, ctx) -> {
                 ctx.sendMessage(target + ":" + ctx.getOption(force));
             });
         }});
@@ -216,7 +216,7 @@ class CommandOptionTest {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("game") {{
             addChildren(new TestCommand("start") {{
                 CommandOption<Boolean, TestCommandContext> force = option(Options.flag("force", 'f'));
-                argument(new CommonStringArgument<>("target"), (target, ctx) -> {
+                argument(new CommonStringArgument<>("target")).execute((target, ctx) -> {
                     ctx.sendMessage(target + ":" + ctx.getOption(force));
                 });
             }});
@@ -235,7 +235,7 @@ class CommandOptionTest {
             option(Options.integer("limit", 'n', 10, 1, 100)
                           .description("Maximum count"));
 
-            argument(new CommonStringArgument<>("target"), (target, ctx) -> {
+            argument(new CommonStringArgument<>("target")).execute((target, ctx) -> {
             });
         }});
 

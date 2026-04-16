@@ -3,8 +3,10 @@ package net.kunmc.lab.commandlib;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -13,9 +15,11 @@ import java.util.stream.Collectors;
 final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>> {
     private final PlatformAdapter<S, T, C, ?, ?> platformAdapter = PlatformAdapter.get();
     private final Arguments<C> arguments;
+    private final List<Arguments<C>> executorArguments;
 
-    ArgumentCommandNodeCreator(Arguments<C> arguments) {
+    ArgumentCommandNodeCreator(Arguments<C> arguments, List<Arguments<C>> executorArguments) {
         this.arguments = arguments;
+        this.executorArguments = List.copyOf(executorArguments);
     }
 
     private RequiredArgumentBuilder<S, ?> buildArgument(CommonArgument<?, C> argument,
@@ -62,7 +66,7 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
         }
 
         builder.executes(new CommandExecutor<>(platformAdapter,
-                                               arguments,
+                                               executorArguments,
                                                parent.options(),
                                                parent.prerequisite(),
                                                helpAction,
@@ -80,7 +84,9 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
                         .collect(Collectors.toList());
     }
 
-    ArgumentCommandNode<S, ?> build(ContextAction<C> helpAction, CommonCommand<C, ?, ?> parent) {
+    ArgumentCommandNode<S, ?> build(ContextAction<C> helpAction,
+                                    CommonCommand<C, ?, ?> parent,
+                                    Collection<LiteralCommandNode<S>> terminalChildren) {
         List<ArgumentCommandNode<S, ?>> nodes = toCommandNodes(helpAction, parent);
         if (nodes.isEmpty()) {
             return null;
@@ -89,6 +95,12 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
         for (int i = 0; i < nodes.size() - 1; i++) {
             nodes.get(i)
                  .addChild(nodes.get(i + 1));
+        }
+
+        for (var child : terminalChildren) {
+            // Append sub command nodes
+            nodes.get(nodes.size() - 1)
+                 .addChild(child);
         }
 
         return nodes.get(0);

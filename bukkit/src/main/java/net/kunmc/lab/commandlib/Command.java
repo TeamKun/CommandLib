@@ -70,6 +70,10 @@ public abstract class Command extends CommonCommand<CommandContext, ArgumentBuil
                                      .flatMap(x -> x.permissions(prefix)
                                                     .stream())
                                      .collect(Collectors.toList()));
+        permissions.addAll(argumentChildren().stream()
+                                             .flatMap(x -> x.permissions(prefix)
+                                                            .stream())
+                                             .collect(Collectors.toList()));
         return permissions;
     }
 }

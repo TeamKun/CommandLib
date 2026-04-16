@@ -14,7 +14,7 @@ class ParticleArgumentTest {
         FakeSender sender = FakeSender.player("Alice");
 
         try (CommandTester tester = new CommandTester(() -> new Command("particle") {{
-            argument(new ParticleArgument("type"), (particle, ctx) -> {
+            argument(new ParticleArgument("type")).execute((particle, ctx) -> {
                 ctx.sendMessage("particle=" + particle.name());
             });
         }}, "test.command")) {
@@ -29,7 +29,7 @@ class ParticleArgumentTest {
         FakeSender sender = FakeSender.player("Alice");
 
         try (CommandTester tester = new CommandTester(() -> new Command("particle") {{
-            argument(new ParticleArgument("type"), (particle, ctx) -> {
+            argument(new ParticleArgument("type")).execute((particle, ctx) -> {
                 ctx.sendMessage(particle.name());
             });
         }}, "test.command")) {

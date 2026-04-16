@@ -13,7 +13,7 @@ class ItemStackArgumentTest {
         FakeSender sender = FakeSender.player("Alice");
 
         try (CommandTester tester = new CommandTester(() -> new Command("give") {{
-            argument(new ItemStackArgument("item"), (item, ctx) -> {
+            argument(new ItemStackArgument("item")).execute((item, ctx) -> {
                 ctx.sendMessage(item.getType()
                                     .name());
             });
@@ -29,7 +29,7 @@ class ItemStackArgumentTest {
         FakeSender sender = FakeSender.player("Alice");
 
         try (CommandTester tester = new CommandTester(() -> new Command("give") {{
-            argument(new ItemStackArgument("item"), (item, ctx) -> {
+            argument(new ItemStackArgument("item")).execute((item, ctx) -> {
                 ctx.sendMessage(item.getType()
                                     .name());
             });

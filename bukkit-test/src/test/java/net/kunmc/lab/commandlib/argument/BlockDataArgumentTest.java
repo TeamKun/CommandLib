@@ -22,7 +22,7 @@ class BlockDataArgumentTest {
 
         try (MockedStatic<Bukkit> bukkit = Mockito.mockStatic(Bukkit.class);
              CommandTester tester = new CommandTester(() -> new Command("setblock") {{
-                 argument(new BlockDataArgument("block"), (block, ctx) -> {
+                 argument(new BlockDataArgument("block")).execute((block, ctx) -> {
                      ctx.sendMessage(block.getMaterial()
                                           .name());
                  });

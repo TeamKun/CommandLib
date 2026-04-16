@@ -11,7 +11,7 @@ class CommandOptionTest {
         try (CommandTester tester = new CommandTester(new Command("scan") {{
             CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f'));
             CommandOption<Integer, CommandContext> limit = option(Options.integer("limit", 'n', 10, 1, 100));
-            argument(new StringArgument("target"), (target, ctx) -> {
+            argument(new StringArgument("target")).execute((target, ctx) -> {
                 ctx.sendMessage(target + ":" + ctx.getOption(force) + ":" + ctx.getOption(limit));
             });
         }}, "test.command")) {
@@ -29,7 +29,7 @@ class CommandOptionTest {
             option(Options.integer("limit", 'n', 10, 1, 100)
                           .description("Maximum count"));
 
-            argument(new StringArgument("target"), (target, ctx) -> {
+            argument(new StringArgument("target")).execute((target, ctx) -> {
             });
         }}, "test.command")) {
             FakeSender sender = FakeSender.player("Steve");

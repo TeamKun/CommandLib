@@ -94,4 +94,13 @@ public class FakeSender {
                            .map(c -> c.toPlainText())
                            .collect(Collectors.toList());
     }
+
+    /**
+     * Convenience method that returns sent messages as legacy text with color codes preserved.
+     */
+    public List<String> getSentMessageLegacyTexts() {
+        return sentMessages.stream()
+                           .map(c -> c.toLegacyText())
+                           .collect(Collectors.toList());
+    }
 }

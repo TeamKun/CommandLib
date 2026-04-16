@@ -2,11 +2,11 @@ package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
-import net.kunmc.lab.commandlib.util.ChatColorUtil;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -20,22 +20,23 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
         this.permissionPrefix = permissionPrefix;
     }
 
-    public List<CommandNode<S>> build() {
+    public List<LiteralCommandNode<S>> build() {
         return commands.stream()
-                       .map(this::toCommandNodes)
+                       .map(x -> toCommandNodes(x, List.of()))
                        .flatMap(Collection::stream)
                        .collect(Collectors.toList());
     }
 
-    private List<CommandNode<S>> toCommandNodes(U command) {
-        List<CommandNode<S>> nodes = new ArrayList<>();
-
-        CommandNode<S> node = toCommandNode(command);
+    private List<LiteralCommandNode<S>> toCommandNodes(U command, List<Arguments<C>> inheritedArguments) {
+        List<LiteralCommandNode<S>> nodes = new ArrayList<>();
+        LiteralCommandNode<S> node = toCommandNode(command, inheritedArguments);
         nodes.add(node);
 
         command.children()
                .forEach(x -> {
-                   toCommandNodes(x).forEach(node::addChild);
+                   // Normal command children do not consume new arguments, so they must keep the same inherited
+                   // argument chain that was parsed before this command.
+                   toCommandNodes(x, inheritedArguments).forEach(node::addChild);
                });
 
         nodes.addAll(createAliasCommands(command, node));
@@ -43,16 +44,18 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
         return nodes;
     }
 
-    private CommandNode<S> toCommandNode(U command) {
+    private LiteralCommandNode<S> toCommandNode(U command, List<Arguments<C>> inheritedArguments) {
         LiteralArgumentBuilder<S> builder = LiteralArgumentBuilder.literal(command.name());
         builder.requires(x -> platformAdapter.hasPermission(command, x, permissionPrefix));
 
         List<Arguments<C>> argumentsList = command.argumentsList();
-        ContextAction<C> helpAction = createSendHelpAction(command);
+        HelpMessageAction<S, T, C, B, U> helpAction = new HelpMessageAction<>(platformAdapter,
+                                                                              command,
+                                                                              permissionPrefix);
 
         if (argumentsList.isEmpty()) {
             CommandExecutor<S, C> executor = new CommandExecutor<>(platformAdapter,
-                                                                   null,
+                                                                   inheritedArguments,
                                                                    command.options(),
                                                                    command.prerequisite(),
                                                                    helpAction,
@@ -68,16 +71,28 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                      .sorted((x, y) -> Integer.compare(y.size(),
                                                        x.size())) // Sort in descending order to handle variable-length arguments
                      .forEach(arguments -> {
+                         List<Arguments<C>> executorArguments = appendArgument(inheritedArguments, arguments);
                          CommandExecutor<S, C> executor = new CommandExecutor<>(platformAdapter,
-                                                                                arguments,
+                                                                                executorArguments,
                                                                                 command.options(),
                                                                                 command.prerequisite(),
                                                                                 helpAction,
                                                                                 command.preprocess(),
                                                                                 command.contextAction(),
                                                                                 command.uncaughtExceptionHandlers());
-                         Supplier<CommandNode<S>> argumentNodeSupplier = () -> new ArgumentCommandNodeCreator<>(
-                                 arguments).build(helpAction, command);
+                         Supplier<ArgumentCommandNode<S, ?>> argumentNodeSupplier = () -> {
+                             // Brigadier can attach literal nodes under an argument node. The executor still needs
+                             // the parent arguments, so child commands inherit the complete argument chain here.
+                             List<LiteralCommandNode<S>> childNodes = arguments.children()
+                                                                               .stream()
+                                                                               .map(x -> toCommandNodes(castCommand(x),
+                                                                                                        executorArguments))
+                                                                               .flatMap(Collection::stream)
+                                                                               .collect(Collectors.toList());
+                             return new ArgumentCommandNodeCreator<>(arguments, executorArguments).build(helpAction,
+                                                                                                         command,
+                                                                                                         childNodes);
+                         };
                          builder.then(argumentNodeSupplier.get())
                                 .executes(executor);
                          createOptionCommands(command.options(), argumentNodeSupplier, executor).forEach(builder::then);
@@ -86,8 +101,19 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
         return builder.build();
     }
 
+    private List<Arguments<C>> appendArgument(List<Arguments<C>> inheritedArguments, Arguments<C> arguments) {
+        List<Arguments<C>> result = new ArrayList<>(inheritedArguments);
+        result.add(arguments);
+        return List.copyOf(result);
+    }
+
+    @SuppressWarnings("unchecked")
+    private U castCommand(CommonCommand<C, ?, ?> command) {
+        return (U) command;
+    }
+
     private List<CommandNode<S>> createOptionCommands(List<CommandOption<?, C>> options,
-                                                      Supplier<CommandNode<S>> argumentNodeSupplier,
+                                                      Supplier<ArgumentCommandNode<S, ?>> argumentNodeSupplier,
                                                       CommandExecutor<S, C> executor) {
         if (options.isEmpty()) {
             return List.of();
@@ -98,7 +124,7 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
 
     private List<CommandNode<S>> createOptionCommands(List<CommandOption<?, C>> options,
                                                       Set<CommandOption<?, C>> selectedOptions,
-                                                      Supplier<CommandNode<S>> argumentNodeSupplier,
+                                                      Supplier<ArgumentCommandNode<S, ?>> argumentNodeSupplier,
                                                       CommandExecutor<S, C> executor) {
         List<CommandNode<S>> nodes = new ArrayList<>();
 
@@ -112,10 +138,9 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                 builder.executes(executor);
             }
 
-            CommandNode<S> argumentNode = argumentNodeSupplier.get();
             addArgumentAndOptionChildren(builder,
                                          tokenOptions,
-                                         argumentNode,
+                                         argumentNodeSupplier.get(),
                                          options,
                                          nextSelectedOptions,
                                          argumentNodeSupplier,
@@ -129,10 +154,10 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
 
     private void addArgumentAndOptionChildren(LiteralArgumentBuilder<S> builder,
                                               List<CommandOption<?, C>> tokenOptions,
-                                              CommandNode<S> argumentNode,
+                                              ArgumentCommandNode<S, ?> argumentNode,
                                               List<CommandOption<?, C>> options,
                                               Set<CommandOption<?, C>> nextSelectedOptions,
-                                              Supplier<CommandNode<S>> argumentNodeSupplier,
+                                              Supplier<ArgumentCommandNode<S, ?>> argumentNodeSupplier,
                                               CommandExecutor<S, C> executor) {
         if (isValueOptionToken(tokenOptions)) {
             CommandOption<?, C> option = tokenOptions.get(0);
@@ -225,17 +250,18 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
         }
     }
 
-    private List<CommandNode<S>> createAliasCommands(U source, CommandNode<S> redirectTarget) {
+    private List<LiteralCommandNode<S>> createAliasCommands(U source, LiteralCommandNode<S> redirectTarget) {
         return source.aliases()
                      .stream()
                      .map(s -> {
-                         CommandNode<S> node = LiteralArgumentBuilder.<S>literal(s)
-                                                                     .requires(x -> platformAdapter.hasPermission(source,
-                                                                                                                  x,
-                                                                                                                  permissionPrefix))
-                                                                     .executes(x -> redirectTarget.getCommand()
-                                                                                                  .run(x))
-                                                                     .build();
+                         LiteralCommandNode<S> node = LiteralArgumentBuilder.<S>literal(s)
+                                                                            .requires(x -> platformAdapter.hasPermission(
+                                                                                    source,
+                                                                                    x,
+                                                                                    permissionPrefix))
+                                                                            .executes(x -> redirectTarget.getCommand()
+                                                                                                         .run(x))
+                                                                            .build();
                          redirectTarget.getChildren()
                                        .forEach(node::addChild);
                          return node;
@@ -243,116 +269,4 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                      .collect(Collectors.toList());
     }
 
-    private ContextAction<C> createSendHelpAction(U command) {
-        return ctx -> {
-            String border = ChatColorUtil.GRAY + "-".repeat(50);
-            String padding = " ".repeat(2);
-
-            String literalConcatName = ((Supplier<String>) () -> {
-                LinkedList<U> commands = new LinkedList<>();
-                commands.addFirst(command);
-                U parent = command.parent();
-                while (parent != null) {
-                    commands.addFirst(parent);
-                    parent = parent.parent();
-                }
-
-                List<String> names = commands.stream()
-                                             .map(CommonCommand::name)
-                                             .collect(Collectors.toList());
-                names.set(0, ctx.getArg(0));
-                return String.join(" ", names);
-            }).get();
-
-            ctx.sendMessage(border);
-
-            if (!command.description()
-                        .isEmpty()) {
-                ctx.sendMessage(command.description());
-            }
-            ctx.sendMessage(ChatColorUtil.RED + "Usage:");
-
-            List<U> permissibleChildren = command.children()
-                                                 .stream()
-                                                 .filter(x -> platformAdapter.hasPermission(x, ctx, permissionPrefix))
-                                                 .collect(Collectors.toList());
-            if (!permissibleChildren.isEmpty()) {
-                ctx.sendMessage(ChatColorUtil.AQUA + padding + "/" + literalConcatName + concatOptionUsage(command));
-
-                permissibleChildren.stream()
-                                   .filter(x -> platformAdapter.hasPermission(x, ctx, permissionPrefix))
-                                   .map(x -> {
-                                       String s = ChatColorUtil.YELLOW + padding + padding + x.name();
-                                       if (x.description()
-                                            .isEmpty()) {
-                                           return s;
-                                       }
-                                       return s + ChatColorUtil.WHITE + ": " + x.description();
-                                   })
-                                   .forEach(ctx::sendMessage);
-            }
-
-            List<String> concatenatedTagNames = command.argumentsList()
-                                                       .stream()
-                                                       .map(Arguments::concatTagNames)
-                                                       .filter(Predicate.not(String::isEmpty))
-                                                       .map(x -> padding + ChatColorUtil.AQUA + "/" + literalConcatName + concatOptionUsage(
-                                                               command) + " " + x)
-                                                       .collect(Collectors.toList());
-            if (!permissibleChildren.isEmpty() && !concatenatedTagNames.isEmpty()) {
-                ctx.sendMessage("");
-            }
-            concatenatedTagNames.forEach(ctx::sendMessage);
-
-            List<String> optionDescriptions = command.options()
-                                                     .stream()
-                                                     .map(x -> formatOptionDescription(padding, x))
-                                                     .collect(Collectors.toList());
-            if (permissibleChildren.isEmpty() && concatenatedTagNames.isEmpty() && !optionDescriptions.isEmpty()) {
-                ctx.sendMessage(ChatColorUtil.AQUA + padding + "/" + literalConcatName + concatOptionUsage(command));
-            }
-            if (!optionDescriptions.isEmpty()) {
-                if (!permissibleChildren.isEmpty() || !concatenatedTagNames.isEmpty()) {
-                    ctx.sendMessage("");
-                }
-                ctx.sendMessage(ChatColorUtil.RED + "Options:");
-                optionDescriptions.forEach(ctx::sendMessage);
-            }
-
-            ctx.sendMessage(border);
-        };
-    }
-
-    private String concatOptionUsage(U command) {
-        if (command.options()
-                   .isEmpty()) {
-            return "";
-        }
-
-        return " " + ChatColorUtil.GRAY + "[" + ChatColorUtil.YELLOW + "options" + ChatColorUtil.GRAY + "]";
-    }
-
-    private String formatOptionDescription(String padding, CommandOption<?, C> option) {
-        String s = ChatColorUtil.YELLOW + padding + formatOptionNames(option);
-        if (option.description()
-                  .isEmpty()) {
-            return s;
-        }
-
-        return s + ChatColorUtil.WHITE + ": " + option.description();
-    }
-
-    private String formatOptionNames(CommandOption<?, C> option) {
-        String valueTag = "";
-        if (option.hasValue()) {
-            valueTag = " " + ChatColorUtil.GRAY + "<" + ChatColorUtil.YELLOW + option.name() + ChatColorUtil.GRAY + ">";
-        }
-
-        String longName = "--" + option.name() + valueTag;
-        if (option.shortName() == null) {
-            return longName;
-        }
-
-        return "-" + option.shortName() + valueTag + ChatColorUtil.GRAY + ", " + ChatColorUtil.YELLOW + longName;
-    }
 }

@@ -17,6 +17,12 @@ public abstract class AbstractCommandContext<S, C> {
     protected AbstractCommandContext(@NotNull com.mojang.brigadier.context.CommandContext<S> ctx) {
         this.handle = Objects.requireNonNull(ctx);
 
+        collectInputs(ctx);
+    }
+
+    private void collectInputs(com.mojang.brigadier.context.CommandContext<S> ctx) {
+        // Brigadier splits /a <n> <p> sub <b> across parent and child contexts. CommandLib keeps a flat name-to-token
+        // map so argument-child executors can still read parent arguments.
         ctx.getNodes()
            .forEach(x -> {
                String name = x.getNode()
@@ -29,6 +35,11 @@ public abstract class AbstractCommandContext<S, C> {
                                              x.getRange()
                                               .get(ctx.getInput()));
            });
+
+        com.mojang.brigadier.context.CommandContext<S> child = ctx.getChild();
+        if (child != null) {
+            collectInputs(child);
+        }
     }
 
     @NotNull
@@ -93,6 +104,17 @@ public abstract class AbstractCommandContext<S, C> {
         }
 
         return clazz.cast(parsedArg);
+    }
+
+    @Nullable
+    public final <T> T getParsedArg(@NotNull CommonArgument<T, ?> argument) {
+        Objects.requireNonNull(argument);
+        Object parsedArg = getParsedArg(argument.name());
+        if (parsedArg == null) {
+            return null;
+        }
+
+        return argument.cast(parsedArg);
     }
 
     @NotNull

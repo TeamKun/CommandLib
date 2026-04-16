@@ -2,15 +2,15 @@
 
 ## Argument Style
 
-Prefer Style A, the typed shorthand, over the builder style for normal command
-implementations.
+Prefer typed argument instances with `argument(...).execute(...)` over the
+builder style for normal command implementations.
 
 ```java
 class MyCommand extends Command {
     MyCommand() {
         super("message");
 
-        argument(new PlayerArgument("target"), new StringArgument("text"), (target, text, ctx) -> {
+        argument(new PlayerArgument("target"), new StringArgument("text")).execute((target, text, ctx) -> {
             target.sendMessage(text);
         });
     }
@@ -28,10 +28,74 @@ class MyCommand extends Command {
     MyCommand() {
         super("cmd");
 
-        argument(new PlayerArgument("target",
-                                    opt -> opt.validator(player -> player.isOp())
-                                              .suggestionAction((sb, ctx) -> sb.suggest("Steve"))),
-                 (player, ctx) -> ctx.sendMessage("ok"));
+        argument(new PlayerArgument("target", opt -> {
+            opt.validator(player -> player.isOp())
+               .suggestionAction((sb, ctx) -> sb.suggest("Steve"));
+        })).execute((player, ctx) -> {
+            ctx.sendMessage("ok");
+        });
+    }
+}
+```
+
+## Subcommand Shape
+
+Prefer literal-first subcommands for ordinary plugin commands:
+
+```text
+/config get <key>
+/config set <key> <value>
+/arena start <name>
+/arena delete <name>
+```
+
+Use argument-first subcommands only when the requested syntax needs it, such as
+matching a vanilla-like command tree or an existing command contract:
+
+```text
+/config <key> get
+/config <key> set <value>
+```
+
+Use typed argument instances for this shape. The `child(...)` factory receives
+the `Argument` instances, not parsed values, because child commands are built
+before a command is executed. Read parent values inside the child executor with
+`ctx.getParsedArg(argument)`.
+
+The same argument branch can define multiple children by calling `child(...)`
+multiple times:
+
+```java
+class ConfigCommand extends Command {
+    ConfigCommand() {
+        super("config");
+
+        argument(new StringArgument("key")).description("Select a config key")
+                                           .child(keyArg -> new Command("get") {{
+                                               execute(ctx -> {
+                                                   String key = ctx.getParsedArg(keyArg);
+                                                   ctx.sendMessage("get " + key);
+                                               });
+                                           }})
+                                           .child(keyArg -> new Command("set") {{
+                                               argument(new StringArgument("value")).execute((value, ctx) -> {
+                                                   String key = ctx.getParsedArg(keyArg);
+                                                   ctx.sendMessage("set " + key + " to " + value);
+                                               });
+                                           }});
+    }
+}
+```
+
+Do not write the factory as if it receives runtime values:
+
+```java
+class MyCommand extends Command {
+    MyCommand() {
+        // Wrong: keyValue is an Argument object, not the parsed String value.
+        argument(new StringArgument("key")).child(keyValue -> new Command("get") {{
+            execute(ctx -> ctx.sendMessage(keyValue.toString()));
+        }});
     }
 }
 ```
@@ -54,12 +118,12 @@ class ScanCommand extends Command {
         CommandOption<String, CommandContext> format = option(Options.string("format", 'F', "text")
                                                                      .description("Output format"));
 
-        argument(new StringArgument("target", StringArgument.Type.WORD), (target, ctx) -> {
+        argument(new StringArgument("text", StringArgument.Type.WORD)).execute((text, ctx) -> {
             boolean isForce = ctx.getOption(force);
             int maxCount = ctx.getOption(limit);
             String outputFormat = ctx.getOption(format);
             boolean limitWasSpecified = ctx.hasOption(limit);
-            ctx.sendMessage(target + ":" + isForce + ":" + maxCount + ":" + outputFormat + ":" + limitWasSpecified);
+            ctx.sendMessage(text + ":" + isForce + ":" + maxCount + ":" + outputFormat + ":" + limitWasSpecified);
         });
     }
 }
@@ -90,15 +154,3 @@ Important constraints:
   a default value.
 - Add `.description(...)` for user-facing commands so help output is clear.
 - Use `.requires(...)` for option dependencies.
-
-Available factories:
-
-```java
-Options.flag("force", 'f')
-Options.bool("enabled", 'e', true)
-Options.integer("limit", 'n', 10)
-Options.longValue("size", 's', 0L)
-Options.floatValue("speed", 'S', 1.0f)
-Options.doubleValue("radius", 'r', 5.0)
-Options.string("format", 'F', "text")
-```

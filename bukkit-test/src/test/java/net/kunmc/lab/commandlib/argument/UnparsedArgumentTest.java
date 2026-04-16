@@ -13,7 +13,7 @@ class UnparsedArgumentTest {
         FakeSender sender = FakeSender.player("Alice");
 
         try (CommandTester tester = new CommandTester(() -> new Command("raw") {{
-            argument(new UnparsedArgument("text"), (text, ctx) -> {
+            argument(new UnparsedArgument("text")).execute((text, ctx) -> {
                 ctx.sendMessage("raw:" + text);
             });
         }}, "test.command")) {

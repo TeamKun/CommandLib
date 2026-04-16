@@ -21,7 +21,7 @@ class WorldArgumentTest {
 
         try (MockedStatic<Bukkit> bukkit = Mockito.mockStatic(Bukkit.class); CommandTester tester = new CommandTester(
                 new Command("tp") {{
-                    argument(new WorldArgument("world"), (world, ctx) -> {
+                    argument(new WorldArgument("world")).execute((world, ctx) -> {
                         ctx.sendMessage(world.getName());
                     });
                 }},
@@ -40,7 +40,7 @@ class WorldArgumentTest {
 
         try (MockedStatic<Bukkit> bukkit = Mockito.mockStatic(Bukkit.class); CommandTester tester = new CommandTester(
                 new Command("tp") {{
-                    argument(new WorldArgument("world"), (world, ctx) -> {
+                    argument(new WorldArgument("world")).execute((world, ctx) -> {
                         ctx.sendMessage(world.getName());
                     });
                 }},

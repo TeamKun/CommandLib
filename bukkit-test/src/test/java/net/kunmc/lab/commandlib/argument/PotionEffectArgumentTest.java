@@ -23,7 +23,7 @@ class PotionEffectArgumentTest {
 
         try (MockedStatic<PotionEffectType> potionStatic = Mockito.mockStatic(PotionEffectType.class);
              CommandTester tester = new CommandTester(() -> new Command("effect") {{
-                 argument(new PotionEffectArgument("type"), (effect, ctx) -> {
+                 argument(new PotionEffectArgument("type")).execute((effect, ctx) -> {
                      ctx.sendMessage(effect.getType()
                                            .getName());
                  });

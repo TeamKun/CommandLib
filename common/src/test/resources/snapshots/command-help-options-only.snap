@@ -1,0 +1,9 @@
+§7--------------------------------------------------
+Scan command
+§cUsage:
+§b  /scan §7[§eoptions§7]
+§cOptions:
+§e  -f§7, §e--force§7: Force execution
+§e  -n §7<§elimit§7>§7, §e--limit §7<§elimit§7>§7: Maximum count
+§e  -F §7<§eformat§7>§7, §e--format §7<§eformat§7>
+§7--------------------------------------------------

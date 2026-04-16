@@ -1,5 +1,6 @@
 package net.kunmc.lab.commandlib;
 
+import net.kunmc.lab.commandlib.argument.CommonIntegerArgument;
 import net.kunmc.lab.commandlib.argument.CommonStringArgument;
 import net.kunmc.lab.commandlib.exception.CommandPrerequisiteException;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ class CommonCommandExecutionTest {
     void alias_executes_same_command_tree() throws Exception {
         TestCommand command = new TestCommand("message") {{
             addAliases("msg");
-            argument(new CommonStringArgument<>("body"), (body, ctx) -> {
+            argument(new CommonStringArgument<>("body")).execute((body, ctx) -> {
                 ctx.sendMessage(body);
             });
         }};
@@ -53,7 +54,7 @@ class CommonCommandExecutionTest {
     void child_command_executes_with_its_own_arguments() throws Exception {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("game") {{
             addChildren(new TestCommand("start") {{
-                argument(new CommonStringArgument<>("target"), (target, ctx) -> {
+                argument(new CommonStringArgument<>("target")).execute((target, ctx) -> {
                     ctx.sendMessage("started:" + target);
                 });
             }});
@@ -62,6 +63,72 @@ class CommonCommandExecutionTest {
         TestCommandContext ctx = runner.execute("game start Alex");
 
         assertThat(ctx.messages()).containsExactly("started:Alex");
+    }
+
+    @Test
+    void argument_chain_can_have_child_command() throws Exception {
+        CommonStringArgument<TestCommandContext> key = new CommonStringArgument<>("key");
+        TestCommandRunner runner = new TestCommandRunner(new TestCommand("config") {{
+            argument(key).child(keyArg -> new TestCommand("get") {{
+                execute(ctx -> {
+                    ctx.sendMessage("get:" + ctx.getParsedArg(keyArg));
+                });
+            }});
+        }});
+
+        TestCommandContext ctx = runner.execute("config maxPlayers get");
+
+        assertThat(ctx.messages()).containsExactly("get:maxPlayers");
+    }
+
+    @Test
+    void argument_child_command_can_have_its_own_arguments() throws Exception {
+        CommonStringArgument<TestCommandContext> key = new CommonStringArgument<>("key");
+        TestCommandRunner runner = new TestCommandRunner(new TestCommand("config") {{
+            argument(key).child(keyArg -> new TestCommand("set") {{
+                argument(new CommonStringArgument<>("value")).execute((value, ctx) -> {
+                    ctx.sendMessage(ctx.getParsedArg(keyArg) + "=" + value);
+                });
+            }});
+        }});
+
+        TestCommandContext ctx = runner.execute("config difficulty set hard");
+
+        assertThat(ctx.messages()).containsExactly("difficulty=hard");
+    }
+
+    @Test
+    void argument_child_command_can_read_parent_argument_after_child_argument_is_parsed() throws Exception {
+        CommonIntegerArgument<TestCommandContext> count = new CommonIntegerArgument<>("count");
+        TestCommandRunner runner = new TestCommandRunner(new TestCommand("counter") {{
+            argument(count).child(countArg -> new TestCommand("label") {{
+                argument(new CommonStringArgument<>("name")).execute((name, ctx) -> {
+                    ctx.sendMessage(ctx.getParsedArg(countArg) + ":" + name);
+                });
+            }});
+        }});
+
+        TestCommandContext ctx = runner.execute("counter 3 label total");
+
+        assertThat(ctx.messages()).containsExactly("3:total");
+    }
+
+    @Test
+    void argument_branch_can_have_multiple_child_factories() throws Exception {
+        CommonStringArgument<TestCommandContext> key = new CommonStringArgument<>("key");
+        TestCommandRunner runner = new TestCommandRunner(new TestCommand("config") {{
+            argument(key).child(keyArg -> new TestCommand("get") {{
+                execute(ctx -> ctx.sendMessage("get:" + ctx.getParsedArg(keyArg)));
+            }}).child(keyArg -> new TestCommand("delete") {{
+                execute(ctx -> ctx.sendMessage("delete:" + ctx.getParsedArg(keyArg)));
+            }});
+        }});
+
+        TestCommandContext get = runner.execute("config difficulty get");
+        TestCommandContext delete = runner.execute("config difficulty delete");
+
+        assertThat(get.messages()).containsExactly("get:difficulty");
+        assertThat(delete.messages()).containsExactly("delete:difficulty");
     }
 
     @Test
@@ -81,12 +148,11 @@ class CommonCommandExecutionTest {
     @Test
     void longest_argument_chain_is_selected_first() throws Exception {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("set") {{
-            argument(new CommonStringArgument<>("key"), (key, ctx) -> {
+            argument(new CommonStringArgument<>("key")).execute((key, ctx) -> {
                 ctx.sendMessage("one:" + key);
             });
             argument(new CommonStringArgument<>("key"),
-                     new CommonStringArgument<>("value"),
-                     (key, value, ctx) -> {
+                     new CommonStringArgument<>("value")).execute((key, value, ctx) -> {
                          ctx.sendMessage("two:" + key + ":" + value);
                      });
         }});
@@ -185,7 +251,7 @@ class CommonCommandExecutionTest {
                 ctx.sendMessage("preprocess:" + ctx.getInput("target"));
                 return false;
             });
-            argument(new CommonStringArgument<>("target"), (target, ctx) -> {
+            argument(new CommonStringArgument<>("target")).execute((target, ctx) -> {
                 ctx.sendMessage("executed:" + target);
             });
         }});
@@ -230,4 +296,5 @@ class CommonCommandExecutionTest {
         assertThat(ctx.messages()).containsExactly("An unexpected error occurred trying to execute that command.",
                                                    "Check the console for details.");
     }
+
 }

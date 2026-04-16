@@ -13,7 +13,7 @@ class IntegerArgumentTest {
         FakeSender sender = FakeSender.player("Alice");
 
         try (CommandTester tester = new CommandTester(new Command("set") {{
-            argument(new IntegerArgument("amount"), (amount, ctx) -> {
+            argument(new IntegerArgument("amount")).execute((amount, ctx) -> {
                 ctx.sendMessage("amount=" + amount);
             });
         }}, "test.command")) {
@@ -28,7 +28,7 @@ class IntegerArgumentTest {
         FakeSender sender = FakeSender.player("Alice");
 
         try (CommandTester tester = new CommandTester(new Command("set") {{
-            argument(new IntegerArgument("amount"), (amount, ctx) -> {
+            argument(new IntegerArgument("amount")).execute((amount, ctx) -> {
                 ctx.sendMessage("amount=" + amount);
             });
         }}, "test.command")) {

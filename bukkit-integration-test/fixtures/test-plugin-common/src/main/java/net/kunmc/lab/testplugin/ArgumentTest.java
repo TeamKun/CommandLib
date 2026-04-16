@@ -62,7 +62,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
             });
         }});
@@ -80,7 +80,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(key, a.toString(), "true");
             });
         }});
@@ -98,7 +98,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(key, a.toString(), "1.0");
             });
         }});
@@ -116,7 +116,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
             });
         }});
@@ -134,7 +134,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(key, Integer.toString(a.size()), "1");
             });
         }});
@@ -152,7 +152,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
             });
         }});
@@ -170,7 +170,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(key, a.toString(), "AIR");
             });
         }});
@@ -188,7 +188,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(key, a.toString(), "1.0");
             });
         }});
@@ -206,7 +206,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(key, a.toString(), "1");
             });
         }});
@@ -224,7 +224,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
             });
         }});
@@ -242,7 +242,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(key, a, "a");
             });
         }});
@@ -260,7 +260,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
             });
         }});
@@ -278,7 +278,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(key, a.tabCompleteName(), "a");
             });
         }});
@@ -298,7 +298,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(key, a.toString(), "1");
             });
         }});
@@ -317,7 +317,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(key, a.getName(), offlinePlayer.getName());
             });
         }});
@@ -336,7 +336,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(key,
                           a.stream()
                            .map(OfflinePlayer::getName)
@@ -358,7 +358,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
             });
         }});
@@ -376,7 +376,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(key, a.getName(), playerName);
             });
         }});
@@ -394,7 +394,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(key,
                           a.stream()
                            .map(x -> x.getName())
@@ -416,7 +416,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(new TestResult(key, TestStatus.SUCCEEDED, a.toString()));
             });
         }});
@@ -434,7 +434,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(key, a, "a");
             });
         }});
@@ -461,7 +461,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(key, a.getName(), team.getName());
             });
         }});
@@ -479,7 +479,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(key, a, "a");
             });
         }});
@@ -498,7 +498,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(key, a.toString(), uuid.toString());
             });
         }});
@@ -518,7 +518,7 @@ public final class ArgumentTest extends TestBase {
                 option.addUncaughtExceptionHandler((e, ctx) -> {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
-            }), (a, ctx) -> {
+            })).execute((a, ctx) -> {
                 putResult(key,
                           a.toString(),
                           List.of(uuid)

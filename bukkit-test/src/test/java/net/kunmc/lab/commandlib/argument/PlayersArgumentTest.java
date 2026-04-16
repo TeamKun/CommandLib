@@ -15,7 +15,7 @@ class PlayersArgumentTest {
         FakeSender admin = FakeSender.player("Admin");
 
         try (CommandTester tester = new CommandTester(() -> new Command("kick") {{
-            argument(new PlayersArgument("targets"), (targets, ctx) -> {
+            argument(new PlayersArgument("targets")).execute((targets, ctx) -> {
                 targets.forEach(p -> ctx.sendMessage("Kicked " + p.getName()));
             });
         }}, "test.command")) {

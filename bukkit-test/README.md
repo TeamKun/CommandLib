@@ -25,24 +25,41 @@ Pass the command(s) you want to test and the permission prefix used when registe
 `CommandTester` implements `AutoCloseable` — always use try-with-resources.
 
 ```java
-try (CommandTester tester = new CommandTester(new GreetCommand(), "myplugin.command")) {
-    // ...
+class GreetCommandTest {
+    @Test
+    void greet_test() {
+        try (CommandTester tester = new CommandTester(new GreetCommand(), "myplugin.command")) {
+            // ...
+        }
+    }
 }
 ```
 
 ### 2. Create a `FakeSender`
 
 ```java
-FakeSender player = FakeSender.player("Steve");   // fake player
-FakeSender console = FakeSender.console();          // fake console
+class GreetCommandTest {
+    @Test
+    void greet_test() {
+        FakeSender player = FakeSender.player("Steve");   // fake player
+        FakeSender console = FakeSender.console();        // fake console
+    }
+}
 ```
 
 ### 3. Execute a command and assert
 
 ```java
-tester.execute("greet Steve", player);
+class GreetCommandTest {
+    @Test
+    void greet_sends_message() {
+        try (CommandTester tester = new CommandTester(new GreetCommand(), "myplugin.command")) {
+            tester.execute("greet Steve", player);
+        }
 
-assertThat(player.getSentMessageTexts()).contains("Hello, Steve!");
+        assertThat(player.getSentMessageTexts()).contains("Hello, Steve!");
+    }
+}
 ```
 
 ## Full Example
@@ -53,7 +70,7 @@ public class HealCommand extends Command {
     public HealCommand() {
         super("heal");
         requirePlayer();
-        argument(new PlayerArgument("target"), (target, ctx) -> {
+        argument(new PlayerArgument("target")).execute((target, ctx) -> {
             ctx.sendSuccess("Healed " + target.getName() + "!");
         });
     }
@@ -74,9 +91,8 @@ class HealCommandTest {
         }
 
         assertThat(admin.getSentMessageTexts()).containsExactly("Healed Steve!");
-        assertThat(admin.getSentMessages())
-                .extracting(BaseComponent::getColor)
-                .containsExactly(ChatColor.GREEN);
+        assertThat(admin.getSentMessages()).extracting(BaseComponent::getColor)
+                                           .containsExactly(ChatColor.GREEN);
     }
 
     @Test
@@ -116,46 +132,77 @@ class HealCommandTest {
 | `FakeSender.player(String name)` | A fake player with the given name. Has all permissions by default. |
 | `FakeSender.console()`           | A fake console sender. Has all permissions by default.             |
 
-| Method                                  | Description                                                                                                           |
-|-----------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
-| `List<BaseComponent> getSentMessages()` | Returns messages sent to this sender. Preserves color and formatting for assertions on `sendSuccess` / `sendFailure`. |
-| `List<String> getSentMessageTexts()`    | Convenience method. Returns sent messages as plain text with color codes stripped.                                    |
-| `CommandSender asSender()`              | Returns the underlying Mockito mock for additional setup (e.g., stubbing `getLocation()`).                            |
+| Method                                     | Description                                                                                                           |
+|--------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `List<BaseComponent> getSentMessages()`    | Returns messages sent to this sender. Preserves color and formatting for assertions on `sendSuccess` / `sendFailure`. |
+| `List<String> getSentMessageTexts()`       | Convenience method. Returns sent messages as plain text with color codes stripped.                                    |
+| `List<String> getSentMessageLegacyTexts()` | Convenience method. Returns sent messages as legacy text with color codes preserved.                                  |
+| `CommandSender asSender()`                 | Returns the underlying Mockito mock for additional setup (e.g., stubbing `getLocation()`).                            |
 
 ## Notes
 
 - `getSentMessages()` returns `BaseComponent` objects so you can assert on color as well as text:
   ```java
-  // check text
-  assertThat(sender.getSentMessageTexts()).containsExactly("done");
-  // check color (green = sendSuccess, red = sendFailure, yellow = sendWarn)
-  assertThat(sender.getSentMessages())
-      .extracting(BaseComponent::getColor)
-      .containsExactly(ChatColor.GREEN);
+  class MyCommandTest {
+      @Test
+      void check_color_and_text() {
+          // check text
+          assertThat(sender.getSentMessageTexts()).containsExactly("done");
+          // check color (green = sendSuccess, red = sendFailure, yellow = sendWarn)
+          assertThat(sender.getSentMessages())
+              .extracting(BaseComponent::getColor)
+              .containsExactly(ChatColor.GREEN);
+      }
+  }
   ```
 - For simple text-only assertions, use `getSentMessageTexts()` which strips color codes.
+- For snapshot-style assertions where color matters, use `getSentMessageLegacyTexts()`.
 - All permissions are granted by default. To test permission-denied behaviour, stub `asSender().hasPermission(...)`:
   ```java
-  FakeSender player = FakeSender.player("Steve");
-  Mockito.when(player.asSender().hasPermission(Mockito.anyString())).thenReturn(false);
+  class MyCommandTest {
+      @Test
+      void deny_all_permissions() {
+          FakeSender player = FakeSender.player("Steve");
+          Mockito.when(player.asSender().hasPermission(Mockito.anyString())).thenReturn(false);
+      }
+  }
   ```
 - `requirePlayer()` and `requireConsole()` work correctly — `FakeSender.player()` passes `instanceof Player` checks.
 - **NMS-backed arguments** (`PlayerArgument`, `EnchantmentArgument`, `ItemStackArgument`, etc.) call into
   `NMSClassRegistry` at construction time. Always use the `Supplier<Command>` constructor form for these:
   ```java
-  // Correct — NMS mocks are active when the supplier is called inside the constructor
-  new CommandTester(() -> new Command("enchant") {{
-      argument(new EnchantmentArgument("type"), (ench, ctx) -> { ... });
-  }}, "test.command")
+  class EnchantCommandTest {
+      @Test
+      void enchant_test() {
+          // Correct — NMS mocks are active when the supplier is called inside the constructor
+          try (CommandTester tester = new CommandTester(
+                  () -> new Command("enchant") {{
+                      argument(new EnchantmentArgument("type")).execute((ench, ctx) -> { /* ... */ });
+                  }},
+                  "test.command")) {
+              // ...
+          }
+      }
+  }
   ```
 - **Arguments that call Bukkit static methods** (`WorldArgument`, `OfflinePlayerArgument`, `TeamArgument`, etc.) require
   `MockedStatic<Bukkit>` from `mockito-inline`. Open it in the same try-with-resources block as `CommandTester`:
   ```java
-  try (MockedStatic<Bukkit> bukkit = Mockito.mockStatic(Bukkit.class);
-       CommandTester tester = new CommandTester(new Command("tp") {{
-           argument(new WorldArgument("world"), (world, ctx) -> { ... });
-       }}, "test.command")) {
-      bukkit.when(() -> Bukkit.getWorld("nether")).thenReturn(mockWorld);
-      tester.execute("tp nether", sender);
+  class TpCommandTest {
+      @Test
+      void tp_to_world() {
+          FakeSender sender = FakeSender.player("Steve");
+          World mockWorld = Mockito.mock(World.class);
+
+          try (MockedStatic<Bukkit> bukkit = Mockito.mockStatic(Bukkit.class);
+               CommandTester tester = new CommandTester(
+                       new Command("tp") {{
+                           argument(new WorldArgument("world")).execute((world, ctx) -> { /* ... */ });
+                       }},
+                       "test.command")) {
+              bukkit.when(() -> Bukkit.getWorld("nether")).thenReturn(mockWorld);
+              tester.execute("tp nether", sender);
+          }
+      }
   }
   ```

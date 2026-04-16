@@ -31,7 +31,7 @@ public class CommandSyntaxExceptionTest extends TestBase {
         command.addChildren(new Command(name) {{
             argument(new Argument<Object>("a", BoolArgumentType.bool()) {
                 {
-                    applyOption(new Option<Object, CommandContext>(this).addUncaughtExceptionHandler((e, ctx) -> {
+                    applyOption(new Option<>(this).addUncaughtExceptionHandler((e, ctx) -> {
                         putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                     }));
                 }
@@ -46,7 +46,7 @@ public class CommandSyntaxExceptionTest extends TestBase {
                     throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.integerTooHigh()
                                                                     .create(1, 2);
                 }
-            }, (a, ctx) -> {
+            }).execute((a, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, "CommandSyntaxException was not thrown."));
             });
         }});

@@ -17,8 +17,7 @@ class CommonArgumentTest {
                      new CommonIntegerArgument<>("amount"),
                      new CommonLongArgument<>("ticks"),
                      new CommonFloatArgument<>("speed"),
-                     new CommonDoubleArgument<>("ratio"),
-                     (enabled, amount, ticks, speed, ratio, ctx) -> {
+                     new CommonDoubleArgument<>("ratio")).execute((enabled, amount, ticks, speed, ratio, ctx) -> {
                          ctx.sendMessage(enabled + ":" + amount + ":" + ticks + ":" + speed + ":" + ratio);
                      });
         }});
@@ -33,8 +32,7 @@ class CommonArgumentTest {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("say") {{
             argument(new CommonStringArgument<>("word", CommonStringArgument.Type.WORD),
                      new CommonStringArgument<>("quoted", CommonStringArgument.Type.PHRASE_QUOTED),
-                     new CommonStringArgument<>("rest", CommonStringArgument.Type.PHRASE),
-                     (word, quoted, rest, ctx) -> {
+                     new CommonStringArgument<>("rest", CommonStringArgument.Type.PHRASE)).execute((word, quoted, rest, ctx) -> {
                          ctx.sendMessage(word + "|" + quoted + "|" + rest);
                      });
         }});
@@ -47,7 +45,7 @@ class CommonArgumentTest {
     @Test
     void enum_argument_resolves_case_insensitively_and_rejects_unknown_value() throws Exception {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("go") {{
-            argument(new CommonEnumArgument<>("dir", Direction.class), (dir, ctx) -> {
+            argument(new CommonEnumArgument<>("dir", Direction.class)).execute((dir, ctx) -> {
                 ctx.sendMessage("going " + dir.name());
             });
         }});
@@ -64,7 +62,7 @@ class CommonArgumentTest {
     void object_argument_resolves_by_name_and_rejects_unknown_value() throws Exception {
         Map<String, Integer> items = Map.of("sword", 1, "bow", 2);
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("give") {{
-            argument(new CommonObjectArgument<>("item", items), (item, ctx) -> {
+            argument(new CommonObjectArgument<>("item", items)).execute((item, ctx) -> {
                 ctx.sendMessage("item=" + item);
             });
         }});
@@ -81,7 +79,7 @@ class CommonArgumentTest {
     void nameable_object_argument_resolves_by_tab_complete_name() throws Exception {
         List<Item> items = List.of(new Item("sword", 1), new Item("bow", 2));
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("equip") {{
-            argument(new CommonNameableObjectArgument<>("item", items), (item, ctx) -> {
+            argument(new CommonNameableObjectArgument<>("item", items)).execute((item, ctx) -> {
                 ctx.sendMessage("equipped id=" + item.id);
             });
         }});
@@ -94,7 +92,7 @@ class CommonArgumentTest {
     @Test
     void literal_argument_accepts_only_listed_values() throws Exception {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("mode") {{
-            argument(new CommonLiteralArgument<>("value", List.of("on", "off")), (value, ctx) -> {
+            argument(new CommonLiteralArgument<>("value", List.of("on", "off"))).execute((value, ctx) -> {
                 ctx.sendMessage("mode=" + value);
             });
         }});
@@ -113,7 +111,7 @@ class CommonArgumentTest {
             argument(new CommonIntegerArgument<TestCommandContext>("amount", option -> {
                 option.validator(value -> value >= 0)
                       .transformer(value -> value * 2);
-            }), (amount, ctx) -> {
+            })).execute((amount, ctx) -> {
                 ctx.sendMessage("amount=" + amount);
             });
         }});
@@ -131,7 +129,7 @@ class CommonArgumentTest {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("set") {{
             argument(new CommonObjectArgument<Integer, TestCommandContext>("item", Map.of("sword", 1), option -> {
                 option.additionalParser((ctx, input) -> input.equals("axe") ? 2 : null);
-            }), (item, ctx) -> {
+            })).execute((item, ctx) -> {
                 ctx.sendMessage("item=" + item);
             });
         }});
@@ -144,7 +142,7 @@ class CommonArgumentTest {
     @Test
     void context_exposes_raw_and_parsed_arguments() throws Exception {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("sum") {{
-            argument(new CommonIntegerArgument<>("left"), new CommonIntegerArgument<>("right"), (left, right, ctx) -> {
+            argument(new CommonIntegerArgument<>("left"), new CommonIntegerArgument<>("right")).execute((left, right, ctx) -> {
                 ctx.sendMessage(ctx.getInput("left") + ":" + ctx.getInput("right"));
                 ctx.sendMessage(ctx.getArgs()
                                    .toString());
@@ -162,11 +160,11 @@ class CommonArgumentTest {
     @Test
     void suggestions_include_custom_object_and_literal_candidates() {
         TestCommandRunner objectRunner = new TestCommandRunner(new TestCommand("give") {{
-            argument(new CommonObjectArgument<>("item", Map.of("sword", 1, "bow", 2)), (item, ctx) -> {
+            argument(new CommonObjectArgument<>("item", Map.of("sword", 1, "bow", 2))).execute((item, ctx) -> {
             });
         }});
         TestCommandRunner literalRunner = new TestCommandRunner(new TestCommand("mode") {{
-            argument(new CommonLiteralArgument<>("value", List.of("on", "off")), (value, ctx) -> {
+            argument(new CommonLiteralArgument<>("value", List.of("on", "off"))).execute((value, ctx) -> {
             });
         }});
 
@@ -182,7 +180,7 @@ class CommonArgumentTest {
                     sb.suggest("alpha");
                     sb.suggest("beta");
                 }));
-            }), (word, ctx) -> {
+            })).execute((word, ctx) -> {
             });
         }});
 

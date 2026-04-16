@@ -29,7 +29,9 @@ validation, improved usability, and extensibility, CommandLib empowers developer
 4. **Typed Command Options**  
    Define command options such as `-f`, `--force`, or `--limit 10` and read them from the command context in a
    type-safe way.
-5. **Seamless Integration with the `/execute` command**   
+5. **Automatic Usage and Help Generation**  
+   Generate usage and help messages from the command tree, including arguments, subcommands, options, and descriptions.
+6. **Seamless Integration with the `/execute` command**   
    Allow your commands to be executed seamlessly from the `/execute` command, just like built-in commands.
 
 ## Installation
@@ -172,7 +174,7 @@ tasks.named<ShadowJar>("shadowJar") {
 public final class TestPlugin extends JavaPlugin {
     public void onEnable() {
         CommandLib.register(this, new Command("message") {{
-            argument(new PlayerArgument("target"), new StringArgument("message"), (target, message, ctx) -> {
+            argument(new PlayerArgument("target"), new StringArgument("message")).execute((target, message, ctx) -> {
                 // 'target' is inferred as 'org.bukkit.entity.Player'. No need to cast.
                 target.sendMessage(message);
             });
@@ -186,7 +188,7 @@ public final class TestPlugin extends JavaPlugin {
 public final class MessageCommand extends Command {
     public MessageCommand() {
         super("message");
-        argument(new PlayerArgument("target"), new StringArgument("message"), (target, message, ctx) -> {
+        argument(new PlayerArgument("target"), new StringArgument("message")).execute((target, message, ctx) -> {
             target.sendMessage(message);
         });
     }
@@ -225,6 +227,49 @@ public final class TestPlugin extends JavaPlugin {
 </details>
 
 <details>
+<summary>Appending Subcommands After Arguments</summary>
+
+CommandLib also supports Brigadier-style command trees where an argument is followed by a literal subcommand.
+Use this for vanilla-like command shapes such as `/config <key> get` or `/config <key> set <value>`.
+
+For most plugin commands, prefer the simpler literal-first shape, such as `/config get <key>` and
+`/config set <key> <value>`. Argument-first trees are useful when the target naturally comes before the action, or when
+you need to match an existing command syntax.
+
+```java
+public final class ConfigCommand extends Command {
+    public ConfigCommand() {
+        super("config");
+
+        argument(new StringArgument("key")).description("Select a config key")
+                                           .child(keyArg -> new Command("get") {{
+                                               execute(ctx -> {
+                                                   String key = ctx.getParsedArg(keyArg);
+
+                                                   // Get config value
+                                               });
+                                           }})
+                                           .child(keyArg -> new Command("set") {{
+                                               argument(new StringArgument("value")).execute((valueValue, ctx) -> {
+                                                   String key = ctx.getParsedArg(keyArg);
+
+                                                   // Set config value
+                                               });
+                                           }});
+    }
+}
+```
+
+Valid inputs:
+
+```text
+/config difficulty get
+/config difficulty set hard
+```
+
+</details>
+
+<details>
 <summary>Defining Command Options</summary>
 
 Command options can be placed immediately after the command name and before regular arguments.
@@ -241,7 +286,7 @@ public final class ScanCommand extends Command {
         CommandOption<Integer, CommandContext> limit = option(Options.integer("limit", 'n', 10, 1, 100)
                                                                      .description("Maximum number of targets."));
 
-        argument(new PlayerArgument("target"), (target, ctx) -> {
+        argument(new PlayerArgument("target")).execute((target, ctx) -> {
             boolean isForce = ctx.getOption(force);
             boolean isVerbose = ctx.getOption(verbose);
             int maxCount = ctx.getOption(limit);
@@ -282,7 +327,7 @@ public final class GameCommand extends Command {
         addChildren(new Command("start") {{
             CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f'));
 
-            argument(new StringArgument("arena"), (arena, ctx) -> {
+            argument(new StringArgument("arena")).execute((arena, ctx) -> {
                 boolean isForce = ctx.getOption(force);
 
                 // Starts game
@@ -302,18 +347,6 @@ Invalid:
 
 ```text
 /game -f start arena1
-```
-
-Supported option types:
-
-```java
-Options.flag("force", 'f')             // boolean flag, false when omitted
-Options.bool("enabled", 'e', true)
-Options.integer("limit", 'n', 10)
-Options.longValue("size", 's', 0L)
-Options.floatValue("speed", 'S', 1.0f)
-Options.doubleValue("radius", 'r', 5.0)
-Options.string("format", 'F', "text")
 ```
 
 Value options use the separated form, such as `--limit 20` or `-n 20`. Forms like `--limit=20` and `-n20` are not
@@ -339,7 +372,7 @@ public final class ExportCommand extends Command {
         CommandOption<Integer, CommandContext> threads = option(Options.integer("threads", 't', 1, 1, 16)
                                                                        .requires(mode, "parallel"));
 
-        argument(new StringArgument("target"), (target, ctx) -> {
+        argument(new StringArgument("target")).execute((target, ctx) -> {
             // --reason can be used only with --force.
             // --threads can be used only when ctx.getOption(mode) is parallel.
         });
@@ -381,7 +414,7 @@ public final class TestPlugin extends JavaPlugin {
                         throw new InvalidArgumentException(x.name() + " is not block.");
                     }
                 });
-            }), (m, ctx) -> {
+            })).execute((m, ctx) -> {
                 // Do something
             });
         }});
@@ -398,10 +431,10 @@ public final class TestPlugin extends JavaPlugin {
 public final class TestPlugin extends JavaPlugin {
     public void onEnable() {
         CommandLib.register(this, new Command("test") {{
-            argument(new PlayerArgument("player"), (player, ctx) -> {
+            argument(new PlayerArgument("player")).execute((player, ctx) -> {
                 // Do something
             });
-            argument(new PlayerArgument("player"), new StringArgument("message"), (player, message, ctx) -> {
+            argument(new Player("player"), new StringArgument("message")).execute((player, message, ctx) -> {
                 // Do something
             });
         }});

@@ -29,7 +29,7 @@ class TeamArgumentTest {
 
         try (MockedStatic<Bukkit> bukkit = Mockito.mockStatic(Bukkit.class);
              CommandTester tester = new CommandTester(() -> new Command("team") {{
-                 argument(new TeamArgument("name"), (team, ctx) -> {
+                 argument(new TeamArgument("name")).execute((team, ctx) -> {
                      ctx.sendMessage(team.getName());
                  });
              }}, "test.command")) {

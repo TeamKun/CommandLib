@@ -1,11 +1,12 @@
 package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.tree.RootCommandNode;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.exception.CommandPrerequisiteException;
 import net.kunmc.lab.commandlib.util.UncaughtExceptionHandler;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.function.Predicate;
 
 final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implements Command<S> {
     private final PlatformAdapter<S, ?, C, ?, ?> platformAdapter;
-    private final Arguments<C> arguments;
+    private final List<Arguments<C>> argumentsList;
     private final List<CommandOption<?, C>> options;
     private final Prerequisite<C> prerequisite;
     private final ContextAction<C> helpAction;
@@ -22,9 +23,8 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
     private final ContextAction<C> contextAction;
     private final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers;
 
-
     CommandExecutor(PlatformAdapter<S, ?, C, ?, ?> platformAdapter,
-                    @Nullable Arguments<C> arguments,
+                    List<Arguments<C>> argumentsList,
                     List<CommandOption<?, C>> options,
                     Prerequisite<C> prerequisite,
                     ContextAction<C> helpAction,
@@ -32,7 +32,7 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
                     ContextAction<C> contextAction,
                     List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers) {
         this.platformAdapter = platformAdapter;
-        this.arguments = arguments;
+        this.argumentsList = List.copyOf(argumentsList);
         this.options = options;
         this.prerequisite = prerequisite;
         this.helpAction = helpAction;
@@ -44,7 +44,7 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
     @Override
     public int run(CommandContext<S> context) {
         try {
-            C ctx = platformAdapter.createCommandContext(context);
+            C ctx = platformAdapter.createCommandContext(rootContext(context));
 
             try {
                 try {
@@ -55,7 +55,7 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
                     return 1;
                 }
 
-                if (arguments != null) {
+                for (Arguments<C> arguments : argumentsList) {
                     try {
                         arguments.parse(ctx);
                     } catch (ArgumentParseException e) {
@@ -63,7 +63,6 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
                         return 1;
                     }
                 }
-
                 try {
                     prerequisite.check(ctx);
                 } catch (CommandPrerequisiteException e) {
@@ -89,6 +88,17 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
             e.printStackTrace();
             throw e;
         }
+    }
+
+    private CommandContext<S> rootContext(CommandContext<S> context) {
+        if (!(context.getRootNode() instanceof RootCommandNode)) {
+            return context;
+        }
+
+        RootCommandNode<S> root = (RootCommandNode<S>) context.getRootNode();
+        return new CommandDispatcher<>(root).parse(context.getInput(), context.getSource())
+                                            .getContext()
+                                            .build(context.getInput());
     }
 
     private int executeWithStackTrace(C ctx, ContextAction<C> contextAction) {

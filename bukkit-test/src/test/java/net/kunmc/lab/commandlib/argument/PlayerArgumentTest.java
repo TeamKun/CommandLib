@@ -15,7 +15,7 @@ class PlayerArgumentTest {
         FakeSender admin = FakeSender.player("Admin");
 
         try (CommandTester tester = new CommandTester(() -> new Command("heal") {{
-            argument(new PlayerArgument("target"), (target, ctx) -> {
+            argument(new PlayerArgument("target")).execute((target, ctx) -> {
                 ctx.sendMessage("Healed " + target.getName() + "!");
             });
         }}, "test.command")) {
@@ -33,7 +33,7 @@ class PlayerArgumentTest {
 
         try (CommandTester tester = new CommandTester(() -> new Command("info") {{
             requirePlayer();
-            argument(new PlayerArgument("target"), (target, ctx) -> {
+            argument(new PlayerArgument("target")).execute((target, ctx) -> {
                 ctx.sendMessage(ctx.getPlayer()
                                    .getName() + " targeted " + target.getName());
             });

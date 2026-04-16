@@ -32,7 +32,7 @@ class HealCommandTest {
         FakeSender sender = FakeSender.player("Steve");
 
         try (CommandTester tester = new CommandTester(() -> new Command("heal") {{
-            argument(new PlayerArgument("target"), (target, ctx) -> ctx.sendMessage("healed " + target.getName()));
+            argument(new PlayerArgument("target")).execute((target, ctx) -> ctx.sendMessage("healed " + target.getName()));
         }}, "myplugin.command")) {
             tester.withFakePlayer((Player) sender.asSender());
             tester.execute("heal Steve", sender);
@@ -55,13 +55,16 @@ class TpCommandTest {
     void tpTest() {
         FakeSender sender = FakeSender.player("Alice");
         World mockWorld = Mockito.mock(World.class);
-        Mockito.when(mockWorld.getName()).thenReturn("nether");
+        Mockito.when(mockWorld.getName())
+               .thenReturn("nether");
 
-        try (MockedStatic<Bukkit> bukkit = Mockito.mockStatic(Bukkit.class);
-             CommandTester tester = new CommandTester(new Command("tp") {{
-                 argument(new WorldArgument("world"), (world, ctx) -> ctx.sendMessage(world.getName()));
-             }}, "myplugin.command")) {
-            bukkit.when(() -> Bukkit.getWorld("nether")).thenReturn(mockWorld);
+        try (MockedStatic<Bukkit> bukkit = Mockito.mockStatic(Bukkit.class); CommandTester tester = new CommandTester(
+                new Command("tp") {{
+                    argument(new WorldArgument("world")).execute((world, ctx) -> ctx.sendMessage(world.getName()));
+                }},
+                "myplugin.command")) {
+            bukkit.when(() -> Bukkit.getWorld("nether"))
+                  .thenReturn(mockWorld);
             tester.execute("tp nether", sender);
         }
 

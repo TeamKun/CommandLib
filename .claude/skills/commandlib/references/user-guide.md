@@ -44,7 +44,8 @@ class MyPlugin extends JavaPlugin {
     public void onEnable() {
         CommandLib.register(this, "myplugin.command", new Command("game") {{
             addPrerequisite(ctx -> {
-                if (!ctx.getSender().hasPermission("myplugin.game")) {
+                if (!ctx.getSender()
+                        .hasPermission("myplugin.game")) {
                     throw new CommandPrerequisiteException("No permission");
                 }
             });
@@ -53,3 +54,35 @@ class MyPlugin extends JavaPlugin {
     }
 }
 ```
+
+Argument chains can also have child commands. Prefer this only for vanilla-like
+or compatibility syntax where the target comes before the action.
+
+The `child(...)` factory receives `Argument` instances, not parsed runtime
+values. Use those instances with `ctx.getParsedArg(argument)` inside the child
+executor:
+
+```java
+class ConfigCommand extends Command {
+    ConfigCommand() {
+        super("config");
+
+        argument(new StringARgument("key")).description("Select a config key")
+                                           .child(keyArg -> new Command("get") {{
+                                               execute(ctx -> {
+                                                   String parsedKey = ctx.getParsedArg(keyArg);
+                                                   ctx.sendMessage("get " + parsedKey);
+                                               });
+                                           }})
+                                           .child(keyArg -> new Command("set") {{
+                                               argument(new StringArgument("value")).execute((parsedValue, ctx) -> {
+                                                   String parsedKey = ctx.getParsedArg(keyArg);
+                                                   ctx.sendMessage("set " + parsedKey + " to " + parsedValue);
+                                               });
+                                           }});
+    }
+}
+```
+
+Calling `child(...)` repeatedly appends multiple child commands under the same
+argument branch.

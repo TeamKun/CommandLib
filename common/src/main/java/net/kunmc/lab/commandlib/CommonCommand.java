@@ -1,12 +1,11 @@
 package net.kunmc.lab.commandlib;
 
+import net.kunmc.lab.commandlib.branch.*;
 import net.kunmc.lab.commandlib.util.UncaughtExceptionHandler;
-import net.kunmc.lab.commandlib.util.function.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -14,6 +13,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     private final String name;
     private String description = "";
     private T parent = null;
+    private Arguments<C> parentArguments = null;
     private boolean inheritParentPrerequisite = true;
     private boolean inheritParentPreprocess = true;
     private final List<T> children = new ArrayList<>();
@@ -56,16 +56,24 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         addChildren(list);
     }
 
-    @SuppressWarnings("unchecked")
     public final void addChildren(@NotNull Collection<? extends T> children) {
         Objects.requireNonNull(children);
+        validateChildren(children);
+        this.children.addAll(children);
+        setParentFor(children, null);
+    }
+
+    private void validateChildren(@NotNull Collection<? extends T> children) {
         for (T child : children) {
             Objects.requireNonNull(child);
         }
-        this.children.addAll(children);
+    }
 
+    @SuppressWarnings("unchecked")
+    private void setParentFor(@NotNull Collection<? extends T> children, Arguments<C> parentArguments) {
         for (CommonCommand<C, B, T> child : children) {
             child.parent = ((T) this);
+            child.parentArguments = parentArguments;
         }
     }
 
@@ -118,148 +126,144 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         this.inheritParentPreprocess = false;
     }
 
-    public final void argument(@NotNull Consumer<B> buildArguments) {
+    public final ArgumentBranch<C, T> argument(@NotNull Consumer<B> buildArguments) {
         B builder = platformAdapter.createArgumentBuilder();
         buildArguments.accept(builder);
-        argumentsList.add(new Arguments<>(builder.build()));
+        Arguments<C> arguments = addArguments(builder.build(), List.of());
+        return new ArgumentBranch<>(delegateFor(arguments));
     }
 
-    public final <T1> void argument(@NotNull CommonArgument<T1, C> argument, @NotNull BiConsumer<T1, C> execute) {
-        argument(builder -> {
-            builder.customArgument(argument)
-                   .execute(ctx -> {
-                       execute.accept(argument.cast(ctx.getParsedArg(argument.name())), ctx);
-                   });
-        });
+    public final <T1> UnaryArgumentBranch<T1, C, T> argument(@NotNull CommonArgument<T1, C> argument) {
+        Arguments<C> arguments = addArguments(List.of(argument));
+        return new UnaryArgumentBranch<>(delegateFor(arguments), argument);
     }
 
-    public final <T1, T2> void argument(@NotNull CommonArgument<T1, C> argument1,
-                                        @NotNull CommonArgument<T2, C> argument2,
-                                        @NotNull TriConsumer<T1, T2, C> execute) {
-        argument(builder -> {
-            builder.customArgument(argument1)
-                   .customArgument(argument2)
-                   .execute(ctx -> {
-                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name())),
-                                      argument2.cast(ctx.getParsedArg(argument2.name())),
-                                      ctx);
-                   });
-        });
+    public final <T1, T2> BiArgumentBranch<T1, T2, C, T> argument(@NotNull CommonArgument<T1, C> argument1,
+                                                                  @NotNull CommonArgument<T2, C> argument2) {
+        Arguments<C> arguments = addArguments(List.of(argument1, argument2));
+        return new BiArgumentBranch<>(delegateFor(arguments), argument1, argument2);
     }
 
-    public final <T1, T2, T3> void argument(@NotNull CommonArgument<T1, C> argument1,
-                                            @NotNull CommonArgument<T2, C> argument2,
-                                            @NotNull CommonArgument<T3, C> argument3,
-                                            @NotNull TetraConsumer<T1, T2, T3, C> execute) {
-        argument(builder -> {
-            builder.customArgument(argument1)
-                   .customArgument(argument2)
-                   .customArgument(argument3)
-                   .execute(ctx -> {
-                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name())),
-                                      argument2.cast(ctx.getParsedArg(argument2.name())),
-                                      argument3.cast(ctx.getParsedArg(argument3.name())),
-                                      ctx);
-                   });
-        });
+    public final <T1, T2, T3> TriArgumentBranch<T1, T2, T3, C, T> argument(@NotNull CommonArgument<T1, C> argument1,
+                                                                           @NotNull CommonArgument<T2, C> argument2,
+                                                                           @NotNull CommonArgument<T3, C> argument3) {
+        Arguments<C> arguments = addArguments(List.of(argument1, argument2, argument3));
+        return new TriArgumentBranch<>(delegateFor(arguments), argument1, argument2, argument3);
     }
 
-    public final <T1, T2, T3, T4> void argument(@NotNull CommonArgument<T1, C> argument1,
-                                                @NotNull CommonArgument<T2, C> argument2,
-                                                @NotNull CommonArgument<T3, C> argument3,
-                                                @NotNull CommonArgument<T4, C> argument4,
-                                                @NotNull QuintConsumer<T1, T2, T3, T4, C> execute) {
-        argument(builder -> {
-            builder.customArgument(argument1)
-                   .customArgument(argument2)
-                   .customArgument(argument3)
-                   .customArgument(argument4)
-                   .execute(ctx -> {
-                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name())),
-                                      argument2.cast(ctx.getParsedArg(argument2.name())),
-                                      argument3.cast(ctx.getParsedArg(argument3.name())),
-                                      argument4.cast(ctx.getParsedArg(argument4.name())),
-                                      ctx);
-                   });
-        });
+    public final <T1, T2, T3, T4> TetraArgumentBranch<T1, T2, T3, T4, C, T> argument(@NotNull CommonArgument<T1, C> argument1,
+                                                                                     @NotNull CommonArgument<T2, C> argument2,
+                                                                                     @NotNull CommonArgument<T3, C> argument3,
+                                                                                     @NotNull CommonArgument<T4, C> argument4) {
+        Arguments<C> arguments = addArguments(List.of(argument1, argument2, argument3, argument4));
+        return new TetraArgumentBranch<>(delegateFor(arguments), argument1, argument2, argument3, argument4);
     }
 
-    public final <T1, T2, T3, T4, T5> void argument(@NotNull CommonArgument<T1, C> argument1,
-                                                    @NotNull CommonArgument<T2, C> argument2,
-                                                    @NotNull CommonArgument<T3, C> argument3,
-                                                    @NotNull CommonArgument<T4, C> argument4,
-                                                    @NotNull CommonArgument<T5, C> argument5,
-                                                    @NotNull HexaConsumer<T1, T2, T3, T4, T5, C> execute) {
-        argument(builder -> {
-            builder.customArgument(argument1)
-                   .customArgument(argument2)
-                   .customArgument(argument3)
-                   .customArgument(argument4)
-                   .customArgument(argument5)
-                   .execute(ctx -> {
-                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name())),
-                                      argument2.cast(ctx.getParsedArg(argument2.name())),
-                                      argument3.cast(ctx.getParsedArg(argument3.name())),
-                                      argument4.cast(ctx.getParsedArg(argument4.name())),
-                                      argument5.cast(ctx.getParsedArg(argument5.name())),
-                                      ctx);
-                   });
-        });
+    public final <T1, T2, T3, T4, T5> QuintArgumentBranch<T1, T2, T3, T4, T5, C, T> argument(@NotNull CommonArgument<T1, C> argument1,
+                                                                                             @NotNull CommonArgument<T2, C> argument2,
+                                                                                             @NotNull CommonArgument<T3, C> argument3,
+                                                                                             @NotNull CommonArgument<T4, C> argument4,
+                                                                                             @NotNull CommonArgument<T5, C> argument5) {
+        Arguments<C> arguments = addArguments(List.of(argument1, argument2, argument3, argument4, argument5));
+        return new QuintArgumentBranch<>(delegateFor(arguments), argument1, argument2, argument3, argument4, argument5);
     }
 
-    public final <T1, T2, T3, T4, T5, T6> void argument(@NotNull CommonArgument<T1, C> argument1,
-                                                        @NotNull CommonArgument<T2, C> argument2,
-                                                        @NotNull CommonArgument<T3, C> argument3,
-                                                        @NotNull CommonArgument<T4, C> argument4,
-                                                        @NotNull CommonArgument<T5, C> argument5,
-                                                        @NotNull CommonArgument<T6, C> argument6,
-                                                        @NotNull HeptConsumer<T1, T2, T3, T4, T5, T6, C> execute) {
-        argument(builder -> {
-            builder.customArgument(argument1)
-                   .customArgument(argument2)
-                   .customArgument(argument3)
-                   .customArgument(argument4)
-                   .customArgument(argument5)
-                   .customArgument(argument6)
-                   .execute(ctx -> {
-                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name())),
-                                      argument2.cast(ctx.getParsedArg(argument2.name())),
-                                      argument3.cast(ctx.getParsedArg(argument3.name())),
-                                      argument4.cast(ctx.getParsedArg(argument4.name())),
-                                      argument5.cast(ctx.getParsedArg(argument5.name())),
-                                      argument6.cast(ctx.getParsedArg(argument6.name())),
-                                      ctx);
-                   });
-        });
+    public final <T1, T2, T3, T4, T5, T6> HexaArgumentBranch<T1, T2, T3, T4, T5, T6, C, T> argument(@NotNull CommonArgument<T1, C> argument1,
+                                                                                                    @NotNull CommonArgument<T2, C> argument2,
+                                                                                                    @NotNull CommonArgument<T3, C> argument3,
+                                                                                                    @NotNull CommonArgument<T4, C> argument4,
+                                                                                                    @NotNull CommonArgument<T5, C> argument5,
+                                                                                                    @NotNull CommonArgument<T6, C> argument6) {
+        Arguments<C> arguments = addArguments(List.of(argument1,
+                                                      argument2,
+                                                      argument3,
+                                                      argument4,
+                                                      argument5,
+                                                      argument6));
+        return new HexaArgumentBranch<>(delegateFor(arguments),
+                                        argument1,
+                                        argument2,
+                                        argument3,
+                                        argument4,
+                                        argument5,
+                                        argument6);
     }
 
-    public final <T1, T2, T3, T4, T5, T6, T7> void argument(@NotNull CommonArgument<T1, C> argument1,
-                                                            @NotNull CommonArgument<T2, C> argument2,
-                                                            @NotNull CommonArgument<T3, C> argument3,
-                                                            @NotNull CommonArgument<T4, C> argument4,
-                                                            @NotNull CommonArgument<T5, C> argument5,
-                                                            @NotNull CommonArgument<T6, C> argument6,
-                                                            @NotNull CommonArgument<T7, C> argument7,
-                                                            @NotNull OctoConsumer<T1, T2, T3, T4, T5, T6, T7, C> execute) {
-        argument(builder -> {
-            builder.customArgument(argument1)
-                   .customArgument(argument2)
-                   .customArgument(argument3)
-                   .customArgument(argument4)
-                   .customArgument(argument5)
-                   .customArgument(argument6)
-                   .customArgument(argument7)
-                   .execute(ctx -> {
-                       execute.accept(argument1.cast(ctx.getParsedArg(argument1.name())),
-                                      argument2.cast(ctx.getParsedArg(argument2.name())),
-                                      argument3.cast(ctx.getParsedArg(argument3.name())),
-                                      argument4.cast(ctx.getParsedArg(argument4.name())),
-                                      argument5.cast(ctx.getParsedArg(argument5.name())),
-                                      argument6.cast(ctx.getParsedArg(argument6.name())),
-                                      argument7.cast(ctx.getParsedArg(argument7.name())),
-                                      ctx);
-                   });
-        });
+    public final <T1, T2, T3, T4, T5, T6, T7> HeptArgumentBranch<T1, T2, T3, T4, T5, T6, T7, C, T> argument(@NotNull CommonArgument<T1, C> argument1,
+                                                                                                            @NotNull CommonArgument<T2, C> argument2,
+                                                                                                            @NotNull CommonArgument<T3, C> argument3,
+                                                                                                            @NotNull CommonArgument<T4, C> argument4,
+                                                                                                            @NotNull CommonArgument<T5, C> argument5,
+                                                                                                            @NotNull CommonArgument<T6, C> argument6,
+                                                                                                            @NotNull CommonArgument<T7, C> argument7) {
+        Arguments<C> arguments = addArguments(List.of(argument1,
+                                                      argument2,
+                                                      argument3,
+                                                      argument4,
+                                                      argument5,
+                                                      argument6,
+                                                      argument7));
+        return new HeptArgumentBranch<>(delegateFor(arguments),
+                                        argument1,
+                                        argument2,
+                                        argument3,
+                                        argument4,
+                                        argument5,
+                                        argument6,
+                                        argument7);
+    }
+
+    private ArgumentBranchDelegate<C, T> delegateFor(Arguments<C> arguments) {
+        return new ArgumentBranchDelegate<>() {
+            @Override
+            public void description(@NotNull String description) {
+                arguments.description(description);
+            }
+
+            @Override
+            public void execute(@Nullable ContextAction<C> action) {
+                arguments.contextAction(action);
+            }
+
+            @Override
+            public void addChildren(@NotNull Collection<? extends T> children) {
+                addArgumentChildren(arguments, children);
+            }
+        };
+    }
+
+    private Arguments<C> addArguments(@NotNull List<? extends CommonArgument<?, C>> arguments) {
+        return addArguments(arguments, List.of());
+    }
+
+    private Arguments<C> addArguments(@NotNull List<? extends CommonArgument<?, C>> arguments,
+                                      @NotNull Collection<? extends T> children) {
+        validateArguments(arguments);
+        validateChildren(children);
+        Arguments<C> argumentBranch = new Arguments<>(arguments, children);
+        argumentsList.add(argumentBranch);
+        setParentFor(children, argumentBranch);
+        return argumentBranch;
+    }
+
+    final void addArgumentChildren(@NotNull Arguments<C> arguments, @NotNull Collection<? extends T> children) {
+        Objects.requireNonNull(arguments);
+        Objects.requireNonNull(children);
+        validateChildren(children);
+        arguments.addChildren(children);
+        setParentFor(children, arguments);
+    }
+
+    private void validateArguments(@NotNull List<? extends CommonArgument<?, C>> arguments) {
+        for (CommonArgument<?, C> argument : arguments) {
+            Objects.requireNonNull(argument);
+        }
+        Set<String> names = new HashSet<>();
+        for (CommonArgument<?, C> argument : arguments) {
+            if (!names.add(argument.name())) {
+                throw new IllegalArgumentException("Duplicate argument name: " + argument.name());
+            }
+        }
     }
 
     public final void addPrerequisite(@NotNull Prerequisite<C> prerequisite) {
@@ -294,8 +298,21 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         return parent;
     }
 
+    final Arguments<C> parentArguments() {
+        return parentArguments;
+    }
+
     final List<T> children() {
         return List.copyOf(children);
+    }
+
+    @SuppressWarnings("unchecked")
+    final List<T> argumentChildren() {
+        return argumentsList.stream()
+                            .flatMap(x -> x.children()
+                                           .stream())
+                            .map(x -> (T) x)
+                            .collect(java.util.stream.Collectors.toList());
     }
 
     final Prerequisite<C> prerequisite() {
