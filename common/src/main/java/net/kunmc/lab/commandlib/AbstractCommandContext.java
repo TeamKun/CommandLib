@@ -82,9 +82,13 @@ public abstract class AbstractCommandContext<S, C> {
         return getArguments().get(index);
     }
 
-    @Nullable
+    @NotNull
     public final Object getArgument(String name) {
-        return parsedArgMap.get(name);
+        Object arg = parsedArgMap.get(name);
+        if (arg == null) {
+            throw new IllegalArgumentException("No such argument '" + name + "' exists on this command");
+        }
+        return arg;
     }
 
     /**
@@ -96,25 +100,15 @@ public abstract class AbstractCommandContext<S, C> {
         return clazz.cast(parsedArg);
     }
 
-    @Nullable
+    @NotNull
     public final <T> T getArgument(String name, Class<T> clazz) {
-        Object parsedArg = getArgument(name);
-        if (parsedArg == null) {
-            return null;
-        }
-
-        return clazz.cast(parsedArg);
+        return clazz.cast(getArgument(name));
     }
 
-    @Nullable
+    @NotNull
     public final <T> T getArgument(@NotNull CommonArgument<T, ?> argument) {
         Objects.requireNonNull(argument);
-        Object parsedArg = getArgument(argument.name());
-        if (parsedArg == null) {
-            return null;
-        }
-
-        return argument.cast(parsedArg);
+        return argument.cast(getArgument(argument.name()));
     }
 
     @NotNull
