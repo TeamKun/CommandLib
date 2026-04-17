@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.argument.ArgumentValidator;
-import net.kunmc.lab.commandlib.command.CommandHandler;
+import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.exception.ArgumentValidationException;
 import net.kunmc.lab.commandlib.suggestion.AsyncSuggestionAction;
@@ -29,7 +29,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
     private AsyncSuggestionAction<C> asyncSuggestionAction;
     private AsyncSuggestionAction<C> additionalAsyncSuggestionAction;
     private BiFunction<C, String, T> additionalParser;
-    private CommandHandler<C> contextAction;
+    private CommandExecutor<C> executor;
     private final ArgumentType<?> type;
     private ArgumentValidator<? super T, C> validator;
     private BiFunction<? super T, C, ? extends T> transformer;
@@ -42,11 +42,11 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
 
     protected CommonArgument(@NotNull String name,
                              @Nullable SuggestionAction<C> suggestionAction,
-                             @Nullable CommandHandler<C> contextAction,
+                             @Nullable CommandExecutor<C> executor,
                              @NotNull ArgumentType<?> type) {
         this.name = Objects.requireNonNull(name);
         this.suggestionAction = suggestionAction;
-        this.contextAction = contextAction;
+        this.executor = executor;
         this.type = Objects.requireNonNull(type);
     }
 
@@ -116,16 +116,16 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
     }
 
     @Nullable
-    public final CommandHandler<C> contextAction() {
-        return contextAction;
+    public final CommandExecutor<C> executor() {
+        return executor;
     }
 
     public final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers() {
         return List.copyOf(uncaughtExceptionHandlers);
     }
 
-    protected final void contextAction(@Nullable CommandHandler<C> contextAction) {
-        this.contextAction = contextAction;
+    protected final void execute(@Nullable CommandExecutor<C> executor) {
+        this.executor = executor;
     }
 
     public final ArgumentType<?> type() {
@@ -167,8 +167,8 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
               .ifPresent(this::additionalAsyncSuggestionAction);
         option.additionalParser()
               .ifPresent(this::additionalParser);
-        option.contextAction()
-              .ifPresent(this::contextAction);
+        option.executor()
+              .ifPresent(this::execute);
         option.validator()
               .ifPresent(this::validator);
         option.transformer()
@@ -242,7 +242,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         protected BiFunction<C, String, T> additionalParser;
         protected ArgumentValidator<? super T, C> validator;
         protected BiFunction<? super T, C, ? extends T> transformer;
-        protected CommandHandler<C> contextAction;
+        protected CommandExecutor<C> executor;
         protected final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers = new ArrayList<>();
         private final CommonArgument<T, C> argument;
 
@@ -374,17 +374,17 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
             return Optional.ofNullable(transformer);
         }
 
-        public Option<T, C> contextAction(@Nullable CommandHandler<C> contextAction) {
-            this.contextAction = contextAction;
+        public Option<T, C> execute(@Nullable CommandExecutor<C> executor) {
+            this.executor = executor;
             return this;
         }
 
-        protected Optional<CommandHandler<C>> contextAction() {
-            return Optional.ofNullable(contextAction);
+        protected Optional<CommandExecutor<C>> executor() {
+            return Optional.ofNullable(executor);
         }
 
-        public Option<T, C> addUncaughtExceptionHandler(UncaughtExceptionHandler<?, C> handler) {
-            this.uncaughtExceptionHandlers.add(handler);
+        public Option<T, C> addUncaughtExceptionHandler(UncaughtExceptionHandler<?, C> executor) {
+            this.uncaughtExceptionHandlers.add(executor);
             return this;
         }
 

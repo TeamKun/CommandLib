@@ -1,6 +1,6 @@
 package net.kunmc.lab.commandlib;
 
-import net.kunmc.lab.commandlib.command.CommandHandler;
+import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.ChatColorUtil;
 
@@ -59,13 +59,13 @@ final class Arguments<C extends AbstractCommandContext<?, ?>> {
         this.children.addAll(children);
     }
 
-    void contextAction(CommandHandler<C> contextAction) {
+    void executor(CommandExecutor<C> executor) {
         if (arguments.isEmpty()) {
             return;
         }
 
         CommonArgument<?, C> last = arguments.get(arguments.size() - 1);
-        last.contextAction(contextAction);
+        last.execute(executor);
     }
 
     void description(String description) {

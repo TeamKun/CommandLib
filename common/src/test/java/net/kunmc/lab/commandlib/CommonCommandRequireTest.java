@@ -1,8 +1,8 @@
 package net.kunmc.lab.commandlib;
 
-import net.kunmc.lab.commandlib.command.Extractor;
 import net.kunmc.lab.commandlib.argument.CommonIntegerArgument;
 import net.kunmc.lab.commandlib.argument.CommonStringArgument;
+import net.kunmc.lab.commandlib.command.Extractor;
 import net.kunmc.lab.commandlib.exception.CommandPrerequisiteException;
 import org.junit.jupiter.api.Test;
 

@@ -54,14 +54,14 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                                                                               permissionPrefix);
 
         if (argumentsList.isEmpty()) {
-            CommandExecutor<S, C> executor = new CommandExecutor<>(platformAdapter,
-                                                                   inheritedArguments,
-                                                                   command.options(),
-                                                                   command.prerequisite(),
-                                                                   helpAction,
-                                                                   command.preprocess(),
-                                                                   command.contextAction(),
-                                                                   command.uncaughtExceptionHandlers());
+            CommandRunner<S, C> executor = new CommandRunner<>(platformAdapter,
+                                                               inheritedArguments,
+                                                               command.options(),
+                                                               command.prerequisite(),
+                                                               helpAction,
+                                                               command.preprocess(),
+                                                               command.executor(),
+                                                               command.uncaughtExceptionHandlers());
             builder.executes(executor);
             createOptionCommands(command.options(), () -> null, executor).forEach(builder::then);
             return builder.build();
@@ -72,14 +72,14 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                                                        x.size())) // Sort in descending order to handle variable-length arguments
                      .forEach(arguments -> {
                          List<Arguments<C>> executorArguments = appendArgument(inheritedArguments, arguments);
-                         CommandExecutor<S, C> executor = new CommandExecutor<>(platformAdapter,
-                                                                                executorArguments,
-                                                                                command.options(),
-                                                                                command.prerequisite(),
-                                                                                helpAction,
-                                                                                command.preprocess(),
-                                                                                command.contextAction(),
-                                                                                command.uncaughtExceptionHandlers());
+                         CommandRunner<S, C> executor = new CommandRunner<>(platformAdapter,
+                                                                            executorArguments,
+                                                                            command.options(),
+                                                                            command.prerequisite(),
+                                                                            helpAction,
+                                                                            command.preprocess(),
+                                                                            command.executor(),
+                                                                            command.uncaughtExceptionHandlers());
                          Supplier<ArgumentCommandNode<S, ?>> argumentNodeSupplier = () -> {
                              // Brigadier can attach literal nodes under an argument node. The executor still needs
                              // the parent arguments, so child commands inherit the complete argument chain here.
@@ -114,7 +114,7 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
 
     private List<CommandNode<S>> createOptionCommands(List<CommandOption<?, C>> options,
                                                       Supplier<ArgumentCommandNode<S, ?>> argumentNodeSupplier,
-                                                      CommandExecutor<S, C> executor) {
+                                                      CommandRunner<S, C> executor) {
         if (options.isEmpty()) {
             return List.of();
         }
@@ -125,7 +125,7 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
     private List<CommandNode<S>> createOptionCommands(List<CommandOption<?, C>> options,
                                                       Set<CommandOption<?, C>> selectedOptions,
                                                       Supplier<ArgumentCommandNode<S, ?>> argumentNodeSupplier,
-                                                      CommandExecutor<S, C> executor) {
+                                                      CommandRunner<S, C> executor) {
         List<CommandNode<S>> nodes = new ArrayList<>();
 
         for (OptionToken<C> optionToken : createOptionTokens(options, selectedOptions)) {
@@ -158,7 +158,7 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                                               List<CommandOption<?, C>> options,
                                               Set<CommandOption<?, C>> nextSelectedOptions,
                                               Supplier<ArgumentCommandNode<S, ?>> argumentNodeSupplier,
-                                              CommandExecutor<S, C> executor) {
+                                              CommandRunner<S, C> executor) {
         if (isValueOptionToken(tokenOptions)) {
             CommandOption<?, C> option = tokenOptions.get(0);
             RequiredArgumentBuilder<S, ?> valueBuilder = RequiredArgumentBuilder.argument(option.internalName(),

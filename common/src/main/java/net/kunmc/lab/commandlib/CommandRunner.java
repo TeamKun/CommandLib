@@ -1,11 +1,11 @@
 package net.kunmc.lab.commandlib;
 
-import net.kunmc.lab.commandlib.command.Prerequisite;
-import net.kunmc.lab.commandlib.command.CommandHandler;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.RootCommandNode;
+import net.kunmc.lab.commandlib.command.CommandExecutor;
+import net.kunmc.lab.commandlib.command.Prerequisite;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.exception.CommandPrerequisiteException;
 import net.kunmc.lab.commandlib.util.UncaughtExceptionHandler;
@@ -15,31 +15,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implements Command<S> {
+final class CommandRunner<S, C extends AbstractCommandContext<S, ?>> implements Command<S> {
     private final PlatformAdapter<S, ?, C, ?, ?> platformAdapter;
     private final List<Arguments<C>> argumentsList;
     private final List<CommandOption<?, C>> options;
     private final Prerequisite<C> prerequisite;
-    private final CommandHandler<C> helpAction;
+    private final CommandExecutor<C> helpAction;
     private final Predicate<C> preprocess;
-    private final CommandHandler<C> contextAction;
+    private final CommandExecutor<C> executor;
     private final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers;
 
-    CommandExecutor(PlatformAdapter<S, ?, C, ?, ?> platformAdapter,
-                    List<Arguments<C>> argumentsList,
-                    List<CommandOption<?, C>> options,
-                    Prerequisite<C> prerequisite,
-                    CommandHandler<C> helpAction,
-                    Predicate<C> preprocess,
-                    CommandHandler<C> contextAction,
-                    List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers) {
+    CommandRunner(PlatformAdapter<S, ?, C, ?, ?> platformAdapter,
+                  List<Arguments<C>> argumentsList,
+                  List<CommandOption<?, C>> options,
+                  Prerequisite<C> prerequisite,
+                  CommandExecutor<C> helpAction,
+                  Predicate<C> preprocess,
+                  CommandExecutor<C> executor,
+                  List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers) {
         this.platformAdapter = platformAdapter;
         this.argumentsList = List.copyOf(argumentsList);
         this.options = options;
         this.prerequisite = prerequisite;
         this.helpAction = helpAction;
         this.preprocess = preprocess;
-        this.contextAction = contextAction;
+        this.executor = executor;
         this.uncaughtExceptionHandlers = uncaughtExceptionHandlers;
     }
 
@@ -72,7 +72,7 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
                     return 0;
                 }
 
-                if (contextAction == null) {
+                if (executor == null) {
                     return executeWithStackTrace(ctx, helpAction);
                 }
 
@@ -80,7 +80,7 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
                     return 0;
                 }
 
-                return executeWithStackTrace(ctx, contextAction);
+                return executeWithStackTrace(ctx, executor);
             } catch (Throwable e) {
                 e.printStackTrace();
                 uncaughtExceptionHandlers.forEach(x -> x.uncaughtException(e, ctx));
@@ -103,9 +103,9 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
                                             .build(context.getInput());
     }
 
-    private int executeWithStackTrace(C ctx, CommandHandler<C> contextAction) {
+    private int executeWithStackTrace(C ctx, CommandExecutor<C> executor) {
         try {
-            contextAction.accept(ctx);
+            executor.accept(ctx);
             return 1;
         } catch (CommandPrerequisiteException e) {
             e.sendMessage(ctx);

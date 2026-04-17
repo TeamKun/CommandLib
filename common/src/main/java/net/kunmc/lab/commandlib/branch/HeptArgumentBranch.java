@@ -1,9 +1,10 @@
 package net.kunmc.lab.commandlib.branch;
 
+import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
+import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.command.Extractor;
-import net.kunmc.lab.commandlib.command.CommandHandler;
-import net.kunmc.lab.commandlib.*;
 import net.kunmc.lab.commandlib.util.function.HeptFunction;
 import net.kunmc.lab.commandlib.util.function.OctoConsumer;
 import org.jetbrains.annotations.NotNull;
@@ -49,7 +50,7 @@ public final class HeptArgumentBranch<T1, T2, T3, T4, T5, T6, T7, C extends Abst
     }
 
     @Override
-    public HeptArgumentBranch<T1, T2, T3, T4, T5, T6, T7, C, T> execute(@Nullable CommandHandler<C> action) {
+    public HeptArgumentBranch<T1, T2, T3, T4, T5, T6, T7, C, T> execute(@Nullable CommandExecutor<C> action) {
         super.execute(action);
         return this;
     }

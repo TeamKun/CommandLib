@@ -1,9 +1,10 @@
 package net.kunmc.lab.commandlib.branch;
 
+import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
+import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.command.Extractor;
-import net.kunmc.lab.commandlib.command.CommandHandler;
-import net.kunmc.lab.commandlib.*;
 import net.kunmc.lab.commandlib.util.function.TriConsumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +29,7 @@ public final class BiArgumentBranch<T1, T2, C extends AbstractCommandContext<?, 
     }
 
     @Override
-    public BiArgumentBranch<T1, T2, C, T> execute(@Nullable CommandHandler<C> action) {
+    public BiArgumentBranch<T1, T2, C, T> execute(@Nullable CommandExecutor<C> action) {
         super.execute(action);
         return this;
     }

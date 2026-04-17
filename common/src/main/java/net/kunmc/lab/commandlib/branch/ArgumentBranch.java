@@ -2,7 +2,7 @@ package net.kunmc.lab.commandlib.branch;
 
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonCommand;
-import net.kunmc.lab.commandlib.command.CommandHandler;
+import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.command.Extractor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +24,7 @@ public class ArgumentBranch<C extends AbstractCommandContext<?, ?>, T extends Co
         return this;
     }
 
-    public ArgumentBranch<C, T> execute(@Nullable CommandHandler<C> action) {
+    public ArgumentBranch<C, T> execute(@Nullable CommandExecutor<C> action) {
         delegate.execute(action);
         return this;
     }

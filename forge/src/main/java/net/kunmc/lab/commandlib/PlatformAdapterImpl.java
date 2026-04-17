@@ -5,6 +5,8 @@ import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.text.TextComponentBuilderImpl;
 import net.kunmc.lab.commandlib.util.text.TranslatableComponentBuilderImpl;
 import net.minecraft.command.CommandSource;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.text.ITextComponent;
 import org.jetbrains.annotations.NotNull;
 

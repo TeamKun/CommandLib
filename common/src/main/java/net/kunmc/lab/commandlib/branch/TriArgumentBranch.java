@@ -1,9 +1,10 @@
 package net.kunmc.lab.commandlib.branch;
 
+import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
+import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.command.Extractor;
-import net.kunmc.lab.commandlib.command.CommandHandler;
-import net.kunmc.lab.commandlib.*;
 import net.kunmc.lab.commandlib.util.function.TetraConsumer;
 import net.kunmc.lab.commandlib.util.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +34,7 @@ public final class TriArgumentBranch<T1, T2, T3, C extends AbstractCommandContex
     }
 
     @Override
-    public TriArgumentBranch<T1, T2, T3, C, T> execute(@Nullable CommandHandler<C> action) {
+    public TriArgumentBranch<T1, T2, T3, C, T> execute(@Nullable CommandExecutor<C> action) {
         super.execute(action);
         return this;
     }

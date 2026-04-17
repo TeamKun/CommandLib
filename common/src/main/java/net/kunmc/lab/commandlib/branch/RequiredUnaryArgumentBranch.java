@@ -1,9 +1,10 @@
 package net.kunmc.lab.commandlib.branch;
 
+import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
+import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.command.Extractor;
-import net.kunmc.lab.commandlib.command.CommandHandler;
-import net.kunmc.lab.commandlib.*;
 import net.kunmc.lab.commandlib.util.function.TriConsumer;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +16,7 @@ public final class RequiredUnaryArgumentBranch<S, T1, C extends AbstractCommandC
     private final CommonArgument<T1, C> argument1;
 
     public RequiredUnaryArgumentBranch(@NotNull Extractor<C, S> extractor,
-                                       @NotNull Consumer<CommandHandler<C>> executeRegistrar,
+                                       @NotNull Consumer<CommandExecutor<C>> executeRegistrar,
                                        @NotNull Consumer<Collection<? extends T>> childrenAdder,
                                        @NotNull CommonArgument<T1, C> argument1) {
         super(extractor, executeRegistrar, childrenAdder);

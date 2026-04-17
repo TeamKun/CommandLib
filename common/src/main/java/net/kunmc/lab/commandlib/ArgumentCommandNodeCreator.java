@@ -1,14 +1,14 @@
 package net.kunmc.lab.commandlib;
 
-import net.kunmc.lab.commandlib.suggestion.SuggestionBuilder;
-import net.kunmc.lab.commandlib.suggestion.SuggestionAction;
-import net.kunmc.lab.commandlib.suggestion.AsyncSuggestionAction;
-import net.kunmc.lab.commandlib.command.CommandHandler;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
+import net.kunmc.lab.commandlib.suggestion.AsyncSuggestionAction;
+import net.kunmc.lab.commandlib.suggestion.SuggestionAction;
+import net.kunmc.lab.commandlib.suggestion.SuggestionBuilder;
 
 import java.util.Collection;
 import java.util.List;
@@ -27,7 +27,7 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
     }
 
     private RequiredArgumentBuilder<S, ?> buildArgument(CommonArgument<?, C> argument,
-                                                        CommandHandler<C> helpAction,
+                                                        CommandExecutor<C> helpAction,
                                                         CommonCommand<C, ?, ?> parent) {
         RequiredArgumentBuilder<S, ?> builder = RequiredArgumentBuilder.argument(argument.name(), argument.type());
 
@@ -69,26 +69,27 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
             });
         }
 
-        builder.executes(new CommandExecutor<>(platformAdapter,
-                                               executorArguments,
-                                               parent.options(),
-                                               parent.prerequisite(),
-                                               helpAction,
-                                               parent.preprocess(),
-                                               argument.contextAction(),
-                                               argument.uncaughtExceptionHandlers()));
+        builder.executes(new CommandRunner<>(platformAdapter,
+                                             executorArguments,
+                                             parent.options(),
+                                             parent.prerequisite(),
+                                             helpAction,
+                                             parent.preprocess(),
+                                             argument.executor(),
+                                             argument.uncaughtExceptionHandlers()));
 
         return builder;
     }
 
-    private List<ArgumentCommandNode<S, ?>> toCommandNodes(CommandHandler<C> helpAction, CommonCommand<C, ?, ?> parent) {
+    private List<ArgumentCommandNode<S, ?>> toCommandNodes(CommandExecutor<C> helpAction,
+                                                           CommonCommand<C, ?, ?> parent) {
         return arguments.stream()
                         .map(x -> buildArgument(x, helpAction, parent))
                         .map(RequiredArgumentBuilder::build)
                         .collect(Collectors.toList());
     }
 
-    ArgumentCommandNode<S, ?> build(CommandHandler<C> helpAction,
+    ArgumentCommandNode<S, ?> build(CommandExecutor<C> helpAction,
                                     CommonCommand<C, ?, ?> parent,
                                     Collection<LiteralCommandNode<S>> terminalChildren) {
         List<ArgumentCommandNode<S, ?>> nodes = toCommandNodes(helpAction, parent);

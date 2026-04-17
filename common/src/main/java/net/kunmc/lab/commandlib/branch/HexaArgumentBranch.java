@@ -1,9 +1,10 @@
 package net.kunmc.lab.commandlib.branch;
 
+import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
+import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.command.Extractor;
-import net.kunmc.lab.commandlib.command.CommandHandler;
-import net.kunmc.lab.commandlib.*;
 import net.kunmc.lab.commandlib.util.function.HeptConsumer;
 import net.kunmc.lab.commandlib.util.function.HexaFunction;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +46,7 @@ public final class HexaArgumentBranch<T1, T2, T3, T4, T5, T6, C extends Abstract
     }
 
     @Override
-    public HexaArgumentBranch<T1, T2, T3, T4, T5, T6, C, T> execute(@Nullable CommandHandler<C> action) {
+    public HexaArgumentBranch<T1, T2, T3, T4, T5, T6, C, T> execute(@Nullable CommandExecutor<C> action) {
         super.execute(action);
         return this;
     }

@@ -1,7 +1,6 @@
 package net.kunmc.lab.commandlib.argument;
 
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.Nameable;
 
 import java.util.Collection;
 import java.util.function.Consumer;

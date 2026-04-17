@@ -1,6 +1,6 @@
 package net.kunmc.lab.commandlib;
 
-import net.kunmc.lab.commandlib.command.CommandHandler;
+import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.util.ChatColorUtil;
 
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B extends AbstractArgumentBuilder<C, B>, U extends CommonCommand<C, B, U>> implements CommandHandler<C> {
+final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B extends AbstractArgumentBuilder<C, B>, U extends CommonCommand<C, B, U>> implements CommandExecutor<C> {
     private final PlatformAdapter<S, T, C, B, U> platformAdapter;
     private final U command;
     private final String permissionPrefix;
@@ -131,7 +131,7 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
         //   "/config <key> set <value>"
         //   "/config <key> group <name> delete"
         List<String> usages = new ArrayList<>();
-        if (command.contextAction() != null) {
+        if (command.executor() != null) {
             // A literal after arguments is only a valid usage by itself when it can execute at that point.
             usages.add(formatArgumentChildUsage(prefix, command));
         }

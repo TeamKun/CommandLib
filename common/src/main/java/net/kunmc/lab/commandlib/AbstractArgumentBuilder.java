@@ -1,7 +1,7 @@
 package net.kunmc.lab.commandlib;
 
 import net.kunmc.lab.commandlib.argument.*;
-import net.kunmc.lab.commandlib.command.CommandHandler;
+import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.suggestion.SuggestionAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T extends AbstractArgumentBuilder<C, T>> {
     private final List<CommonArgument<?, C>> arguments = new ArrayList<>();
-    private CommandHandler<C> contextAction = null;
+    private CommandExecutor<C> executor = null;
 
     @SuppressWarnings("unchecked")
     protected final T addArgument(@NotNull CommonArgument<?, C> argument) {
@@ -47,10 +47,10 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
      */
     public final T boolArgument(@NotNull String name,
                                 @Nullable SuggestionAction<C> suggestionAction,
-                                @Nullable CommandHandler<C> contextAction) {
+                                @Nullable CommandExecutor<C> executor) {
         return boolArgumentWith(name, options -> {
             options.suggestionAction(suggestionAction)
-                   .contextAction(contextAction);
+                   .execute(executor);
         });
     }
 
@@ -88,10 +88,10 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
      */
     public final T doubleArgument(@NotNull String name,
                                   @Nullable SuggestionAction<C> suggestionAction,
-                                  @Nullable CommandHandler<C> contextAction) {
+                                  @Nullable CommandExecutor<C> executor) {
         return doubleArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -112,10 +112,10 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
                                   Double min,
                                   Double max,
                                   @Nullable SuggestionAction<C> suggestionAction,
-                                  @Nullable CommandHandler<C> contextAction) {
+                                  @Nullable CommandExecutor<C> executor) {
         return doubleArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         }, min, max);
     }
 
@@ -147,9 +147,8 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
     /**
      * Add any argument that implements {@link net.kunmc.lab.commandlib.CommonArgument}.
      */
-    public final <E> T customArgument(@NotNull CommonArgument<E, C> argument,
-                                      @Nullable CommandHandler<C> contextAction) {
-        argument.contextAction(contextAction);
+    public final <E> T customArgument(@NotNull CommonArgument<E, C> argument, @Nullable CommandExecutor<C> executor) {
+        argument.execute(executor);
         return addArgument(argument);
     }
 
@@ -175,10 +174,10 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
     public final <E extends Enum<E>> T enumArgument(@NotNull String name,
                                                     @NotNull Class<E> clazz,
                                                     @Nullable Predicate<? super E> filter,
-                                                    @Nullable CommandHandler<C> contextAction) {
+                                                    @Nullable CommandExecutor<C> executor) {
         return enumArgumentWith(name, clazz, option -> {
             option.validator(filter)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -217,10 +216,10 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
      */
     public final T floatArgument(@NotNull String name,
                                  @Nullable SuggestionAction<C> suggestionAction,
-                                 @Nullable CommandHandler<C> contextAction) {
+                                 @Nullable CommandExecutor<C> executor) {
         return floatArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -241,10 +240,10 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
                                  Float min,
                                  Float max,
                                  @Nullable SuggestionAction<C> suggestionAction,
-                                 @Nullable CommandHandler<C> contextAction) {
+                                 @Nullable CommandExecutor<C> executor) {
         return floatArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         }, min, max);
     }
 
@@ -292,10 +291,10 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
      */
     public final T integerArgument(@NotNull String name,
                                    @Nullable SuggestionAction<C> suggestionAction,
-                                   @Nullable CommandHandler<C> contextAction) {
+                                   @Nullable CommandExecutor<C> executor) {
         return integerArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -316,10 +315,10 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
                                    Integer min,
                                    Integer max,
                                    @Nullable SuggestionAction<C> suggestionAction,
-                                   @Nullable CommandHandler<C> contextAction) {
+                                   @Nullable CommandExecutor<C> executor) {
         return integerArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         }, min, max);
     }
 
@@ -355,8 +354,8 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
      */
     public final T literalArgument(@NotNull String name,
                                    @NotNull Collection<String> literals,
-                                   @Nullable CommandHandler<C> contextAction) {
-        return literalArgument(name, () -> literals, contextAction);
+                                   @Nullable CommandExecutor<C> executor) {
+        return literalArgument(name, () -> literals, executor);
     }
 
     /**
@@ -373,8 +372,8 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
      */
     public final T literalArgument(@NotNull String name,
                                    @NotNull Supplier<Collection<String>> literalsSupplier,
-                                   @Nullable CommandHandler<C> contextAction) {
-        return addArgument(new CommonLiteralArgument<>(name, literalsSupplier, contextAction));
+                                   @Nullable CommandExecutor<C> executor) {
+        return addArgument(new CommonLiteralArgument<>(name, literalsSupplier, executor));
     }
 
     /**
@@ -403,10 +402,10 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
     public final <E extends Nameable> T nameableObjectArgument(@NotNull String name,
                                                                @NotNull Collection<? extends E> candidates,
                                                                @Nullable Predicate<? super E> filter,
-                                                               @Nullable CommandHandler<C> contextAction) {
+                                                               @Nullable CommandExecutor<C> executor) {
         return nameableObjectArgumentWith(name, candidates, option -> {
             option.validator(filter)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -435,10 +434,10 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
     public final <E> T objectArgument(@NotNull String name,
                                       @NotNull Map<String, ? extends E> nameToObjectMap,
                                       @Nullable Predicate<? super E> filter,
-                                      @Nullable CommandHandler<C> contextAction) {
+                                      @Nullable CommandExecutor<C> executor) {
         return objectArgumentWith(name, nameToObjectMap, option -> {
             option.validator(filter)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -474,10 +473,10 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
      */
     public final T stringArgument(@NotNull String name,
                                   @Nullable SuggestionAction<C> suggestionAction,
-                                  @Nullable CommandHandler<C> contextAction) {
+                                  @Nullable CommandExecutor<C> executor) {
         return stringArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -496,10 +495,10 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
     public final T stringArgument(@NotNull String name,
                                   @NotNull CommonStringArgument.Type type,
                                   @Nullable SuggestionAction<C> suggestionAction,
-                                  @Nullable CommandHandler<C> contextAction) {
+                                  @Nullable CommandExecutor<C> executor) {
         return stringArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         }, type);
     }
 
@@ -522,17 +521,17 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
 
     /**
      * Set command's process.<br>
-     * If arguments are not added, process set by this wouldn't work. Then you should use {@link net.kunmc.lab.commandlib.CommonCommand#execute(CommandHandler)}
+     * If arguments are not added, process set by this wouldn't work. Then you should use {@link net.kunmc.lab.commandlib.CommonCommand#execute(CommandExecutor)}
      */
-    public final void execute(@Nullable CommandHandler<C> contextAction) {
-        this.contextAction = contextAction;
+    public final void execute(@Nullable CommandExecutor<C> executor) {
+        this.executor = executor;
     }
 
     final List<CommonArgument<?, C>> build() {
         if (!arguments.isEmpty()) {
             CommonArgument<?, C> last = arguments.get(arguments.size() - 1);
-            if (last.contextAction() == null) {
-                last.contextAction(contextAction);
+            if (last.executor() == null) {
+                last.execute(executor);
             }
         }
 

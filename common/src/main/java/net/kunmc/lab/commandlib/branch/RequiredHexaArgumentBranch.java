@@ -1,9 +1,10 @@
 package net.kunmc.lab.commandlib.branch;
 
+import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
+import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.command.Extractor;
-import net.kunmc.lab.commandlib.command.CommandHandler;
-import net.kunmc.lab.commandlib.*;
 import net.kunmc.lab.commandlib.util.function.HexaFunction;
 import net.kunmc.lab.commandlib.util.function.OctoConsumer;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +21,7 @@ public final class RequiredHexaArgumentBranch<S, T1, T2, T3, T4, T5, T6, C exten
     private final CommonArgument<T6, C> argument6;
 
     public RequiredHexaArgumentBranch(@NotNull Extractor<C, S> extractor,
-                                      @NotNull Consumer<CommandHandler<C>> executeRegistrar,
+                                      @NotNull Consumer<CommandExecutor<C>> executeRegistrar,
                                       @NotNull Consumer<Collection<? extends T>> childrenAdder,
                                       @NotNull CommonArgument<T1, C> argument1,
                                       @NotNull CommonArgument<T2, C> argument2,

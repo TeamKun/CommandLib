@@ -1,9 +1,10 @@
 package net.kunmc.lab.commandlib.branch;
 
+import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
+import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.command.Extractor;
-import net.kunmc.lab.commandlib.command.CommandHandler;
-import net.kunmc.lab.commandlib.*;
 import net.kunmc.lab.commandlib.util.function.HeptFunction;
 import net.kunmc.lab.commandlib.util.function.NonaConsumer;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,7 @@ public final class RequiredHeptArgumentBranch<S, T1, T2, T3, T4, T5, T6, T7, C e
     private final CommonArgument<T7, C> argument7;
 
     public RequiredHeptArgumentBranch(@NotNull Extractor<C, S> extractor,
-                                      @NotNull Consumer<CommandHandler<C>> executeRegistrar,
+                                      @NotNull Consumer<CommandExecutor<C>> executeRegistrar,
                                       @NotNull Consumer<Collection<? extends T>> childrenAdder,
                                       @NotNull CommonArgument<T1, C> argument1,
                                       @NotNull CommonArgument<T2, C> argument2,

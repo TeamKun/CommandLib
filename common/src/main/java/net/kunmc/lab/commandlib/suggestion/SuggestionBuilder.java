@@ -1,8 +1,8 @@
 package net.kunmc.lab.commandlib.suggestion;
 
-import net.kunmc.lab.commandlib.AbstractCommandContext;
 import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.context.StringRange;
+import net.kunmc.lab.commandlib.AbstractCommandContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

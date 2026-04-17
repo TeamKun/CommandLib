@@ -2,7 +2,7 @@ package net.kunmc.lab.commandlib;
 
 import com.mojang.authlib.GameProfile;
 import net.kunmc.lab.commandlib.argument.*;
-import net.kunmc.lab.commandlib.command.CommandHandler;
+import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.suggestion.SuggestionAction;
 import net.kunmc.lab.commandlib.util.Location;
 import net.minecraft.command.arguments.BlockStateInput;
@@ -43,10 +43,10 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder blockPosArgument(@NotNull String name,
                                             @Nullable SuggestionAction<CommandContext> suggestionAction,
-                                            @Nullable CommandHandler<CommandContext> contextAction) {
+                                            @Nullable CommandExecutor<CommandContext> executor) {
         return blockPosArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -78,10 +78,10 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder blockStateArgument(@NotNull String name,
                                               @Nullable SuggestionAction<CommandContext> suggestionAction,
-                                              @Nullable CommandHandler<CommandContext> contextAction) {
+                                              @Nullable CommandExecutor<CommandContext> executor) {
         return blockStateArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -113,10 +113,10 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder effectArgument(@NotNull String name,
                                           @Nullable SuggestionAction<CommandContext> suggestionAction,
-                                          CommandHandler<CommandContext> contextAction) {
+                                          CommandExecutor<CommandContext> executor) {
         return effectArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -148,10 +148,10 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder enchantmentArgument(@NotNull String name,
                                                @Nullable SuggestionAction<CommandContext> suggestionAction,
-                                               CommandHandler<CommandContext> contextAction) {
+                                               CommandExecutor<CommandContext> executor) {
         return enchantmentArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -183,10 +183,10 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder entityArgument(@NotNull String name,
                                           @Nullable SuggestionAction<CommandContext> suggestionAction,
-                                          @Nullable CommandHandler<CommandContext> contextAction) {
+                                          @Nullable CommandExecutor<CommandContext> executor) {
         return entityArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -218,10 +218,10 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder entitiesArgument(@NotNull String name,
                                             @Nullable SuggestionAction<CommandContext> suggestionAction,
-                                            @Nullable CommandHandler<CommandContext> contextAction) {
+                                            @Nullable CommandExecutor<CommandContext> executor) {
         return entitiesArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -252,10 +252,10 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder gameProfileArgument(@NotNull String name,
                                                @Nullable Predicate<? super GameProfile> filter,
-                                               @Nullable CommandHandler<CommandContext> contextAction) {
+                                               @Nullable CommandExecutor<CommandContext> executor) {
         return gameProfileArgumentWith(name, option -> {
             option.validator(filter)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -287,10 +287,10 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder itemStackArgument(@NotNull String name,
                                              @Nullable SuggestionAction<CommandContext> suggestionAction,
-                                             @Nullable CommandHandler<CommandContext> contextAction) {
+                                             @Nullable CommandExecutor<CommandContext> executor) {
         return itemStackArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -322,10 +322,10 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder locationArgument(@NotNull String name,
                                             @Nullable SuggestionAction<CommandContext> suggestionAction,
-                                            @Nullable CommandHandler<CommandContext> contextAction) {
+                                            @Nullable CommandExecutor<CommandContext> executor) {
         return locationArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -357,10 +357,10 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder particleArgument(@NotNull String name,
                                             @Nullable SuggestionAction<CommandContext> suggestionAction,
-                                            @Nullable CommandHandler<CommandContext> contextAction) {
+                                            @Nullable CommandExecutor<CommandContext> executor) {
         return particleArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -392,10 +392,10 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder playerArgument(@NotNull String name,
                                           @Nullable SuggestionAction<CommandContext> suggestionAction,
-                                          @Nullable CommandHandler<CommandContext> contextAction) {
+                                          @Nullable CommandExecutor<CommandContext> executor) {
         return playerArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -427,10 +427,10 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder playersArgument(@NotNull String name,
                                            @Nullable SuggestionAction<CommandContext> suggestionAction,
-                                           @Nullable CommandHandler<CommandContext> contextAction) {
+                                           @Nullable CommandExecutor<CommandContext> executor) {
         return playerArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -462,10 +462,10 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder teamArgument(@NotNull String name,
                                         @Nullable SuggestionAction<CommandContext> suggestionAction,
-                                        @Nullable CommandHandler<CommandContext> contextAction) {
+                                        @Nullable CommandExecutor<CommandContext> executor) {
         return teamArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 
@@ -500,10 +500,10 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      */
     public ArgumentBuilder unparsedArgument(@NotNull String name,
                                             @Nullable SuggestionAction<CommandContext> suggestionAction,
-                                            @Nullable CommandHandler<CommandContext> contextAction) {
+                                            @Nullable CommandExecutor<CommandContext> executor) {
         return unparsedArgumentWith(name, option -> {
             option.suggestionAction(suggestionAction)
-                  .contextAction(contextAction);
+                  .execute(executor);
         });
     }
 

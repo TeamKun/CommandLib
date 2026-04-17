@@ -1,9 +1,10 @@
 package net.kunmc.lab.commandlib.branch;
 
+import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
+import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.command.Extractor;
-import net.kunmc.lab.commandlib.command.CommandHandler;
-import net.kunmc.lab.commandlib.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +25,7 @@ public final class UnaryArgumentBranch<T1, C extends AbstractCommandContext<?, ?
     }
 
     @Override
-    public UnaryArgumentBranch<T1, C, T> execute(@Nullable CommandHandler<C> action) {
+    public UnaryArgumentBranch<T1, C, T> execute(@Nullable CommandExecutor<C> action) {
         super.execute(action);
         return this;
     }

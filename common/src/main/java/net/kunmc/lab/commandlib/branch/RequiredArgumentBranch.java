@@ -1,9 +1,10 @@
 package net.kunmc.lab.commandlib.branch;
 
-import net.kunmc.lab.commandlib.command.Prerequisite;
+import net.kunmc.lab.commandlib.AbstractCommandContext;
+import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.command.Extractor;
-import net.kunmc.lab.commandlib.command.CommandHandler;
-import net.kunmc.lab.commandlib.*;
+import net.kunmc.lab.commandlib.command.Prerequisite;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -15,11 +16,11 @@ public class RequiredArgumentBranch<S, C extends AbstractCommandContext<?, ?>, T
     // Holding a CommonCommand directly would cause stamp coupling and would not work uniformly:
     // command.require() registers children on CommonCommand, while argument().require() registers them
     // on the Arguments object via ArgumentBranchDelegate. Consumers abstract over both cases.
-    private final Consumer<CommandHandler<C>> executeRegistrar;
+    private final Consumer<CommandExecutor<C>> executeRegistrar;
     private final Consumer<Collection<? extends T>> childrenAdder;
 
     public RequiredArgumentBranch(@NotNull Extractor<C, S> extractor,
-                                  @NotNull Consumer<CommandHandler<C>> executeRegistrar,
+                                  @NotNull Consumer<CommandExecutor<C>> executeRegistrar,
                                   @NotNull Consumer<Collection<? extends T>> childrenAdder) {
         this.extractor = Objects.requireNonNull(extractor);
         this.executeRegistrar = Objects.requireNonNull(executeRegistrar);

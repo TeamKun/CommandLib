@@ -1,9 +1,9 @@
 package net.kunmc.lab.commandlib;
 
-import net.kunmc.lab.commandlib.command.Prerequisite;
-import net.kunmc.lab.commandlib.command.Extractor;
-import net.kunmc.lab.commandlib.command.CommandHandler;
 import net.kunmc.lab.commandlib.branch.*;
+import net.kunmc.lab.commandlib.command.CommandExecutor;
+import net.kunmc.lab.commandlib.command.Extractor;
+import net.kunmc.lab.commandlib.command.Prerequisite;
 import net.kunmc.lab.commandlib.util.UncaughtExceptionHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +26,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     private Prerequisite<C> prerequisite = ctx -> {
     };
     private Predicate<C> preprocess = ctx -> true;
-    private CommandHandler<C> contextAction;
+    private CommandExecutor<C> executor;
     private final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers = new ArrayList<>();
     @SuppressWarnings("unchecked")
     private final PlatformAdapter<?, ?, C, B, T> platformAdapter = (PlatformAdapter<?, ?, C, B, T>) PlatformAdapter.get();
@@ -224,8 +224,8 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
             }
 
             @Override
-            public void execute(@Nullable CommandHandler<C> action) {
-                arguments.contextAction(action);
+            public void execute(@Nullable CommandExecutor<C> action) {
+                arguments.executor(action);
             }
 
             @Override
@@ -293,12 +293,12 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         this.preprocess = this.preprocess.and(Objects.requireNonNull(preprocess));
     }
 
-    public final void execute(@Nullable CommandHandler<C> execute) {
-        this.contextAction = execute;
+    public final void execute(@Nullable CommandExecutor<C> executor) {
+        this.executor = executor;
     }
 
-    public final void addUncaughtExceptionHandler(UncaughtExceptionHandler<?, C> handler) {
-        this.uncaughtExceptionHandlers.add(handler);
+    public final void addUncaughtExceptionHandler(UncaughtExceptionHandler<?, C> executor) {
+        this.uncaughtExceptionHandlers.add(executor);
     }
 
     final T parent() {
@@ -352,8 +352,8 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         return List.copyOf(aliases);
     }
 
-    final CommandHandler<C> contextAction() {
-        return contextAction;
+    final CommandExecutor<C> executor() {
+        return executor;
     }
 
     final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers() {
