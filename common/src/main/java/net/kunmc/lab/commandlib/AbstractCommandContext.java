@@ -60,17 +60,17 @@ public abstract class AbstractCommandContext<S, C> {
      * @throws IndexOutOfBoundsException - if the index is out of range (index < 0 || index >= size())n
      */
     @NotNull
-    public final String getArg(int index) {
-        return getArgs().get(index);
+    public final String getInput(int index) {
+        return getInputs().get(index);
     }
 
     @NotNull
-    public final List<String> getArgs() {
+    public final List<String> getInputs() {
         return new ArrayList<>(argumentNameToInputArgMap.values());
     }
 
     @NotNull
-    public final List<Object> getParsedArgs() {
+    public final List<Object> getArguments() {
         return List.copyOf(parsedArgMap.values());
     }
 
@@ -78,12 +78,12 @@ public abstract class AbstractCommandContext<S, C> {
      * @throws IndexOutOfBoundsException - if the index is out of range (index < 0 || index >= size())n
      */
     @NotNull
-    public final Object getParsedArg(int index) {
-        return getParsedArgs().get(index);
+    public final Object getArgument(int index) {
+        return getArguments().get(index);
     }
 
     @Nullable
-    public final Object getParsedArg(String name) {
+    public final Object getArgument(String name) {
         return parsedArgMap.get(name);
     }
 
@@ -91,14 +91,14 @@ public abstract class AbstractCommandContext<S, C> {
      * @throws IndexOutOfBoundsException - if the index is out of range (index < 0 || index >= size())n
      */
     @NotNull
-    public final <T> T getParsedArg(int index, Class<T> clazz) {
-        Object parsedArg = getParsedArg(index);
+    public final <T> T getArgument(int index, Class<T> clazz) {
+        Object parsedArg = getArgument(index);
         return clazz.cast(parsedArg);
     }
 
     @Nullable
-    public final <T> T getParsedArg(String name, Class<T> clazz) {
-        Object parsedArg = getParsedArg(name);
+    public final <T> T getArgument(String name, Class<T> clazz) {
+        Object parsedArg = getArgument(name);
         if (parsedArg == null) {
             return null;
         }
@@ -107,9 +107,9 @@ public abstract class AbstractCommandContext<S, C> {
     }
 
     @Nullable
-    public final <T> T getParsedArg(@NotNull CommonArgument<T, ?> argument) {
+    public final <T> T getArgument(@NotNull CommonArgument<T, ?> argument) {
         Objects.requireNonNull(argument);
-        Object parsedArg = getParsedArg(argument.name());
+        Object parsedArg = getArgument(argument.name());
         if (parsedArg == null) {
             return null;
         }

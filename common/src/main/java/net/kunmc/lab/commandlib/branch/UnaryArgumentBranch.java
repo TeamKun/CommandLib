@@ -19,7 +19,7 @@ public final class UnaryArgumentBranch<T1, C extends AbstractCommandContext<?, ?
     }
 
     public UnaryArgumentBranch<T1, C, T> execute(@NotNull BiConsumer<T1, C> action) {
-        super.execute(ctx -> action.accept(ctx.getParsedArg(argument1), ctx));
+        super.execute(ctx -> action.accept(ctx.getArgument(argument1), ctx));
         return this;
     }
 

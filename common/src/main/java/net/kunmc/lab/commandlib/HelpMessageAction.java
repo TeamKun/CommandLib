@@ -181,7 +181,7 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
         //   root help: "game"
         //   child help: "game start"
         //   argument-child help: "config <key> set"
-        // The root name uses ctx.getArg(0), so aliases are preserved in help output.
+        // The root name uses ctx.getInput(0), so aliases are preserved in help output.
         LinkedList<String> parts = new LinkedList<>();
         U current = command;
         while (current != null) {
@@ -201,7 +201,7 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
         }
 
         // The parsed input may use an alias for the root command; help should echo what the sender actually typed.
-        parts.addFirst(ctx.getArg(0));
+        parts.addFirst(ctx.getInput(0));
         return parts.stream()
                     .filter(Predicate.not(String::isEmpty))
                     .collect(Collectors.joining(" "));

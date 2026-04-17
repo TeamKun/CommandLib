@@ -35,11 +35,11 @@ public final class RequiredQuintArgumentBranch<S, T1, T2, T3, T4, T5, C extends 
     }
 
     public RequiredQuintArgumentBranch<S, T1, T2, T3, T4, T5, C, T> execute(@NotNull HeptConsumer<T1, T2, T3, T4, T5, S, C> action) {
-        super.execute((s, ctx) -> action.accept(ctx.getParsedArg(argument1),
-                                                ctx.getParsedArg(argument2),
-                                                ctx.getParsedArg(argument3),
-                                                ctx.getParsedArg(argument4),
-                                                ctx.getParsedArg(argument5),
+        super.execute((s, ctx) -> action.accept(ctx.getArgument(argument1),
+                                                ctx.getArgument(argument2),
+                                                ctx.getArgument(argument3),
+                                                ctx.getArgument(argument4),
+                                                ctx.getArgument(argument5),
                                                 s,
                                                 ctx));
         return this;

@@ -25,9 +25,9 @@ public final class TriArgumentBranch<T1, T2, T3, C extends AbstractCommandContex
     }
 
     public TriArgumentBranch<T1, T2, T3, C, T> execute(@NotNull TetraConsumer<T1, T2, T3, C> action) {
-        super.execute(ctx -> action.accept(ctx.getParsedArg(argument1),
-                                           ctx.getParsedArg(argument2),
-                                           ctx.getParsedArg(argument3),
+        super.execute(ctx -> action.accept(ctx.getArgument(argument1),
+                                           ctx.getArgument(argument2),
+                                           ctx.getArgument(argument3),
                                            ctx));
         return this;
     }

@@ -23,7 +23,7 @@ public final class BiArgumentBranch<T1, T2, C extends AbstractCommandContext<?, 
     }
 
     public BiArgumentBranch<T1, T2, C, T> execute(@NotNull TriConsumer<T1, T2, C> action) {
-        super.execute(ctx -> action.accept(ctx.getParsedArg(argument1), ctx.getParsedArg(argument2), ctx));
+        super.execute(ctx -> action.accept(ctx.getArgument(argument1), ctx.getArgument(argument2), ctx));
         return this;
     }
 

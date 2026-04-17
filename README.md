@@ -244,14 +244,14 @@ public final class ConfigCommand extends Command {
         argument(new StringArgument("key")).description("Select a config key")
                                            .child(keyArg -> new Command("get") {{
                                                execute(ctx -> {
-                                                   String key = ctx.getParsedArg(keyArg);
+                                                   String key = ctx.getArgument(keyArg);
 
                                                    // Get config value
                                                });
                                            }})
                                            .child(keyArg -> new Command("set") {{
                                                argument(new StringArgument("value")).execute((valueValue, ctx) -> {
-                                                   String key = ctx.getParsedArg(keyArg);
+                                                   String key = ctx.getArgument(keyArg);
 
                                                    // Set config value
                                                });

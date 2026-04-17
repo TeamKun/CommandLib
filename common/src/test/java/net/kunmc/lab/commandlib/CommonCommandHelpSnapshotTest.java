@@ -139,9 +139,9 @@ class CommonCommandHelpSnapshotTest {
                                                                                                          description("Nested sub command");
                                                                                                          execute(ctx -> {
                                                                                                              ctx.sendSuccess("sub sub");
-                                                                                                             ctx.sendSuccess(ctx.getParsedArg(nArg));
-                                                                                                             ctx.sendSuccess(ctx.getParsedArg(pArg));
-                                                                                                             ctx.sendSuccess(ctx.getParsedArg(floatArg));
+                                                                                                             ctx.sendSuccess(ctx.getArgument(nArg));
+                                                                                                             ctx.sendSuccess(ctx.getArgument(pArg));
+                                                                                                             ctx.sendSuccess(ctx.getArgument(floatArg));
                                                                                                          });
                                                                                                      }})
                                                                                                      .description(

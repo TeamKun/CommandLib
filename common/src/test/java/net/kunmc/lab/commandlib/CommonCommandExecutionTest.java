@@ -71,7 +71,7 @@ class CommonCommandExecutionTest {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("config") {{
             argument(key).child(keyArg -> new TestCommand("get") {{
                 execute(ctx -> {
-                    ctx.sendMessage("get:" + ctx.getParsedArg(keyArg));
+                    ctx.sendMessage("get:" + ctx.getArgument(keyArg));
                 });
             }});
         }});
@@ -87,7 +87,7 @@ class CommonCommandExecutionTest {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("config") {{
             argument(key).child(keyArg -> new TestCommand("set") {{
                 argument(new CommonStringArgument<>("value")).execute((value, ctx) -> {
-                    ctx.sendMessage(ctx.getParsedArg(keyArg) + "=" + value);
+                    ctx.sendMessage(ctx.getArgument(keyArg) + "=" + value);
                 });
             }});
         }});
@@ -103,7 +103,7 @@ class CommonCommandExecutionTest {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("counter") {{
             argument(count).child(countArg -> new TestCommand("label") {{
                 argument(new CommonStringArgument<>("name")).execute((name, ctx) -> {
-                    ctx.sendMessage(ctx.getParsedArg(countArg) + ":" + name);
+                    ctx.sendMessage(ctx.getArgument(countArg) + ":" + name);
                 });
             }});
         }});
@@ -118,10 +118,10 @@ class CommonCommandExecutionTest {
         CommonStringArgument<TestCommandContext> key = new CommonStringArgument<>("key");
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("config") {{
             argument(key).child(keyArg -> new TestCommand("get") {{
-                             execute(ctx -> ctx.sendMessage("get:" + ctx.getParsedArg(keyArg)));
+                             execute(ctx -> ctx.sendMessage("get:" + ctx.getArgument(keyArg)));
                          }})
                          .child(keyArg -> new TestCommand("delete") {{
-                             execute(ctx -> ctx.sendMessage("delete:" + ctx.getParsedArg(keyArg)));
+                             execute(ctx -> ctx.sendMessage("delete:" + ctx.getArgument(keyArg)));
                          }});
         }});
 

@@ -41,13 +41,13 @@ public final class RequiredHeptArgumentBranch<S, T1, T2, T3, T4, T5, T6, T7, C e
     }
 
     public RequiredHeptArgumentBranch<S, T1, T2, T3, T4, T5, T6, T7, C, T> execute(@NotNull NonaConsumer<T1, T2, T3, T4, T5, T6, T7, S, C> action) {
-        super.execute((s, ctx) -> action.accept(ctx.getParsedArg(argument1),
-                                                ctx.getParsedArg(argument2),
-                                                ctx.getParsedArg(argument3),
-                                                ctx.getParsedArg(argument4),
-                                                ctx.getParsedArg(argument5),
-                                                ctx.getParsedArg(argument6),
-                                                ctx.getParsedArg(argument7),
+        super.execute((s, ctx) -> action.accept(ctx.getArgument(argument1),
+                                                ctx.getArgument(argument2),
+                                                ctx.getArgument(argument3),
+                                                ctx.getArgument(argument4),
+                                                ctx.getArgument(argument5),
+                                                ctx.getArgument(argument6),
+                                                ctx.getArgument(argument7),
                                                 s,
                                                 ctx));
         return this;

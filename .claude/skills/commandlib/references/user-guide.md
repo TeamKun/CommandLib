@@ -59,7 +59,7 @@ Argument chains can also have child commands. Prefer this only for vanilla-like
 or compatibility syntax where the target comes before the action.
 
 The `child(...)` factory receives `Argument` instances, not parsed runtime
-values. Use those instances with `ctx.getParsedArg(argument)` inside the child
+values. Use those instances with `ctx.getArgument(argument)` inside the child
 executor:
 
 ```java
@@ -70,14 +70,14 @@ class ConfigCommand extends Command {
         argument(new StringARgument("key")).description("Select a config key")
                                            .child(keyArg -> new Command("get") {{
                                                execute(ctx -> {
-                                                   String parsedKey = ctx.getParsedArg(keyArg);
-                                                   ctx.sendMessage("get " + parsedKey);
+                                                   String key = ctx.getArgument(keyArg);
+                                                   ctx.sendMessage("get " + key);
                                                });
                                            }})
                                            .child(keyArg -> new Command("set") {{
-                                               argument(new StringArgument("value")).execute((parsedValue, ctx) -> {
-                                                   String parsedKey = ctx.getParsedArg(keyArg);
-                                                   ctx.sendMessage("set " + parsedKey + " to " + parsedValue);
+                                               argument(new StringArgument("value")).execute((value, ctx) -> {
+                                                   String key = ctx.getArgument(keyArg);
+                                                   ctx.sendMessage("set " + key + " to " + value);
                                                });
                                            }});
     }

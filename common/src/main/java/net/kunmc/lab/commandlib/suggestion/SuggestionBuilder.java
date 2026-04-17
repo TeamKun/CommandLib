@@ -47,36 +47,36 @@ public final class SuggestionBuilder<C extends AbstractCommandContext<?, ?>> {
         return input.substring(range.getEnd() + 1);
     }
 
-    public List<String> getArgs() {
-        return ctx.getArgs();
+    public List<String> getInputs() {
+        return ctx.getInputs();
     }
 
-    public String getArg(int index) {
-        return ctx.getArg(index);
+    public String getInput(int index) {
+        return ctx.getInput(index);
     }
 
     public String getInput(String name) {
         return ctx.getInput(name);
     }
 
-    public List<Object> getParsedArgs() {
-        return ctx.getParsedArgs();
+    public List<Object> getArguments() {
+        return ctx.getArguments();
     }
 
-    public Object getParsedArg(int index) {
-        return ctx.getParsedArg(index);
+    public Object getArgument(int index) {
+        return ctx.getArgument(index);
     }
 
-    public Object getParsedArg(String name) {
-        return ctx.getParsedArg(name);
+    public Object getArgument(String name) {
+        return ctx.getArgument(name);
     }
 
-    public <T> T getParsedArg(int index, Class<T> clazz) {
-        return ctx.getParsedArg(index, clazz);
+    public <T> T getArgument(int index, Class<T> clazz) {
+        return ctx.getArgument(index, clazz);
     }
 
-    public <T> T getParsedArg(String name, Class<T> clazz) {
-        return ctx.getParsedArg(name, clazz);
+    public <T> T getArgument(String name, Class<T> clazz) {
+        return ctx.getArgument(name, clazz);
     }
 
     public void sendMessage(String message) {

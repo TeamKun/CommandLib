@@ -41,7 +41,7 @@ API is expected to behave, and which internal boundaries are intentional.
 - Let child commands read parent arguments in a typed way:
 
   ```java
-  Integer n = ctx.getParsedArg(nArg);
+  Integer n = ctx.getArgument(nArg);
   ```
 
 - Keep internal tree storage types out of the public API where possible.
@@ -94,8 +94,8 @@ child((nArg, pArg) ->new
 Command("sub") {
     {
         execute(ctx -> {
-            Integer parsedN = ctx.getParsedArg(nArg);
-            Player parsedP = ctx.getParsedArg(pArg);
+            Integer parsedN = ctx.getArgument(nArg);
+            Player parsedP = ctx.getArgument(pArg);
         });
     }
 });
@@ -319,7 +319,7 @@ Because of that, parent arguments can be read through the normal argument
 implementation:
 
 ```java
-Integer n = ctx.getParsedArg(nArg);
+Integer n = ctx.getArgument(nArg);
 ```
 
 No raw-input fallback is required for the current implementation. If a future

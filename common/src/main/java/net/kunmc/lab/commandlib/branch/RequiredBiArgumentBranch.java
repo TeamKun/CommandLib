@@ -26,7 +26,7 @@ public final class RequiredBiArgumentBranch<S, T1, T2, C extends AbstractCommand
     }
 
     public RequiredBiArgumentBranch<S, T1, T2, C, T> execute(@NotNull TetraConsumer<T1, T2, S, C> action) {
-        super.execute((s, ctx) -> action.accept(ctx.getParsedArg(argument1), ctx.getParsedArg(argument2), s, ctx));
+        super.execute((s, ctx) -> action.accept(ctx.getArgument(argument1), ctx.getArgument(argument2), s, ctx));
         return this;
     }
 

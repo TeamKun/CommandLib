@@ -23,7 +23,7 @@ public final class RequiredUnaryArgumentBranch<S, T1, C extends AbstractCommandC
     }
 
     public RequiredUnaryArgumentBranch<S, T1, C, T> execute(@NotNull TriConsumer<T1, S, C> action) {
-        super.execute((s, ctx) -> action.accept(ctx.getParsedArg(argument1), s, ctx));
+        super.execute((s, ctx) -> action.accept(ctx.getArgument(argument1), s, ctx));
         return this;
     }
 

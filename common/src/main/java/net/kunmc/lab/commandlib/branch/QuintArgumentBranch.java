@@ -31,11 +31,11 @@ public final class QuintArgumentBranch<T1, T2, T3, T4, T5, C extends AbstractCom
     }
 
     public QuintArgumentBranch<T1, T2, T3, T4, T5, C, T> execute(@NotNull HexaConsumer<T1, T2, T3, T4, T5, C> action) {
-        super.execute(ctx -> action.accept(ctx.getParsedArg(argument1),
-                                           ctx.getParsedArg(argument2),
-                                           ctx.getParsedArg(argument3),
-                                           ctx.getParsedArg(argument4),
-                                           ctx.getParsedArg(argument5),
+        super.execute(ctx -> action.accept(ctx.getArgument(argument1),
+                                           ctx.getArgument(argument2),
+                                           ctx.getArgument(argument3),
+                                           ctx.getArgument(argument4),
+                                           ctx.getArgument(argument5),
                                            ctx));
         return this;
     }

@@ -60,7 +60,7 @@ matching a vanilla-like command tree or an existing command contract:
 Use typed argument instances for this shape. The `child(...)` factory receives
 the `Argument` instances, not parsed values, because child commands are built
 before a command is executed. Read parent values inside the child executor with
-`ctx.getParsedArg(argument)`.
+`ctx.getArgument(argument)`.
 
 The same argument branch can define multiple children by calling `child(...)`
 multiple times:
@@ -73,13 +73,13 @@ class ConfigCommand extends Command {
         argument(new StringArgument("key")).description("Select a config key")
                                            .child(keyArg -> new Command("get") {{
                                                execute(ctx -> {
-                                                   String key = ctx.getParsedArg(keyArg);
+                                                   String key = ctx.getArgument(keyArg);
                                                    ctx.sendMessage("get " + key);
                                                });
                                            }})
                                            .child(keyArg -> new Command("set") {{
                                                argument(new StringArgument("value")).execute((value, ctx) -> {
-                                                   String key = ctx.getParsedArg(keyArg);
+                                                   String key = ctx.getArgument(keyArg);
                                                    ctx.sendMessage("set " + key + " to " + value);
                                                });
                                            }});
@@ -149,7 +149,7 @@ Important constraints:
   `/game start -f arena`, not `/game -f start arena`.
 - Value options use separated values only: `--limit 20` and `-n 20`; do not
   generate `--limit=20` or `-n20`.
-- Prefer typed option keys over `ctx.getParsedArg(...)`.
+- Prefer typed option keys over `ctx.getArgument(...)`.
 - Use `ctx.hasOption(option)` when code must distinguish explicit presence from
   a default value.
 - Add `.description(...)` for user-facing commands so help output is clear.

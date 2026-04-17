@@ -11,7 +11,7 @@ public class MainCommand extends Command {
 
         addPreprocess(ctx -> {
             if (ctx.getSender() instanceof Player) {
-                ctx.sendSuccess(ctx.getParsedArgs());
+                ctx.sendSuccess(ctx.getArguments());
             }
         });
     }

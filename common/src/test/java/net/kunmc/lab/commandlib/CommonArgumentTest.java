@@ -147,11 +147,11 @@ class CommonArgumentTest {
             argument(new CommonIntegerArgument<>("left"),
                      new CommonIntegerArgument<>("right")).execute((left, right, ctx) -> {
                 ctx.sendMessage(ctx.getInput("left") + ":" + ctx.getInput("right"));
-                ctx.sendMessage(ctx.getArgs()
+                ctx.sendMessage(ctx.getInputs()
                                    .toString());
-                ctx.sendMessage(ctx.getParsedArgs()
+                ctx.sendMessage(ctx.getArguments()
                                    .toString());
-                ctx.sendMessage(ctx.getParsedArg("left", Integer.class) + right);
+                ctx.sendMessage(ctx.getArgument("left", Integer.class) + right);
             });
         }});
 

@@ -29,9 +29,9 @@ public final class RequiredTriArgumentBranch<S, T1, T2, T3, C extends AbstractCo
     }
 
     public RequiredTriArgumentBranch<S, T1, T2, T3, C, T> execute(@NotNull QuintConsumer<T1, T2, T3, S, C> action) {
-        super.execute((s, ctx) -> action.accept(ctx.getParsedArg(argument1),
-                                                ctx.getParsedArg(argument2),
-                                                ctx.getParsedArg(argument3),
+        super.execute((s, ctx) -> action.accept(ctx.getArgument(argument1),
+                                                ctx.getArgument(argument2),
+                                                ctx.getArgument(argument3),
                                                 s,
                                                 ctx));
         return this;
