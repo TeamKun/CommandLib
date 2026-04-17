@@ -1,5 +1,6 @@
-package net.kunmc.lab.commandlib;
+package net.kunmc.lab.commandlib.suggestion;
 
+import net.kunmc.lab.commandlib.AbstractCommandContext;
 import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.context.StringRange;
 import org.jetbrains.annotations.NotNull;
@@ -103,7 +104,7 @@ public final class SuggestionBuilder<C extends AbstractCommandContext<?, ?>> {
         return this;
     }
 
-    List<Suggestion> build() {
+    public List<Suggestion> build() {
         return suggestions;
     }
 }

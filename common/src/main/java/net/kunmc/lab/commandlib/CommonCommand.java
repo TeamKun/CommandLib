@@ -1,5 +1,8 @@
 package net.kunmc.lab.commandlib;
 
+import net.kunmc.lab.commandlib.command.Prerequisite;
+import net.kunmc.lab.commandlib.command.Extractor;
+import net.kunmc.lab.commandlib.command.CommandHandler;
 import net.kunmc.lab.commandlib.branch.*;
 import net.kunmc.lab.commandlib.util.UncaughtExceptionHandler;
 import org.jetbrains.annotations.NotNull;

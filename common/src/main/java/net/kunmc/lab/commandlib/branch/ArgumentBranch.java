@@ -2,8 +2,8 @@ package net.kunmc.lab.commandlib.branch;
 
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonCommand;
-import net.kunmc.lab.commandlib.CommandHandler;
-import net.kunmc.lab.commandlib.Extractor;
+import net.kunmc.lab.commandlib.command.CommandHandler;
+import net.kunmc.lab.commandlib.command.Extractor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

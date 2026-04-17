@@ -1,6 +1,8 @@
 package net.kunmc.lab.commandlib;
 
 import net.kunmc.lab.commandlib.argument.*;
+import net.kunmc.lab.commandlib.command.CommandHandler;
+import net.kunmc.lab.commandlib.suggestion.SuggestionAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -376,7 +378,7 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
     }
 
     /**
-     * Add argument for object that implements {@link net.kunmc.lab.commandlib.Nameable}.<br>
+     * Add argument for object that implements {@link net.kunmc.lab.commandlib.argument.Nameable}.<br>
      * It is only possible to include an object specified by {@code candidates}
      */
     public final <E extends Nameable> T nameableObjectArgument(@NotNull String name,
@@ -385,7 +387,7 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
     }
 
     /**
-     * Add argument for object that implements {@link net.kunmc.lab.commandlib.Nameable}.<br>
+     * Add argument for object that implements {@link net.kunmc.lab.commandlib.argument.Nameable}.<br>
      * It is only possible to include an object specified by {@code candidates}
      */
     public final <E extends Nameable> T nameableObjectArgument(@NotNull String name,
@@ -395,7 +397,7 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
     }
 
     /**
-     * Add argument for object that implements {@link net.kunmc.lab.commandlib.Nameable}.<br>
+     * Add argument for object that implements {@link net.kunmc.lab.commandlib.argument.Nameable}.<br>
      * It is only possible to include an object specified by {@code candidates}
      */
     public final <E extends Nameable> T nameableObjectArgument(@NotNull String name,
@@ -409,7 +411,7 @@ abstract class AbstractArgumentBuilder<C extends AbstractCommandContext<?, ?>, T
     }
 
     /**
-     * Add argument for object that implements {@link net.kunmc.lab.commandlib.Nameable}.<br>
+     * Add argument for object that implements {@link net.kunmc.lab.commandlib.argument.Nameable}.<br>
      * It is only possible to include an object specified by {@code candidates}
      */
     public final <E extends Nameable> T nameableObjectArgumentWith(@NotNull String name,

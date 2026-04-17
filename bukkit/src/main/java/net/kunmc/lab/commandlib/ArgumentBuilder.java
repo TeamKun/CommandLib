@@ -1,6 +1,8 @@
 package net.kunmc.lab.commandlib;
 
 import net.kunmc.lab.commandlib.argument.*;
+import net.kunmc.lab.commandlib.command.CommandHandler;
+import net.kunmc.lab.commandlib.suggestion.SuggestionAction;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Particle;
@@ -51,7 +53,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      * Add argument for {@link org.bukkit.block.data.BlockData}.
      */
     public ArgumentBuilder blockDataArgumentWith(@NotNull String name,
-                                                 @Nullable Consumer<Argument.Option<BlockData, CommandContext>> options) {
+                                                 @Nullable Consumer<CommonArgument.Option<BlockData, CommandContext>> options) {
         return addArgument(new BlockDataArgument(name, options));
     }
 
@@ -86,7 +88,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      * Add argument for {@link org.bukkit.enchantments.Enchantment}.
      */
     public ArgumentBuilder enchantmentArgumentWith(@NotNull String name,
-                                                   @Nullable Consumer<Argument.Option<Enchantment, CommandContext>> options) {
+                                                   @Nullable Consumer<CommonArgument.Option<Enchantment, CommandContext>> options) {
         return addArgument(new EnchantmentArgument(name, options));
     }
 
@@ -121,7 +123,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      * Add argument for {@link org.bukkit.entity.Entity}.
      */
     public ArgumentBuilder entityArgumentWith(@NotNull String name,
-                                              @Nullable Consumer<Argument.Option<Entity, CommandContext>> options) {
+                                              @Nullable Consumer<CommonArgument.Option<Entity, CommandContext>> options) {
         return addArgument(new EntityArgument(name, options));
     }
 
@@ -156,7 +158,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      * Add argument for {@link java.util.List} of {@link org.bukkit.entity.Entity}.
      */
     public ArgumentBuilder entitiesArgumentWith(@NotNull String name,
-                                                @Nullable Consumer<Argument.Option<List<Entity>, CommandContext>> options) {
+                                                @Nullable Consumer<CommonArgument.Option<List<Entity>, CommandContext>> options) {
         return addArgument(new EntitiesArgument(name, options));
     }
 
@@ -191,7 +193,7 @@ public final class ArgumentBuilder extends AbstractArgumentBuilder<CommandContex
      * Add argument for {@link org.bukkit.inventory.ItemStack}.
      */
     public ArgumentBuilder itemStackArgumentWith(@NotNull String name,
-                                                 @Nullable Consumer<Argument.Option<ItemStack, CommandContext>> options) {
+                                                 @Nullable Consumer<CommonArgument.Option<ItemStack, CommandContext>> options) {
         return addArgument(new ItemStackArgument(name, options));
     }
 

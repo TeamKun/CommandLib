@@ -1,5 +1,6 @@
-package net.kunmc.lab.commandlib;
+package net.kunmc.lab.commandlib.argument;
 
+import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.exception.ArgumentValidationException;
 
 @FunctionalInterface

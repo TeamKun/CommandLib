@@ -1,4 +1,4 @@
-package net.kunmc.lab.commandlib;
+package net.kunmc.lab.commandlib.suggestion;
 
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;

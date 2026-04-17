@@ -1,5 +1,6 @@
-package net.kunmc.lab.commandlib;
+package net.kunmc.lab.commandlib.command;
 
+import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.exception.CommandPrerequisiteException;
 
 @FunctionalInterface

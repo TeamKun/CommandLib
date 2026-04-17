@@ -3,7 +3,6 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
-import net.kunmc.lab.commandlib.Nameable;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.StringUtil;
 

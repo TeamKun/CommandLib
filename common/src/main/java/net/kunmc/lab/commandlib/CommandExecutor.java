@@ -1,5 +1,7 @@
 package net.kunmc.lab.commandlib;
 
+import net.kunmc.lab.commandlib.command.Prerequisite;
+import net.kunmc.lab.commandlib.command.CommandHandler;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;

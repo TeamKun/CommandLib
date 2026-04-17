@@ -1,5 +1,6 @@
 package net.kunmc.lab.commandlib;
 
+import net.kunmc.lab.commandlib.command.CommandHandler;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.ChatColorUtil;
 

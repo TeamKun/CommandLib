@@ -1,5 +1,9 @@
 package net.kunmc.lab.commandlib;
 
+import net.kunmc.lab.commandlib.suggestion.SuggestionBuilder;
+import net.kunmc.lab.commandlib.suggestion.SuggestionAction;
+import net.kunmc.lab.commandlib.suggestion.AsyncSuggestionAction;
+import net.kunmc.lab.commandlib.command.CommandHandler;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.tree.ArgumentCommandNode;

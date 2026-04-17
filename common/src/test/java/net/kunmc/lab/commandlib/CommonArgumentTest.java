@@ -1,5 +1,6 @@
 package net.kunmc.lab.commandlib;
 
+import net.kunmc.lab.commandlib.argument.Nameable;
 import net.kunmc.lab.commandlib.argument.*;
 import org.junit.jupiter.api.Test;
 

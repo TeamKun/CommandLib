@@ -1,5 +1,6 @@
 package net.kunmc.lab.commandlib;
 
+import net.kunmc.lab.commandlib.command.Extractor;
 import net.kunmc.lab.commandlib.exception.CommandPrerequisiteException;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -36,6 +37,14 @@ public abstract class Command extends CommonCommand<CommandContext, ArgumentBuil
             }
             return (ConsoleCommandSender) ctx.getSender();
         };
+    }
+
+    public final void requirePlayer() {
+        addPrerequisite(playerRequirer()::extract);
+    }
+
+    public final void requireConsole() {
+        addPrerequisite(consoleRequirer()::extract);
     }
 
     public final void permission(@NotNull PermissionDefault defaultPermission) {

@@ -1,4 +1,4 @@
-package net.kunmc.lab.commandlib;
+package net.kunmc.lab.commandlib.argument;
 
 import java.util.*;
 import java.util.stream.Collectors;

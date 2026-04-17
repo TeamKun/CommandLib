@@ -1,5 +1,6 @@
 package net.kunmc.lab.commandlib.argument;
 
+import net.kunmc.lab.commandlib.Argument;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -33,7 +34,7 @@ class ArgumentCoverageTest {
      */
     private static final Set<Class<?>> EXCLUDED_ARGUMENTS = Set.of(
             // LiteralArgument is a structural element (subcommand names), not a parsed value
-            net.kunmc.lab.commandlib.argument.LiteralArgument.class);
+            LiteralArgument.class);
 
     @Test
     void all_argument_classes_have_a_test() {
@@ -61,7 +62,7 @@ class ArgumentCoverageTest {
                            .isEmpty();
     }
 
-    private List<Class<?>> findConcreteArgumentClasses() throws Exception {  // throws は assertThatCode が捕捉する
+    private List<Class<?>> findConcreteArgumentClasses() throws Exception {
         String packagePath = ARGUMENT_PACKAGE.replace('.', '/');
         ClassLoader classLoader = Thread.currentThread()
                                         .getContextClassLoader();
@@ -71,7 +72,6 @@ class ArgumentCoverageTest {
         while (resources.hasMoreElements()) {
             URL resource = resources.nextElement();
             if ("file".equals(resource.getProtocol())) {
-                // IDE等でクラスがディレクトリ展開されている場合
                 File dir = new File(resource.toURI());
                 File[] files = dir.listFiles();
                 if (files == null) {
@@ -86,7 +86,6 @@ class ArgumentCoverageTest {
                     addIfConcreteArgument(className, classLoader, result);
                 }
             } else if ("jar".equals(resource.getProtocol())) {
-                // Gradleビルド時は依存モジュールがJARになる
                 JarURLConnection jarConn = (JarURLConnection) resource.openConnection();
                 try (JarFile jarFile = jarConn.getJarFile()) {
                     jarFile.stream()
@@ -109,7 +108,7 @@ class ArgumentCoverageTest {
     private void addIfConcreteArgument(String className, ClassLoader classLoader, List<Class<?>> result) {
         try {
             Class<?> cls = Class.forName(className, false, classLoader);
-            if (!Modifier.isAbstract(cls.getModifiers()) && net.kunmc.lab.commandlib.Argument.class.isAssignableFrom(cls) && !EXCLUDED_ARGUMENTS.contains(
+            if (!Modifier.isAbstract(cls.getModifiers()) && Argument.class.isAssignableFrom(cls) && !EXCLUDED_ARGUMENTS.contains(
                     cls)) {
                 result.add(cls);
             }

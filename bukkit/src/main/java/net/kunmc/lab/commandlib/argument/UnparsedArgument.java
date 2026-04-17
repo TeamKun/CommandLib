@@ -2,7 +2,7 @@ package net.kunmc.lab.commandlib.argument;
 
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.SuggestionAction;
+import net.kunmc.lab.commandlib.suggestion.SuggestionAction;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentProfile;
 
