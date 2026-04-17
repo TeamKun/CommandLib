@@ -6,8 +6,8 @@ import net.kunmc.lab.commandlib.util.text.TextComponentBuilderImpl;
 import net.kunmc.lab.commandlib.util.text.TranslatableComponentBuilderImpl;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.server.permission.PermissionAPI;
 import org.jetbrains.annotations.NotNull;
 
 public final class PlatformAdapterImpl implements PlatformAdapter<CommandSource, ITextComponent, CommandContext, ArgumentBuilder, Command> {
@@ -23,14 +23,21 @@ public final class PlatformAdapterImpl implements PlatformAdapter<CommandSource,
 
     @Override
     public boolean hasPermission(Command command, CommandSource commandSource, String permissionPrefix) {
-        return commandSource.hasPermissionLevel(command.permissionLevel());
+        return hasPermission(commandSource, command.permissionName(permissionPrefix));
     }
 
     @Override
     public boolean hasPermission(Command command, CommandContext ctx, String permissionPrefix) {
-        return ctx.getSender()
-                  .hasPermissionLevel(command.permissionLevel());
+        return hasPermission(ctx.getSender(), command.permissionName(permissionPrefix));
     }
+
+    public boolean hasPermission(CommandSource commandSource, String permissionNode) {
+        if (commandSource.getEntity() instanceof PlayerEntity) {
+            return PermissionAPI.hasPermission((PlayerEntity) commandSource.getEntity(), permissionNode);
+        }
+        return true;
+    }
+
 
     @Override
     public ArgumentParseException convertCommandSyntaxException(CommandSyntaxException e) {

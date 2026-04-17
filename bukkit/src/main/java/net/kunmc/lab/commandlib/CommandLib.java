@@ -38,7 +38,10 @@ public final class CommandLib implements Listener {
     }
 
     public static CommandLib register(@NotNull Plugin plugin, @NotNull Collection<Command> commands) {
-        return new CommandLib(plugin, commands, "minecraft.command");
+        return new CommandLib(plugin,
+                              commands,
+                              plugin.getName()
+                                    .toLowerCase() + ".command");
     }
 
     public static CommandLib register(@NotNull Plugin plugin,

@@ -15,6 +15,9 @@ import java.util.function.Predicate;
 public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B extends AbstractArgumentBuilder<C, B>, T extends CommonCommand<C, B, T>> {
     private final String name;
     private String description = "";
+    private String permissionNodeOverride = null;
+    private DefaultPermission defaultPermission = DefaultPermission.OP;
+    private String permissionDescription = "";
     private T parent = null;
     private Arguments<C> parentArguments = null;
     private boolean inheritParentPrerequisite = true;
@@ -358,5 +361,61 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
 
     final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers() {
         return List.copyOf(uncaughtExceptionHandlers);
+    }
+
+    public final void permission(@NotNull String node) {
+        this.permissionNodeOverride = Objects.requireNonNull(node);
+    }
+
+    public final void permission(@NotNull DefaultPermission defaultPermission) {
+        this.defaultPermission = Objects.requireNonNull(defaultPermission);
+    }
+
+    public final void permission(@NotNull DefaultPermission defaultPermission, @NotNull String description) {
+        this.defaultPermission = Objects.requireNonNull(defaultPermission);
+        this.permissionDescription = Objects.requireNonNull(description);
+    }
+
+    public final void permission(@NotNull String node, @NotNull DefaultPermission defaultPermission) {
+        this.permissionNodeOverride = Objects.requireNonNull(node);
+        this.defaultPermission = Objects.requireNonNull(defaultPermission);
+    }
+
+    public final void permission(@NotNull String node,
+                                 @NotNull DefaultPermission defaultPermission,
+                                 @NotNull String description) {
+        this.permissionNodeOverride = Objects.requireNonNull(node);
+        this.defaultPermission = Objects.requireNonNull(defaultPermission);
+        this.permissionDescription = Objects.requireNonNull(description);
+    }
+
+    public final void permissionDescription(@NotNull String description) {
+        this.permissionDescription = Objects.requireNonNull(description);
+    }
+
+    public final String permissionName(@NotNull String prefix) {
+        if (permissionNodeOverride != null) {
+            return permissionNodeOverride;
+        }
+        return prefix + "." + permissionNameWithoutPrefix();
+    }
+
+    public final PermissionConfig permissionConfig(@NotNull String prefix) {
+        return new PermissionConfig(permissionName(prefix), defaultPermission, permissionDescription);
+    }
+
+    final List<PermissionConfig> permissionConfigs(@NotNull String prefix) {
+        List<PermissionConfig> configs = new ArrayList<>();
+        configs.add(permissionConfig(prefix));
+        children().forEach(x -> configs.addAll(x.permissionConfigs(prefix)));
+        argumentChildren().forEach(x -> configs.addAll(x.permissionConfigs(prefix)));
+        return configs;
+    }
+
+    String permissionNameWithoutPrefix() {
+        if (parent == null) {
+            return name;
+        }
+        return parent.permissionNameWithoutPrefix() + "." + name;
     }
 }

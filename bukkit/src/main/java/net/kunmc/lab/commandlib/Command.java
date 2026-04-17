@@ -8,15 +8,10 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public abstract class Command extends CommonCommand<CommandContext, ArgumentBuilder, Command> {
-    private String permissionNode = null;
-    private PermissionDefault defaultPermission = PermissionDefault.OP;
-
     public Command(@NotNull String name) {
         super(name);
     }
@@ -48,43 +43,54 @@ public abstract class Command extends CommonCommand<CommandContext, ArgumentBuil
     }
 
     public final void permission(@NotNull PermissionDefault defaultPermission) {
-        this.defaultPermission = Objects.requireNonNull(defaultPermission);
+        permission(toDefaultPermission(defaultPermission));
     }
 
-    public final void permission(@NotNull String node) {
-        this.permissionNode = Objects.requireNonNull(node);
+    public final void permission(@NotNull PermissionDefault defaultPermission, @NotNull String description) {
+        permission(toDefaultPermission(defaultPermission));
+        permissionDescription(description);
     }
 
     public final void permission(@NotNull String node, @NotNull PermissionDefault defaultPermission) {
-        this.permissionNode = Objects.requireNonNull(node);
-        this.defaultPermission = Objects.requireNonNull(defaultPermission);
+        permission(node, toDefaultPermission(defaultPermission));
     }
 
-    public final String permissionName(@NotNull String prefix) {
-        if (permissionNode != null) {
-            return permissionNode;
-        }
-        return prefix + "." + permissionNameWithoutPrefix();
-    }
-
-    private String permissionNameWithoutPrefix() {
-        if (parent() == null) {
-            return name();
-        }
-        return parent().permissionNameWithoutPrefix() + "." + name();
+    public final void permission(@NotNull String node,
+                                 @NotNull PermissionDefault defaultPermission,
+                                 @NotNull String description) {
+        permission(node, toDefaultPermission(defaultPermission));
+        permissionDescription(description);
     }
 
     final List<Permission> permissions(@NotNull String prefix) {
-        List<Permission> permissions = new ArrayList<>();
-        permissions.add(new Permission(permissionName(prefix), defaultPermission));
-        permissions.addAll(children().stream()
-                                     .flatMap(x -> x.permissions(prefix)
-                                                    .stream())
-                                     .collect(Collectors.toList()));
-        permissions.addAll(argumentChildren().stream()
-                                             .flatMap(x -> x.permissions(prefix)
-                                                            .stream())
-                                             .collect(Collectors.toList()));
-        return permissions;
+        return permissionConfigs(prefix).stream()
+                                        .map(c -> new Permission(c.node(),
+                                                                 c.description(),
+                                                                 toBukkitDefault(c.defaultPermission())))
+                                        .collect(Collectors.toList());
+    }
+
+    private static DefaultPermission toDefaultPermission(@NotNull PermissionDefault bukkit) {
+        switch (bukkit) {
+            case TRUE:
+                return DefaultPermission.ALL;
+            case FALSE:
+                return DefaultPermission.NONE;
+            case OP:
+                return DefaultPermission.OP;
+            default:
+                throw new IllegalArgumentException("Unsupported PermissionDefault: " + bukkit);
+        }
+    }
+
+    private static PermissionDefault toBukkitDefault(@NotNull DefaultPermission common) {
+        switch (common) {
+            case ALL:
+                return PermissionDefault.TRUE;
+            case NONE:
+                return PermissionDefault.FALSE;
+            default:
+                return PermissionDefault.OP;
+        }
     }
 }

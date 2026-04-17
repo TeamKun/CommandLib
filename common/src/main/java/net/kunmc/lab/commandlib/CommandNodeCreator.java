@@ -54,16 +54,16 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                                                                               permissionPrefix);
 
         if (argumentsList.isEmpty()) {
-            CommandRunner<S, C> executor = new CommandRunner<>(platformAdapter,
-                                                               inheritedArguments,
-                                                               command.options(),
-                                                               command.prerequisite(),
-                                                               helpAction,
-                                                               command.preprocess(),
-                                                               command.executor(),
-                                                               command.uncaughtExceptionHandlers());
-            builder.executes(executor);
-            createOptionCommands(command.options(), () -> null, executor).forEach(builder::then);
+            CommandRunner<S, C> runner = new CommandRunner<>(platformAdapter,
+                                                             inheritedArguments,
+                                                             command.options(),
+                                                             command.prerequisite(),
+                                                             helpAction,
+                                                             command.preprocess(),
+                                                             command.executor(),
+                                                             command.uncaughtExceptionHandlers());
+            builder.executes(runner);
+            createOptionCommands(command.options(), () -> null, runner).forEach(builder::then);
             return builder.build();
         }
 
