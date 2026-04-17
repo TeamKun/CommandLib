@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B extends AbstractArgumentBuilder<C, B>, U extends CommonCommand<C, B, U>> implements ContextAction<C> {
+final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B extends AbstractArgumentBuilder<C, B>, U extends CommonCommand<C, B, U>> implements CommandHandler<C> {
     private final PlatformAdapter<S, T, C, B, U> platformAdapter;
     private final U command;
     private final String permissionPrefix;

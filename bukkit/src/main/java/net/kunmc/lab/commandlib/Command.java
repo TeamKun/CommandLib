@@ -20,20 +20,22 @@ public abstract class Command extends CommonCommand<CommandContext, ArgumentBuil
         super(name);
     }
 
-    public final void requirePlayer() {
-        addPrerequisite(ctx -> {
+    public static Extractor<CommandContext, Player> playerRequirer() {
+        return ctx -> {
             if (!(ctx.getSender() instanceof Player)) {
                 throw new CommandPrerequisiteException("This command can only be executed by a player.");
             }
-        });
+            return (Player) ctx.getSender();
+        };
     }
 
-    public final void requireConsole() {
-        addPrerequisite(ctx -> {
+    public static Extractor<CommandContext, ConsoleCommandSender> consoleRequirer() {
+        return ctx -> {
             if (!(ctx.getSender() instanceof ConsoleCommandSender)) {
                 throw new CommandPrerequisiteException("This command can only be executed from the console.");
             }
-        });
+            return (ConsoleCommandSender) ctx.getSender();
+        };
     }
 
     public final void permission(@NotNull PermissionDefault defaultPermission) {

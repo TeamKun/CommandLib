@@ -1,9 +1,6 @@
 package net.kunmc.lab.commandlib.branch;
 
-import net.kunmc.lab.commandlib.AbstractCommandContext;
-import net.kunmc.lab.commandlib.CommonArgument;
-import net.kunmc.lab.commandlib.CommonCommand;
-import net.kunmc.lab.commandlib.ContextAction;
+import net.kunmc.lab.commandlib.*;
 import net.kunmc.lab.commandlib.util.function.HexaConsumer;
 import net.kunmc.lab.commandlib.util.function.QuintFunction;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +38,7 @@ public final class QuintArgumentBranch<T1, T2, T3, T4, T5, C extends AbstractCom
     }
 
     @Override
-    public QuintArgumentBranch<T1, T2, T3, T4, T5, C, T> execute(@Nullable ContextAction<C> action) {
+    public QuintArgumentBranch<T1, T2, T3, T4, T5, C, T> execute(@Nullable CommandHandler<C> action) {
         super.execute(action);
         return this;
     }
@@ -55,5 +52,16 @@ public final class QuintArgumentBranch<T1, T2, T3, T4, T5, C extends AbstractCom
     public QuintArgumentBranch<T1, T2, T3, T4, T5, C, T> child(@NotNull QuintFunction<CommonArgument<T1, C>, CommonArgument<T2, C>, CommonArgument<T3, C>, CommonArgument<T4, C>, CommonArgument<T5, C>, T> factory) {
         child(factory.apply(argument1, argument2, argument3, argument4, argument5));
         return this;
+    }
+
+    public <S> RequiredQuintArgumentBranch<S, T1, T2, T3, T4, T5, C, T> require(@NotNull Extractor<C, S> extractor) {
+        return new RequiredQuintArgumentBranch<>(extractor,
+                                                 this::execute,
+                                                 children -> delegate.addChildren(children),
+                                                 argument1,
+                                                 argument2,
+                                                 argument3,
+                                                 argument4,
+                                                 argument5);
     }
 }

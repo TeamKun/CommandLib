@@ -3,7 +3,7 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
-import net.kunmc.lab.commandlib.ContextAction;
+import net.kunmc.lab.commandlib.CommandHandler;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.StringUtil;
 
@@ -49,7 +49,7 @@ public class CommonLiteralArgument<C extends AbstractCommandContext<?, ?>> exten
 
     public CommonLiteralArgument(String name,
                                  Supplier<Collection<String>> literalsSupplier,
-                                 ContextAction<C> contextAction) {
+                                 CommandHandler<C> contextAction) {
         super(name, sb -> {
             literalsSupplier.get()
                             .stream()

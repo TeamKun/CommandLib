@@ -18,8 +18,8 @@ class CommonArgumentTest {
                      new CommonLongArgument<>("ticks"),
                      new CommonFloatArgument<>("speed"),
                      new CommonDoubleArgument<>("ratio")).execute((enabled, amount, ticks, speed, ratio, ctx) -> {
-                         ctx.sendMessage(enabled + ":" + amount + ":" + ticks + ":" + speed + ":" + ratio);
-                     });
+                ctx.sendMessage(enabled + ":" + amount + ":" + ticks + ":" + speed + ":" + ratio);
+            });
         }});
 
         TestCommandContext ctx = runner.execute("set true -5 9999999999 1.5 3.14");
@@ -32,9 +32,10 @@ class CommonArgumentTest {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("say") {{
             argument(new CommonStringArgument<>("word", CommonStringArgument.Type.WORD),
                      new CommonStringArgument<>("quoted", CommonStringArgument.Type.PHRASE_QUOTED),
-                     new CommonStringArgument<>("rest", CommonStringArgument.Type.PHRASE)).execute((word, quoted, rest, ctx) -> {
-                         ctx.sendMessage(word + "|" + quoted + "|" + rest);
-                     });
+                     new CommonStringArgument<>("rest",
+                                                CommonStringArgument.Type.PHRASE)).execute((word, quoted, rest, ctx) -> {
+                ctx.sendMessage(word + "|" + quoted + "|" + rest);
+            });
         }});
 
         TestCommandContext ctx = runner.execute("say hello \"good morning\" this is rest");
@@ -142,7 +143,8 @@ class CommonArgumentTest {
     @Test
     void context_exposes_raw_and_parsed_arguments() throws Exception {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("sum") {{
-            argument(new CommonIntegerArgument<>("left"), new CommonIntegerArgument<>("right")).execute((left, right, ctx) -> {
+            argument(new CommonIntegerArgument<>("left"),
+                     new CommonIntegerArgument<>("right")).execute((left, right, ctx) -> {
                 ctx.sendMessage(ctx.getInput("left") + ":" + ctx.getInput("right"));
                 ctx.sendMessage(ctx.getArgs()
                                    .toString());

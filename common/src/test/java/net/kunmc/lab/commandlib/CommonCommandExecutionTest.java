@@ -118,10 +118,11 @@ class CommonCommandExecutionTest {
         CommonStringArgument<TestCommandContext> key = new CommonStringArgument<>("key");
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("config") {{
             argument(key).child(keyArg -> new TestCommand("get") {{
-                execute(ctx -> ctx.sendMessage("get:" + ctx.getParsedArg(keyArg)));
-            }}).child(keyArg -> new TestCommand("delete") {{
-                execute(ctx -> ctx.sendMessage("delete:" + ctx.getParsedArg(keyArg)));
-            }});
+                             execute(ctx -> ctx.sendMessage("get:" + ctx.getParsedArg(keyArg)));
+                         }})
+                         .child(keyArg -> new TestCommand("delete") {{
+                             execute(ctx -> ctx.sendMessage("delete:" + ctx.getParsedArg(keyArg)));
+                         }});
         }});
 
         TestCommandContext get = runner.execute("config difficulty get");
@@ -153,8 +154,8 @@ class CommonCommandExecutionTest {
             });
             argument(new CommonStringArgument<>("key"),
                      new CommonStringArgument<>("value")).execute((key, value, ctx) -> {
-                         ctx.sendMessage("two:" + key + ":" + value);
-                     });
+                ctx.sendMessage("two:" + key + ":" + value);
+            });
         }});
 
         TestCommandContext ctx = runner.execute("set name Steve");

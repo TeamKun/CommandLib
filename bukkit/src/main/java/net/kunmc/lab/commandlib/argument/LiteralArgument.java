@@ -1,7 +1,7 @@
 package net.kunmc.lab.commandlib.argument;
 
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.ContextAction;
+import net.kunmc.lab.commandlib.CommandHandler;
 
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -28,7 +28,7 @@ public class LiteralArgument extends CommonLiteralArgument<CommandContext> {
 
     public LiteralArgument(String name,
                            Supplier<Collection<String>> literalsSupplier,
-                           ContextAction<CommandContext> contextAction) {
+                           CommandHandler<CommandContext> contextAction) {
         super(name, literalsSupplier, contextAction);
     }
 }

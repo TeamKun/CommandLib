@@ -1,9 +1,6 @@
 package net.kunmc.lab.commandlib.branch;
 
-import net.kunmc.lab.commandlib.AbstractCommandContext;
-import net.kunmc.lab.commandlib.CommonArgument;
-import net.kunmc.lab.commandlib.CommonCommand;
-import net.kunmc.lab.commandlib.ContextAction;
+import net.kunmc.lab.commandlib.*;
 import net.kunmc.lab.commandlib.util.function.HeptConsumer;
 import net.kunmc.lab.commandlib.util.function.HexaFunction;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +42,7 @@ public final class HexaArgumentBranch<T1, T2, T3, T4, T5, T6, C extends Abstract
     }
 
     @Override
-    public HexaArgumentBranch<T1, T2, T3, T4, T5, T6, C, T> execute(@Nullable ContextAction<C> action) {
+    public HexaArgumentBranch<T1, T2, T3, T4, T5, T6, C, T> execute(@Nullable CommandHandler<C> action) {
         super.execute(action);
         return this;
     }
@@ -59,5 +56,17 @@ public final class HexaArgumentBranch<T1, T2, T3, T4, T5, T6, C extends Abstract
     public HexaArgumentBranch<T1, T2, T3, T4, T5, T6, C, T> child(@NotNull HexaFunction<CommonArgument<T1, C>, CommonArgument<T2, C>, CommonArgument<T3, C>, CommonArgument<T4, C>, CommonArgument<T5, C>, CommonArgument<T6, C>, T> factory) {
         child(factory.apply(argument1, argument2, argument3, argument4, argument5, argument6));
         return this;
+    }
+
+    public <S> RequiredHexaArgumentBranch<S, T1, T2, T3, T4, T5, T6, C, T> require(@NotNull Extractor<C, S> extractor) {
+        return new RequiredHexaArgumentBranch<>(extractor,
+                                                this::execute,
+                                                children -> delegate.addChildren(children),
+                                                argument1,
+                                                argument2,
+                                                argument3,
+                                                argument4,
+                                                argument5,
+                                                argument6);
     }
 }

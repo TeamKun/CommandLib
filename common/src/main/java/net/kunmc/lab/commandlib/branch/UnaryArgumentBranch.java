@@ -1,9 +1,6 @@
 package net.kunmc.lab.commandlib.branch;
 
-import net.kunmc.lab.commandlib.AbstractCommandContext;
-import net.kunmc.lab.commandlib.CommonArgument;
-import net.kunmc.lab.commandlib.CommonCommand;
-import net.kunmc.lab.commandlib.ContextAction;
+import net.kunmc.lab.commandlib.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +21,7 @@ public final class UnaryArgumentBranch<T1, C extends AbstractCommandContext<?, ?
     }
 
     @Override
-    public UnaryArgumentBranch<T1, C, T> execute(@Nullable ContextAction<C> action) {
+    public UnaryArgumentBranch<T1, C, T> execute(@Nullable CommandHandler<C> action) {
         super.execute(action);
         return this;
     }
@@ -38,5 +35,12 @@ public final class UnaryArgumentBranch<T1, C extends AbstractCommandContext<?, ?
     public UnaryArgumentBranch<T1, C, T> child(@NotNull Function<CommonArgument<T1, C>, T> factory) {
         child(factory.apply(argument1));
         return this;
+    }
+
+    public <S> RequiredUnaryArgumentBranch<S, T1, C, T> require(@NotNull Extractor<C, S> extractor) {
+        return new RequiredUnaryArgumentBranch<>(extractor,
+                                                 this::execute,
+                                                 children -> delegate.addChildren(children),
+                                                 argument1);
     }
 }

@@ -1,9 +1,6 @@
 package net.kunmc.lab.commandlib.branch;
 
-import net.kunmc.lab.commandlib.AbstractCommandContext;
-import net.kunmc.lab.commandlib.CommonArgument;
-import net.kunmc.lab.commandlib.CommonCommand;
-import net.kunmc.lab.commandlib.ContextAction;
+import net.kunmc.lab.commandlib.*;
 import net.kunmc.lab.commandlib.util.function.HeptFunction;
 import net.kunmc.lab.commandlib.util.function.OctoConsumer;
 import org.jetbrains.annotations.NotNull;
@@ -49,7 +46,7 @@ public final class HeptArgumentBranch<T1, T2, T3, T4, T5, T6, T7, C extends Abst
     }
 
     @Override
-    public HeptArgumentBranch<T1, T2, T3, T4, T5, T6, T7, C, T> execute(@Nullable ContextAction<C> action) {
+    public HeptArgumentBranch<T1, T2, T3, T4, T5, T6, T7, C, T> execute(@Nullable CommandHandler<C> action) {
         super.execute(action);
         return this;
     }
@@ -63,5 +60,18 @@ public final class HeptArgumentBranch<T1, T2, T3, T4, T5, T6, T7, C extends Abst
     public HeptArgumentBranch<T1, T2, T3, T4, T5, T6, T7, C, T> child(@NotNull HeptFunction<CommonArgument<T1, C>, CommonArgument<T2, C>, CommonArgument<T3, C>, CommonArgument<T4, C>, CommonArgument<T5, C>, CommonArgument<T6, C>, CommonArgument<T7, C>, T> factory) {
         child(factory.apply(argument1, argument2, argument3, argument4, argument5, argument6, argument7));
         return this;
+    }
+
+    public <S> RequiredHeptArgumentBranch<S, T1, T2, T3, T4, T5, T6, T7, C, T> require(@NotNull Extractor<C, S> extractor) {
+        return new RequiredHeptArgumentBranch<>(extractor,
+                                                this::execute,
+                                                children -> delegate.addChildren(children),
+                                                argument1,
+                                                argument2,
+                                                argument3,
+                                                argument4,
+                                                argument5,
+                                                argument6,
+                                                argument7);
     }
 }

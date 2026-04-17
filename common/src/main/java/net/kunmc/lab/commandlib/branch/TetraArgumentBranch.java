@@ -1,9 +1,6 @@
 package net.kunmc.lab.commandlib.branch;
 
-import net.kunmc.lab.commandlib.AbstractCommandContext;
-import net.kunmc.lab.commandlib.CommonArgument;
-import net.kunmc.lab.commandlib.CommonCommand;
-import net.kunmc.lab.commandlib.ContextAction;
+import net.kunmc.lab.commandlib.*;
 import net.kunmc.lab.commandlib.util.function.QuintConsumer;
 import net.kunmc.lab.commandlib.util.function.TetraFunction;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +34,7 @@ public final class TetraArgumentBranch<T1, T2, T3, T4, C extends AbstractCommand
     }
 
     @Override
-    public TetraArgumentBranch<T1, T2, T3, T4, C, T> execute(@Nullable ContextAction<C> action) {
+    public TetraArgumentBranch<T1, T2, T3, T4, C, T> execute(@Nullable CommandHandler<C> action) {
         super.execute(action);
         return this;
     }
@@ -51,5 +48,15 @@ public final class TetraArgumentBranch<T1, T2, T3, T4, C extends AbstractCommand
     public TetraArgumentBranch<T1, T2, T3, T4, C, T> child(@NotNull TetraFunction<CommonArgument<T1, C>, CommonArgument<T2, C>, CommonArgument<T3, C>, CommonArgument<T4, C>, T> factory) {
         child(factory.apply(argument1, argument2, argument3, argument4));
         return this;
+    }
+
+    public <S> RequiredTetraArgumentBranch<S, T1, T2, T3, T4, C, T> require(@NotNull Extractor<C, S> extractor) {
+        return new RequiredTetraArgumentBranch<>(extractor,
+                                                 this::execute,
+                                                 children -> delegate.addChildren(children),
+                                                 argument1,
+                                                 argument2,
+                                                 argument3,
+                                                 argument4);
     }
 }

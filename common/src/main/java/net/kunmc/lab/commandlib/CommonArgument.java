@@ -25,7 +25,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
     private AsyncSuggestionAction<C> asyncSuggestionAction;
     private AsyncSuggestionAction<C> additionalAsyncSuggestionAction;
     private BiFunction<C, String, T> additionalParser;
-    private ContextAction<C> contextAction;
+    private CommandHandler<C> contextAction;
     private final ArgumentType<?> type;
     private ArgumentValidator<? super T, C> validator;
     private BiFunction<? super T, C, ? extends T> transformer;
@@ -38,7 +38,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
 
     protected CommonArgument(@NotNull String name,
                              @Nullable SuggestionAction<C> suggestionAction,
-                             @Nullable ContextAction<C> contextAction,
+                             @Nullable CommandHandler<C> contextAction,
                              @NotNull ArgumentType<?> type) {
         this.name = Objects.requireNonNull(name);
         this.suggestionAction = suggestionAction;
@@ -112,7 +112,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
     }
 
     @Nullable
-    public final ContextAction<C> contextAction() {
+    public final CommandHandler<C> contextAction() {
         return contextAction;
     }
 
@@ -120,7 +120,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         return List.copyOf(uncaughtExceptionHandlers);
     }
 
-    protected final void contextAction(@Nullable ContextAction<C> contextAction) {
+    protected final void contextAction(@Nullable CommandHandler<C> contextAction) {
         this.contextAction = contextAction;
     }
 
@@ -238,7 +238,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         protected BiFunction<C, String, T> additionalParser;
         protected ArgumentValidator<? super T, C> validator;
         protected BiFunction<? super T, C, ? extends T> transformer;
-        protected ContextAction<C> contextAction;
+        protected CommandHandler<C> contextAction;
         protected final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers = new ArrayList<>();
         private final CommonArgument<T, C> argument;
 
@@ -370,12 +370,12 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
             return Optional.ofNullable(transformer);
         }
 
-        public Option<T, C> contextAction(@Nullable ContextAction<C> contextAction) {
+        public Option<T, C> contextAction(@Nullable CommandHandler<C> contextAction) {
             this.contextAction = contextAction;
             return this;
         }
 
-        protected Optional<ContextAction<C>> contextAction() {
+        protected Optional<CommandHandler<C>> contextAction() {
             return Optional.ofNullable(contextAction);
         }
 

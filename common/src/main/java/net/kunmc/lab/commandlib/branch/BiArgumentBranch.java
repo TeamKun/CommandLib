@@ -1,9 +1,6 @@
 package net.kunmc.lab.commandlib.branch;
 
-import net.kunmc.lab.commandlib.AbstractCommandContext;
-import net.kunmc.lab.commandlib.CommonArgument;
-import net.kunmc.lab.commandlib.CommonCommand;
-import net.kunmc.lab.commandlib.ContextAction;
+import net.kunmc.lab.commandlib.*;
 import net.kunmc.lab.commandlib.util.function.TriConsumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +25,7 @@ public final class BiArgumentBranch<T1, T2, C extends AbstractCommandContext<?, 
     }
 
     @Override
-    public BiArgumentBranch<T1, T2, C, T> execute(@Nullable ContextAction<C> action) {
+    public BiArgumentBranch<T1, T2, C, T> execute(@Nullable CommandHandler<C> action) {
         super.execute(action);
         return this;
     }
@@ -42,5 +39,13 @@ public final class BiArgumentBranch<T1, T2, C extends AbstractCommandContext<?, 
     public BiArgumentBranch<T1, T2, C, T> child(@NotNull BiFunction<CommonArgument<T1, C>, CommonArgument<T2, C>, T> factory) {
         child(factory.apply(argument1, argument2));
         return this;
+    }
+
+    public <S> RequiredBiArgumentBranch<S, T1, T2, C, T> require(@NotNull Extractor<C, S> extractor) {
+        return new RequiredBiArgumentBranch<>(extractor,
+                                              this::execute,
+                                              children -> delegate.addChildren(children),
+                                              argument1,
+                                              argument2);
     }
 }

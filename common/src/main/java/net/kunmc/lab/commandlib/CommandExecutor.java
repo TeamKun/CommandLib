@@ -18,18 +18,18 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
     private final List<Arguments<C>> argumentsList;
     private final List<CommandOption<?, C>> options;
     private final Prerequisite<C> prerequisite;
-    private final ContextAction<C> helpAction;
+    private final CommandHandler<C> helpAction;
     private final Predicate<C> preprocess;
-    private final ContextAction<C> contextAction;
+    private final CommandHandler<C> contextAction;
     private final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers;
 
     CommandExecutor(PlatformAdapter<S, ?, C, ?, ?> platformAdapter,
                     List<Arguments<C>> argumentsList,
                     List<CommandOption<?, C>> options,
                     Prerequisite<C> prerequisite,
-                    ContextAction<C> helpAction,
+                    CommandHandler<C> helpAction,
                     Predicate<C> preprocess,
-                    ContextAction<C> contextAction,
+                    CommandHandler<C> contextAction,
                     List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers) {
         this.platformAdapter = platformAdapter;
         this.argumentsList = List.copyOf(argumentsList);
@@ -101,10 +101,13 @@ final class CommandExecutor<S, C extends AbstractCommandContext<S, ?>> implement
                                             .build(context.getInput());
     }
 
-    private int executeWithStackTrace(C ctx, ContextAction<C> contextAction) {
+    private int executeWithStackTrace(C ctx, CommandHandler<C> contextAction) {
         try {
             contextAction.accept(ctx);
             return 1;
+        } catch (CommandPrerequisiteException e) {
+            e.sendMessage(ctx);
+            return 0;
         } catch (Exception e) {
             e.printStackTrace();
             ctx.sendFailure("An unexpected error occurred trying to execute that command.");

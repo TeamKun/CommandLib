@@ -23,7 +23,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     private Prerequisite<C> prerequisite = ctx -> {
     };
     private Predicate<C> preprocess = ctx -> true;
-    private ContextAction<C> contextAction;
+    private CommandHandler<C> contextAction;
     private final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers = new ArrayList<>();
     @SuppressWarnings("unchecked")
     private final PlatformAdapter<?, ?, C, B, T> platformAdapter = (PlatformAdapter<?, ?, C, B, T>) PlatformAdapter.get();
@@ -221,7 +221,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
             }
 
             @Override
-            public void execute(@Nullable ContextAction<C> action) {
+            public void execute(@Nullable CommandHandler<C> action) {
                 arguments.contextAction(action);
             }
 
@@ -266,6 +266,10 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         }
     }
 
+    public final <S> RequiredArgumentBranch<S, C, T> require(@NotNull Extractor<C, S> extractor) {
+        return new RequiredArgumentBranch<>(Objects.requireNonNull(extractor), this::execute, this::addChildren);
+    }
+
     public final void addPrerequisite(@NotNull Prerequisite<C> prerequisite) {
         this.prerequisite = this.prerequisite.and(Objects.requireNonNull(prerequisite));
     }
@@ -286,7 +290,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         this.preprocess = this.preprocess.and(Objects.requireNonNull(preprocess));
     }
 
-    public final void execute(@Nullable ContextAction<C> execute) {
+    public final void execute(@Nullable CommandHandler<C> execute) {
         this.contextAction = execute;
     }
 
@@ -345,7 +349,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         return List.copyOf(aliases);
     }
 
-    final ContextAction<C> contextAction() {
+    final CommandHandler<C> contextAction() {
         return contextAction;
     }
 

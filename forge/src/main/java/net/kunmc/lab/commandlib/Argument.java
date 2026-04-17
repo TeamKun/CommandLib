@@ -9,7 +9,7 @@ public abstract class Argument<T> extends CommonArgument<T, CommandContext> {
 
     public Argument(String name,
                     SuggestionAction<CommandContext> suggestionAction,
-                    ContextAction<CommandContext> contextAction,
+                    CommandHandler<CommandContext> contextAction,
                     ArgumentType<?> type) {
         super(name, suggestionAction, contextAction, type);
     }

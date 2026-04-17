@@ -83,14 +83,22 @@ IntegerArgument n = new IntegerArgument("n");
 PlayerArgument p = new PlayerArgument("p");
 
 argument(n, p)
-    .execute((parsedN, parsedP, ctx) -> {
-    })
-    .child((nArg, pArg) -> new Command("sub") {{
+    .
+
+execute((parsedN, parsedP, ctx) ->{
+        })
+        .
+
+child((nArg, pArg) ->new
+
+Command("sub") {
+    {
         execute(ctx -> {
             Integer parsedN = ctx.getParsedArg(nArg);
             Player parsedP = ctx.getParsedArg(pArg);
         });
-    }});
+    }
+});
 ```
 
 The child factory receives `CommonArgument` instances, not parsed values. Parsed
@@ -144,8 +152,11 @@ It delegates the actual mutation to an `ArgumentBranchDelegate`:
 
 ```java
 description(...)
+
 execute(...)
+
 child(...)
+
 children(...)
 ```
 
@@ -161,7 +172,9 @@ It has only the operations needed by `ArgumentBranch`:
 
 ```java
 void description(String description);
-void execute(ContextAction<C> action);
+
+void execute(CommandHandler<C> action);
+
 void addChildren(Collection<? extends T> children);
 ```
 
@@ -176,8 +189,14 @@ keeps the package split clean:
 For a typed branch:
 
 ```java
-argument(n, p).child((nArg, pArg) -> new Command("sub") {{
-}});
+argument(n, p).
+
+child((nArg, pArg) ->new
+
+Command("sub") {
+    {
+    }
+});
 ```
 
 the flow is:
@@ -212,10 +231,22 @@ The same argument branch can receive multiple children:
 
 ```java
 argument(n, p)
-    .child((nArg, pArg) -> new Command("sub") {{
-    }})
-    .child((nArg, pArg) -> new Command("sub2") {{
-    }});
+    .
+
+child((nArg, pArg) ->new
+
+Command("sub") {
+    {
+    }
+})
+        .
+
+child((nArg, pArg) ->new
+
+Command("sub2") {
+    {
+    }
+});
 ```
 
 Internally this appends both commands to the same `Arguments#children` list:
@@ -334,11 +365,11 @@ The common test suite should cover the shared behavior. Important cases:
 - child command can read parent arguments after child arguments are parsed
 - the same argument branch can have multiple children
 - help snapshots for:
-  - root command input
-  - parent arguments typed
-  - child literal typed
-  - child argument typed
-  - command descriptions
+    - root command input
+    - parent arguments typed
+    - child literal typed
+    - child argument typed
+    - command descriptions
 
 Avoid tests that simulate impossible Brigadier behavior by making a custom
 argument always fail. If a test exists to justify a parsing fallback, it should

@@ -23,7 +23,7 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
     }
 
     private RequiredArgumentBuilder<S, ?> buildArgument(CommonArgument<?, C> argument,
-                                                        ContextAction<C> helpAction,
+                                                        CommandHandler<C> helpAction,
                                                         CommonCommand<C, ?, ?> parent) {
         RequiredArgumentBuilder<S, ?> builder = RequiredArgumentBuilder.argument(argument.name(), argument.type());
 
@@ -77,14 +77,14 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
         return builder;
     }
 
-    private List<ArgumentCommandNode<S, ?>> toCommandNodes(ContextAction<C> helpAction, CommonCommand<C, ?, ?> parent) {
+    private List<ArgumentCommandNode<S, ?>> toCommandNodes(CommandHandler<C> helpAction, CommonCommand<C, ?, ?> parent) {
         return arguments.stream()
                         .map(x -> buildArgument(x, helpAction, parent))
                         .map(RequiredArgumentBuilder::build)
                         .collect(Collectors.toList());
     }
 
-    ArgumentCommandNode<S, ?> build(ContextAction<C> helpAction,
+    ArgumentCommandNode<S, ?> build(CommandHandler<C> helpAction,
                                     CommonCommand<C, ?, ?> parent,
                                     Collection<LiteralCommandNode<S>> terminalChildren) {
         List<ArgumentCommandNode<S, ?>> nodes = toCommandNodes(helpAction, parent);

@@ -58,7 +58,7 @@ final class Arguments<C extends AbstractCommandContext<?, ?>> {
         this.children.addAll(children);
     }
 
-    void contextAction(ContextAction<C> contextAction) {
+    void contextAction(CommandHandler<C> contextAction) {
         if (arguments.isEmpty()) {
             return;
         }

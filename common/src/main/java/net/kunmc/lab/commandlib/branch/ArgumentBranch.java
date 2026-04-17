@@ -2,7 +2,8 @@ package net.kunmc.lab.commandlib.branch;
 
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonCommand;
-import net.kunmc.lab.commandlib.ContextAction;
+import net.kunmc.lab.commandlib.CommandHandler;
+import net.kunmc.lab.commandlib.Extractor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class ArgumentBranch<C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, ?, T>> {
-    private final ArgumentBranchDelegate<C, T> delegate;
+    protected final ArgumentBranchDelegate<C, T> delegate;
 
     public ArgumentBranch(@NotNull ArgumentBranchDelegate<C, T> delegate) {
         this.delegate = Objects.requireNonNull(delegate);
@@ -23,7 +24,7 @@ public class ArgumentBranch<C extends AbstractCommandContext<?, ?>, T extends Co
         return this;
     }
 
-    public ArgumentBranch<C, T> execute(@Nullable ContextAction<C> action) {
+    public ArgumentBranch<C, T> execute(@Nullable CommandHandler<C> action) {
         delegate.execute(action);
         return this;
     }
@@ -35,5 +36,11 @@ public class ArgumentBranch<C extends AbstractCommandContext<?, ?>, T extends Co
         Collections.addAll(list, children);
         delegate.addChildren(list);
         return this;
+    }
+
+    public <S> RequiredArgumentBranch<S, C, T> require(@NotNull Extractor<C, S> extractor) {
+        return new RequiredArgumentBranch<>(Objects.requireNonNull(extractor),
+                                            this::execute,
+                                            children -> delegate.addChildren(children));
     }
 }
