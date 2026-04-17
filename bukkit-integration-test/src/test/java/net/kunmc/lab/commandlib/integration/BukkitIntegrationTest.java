@@ -19,11 +19,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.BitSet;
 import java.util.Collections;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -145,6 +147,8 @@ class BukkitIntegrationTest {
                                                              String reportFileName,
                                                              int javaVersion) {
         String containerWorkDir = "/workspace/fixtures/" + testPluginDir.getFileName() + "/" + serverDirectory;
+        UUID offlineUuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + TEST_PLAYER_NAME).getBytes(StandardCharsets.UTF_8));
+        String opsJson = "[{\"uuid\":\"" + offlineUuid + "\",\"name\":\"" + TEST_PLAYER_NAME + "\",\"level\":4,\"bypassesPlayerLimit\":false}]";
 
         return new GenericContainer<>("eclipse-temurin:" + javaVersion + "-jre").withExposedPorts(25565)
                                                                                 // Bind the whole fixtures tree because the plugin writes its JUnit XML report
@@ -161,7 +165,10 @@ class BukkitIntegrationTest {
                                                                                              "printf 'eula=true\n' > eula.txt && "
                                                                                                      // Force offline mode so MCProtocolLib can join as a local fake player
                                                                                                      // without requiring Mojang authentication in CI.
-                                                                                                     + "printf 'online-mode=false\nserver-port=25565\nenforce-secure-profile=false\nmotd=CommandLib IT\n' > server.properties && " + "java -Dplugin.env=CI -Dcommandlib.testReportName=" + reportFileName + " -jar " + serverJarName + " nogui")
+                                                                                                     + "printf 'online-mode=false\nserver-port=25565\nenforce-secure-profile=false\nmotd=CommandLib IT\ngamemode=creative\nforce-gamemode=true\nlevel-type=FLAT' > server.properties && "
+                                                                                                     // Write ops.json before the server starts so the player has operator permission on join.
+                                                                                                     // Offline UUID is deterministic: UUID.nameUUIDFromBytes("OfflinePlayer:<name>").
+                                                                                                     + "printf '" + opsJson + "' > ops.json && " + "java -Dplugin.env=CI -Dcommandlib.testReportName=" + reportFileName + " -jar " + serverJarName + " nogui")
                                                                                 .waitingFor(Wait.forLogMessage(
                                                                                         ".*Done \\(.*\\)! For help, type \"help\".*",
                                                                                         1))

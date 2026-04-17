@@ -309,7 +309,6 @@ public final class ArgumentTest extends TestBase {
     public List<String> offlinePlayerArgument() {
         String name = getMethodName();
         String key = getKey();
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayers()[0];
 
         putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
         command.addChildren(new Command(name) {{
@@ -318,17 +317,16 @@ public final class ArgumentTest extends TestBase {
                     putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
                 });
             })).execute((a, ctx) -> {
-                putResult(key, a.getName(), offlinePlayer.getName());
+                putResult(key, a.getName(), playerName);
             });
         }});
 
-        return List.of(buildCommand(command, name + " " + offlinePlayer.getName()));
+        return List.of(buildCommand(command, name + " " + playerName));
     }
 
     public List<String> offlinePlayersArgument() {
         String name = getMethodName();
         String key = getKey();
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayers()[0];
 
         putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
         command.addChildren(new Command(name) {{
@@ -341,11 +339,11 @@ public final class ArgumentTest extends TestBase {
                           a.stream()
                            .map(OfflinePlayer::getName)
                            .collect(java.util.stream.Collectors.joining(",")),
-                          offlinePlayer.getName());
+                          playerName);
             });
         }});
 
-        return List.of(buildCommand(command, name + " " + offlinePlayer.getName()));
+        return List.of(buildCommand(command, name + " " + playerName));
     }
 
     public List<String> particleArgument() {
