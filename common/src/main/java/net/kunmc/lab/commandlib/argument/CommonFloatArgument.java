@@ -4,27 +4,13 @@ import com.mojang.brigadier.arguments.FloatArgumentType;
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 
-import java.util.function.Consumer;
-
-public class CommonFloatArgument<C extends AbstractCommandContext<?, ?>> extends CommonArgument<Float, C> {
+public class CommonFloatArgument<C extends AbstractCommandContext<?, ?>, SELF extends CommonFloatArgument<C, SELF>> extends CommonArgument<Float, C, SELF> {
     public CommonFloatArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public CommonFloatArgument(String name, Consumer<Option<Float, C>> options) {
         super(name, FloatArgumentType.floatArg(-Float.MAX_VALUE, Float.MAX_VALUE));
-        applyOptions(options);
     }
 
     public CommonFloatArgument(String name, Float min, Float max) {
-        this(name, option -> {
-        }, min, max);
-    }
-
-    public CommonFloatArgument(String name, Consumer<Option<Float, C>> options, Float min, Float max) {
         super(name, FloatArgumentType.floatArg(min, max));
-        applyOptions(options);
     }
 
     @Override

@@ -13,14 +13,14 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public final class RequiredBiArgumentBranch<S, T1, T2, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, ?, T>> extends RequiredArgumentBranch<S, C, T> {
-    private final CommonArgument<T1, C> argument1;
-    private final CommonArgument<T2, C> argument2;
+    private final CommonArgument<T1, C, ?> argument1;
+    private final CommonArgument<T2, C, ?> argument2;
 
     public RequiredBiArgumentBranch(@NotNull Extractor<C, S> extractor,
                                     @NotNull Consumer<CommandExecutor<C>> executeRegistrar,
                                     @NotNull Consumer<Collection<? extends T>> childrenAdder,
-                                    @NotNull CommonArgument<T1, C> argument1,
-                                    @NotNull CommonArgument<T2, C> argument2) {
+                                    @NotNull CommonArgument<T1, C, ?> argument1,
+                                    @NotNull CommonArgument<T2, C, ?> argument2) {
         super(extractor, executeRegistrar, childrenAdder);
         this.argument1 = argument1;
         this.argument2 = argument2;
@@ -31,7 +31,7 @@ public final class RequiredBiArgumentBranch<S, T1, T2, C extends AbstractCommand
         return this;
     }
 
-    public RequiredBiArgumentBranch<S, T1, T2, C, T> child(@NotNull BiFunction<CommonArgument<T1, C>, CommonArgument<T2, C>, T> factory) {
+    public RequiredBiArgumentBranch<S, T1, T2, C, T> child(@NotNull BiFunction<CommonArgument<T1, C, ?>, CommonArgument<T2, C, ?>, T> factory) {
         super.child(factory.apply(argument1, argument2));
         return this;
     }

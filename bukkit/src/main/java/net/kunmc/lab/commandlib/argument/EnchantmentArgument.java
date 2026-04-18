@@ -8,19 +8,11 @@ import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentEnchantment;
 import net.kunmc.lab.commandlib.util.nms.world.NMSCraftEnchantment;
 import org.bukkit.enchantments.Enchantment;
 
-import java.util.function.Consumer;
-
-public class EnchantmentArgument extends Argument<Enchantment> {
+public class EnchantmentArgument extends Argument<Enchantment, EnchantmentArgument> {
     public EnchantmentArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public EnchantmentArgument(String name, Consumer<Option<Enchantment, CommandContext>> options) {
         super(name,
               NMSArgumentEnchantment.create()
                                     .argument());
-        applyOptions(options);
     }
 
     @Override

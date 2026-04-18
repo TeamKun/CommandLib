@@ -9,17 +9,10 @@ import net.minecraft.entity.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
-public class EntitiesArgument extends Argument<List<Entity>> {
+public class EntitiesArgument extends Argument<List<Entity>, EntitiesArgument> {
     public EntitiesArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public EntitiesArgument(String name, Consumer<Option<List<Entity>, CommandContext>> options) {
         super(name, EntityArgument.entities());
-        applyOptions(options);
     }
 
     @Override

@@ -15,13 +15,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> {
+public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>, SELF extends CommonArgument<T, C, SELF>> {
     private final String name;
     private boolean displayDefaultSuggestions = true;
     private SuggestionAction<C> suggestionAction;
@@ -40,33 +40,24 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         this.type = Objects.requireNonNull(type);
     }
 
-    protected CommonArgument(@NotNull String name,
-                             @Nullable SuggestionAction<C> suggestionAction,
-                             @Nullable CommandExecutor<C> executor,
-                             @NotNull ArgumentType<?> type) {
-        this.name = Objects.requireNonNull(name);
-        this.suggestionAction = suggestionAction;
-        this.executor = executor;
-        this.type = Objects.requireNonNull(type);
-    }
-
     public final String name() {
         return name;
     }
 
-    final boolean isDisplayDefaultSuggestions() {
+    protected final boolean isDisplayDefaultSuggestions() {
         return displayDefaultSuggestions;
     }
 
-    protected final void displayDefaultSuggestions(boolean display) {
+    @SuppressWarnings("unchecked")
+    public final SELF displayDefaultSuggestions(boolean display) {
         this.displayDefaultSuggestions = display;
+        return (SELF) this;
     }
 
-    public final SuggestionAction<C> suggestionAction() {
+    protected final SuggestionAction<C> suggestionAction() {
         if (suggestionAction == null && additionalSuggestionAction == null) {
             return null;
         }
-
         return sb -> {
             if (suggestionAction != null) {
                 suggestionAction.accept(sb);
@@ -77,14 +68,12 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         };
     }
 
-    public final AsyncSuggestionAction<C> asyncSuggestionAction() {
+    protected final AsyncSuggestionAction<C> asyncSuggestionAction() {
         if (asyncSuggestionAction == null && additionalAsyncSuggestionAction == null) {
             return null;
         }
-
         return sb -> {
-            java.util.concurrent.CompletionStage<Void> stage = java.util.concurrent.CompletableFuture.completedFuture(
-                    null);
+            CompletionStage<Void> stage = CompletableFuture.completedFuture(null);
             if (asyncSuggestionAction != null) {
                 stage = stage.thenCompose(ignored -> asyncSuggestionAction.accept(sb));
             }
@@ -95,85 +84,111 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
         };
     }
 
-    protected final void suggestionAction(@Nullable SuggestionAction<C> suggestionAction) {
+    @SuppressWarnings("unchecked")
+    public final SELF suggestionAction(@Nullable SuggestionAction<C> suggestionAction) {
         this.suggestionAction = suggestionAction;
+        return (SELF) this;
     }
 
-    protected final void additionalSuggestionAction(@Nullable SuggestionAction<C> additionalSuggestionAction) {
+    @SuppressWarnings("unchecked")
+    public final SELF additionalSuggestionAction(@Nullable SuggestionAction<C> additionalSuggestionAction) {
         this.additionalSuggestionAction = additionalSuggestionAction;
+        return (SELF) this;
     }
 
-    protected final void asyncSuggestionAction(@Nullable AsyncSuggestionAction<C> asyncSuggestionAction) {
+    @SuppressWarnings("unchecked")
+    public final SELF asyncSuggestionAction(@Nullable AsyncSuggestionAction<C> asyncSuggestionAction) {
         this.asyncSuggestionAction = asyncSuggestionAction;
+        return (SELF) this;
     }
 
-    protected final void additionalAsyncSuggestionAction(@Nullable AsyncSuggestionAction<C> additionalAsyncSuggestionAction) {
+    @SuppressWarnings("unchecked")
+    public final SELF additionalAsyncSuggestionAction(@Nullable AsyncSuggestionAction<C> additionalAsyncSuggestionAction) {
         this.additionalAsyncSuggestionAction = additionalAsyncSuggestionAction;
+        return (SELF) this;
     }
 
-    protected final void additionalParser(@Nullable BiFunction<C, String, T> parser) {
+    @SuppressWarnings("unchecked")
+    public final SELF additionalParser(@Nullable BiFunction<C, String, T> parser) {
         this.additionalParser = parser;
+        return (SELF) this;
     }
 
     @Nullable
-    public final CommandExecutor<C> executor() {
+    protected final CommandExecutor<C> executor() {
         return executor;
     }
 
-    public final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers() {
+    protected final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers() {
         return List.copyOf(uncaughtExceptionHandlers);
     }
 
-    protected final void execute(@Nullable CommandExecutor<C> executor) {
+    @SuppressWarnings("unchecked")
+    public final SELF execute(@Nullable CommandExecutor<C> executor) {
         this.executor = executor;
+        return (SELF) this;
     }
 
-    public final ArgumentType<?> type() {
+    protected final ArgumentType<?> type() {
         return type;
     }
 
     public abstract T cast(Object parsedArgument);
 
-    protected final void validator(ArgumentValidator<? super T, C> validator) {
-        this.validator = validator;
-    }
-
-    protected final void transformer(Function<? super T, ? extends T> transformer) {
-        transformer((value, ctx) -> transformer.apply(value));
-    }
-
-    protected final void transformer(BiFunction<? super T, C, ? extends T> transformer) {
-        this.transformer = transformer;
-    }
-
-    protected final void applyOptions(@Nullable Consumer<Option<T, C>> options) {
-        if (options == null) {
-            return;
+    @SuppressWarnings("unchecked")
+    public final SELF validator(@Nullable Predicate<? super T> predicate) {
+        if (predicate == null) {
+            this.validator = null;
+        } else {
+            this.validator = (x, ctx) -> {
+                if (!predicate.test(x)) {
+                    throw ArgumentValidationException.ofIncorrectInput(name(), ctx, ctx.getInput(name()));
+                }
+            };
         }
-        Option<T, C> option = new Option<>(this);
-        options.accept(option);
-        applyOption(option);
+        return (SELF) this;
     }
 
-    protected final void applyOption(@NotNull Option<T, C> option) {
-        displayDefaultSuggestions(option.isDisplayDefaultSuggestions());
-        option.suggestionAction()
-              .ifPresent(this::suggestionAction);
-        option.additionalSuggestionAction()
-              .ifPresent(this::additionalSuggestionAction);
-        option.asyncSuggestionAction()
-              .ifPresent(this::asyncSuggestionAction);
-        option.additionalAsyncSuggestionAction()
-              .ifPresent(this::additionalAsyncSuggestionAction);
-        option.additionalParser()
-              .ifPresent(this::additionalParser);
-        option.executor()
-              .ifPresent(this::execute);
-        option.validator()
-              .ifPresent(this::validator);
-        option.transformer()
-              .ifPresent(this::transformer);
-        this.uncaughtExceptionHandlers.addAll(option.uncaughtExceptionHandlers());
+    @SuppressWarnings("unchecked")
+    public final SELF validator(@Nullable BiFunction<? super T, C, Boolean> predicate) {
+        if (predicate == null) {
+            this.validator = null;
+        } else {
+            this.validator = (x, ctx) -> {
+                if (!predicate.apply(x, ctx)) {
+                    throw ArgumentValidationException.ofIncorrectInput(name(), ctx, ctx.getInput(name()));
+                }
+            };
+        }
+        return (SELF) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public final SELF validator(@Nullable ArgumentValidator<? super T, C> validator) {
+        this.validator = validator;
+        return (SELF) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public final SELF transformer(@Nullable Function<? super T, ? extends T> transformer) {
+        if (transformer == null) {
+            this.transformer = null;
+        } else {
+            this.transformer = (x, ctx) -> transformer.apply(x);
+        }
+        return (SELF) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public final SELF transformer(@Nullable BiFunction<? super T, C, ? extends T> transformer) {
+        this.transformer = transformer;
+        return (SELF) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public final SELF addUncaughtExceptionHandler(@NotNull UncaughtExceptionHandler<?, C> handler) {
+        this.uncaughtExceptionHandlers.add(handler);
+        return (SELF) this;
     }
 
     @NotNull
@@ -200,7 +215,6 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
             if (additionalParser != null) {
                 t = additionalParser.apply(ctx, ctx.getInput(name));
             }
-
             if (t == null) {
                 throw PlatformAdapter.get()
                                      .convertCommandSyntaxException(e);
@@ -209,7 +223,6 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
             if (additionalParser != null) {
                 t = additionalParser.apply(ctx, ctx.getInput(name));
             }
-
             if (t == null) {
                 throw e;
             }
@@ -226,170 +239,4 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>> 
     }
 
     protected abstract T parseImpl(C ctx) throws CommandSyntaxException, ArgumentParseException;
-
-    public static class Option<T, C extends AbstractCommandContext<?, ?>> {
-        protected boolean displayDefaultSuggestions = true;
-        protected SuggestionAction<C> suggestionAction;
-        /**
-         * It can be used to add additional suggests to an argument that configures a suggestion action by default, such as {@link net.kunmc.lab.commandlib.argument.CommonObjectArgument}.
-         */
-        protected SuggestionAction<C> additionalSuggestionAction;
-        protected AsyncSuggestionAction<C> asyncSuggestionAction;
-        /**
-         * It can be used to add additional suggests to an argument that configures a suggestion action by default, such as {@link net.kunmc.lab.commandlib.argument.CommonObjectArgument}.
-         */
-        protected AsyncSuggestionAction<C> additionalAsyncSuggestionAction;
-        protected BiFunction<C, String, T> additionalParser;
-        protected ArgumentValidator<? super T, C> validator;
-        protected BiFunction<? super T, C, ? extends T> transformer;
-        protected CommandExecutor<C> executor;
-        protected final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers = new ArrayList<>();
-        private final CommonArgument<T, C> argument;
-
-        public Option(CommonArgument<T, C> argument) {
-            this.argument = argument;
-        }
-
-        public Option<T, C> displayDefaultSuggestions(boolean displayDefaultSuggestions) {
-            this.displayDefaultSuggestions = displayDefaultSuggestions;
-            return this;
-        }
-
-        protected boolean isDisplayDefaultSuggestions() {
-            return displayDefaultSuggestions;
-        }
-
-        public Option<T, C> suggestionAction(@Nullable SuggestionAction<C> suggestionAction) {
-            this.suggestionAction = suggestionAction;
-            return this;
-        }
-
-        protected Optional<SuggestionAction<C>> suggestionAction() {
-            return Optional.ofNullable(suggestionAction);
-        }
-
-        public Option<T, C> additionalSuggestionAction(@Nullable SuggestionAction<C> additionalSuggestionAction) {
-            this.additionalSuggestionAction = additionalSuggestionAction;
-            return this;
-        }
-
-        protected Optional<SuggestionAction<C>> additionalSuggestionAction() {
-            return Optional.ofNullable(additionalSuggestionAction);
-        }
-
-        public Option<T, C> asyncSuggestionAction(@Nullable AsyncSuggestionAction<C> asyncSuggestionAction) {
-            this.asyncSuggestionAction = asyncSuggestionAction;
-            return this;
-        }
-
-        protected Optional<AsyncSuggestionAction<C>> asyncSuggestionAction() {
-            return Optional.ofNullable(asyncSuggestionAction);
-        }
-
-        public Option<T, C> additionalAsyncSuggestionAction(@Nullable AsyncSuggestionAction<C> additionalAsyncSuggestionAction) {
-            this.additionalAsyncSuggestionAction = additionalAsyncSuggestionAction;
-            return this;
-        }
-
-        protected Optional<AsyncSuggestionAction<C>> additionalAsyncSuggestionAction() {
-            return Optional.ofNullable(additionalAsyncSuggestionAction);
-        }
-
-        public Option<T, C> additionalParser(@Nullable BiFunction<C, String, T> additionalParser) {
-            this.additionalParser = additionalParser;
-            return this;
-        }
-
-        protected Optional<BiFunction<C, String, T>> additionalParser() {
-            return Optional.ofNullable(additionalParser);
-        }
-
-        /**
-         * Validates values on tab completion and after parsing.<br>
-         */
-        public Option<T, C> validator(@Nullable Predicate<? super T> validator) {
-            if (validator == null) {
-                this.validator = null;
-            } else {
-                validator((x, ctx) -> {
-                    if (!validator.test(x)) {
-                        throw ArgumentValidationException.ofIncorrectInput(argument.name(),
-                                                                           ctx,
-                                                                           ctx.getInput(argument.name()));
-                    }
-                });
-            }
-
-            return this;
-        }
-
-        /**
-         * Validates values on tab completion and after parsing.<br>
-         */
-        public Option<T, C> validator(@Nullable BiFunction<? super T, C, Boolean> validator) {
-            if (validator == null) {
-                this.validator = null;
-            } else {
-                validator((x, ctx) -> {
-                    if (!validator.apply(x, ctx)) {
-                        throw ArgumentValidationException.ofIncorrectInput(argument.name(),
-                                                                           ctx,
-                                                                           ctx.getInput(argument.name()));
-                    }
-                });
-            }
-
-            return this;
-        }
-
-        /**
-         * Validates values on tab completion and after parsing.<br>
-         * Throwing {@link net.kunmc.lab.commandlib.exception.ArgumentValidationException}, you can customize the error message.
-         */
-        public Option<T, C> validator(@Nullable ArgumentValidator<? super T, C> validator) {
-            this.validator = validator;
-            return this;
-        }
-
-        protected Optional<ArgumentValidator<? super T, C>> validator() {
-            return Optional.ofNullable(validator);
-        }
-
-        public Option<T, C> transformer(@Nullable Function<? super T, ? extends T> transformer) {
-            if (transformer == null) {
-                this.transformer = null;
-            } else {
-                transformer((x, ctx) -> transformer.apply(x));
-            }
-
-            return this;
-        }
-
-        public Option<T, C> transformer(@Nullable BiFunction<? super T, C, ? extends T> transformer) {
-            this.transformer = transformer;
-            return this;
-        }
-
-        protected Optional<BiFunction<? super T, C, ? extends T>> transformer() {
-            return Optional.ofNullable(transformer);
-        }
-
-        public Option<T, C> execute(@Nullable CommandExecutor<C> executor) {
-            this.executor = executor;
-            return this;
-        }
-
-        protected Optional<CommandExecutor<C>> executor() {
-            return Optional.ofNullable(executor);
-        }
-
-        public Option<T, C> addUncaughtExceptionHandler(UncaughtExceptionHandler<?, C> executor) {
-            this.uncaughtExceptionHandlers.add(executor);
-            return this;
-        }
-
-        protected List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers() {
-            return uncaughtExceptionHandlers;
-        }
-    }
 }

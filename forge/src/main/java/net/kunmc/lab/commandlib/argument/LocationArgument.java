@@ -9,17 +9,9 @@ import net.minecraft.command.arguments.Vec3Argument;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.vector.Vector3d;
 
-import java.util.function.Consumer;
-
-public class LocationArgument extends Argument<Location> {
+public class LocationArgument extends Argument<Location, LocationArgument> {
     public LocationArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public LocationArgument(String name, Consumer<Option<Location, CommandContext>> options) {
         super(name, Vec3Argument.vec3());
-        applyOptions(options);
     }
 
     @Override

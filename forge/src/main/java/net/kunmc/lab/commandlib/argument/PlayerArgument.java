@@ -7,17 +7,9 @@ import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.player.ServerPlayerEntity;
 
-import java.util.function.Consumer;
-
-public class PlayerArgument extends Argument<ServerPlayerEntity> {
+public class PlayerArgument extends Argument<ServerPlayerEntity, PlayerArgument> {
     public PlayerArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public PlayerArgument(String name, Consumer<Option<ServerPlayerEntity, CommandContext>> options) {
         super(name, EntityArgument.player());
-        applyOptions(options);
     }
 
     @Override

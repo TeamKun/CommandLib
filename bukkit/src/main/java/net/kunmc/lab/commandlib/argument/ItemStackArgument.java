@@ -8,19 +8,11 @@ import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentItemStack;
 import net.kunmc.lab.commandlib.util.nms.world.NMSCraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.function.Consumer;
-
-public class ItemStackArgument extends Argument<ItemStack> {
+public class ItemStackArgument extends Argument<ItemStack, ItemStackArgument> {
     public ItemStackArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public ItemStackArgument(String name, Consumer<Option<ItemStack, CommandContext>> options) {
         super(name,
               NMSArgumentItemStack.create()
                                   .argument());
-        applyOptions(options);
     }
 
     @Override

@@ -4,27 +4,13 @@ import com.mojang.brigadier.arguments.DoubleArgumentType;
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 
-import java.util.function.Consumer;
-
-public class CommonDoubleArgument<C extends AbstractCommandContext<?, ?>> extends CommonArgument<Double, C> {
+public class CommonDoubleArgument<C extends AbstractCommandContext<?, ?>, SELF extends CommonDoubleArgument<C, SELF>> extends CommonArgument<Double, C, SELF> {
     public CommonDoubleArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public CommonDoubleArgument(String name, Consumer<Option<Double, C>> options) {
         super(name, DoubleArgumentType.doubleArg(-Double.MAX_VALUE, Double.MAX_VALUE));
-        applyOptions(options);
     }
 
     public CommonDoubleArgument(String name, Double min, Double max) {
-        this(name, option -> {
-        }, min, max);
-    }
-
-    public CommonDoubleArgument(String name, Consumer<Option<Double, C>> options, Double min, Double max) {
         super(name, DoubleArgumentType.doubleArg(min, max));
-        applyOptions(options);
     }
 
     @Override

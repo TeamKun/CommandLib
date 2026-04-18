@@ -20,18 +20,16 @@ class MyCommand extends Command {
 Use the builder style only when the typed shorthand cannot express the required
 shape.
 
-Options such as validation and suggestions are passed to the argument
-constructor:
+Options such as validation and suggestions are set via fluent methods on the
+argument instance:
 
 ```java
 class MyCommand extends Command {
     MyCommand() {
         super("cmd");
 
-        argument(new PlayerArgument("target", opt -> {
-            opt.validator(player -> player.isOp())
-               .suggestionAction((sb, ctx) -> sb.suggest("Steve"));
-        })).execute((player, ctx) -> {
+        argument(new PlayerArgument("target").validator(Player::isOp)
+                                             .suggestionAction(sb -> sb.suggest("Steve"))).execute((player, ctx) -> {
             ctx.sendMessage("ok");
         });
     }
@@ -134,8 +132,7 @@ class ConfigCommand extends Command {
     ConfigCommand() {
         super("config");
 
-        argument(new StringArgument("key")).permission(DefaultPermission.OP,
-                                                       "Access config keys");
+        argument(new StringArgument("key")).permission(DefaultPermission.OP, "Access config keys");
     }
 }
 ```

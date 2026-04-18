@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 final class Arguments<C extends AbstractCommandContext<?, ?>> {
     private final CommonCommand<C, ?, ?> owner;
-    private final List<? extends CommonArgument<?, C>> arguments;
+    private final List<? extends CommonArgument<?, C, ?>> arguments;
     private final List<CommonCommand<C, ?, ?>> children;
     private String description = "";
     private String permissionNodeOverride = null;
@@ -22,7 +22,7 @@ final class Arguments<C extends AbstractCommandContext<?, ?>> {
     private String permissionDescription = "";
 
     Arguments(CommonCommand<C, ?, ?> owner,
-              List<? extends CommonArgument<?, C>> arguments,
+              List<? extends CommonArgument<?, C, ?>> arguments,
               Collection<? extends CommonCommand<C, ?, ?>> children) {
         this.owner = owner;
         this.arguments = arguments;
@@ -30,7 +30,7 @@ final class Arguments<C extends AbstractCommandContext<?, ?>> {
     }
 
     void parse(C ctx) throws ArgumentParseException {
-        for (CommonArgument<?, C> argument : arguments) {
+        for (CommonArgument<?, C, ?> argument : arguments) {
             // Help actions can run before the whole branch is typed; stop at the first missing token so partial
             // input still produces help instead of an unrelated parse failure.
             if (!ctx.hasInput(argument.name())) {
@@ -56,7 +56,7 @@ final class Arguments<C extends AbstractCommandContext<?, ?>> {
         return arguments.size();
     }
 
-    Stream<? extends CommonArgument<?, C>> stream() {
+    Stream<? extends CommonArgument<?, C, ?>> stream() {
         return arguments.stream();
     }
 
@@ -73,7 +73,7 @@ final class Arguments<C extends AbstractCommandContext<?, ?>> {
             return;
         }
 
-        CommonArgument<?, C> last = arguments.get(arguments.size() - 1);
+        CommonArgument<?, C, ?> last = arguments.get(arguments.size() - 1);
         last.execute(executor);
     }
 

@@ -106,7 +106,7 @@ public abstract class AbstractCommandContext<S, C> {
     }
 
     @NotNull
-    public final <T> T getArgument(@NotNull CommonArgument<T, ?> argument) {
+    public final <T> T getArgument(@NotNull CommonArgument<T, ?, ?> argument) {
         Objects.requireNonNull(argument);
         return argument.cast(getArgument(argument.name()));
     }

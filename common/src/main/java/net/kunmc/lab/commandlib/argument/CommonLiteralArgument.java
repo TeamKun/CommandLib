@@ -3,40 +3,23 @@ package net.kunmc.lab.commandlib.argument;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
-import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.StringUtil;
 
 import java.util.Collection;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class CommonLiteralArgument<C extends AbstractCommandContext<?, ?>> extends CommonArgument<String, C> {
+public class CommonLiteralArgument<C extends AbstractCommandContext<?, ?>, SELF extends CommonLiteralArgument<C, SELF>> extends CommonArgument<String, C, SELF> {
     private final Supplier<Collection<String>> literalsSupplier;
 
     public CommonLiteralArgument(String name, Collection<String> literals) {
-        this(name, () -> literals, (Consumer<CommonArgument.Option<String, C>>) option -> {
-        });
-    }
-
-    public CommonLiteralArgument(String name,
-                                 Collection<String> literals,
-                                 Consumer<CommonArgument.Option<String, C>> options) {
-        this(name, () -> literals, options);
+        this(name, () -> literals);
     }
 
     public CommonLiteralArgument(String name, Supplier<Collection<String>> literalsSupplier) {
-        this(name, literalsSupplier, (Consumer<CommonArgument.Option<String, C>>) option -> {
-        });
-    }
-
-    public CommonLiteralArgument(String name,
-                                 Supplier<Collection<String>> literalsSupplier,
-                                 Consumer<CommonArgument.Option<String, C>> options) {
         super(name, StringArgumentType.string());
         this.literalsSupplier = Objects.requireNonNull(literalsSupplier);
-
         suggestionAction(sb -> {
             literalsSupplier.get()
                             .stream()
@@ -44,21 +27,6 @@ public class CommonLiteralArgument<C extends AbstractCommandContext<?, ?>> exten
                                            .isEmpty() || StringUtil.containsIgnoreCase(x, sb.getLatestInput()))
                             .forEach(sb::suggest);
         });
-        applyOptions(options);
-    }
-
-    public CommonLiteralArgument(String name,
-                                 Supplier<Collection<String>> literalsSupplier,
-                                 CommandExecutor<C> executor) {
-        super(name, sb -> {
-            literalsSupplier.get()
-                            .stream()
-                            .filter(x -> sb.getLatestInput()
-                                           .isEmpty() || StringUtil.containsIgnoreCase(x, sb.getLatestInput()))
-                            .forEach(sb::suggest);
-        }, executor, StringArgumentType.string());
-
-        this.literalsSupplier = literalsSupplier;
     }
 
     @Override

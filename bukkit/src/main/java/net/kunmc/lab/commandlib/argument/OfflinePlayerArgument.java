@@ -10,15 +10,9 @@ import org.bukkit.OfflinePlayer;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.Consumer;
 
-public class OfflinePlayerArgument extends Argument<OfflinePlayer> {
+public class OfflinePlayerArgument extends Argument<OfflinePlayer, OfflinePlayerArgument> {
     public OfflinePlayerArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public OfflinePlayerArgument(String name, Consumer<Option<OfflinePlayer, CommandContext>> options) {
         super(name, StringArgumentType.string());
 
         suggestionAction(sb -> {
@@ -30,7 +24,6 @@ public class OfflinePlayerArgument extends Argument<OfflinePlayer> {
                                  .isEmpty() || StringUtil.containsIgnoreCase(x, sb.getLatestInput()))
                   .forEach(sb::suggest);
         });
-        applyOptions(options);
     }
 
     @Override

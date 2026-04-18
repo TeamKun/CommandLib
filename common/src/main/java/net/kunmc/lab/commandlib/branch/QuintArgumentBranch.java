@@ -12,18 +12,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class QuintArgumentBranch<T1, T2, T3, T4, T5, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, ?, T>> extends ArgumentBranch<C, T> {
-    private final CommonArgument<T1, C> argument1;
-    private final CommonArgument<T2, C> argument2;
-    private final CommonArgument<T3, C> argument3;
-    private final CommonArgument<T4, C> argument4;
-    private final CommonArgument<T5, C> argument5;
+    private final CommonArgument<T1, C, ?> argument1;
+    private final CommonArgument<T2, C, ?> argument2;
+    private final CommonArgument<T3, C, ?> argument3;
+    private final CommonArgument<T4, C, ?> argument4;
+    private final CommonArgument<T5, C, ?> argument5;
 
     public QuintArgumentBranch(ArgumentBranchDelegate<C, T> delegate,
-                               CommonArgument<T1, C> argument1,
-                               CommonArgument<T2, C> argument2,
-                               CommonArgument<T3, C> argument3,
-                               CommonArgument<T4, C> argument4,
-                               CommonArgument<T5, C> argument5) {
+                               CommonArgument<T1, C, ?> argument1,
+                               CommonArgument<T2, C, ?> argument2,
+                               CommonArgument<T3, C, ?> argument3,
+                               CommonArgument<T4, C, ?> argument4,
+                               CommonArgument<T5, C, ?> argument5) {
         super(delegate);
         this.argument1 = argument1;
         this.argument2 = argument2;
@@ -94,7 +94,7 @@ public final class QuintArgumentBranch<T1, T2, T3, T4, T5, C extends AbstractCom
         return this;
     }
 
-    public QuintArgumentBranch<T1, T2, T3, T4, T5, C, T> child(@NotNull QuintFunction<CommonArgument<T1, C>, CommonArgument<T2, C>, CommonArgument<T3, C>, CommonArgument<T4, C>, CommonArgument<T5, C>, T> factory) {
+    public QuintArgumentBranch<T1, T2, T3, T4, T5, C, T> child(@NotNull QuintFunction<CommonArgument<T1, C, ?>, CommonArgument<T2, C, ?>, CommonArgument<T3, C, ?>, CommonArgument<T4, C, ?>, CommonArgument<T5, C, ?>, T> factory) {
         child(factory.apply(argument1, argument2, argument3, argument4, argument5));
         return this;
     }

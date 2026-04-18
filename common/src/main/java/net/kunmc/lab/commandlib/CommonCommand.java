@@ -139,47 +139,47 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         return new ArgumentBranch<>(delegateFor(arguments));
     }
 
-    public final <T1> UnaryArgumentBranch<T1, C, T> argument(@NotNull CommonArgument<T1, C> argument) {
+    public final <T1> UnaryArgumentBranch<T1, C, T> argument(@NotNull CommonArgument<T1, C, ?> argument) {
         Arguments<C> arguments = addArguments(List.of(argument));
         return new UnaryArgumentBranch<>(delegateFor(arguments), argument);
     }
 
-    public final <T1, T2> BiArgumentBranch<T1, T2, C, T> argument(@NotNull CommonArgument<T1, C> argument1,
-                                                                  @NotNull CommonArgument<T2, C> argument2) {
+    public final <T1, T2> BiArgumentBranch<T1, T2, C, T> argument(@NotNull CommonArgument<T1, C, ?> argument1,
+                                                                  @NotNull CommonArgument<T2, C, ?> argument2) {
         Arguments<C> arguments = addArguments(List.of(argument1, argument2));
         return new BiArgumentBranch<>(delegateFor(arguments), argument1, argument2);
     }
 
-    public final <T1, T2, T3> TriArgumentBranch<T1, T2, T3, C, T> argument(@NotNull CommonArgument<T1, C> argument1,
-                                                                           @NotNull CommonArgument<T2, C> argument2,
-                                                                           @NotNull CommonArgument<T3, C> argument3) {
+    public final <T1, T2, T3> TriArgumentBranch<T1, T2, T3, C, T> argument(@NotNull CommonArgument<T1, C, ?> argument1,
+                                                                           @NotNull CommonArgument<T2, C, ?> argument2,
+                                                                           @NotNull CommonArgument<T3, C, ?> argument3) {
         Arguments<C> arguments = addArguments(List.of(argument1, argument2, argument3));
         return new TriArgumentBranch<>(delegateFor(arguments), argument1, argument2, argument3);
     }
 
-    public final <T1, T2, T3, T4> TetraArgumentBranch<T1, T2, T3, T4, C, T> argument(@NotNull CommonArgument<T1, C> argument1,
-                                                                                     @NotNull CommonArgument<T2, C> argument2,
-                                                                                     @NotNull CommonArgument<T3, C> argument3,
-                                                                                     @NotNull CommonArgument<T4, C> argument4) {
+    public final <T1, T2, T3, T4> TetraArgumentBranch<T1, T2, T3, T4, C, T> argument(@NotNull CommonArgument<T1, C, ?> argument1,
+                                                                                     @NotNull CommonArgument<T2, C, ?> argument2,
+                                                                                     @NotNull CommonArgument<T3, C, ?> argument3,
+                                                                                     @NotNull CommonArgument<T4, C, ?> argument4) {
         Arguments<C> arguments = addArguments(List.of(argument1, argument2, argument3, argument4));
         return new TetraArgumentBranch<>(delegateFor(arguments), argument1, argument2, argument3, argument4);
     }
 
-    public final <T1, T2, T3, T4, T5> QuintArgumentBranch<T1, T2, T3, T4, T5, C, T> argument(@NotNull CommonArgument<T1, C> argument1,
-                                                                                             @NotNull CommonArgument<T2, C> argument2,
-                                                                                             @NotNull CommonArgument<T3, C> argument3,
-                                                                                             @NotNull CommonArgument<T4, C> argument4,
-                                                                                             @NotNull CommonArgument<T5, C> argument5) {
+    public final <T1, T2, T3, T4, T5> QuintArgumentBranch<T1, T2, T3, T4, T5, C, T> argument(@NotNull CommonArgument<T1, C, ?> argument1,
+                                                                                             @NotNull CommonArgument<T2, C, ?> argument2,
+                                                                                             @NotNull CommonArgument<T3, C, ?> argument3,
+                                                                                             @NotNull CommonArgument<T4, C, ?> argument4,
+                                                                                             @NotNull CommonArgument<T5, C, ?> argument5) {
         Arguments<C> arguments = addArguments(List.of(argument1, argument2, argument3, argument4, argument5));
         return new QuintArgumentBranch<>(delegateFor(arguments), argument1, argument2, argument3, argument4, argument5);
     }
 
-    public final <T1, T2, T3, T4, T5, T6> HexaArgumentBranch<T1, T2, T3, T4, T5, T6, C, T> argument(@NotNull CommonArgument<T1, C> argument1,
-                                                                                                    @NotNull CommonArgument<T2, C> argument2,
-                                                                                                    @NotNull CommonArgument<T3, C> argument3,
-                                                                                                    @NotNull CommonArgument<T4, C> argument4,
-                                                                                                    @NotNull CommonArgument<T5, C> argument5,
-                                                                                                    @NotNull CommonArgument<T6, C> argument6) {
+    public final <T1, T2, T3, T4, T5, T6> HexaArgumentBranch<T1, T2, T3, T4, T5, T6, C, T> argument(@NotNull CommonArgument<T1, C, ?> argument1,
+                                                                                                    @NotNull CommonArgument<T2, C, ?> argument2,
+                                                                                                    @NotNull CommonArgument<T3, C, ?> argument3,
+                                                                                                    @NotNull CommonArgument<T4, C, ?> argument4,
+                                                                                                    @NotNull CommonArgument<T5, C, ?> argument5,
+                                                                                                    @NotNull CommonArgument<T6, C, ?> argument6) {
         Arguments<C> arguments = addArguments(List.of(argument1,
                                                       argument2,
                                                       argument3,
@@ -195,13 +195,13 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
                                         argument6);
     }
 
-    public final <T1, T2, T3, T4, T5, T6, T7> HeptArgumentBranch<T1, T2, T3, T4, T5, T6, T7, C, T> argument(@NotNull CommonArgument<T1, C> argument1,
-                                                                                                            @NotNull CommonArgument<T2, C> argument2,
-                                                                                                            @NotNull CommonArgument<T3, C> argument3,
-                                                                                                            @NotNull CommonArgument<T4, C> argument4,
-                                                                                                            @NotNull CommonArgument<T5, C> argument5,
-                                                                                                            @NotNull CommonArgument<T6, C> argument6,
-                                                                                                            @NotNull CommonArgument<T7, C> argument7) {
+    public final <T1, T2, T3, T4, T5, T6, T7> HeptArgumentBranch<T1, T2, T3, T4, T5, T6, T7, C, T> argument(@NotNull CommonArgument<T1, C, ?> argument1,
+                                                                                                            @NotNull CommonArgument<T2, C, ?> argument2,
+                                                                                                            @NotNull CommonArgument<T3, C, ?> argument3,
+                                                                                                            @NotNull CommonArgument<T4, C, ?> argument4,
+                                                                                                            @NotNull CommonArgument<T5, C, ?> argument5,
+                                                                                                            @NotNull CommonArgument<T6, C, ?> argument6,
+                                                                                                            @NotNull CommonArgument<T7, C, ?> argument7) {
         Arguments<C> arguments = addArguments(List.of(argument1,
                                                       argument2,
                                                       argument3,
@@ -270,11 +270,11 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         };
     }
 
-    private Arguments<C> addArguments(@NotNull List<? extends CommonArgument<?, C>> arguments) {
+    private Arguments<C> addArguments(@NotNull List<? extends CommonArgument<?, C, ?>> arguments) {
         return addArguments(arguments, List.of());
     }
 
-    private Arguments<C> addArguments(@NotNull List<? extends CommonArgument<?, C>> arguments,
+    private Arguments<C> addArguments(@NotNull List<? extends CommonArgument<?, C, ?>> arguments,
                                       @NotNull Collection<? extends T> children) {
         validateArguments(arguments);
         validateChildren(children);
@@ -292,12 +292,12 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         setParentFor(children, arguments);
     }
 
-    private void validateArguments(@NotNull List<? extends CommonArgument<?, C>> arguments) {
-        for (CommonArgument<?, C> argument : arguments) {
+    private void validateArguments(@NotNull List<? extends CommonArgument<?, C, ?>> arguments) {
+        for (CommonArgument<?, C, ?> argument : arguments) {
             Objects.requireNonNull(argument);
         }
         Set<String> names = new HashSet<>();
-        for (CommonArgument<?, C> argument : arguments) {
+        for (CommonArgument<?, C, ?> argument : arguments) {
             if (!names.add(argument.name())) {
                 throw new IllegalArgumentException("Duplicate argument name: " + argument.name());
             }

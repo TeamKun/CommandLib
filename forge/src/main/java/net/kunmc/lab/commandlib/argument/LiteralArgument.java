@@ -1,34 +1,16 @@
 package net.kunmc.lab.commandlib.argument;
 
 import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.command.CommandExecutor;
 
 import java.util.Collection;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class LiteralArgument extends CommonLiteralArgument<CommandContext> {
+public class LiteralArgument extends CommonLiteralArgument<CommandContext, LiteralArgument> {
     public LiteralArgument(String name, Collection<String> literals) {
         super(name, literals);
     }
 
-    public LiteralArgument(String name, Collection<String> literals, Consumer<Option<String, CommandContext>> options) {
-        super(name, literals, options);
-    }
-
     public LiteralArgument(String name, Supplier<Collection<String>> literalsSupplier) {
         super(name, literalsSupplier);
-    }
-
-    public LiteralArgument(String name,
-                           Supplier<Collection<String>> literalsSupplier,
-                           Consumer<Option<String, CommandContext>> options) {
-        super(name, literalsSupplier, options);
-    }
-
-    public LiteralArgument(String name,
-                           Supplier<Collection<String>> literalsSupplier,
-                           CommandExecutor<CommandContext> executor) {
-        super(name, literalsSupplier, executor);
     }
 }

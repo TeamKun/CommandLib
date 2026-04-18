@@ -13,12 +13,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.BiFunction;
 
 public final class BiArgumentBranch<T1, T2, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, ?, T>> extends ArgumentBranch<C, T> {
-    private final CommonArgument<T1, C> argument1;
-    private final CommonArgument<T2, C> argument2;
+    private final CommonArgument<T1, C, ?> argument1;
+    private final CommonArgument<T2, C, ?> argument2;
 
     public BiArgumentBranch(ArgumentBranchDelegate<C, T> delegate,
-                            CommonArgument<T1, C> argument1,
-                            CommonArgument<T2, C> argument2) {
+                            CommonArgument<T1, C, ?> argument1,
+                            CommonArgument<T2, C, ?> argument2) {
         super(delegate);
         this.argument1 = argument1;
         this.argument2 = argument2;
@@ -81,7 +81,7 @@ public final class BiArgumentBranch<T1, T2, C extends AbstractCommandContext<?, 
         return this;
     }
 
-    public BiArgumentBranch<T1, T2, C, T> child(@NotNull BiFunction<CommonArgument<T1, C>, CommonArgument<T2, C>, T> factory) {
+    public BiArgumentBranch<T1, T2, C, T> child(@NotNull BiFunction<CommonArgument<T1, C, ?>, CommonArgument<T2, C, ?>, T> factory) {
         child(factory.apply(argument1, argument2));
         return this;
     }

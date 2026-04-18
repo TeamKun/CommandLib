@@ -67,7 +67,7 @@ class CommonCommandExecutionTest {
 
     @Test
     void argument_chain_can_have_child_command() throws Exception {
-        CommonStringArgument<TestCommandContext> key = new CommonStringArgument<>("key");
+        CommonArgument<String, TestCommandContext, ?> key = new CommonStringArgument<>("key");
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("config") {{
             argument(key).child(keyArg -> new TestCommand("get") {{
                 execute(ctx -> {
@@ -83,7 +83,7 @@ class CommonCommandExecutionTest {
 
     @Test
     void argument_child_command_can_have_its_own_arguments() throws Exception {
-        CommonStringArgument<TestCommandContext> key = new CommonStringArgument<>("key");
+        CommonArgument<String, TestCommandContext, ?> key = new CommonStringArgument<>("key");
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("config") {{
             argument(key).child(keyArg -> new TestCommand("set") {{
                 argument(new CommonStringArgument<>("value")).execute((value, ctx) -> {
@@ -99,7 +99,7 @@ class CommonCommandExecutionTest {
 
     @Test
     void argument_child_command_can_read_parent_argument_after_child_argument_is_parsed() throws Exception {
-        CommonIntegerArgument<TestCommandContext> count = new CommonIntegerArgument<>("count");
+        CommonArgument<Integer, TestCommandContext, ?> count = new CommonIntegerArgument<>("count");
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("counter") {{
             argument(count).child(countArg -> new TestCommand("label") {{
                 argument(new CommonStringArgument<>("name")).execute((name, ctx) -> {
@@ -115,7 +115,7 @@ class CommonCommandExecutionTest {
 
     @Test
     void argument_branch_can_have_multiple_child_factories() throws Exception {
-        CommonStringArgument<TestCommandContext> key = new CommonStringArgument<>("key");
+        CommonArgument<String, TestCommandContext, ?> key = new CommonStringArgument<>("key");
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("config") {{
             argument(key).child(keyArg -> new TestCommand("get") {{
                              execute(ctx -> ctx.sendMessage("get:" + ctx.getArgument(keyArg)));

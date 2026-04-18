@@ -5,17 +5,9 @@ import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.minecraft.command.arguments.BlockStateInput;
 
-import java.util.function.Consumer;
-
-public class BlockStateArgument extends Argument<BlockStateInput> {
+public class BlockStateArgument extends Argument<BlockStateInput, BlockStateArgument> {
     public BlockStateArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public BlockStateArgument(String name, Consumer<Option<BlockStateInput, CommandContext>> options) {
         super(name, net.minecraft.command.arguments.BlockStateArgument.blockState());
-        applyOptions(options);
     }
 
     @Override

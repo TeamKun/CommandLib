@@ -13,9 +13,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public final class UnaryArgumentBranch<T1, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, ?, T>> extends ArgumentBranch<C, T> {
-    private final CommonArgument<T1, C> argument1;
+    private final CommonArgument<T1, C, ?> argument1;
 
-    public UnaryArgumentBranch(ArgumentBranchDelegate<C, T> delegate, CommonArgument<T1, C> argument1) {
+    public UnaryArgumentBranch(ArgumentBranchDelegate<C, T> delegate, CommonArgument<T1, C, ?> argument1) {
         super(delegate);
         this.argument1 = argument1;
     }
@@ -77,7 +77,7 @@ public final class UnaryArgumentBranch<T1, C extends AbstractCommandContext<?, ?
         return this;
     }
 
-    public UnaryArgumentBranch<T1, C, T> child(@NotNull Function<CommonArgument<T1, C>, T> factory) {
+    public UnaryArgumentBranch<T1, C, T> child(@NotNull Function<CommonArgument<T1, C, ?>, T> factory) {
         child(factory.apply(argument1));
         return this;
     }

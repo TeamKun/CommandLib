@@ -7,17 +7,9 @@ import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.minecraft.command.arguments.PotionArgument;
 import net.minecraft.potion.Effect;
 
-import java.util.function.Consumer;
-
-public class EffectArgument extends Argument<Effect> {
+public class EffectArgument extends Argument<Effect, EffectArgument> {
     public EffectArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public EffectArgument(String name, Consumer<Option<Effect, CommandContext>> options) {
         super(name, PotionArgument.mobEffect());
-        applyOptions(options);
     }
 
     @Override

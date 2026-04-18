@@ -6,17 +6,9 @@ import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 
-import java.util.function.Consumer;
-
-public class TeamArgument extends Argument<ScorePlayerTeam> {
+public class TeamArgument extends Argument<ScorePlayerTeam, TeamArgument> {
     public TeamArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public TeamArgument(String name, Consumer<Option<ScorePlayerTeam, CommandContext>> options) {
         super(name, net.minecraft.command.arguments.TeamArgument.team());
-        applyOptions(options);
     }
 
     @Override

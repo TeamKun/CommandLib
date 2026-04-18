@@ -9,15 +9,8 @@ import net.kunmc.lab.commandlib.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
-import java.util.function.Consumer;
-
-public class WorldArgument extends Argument<World> {
+public class WorldArgument extends Argument<World, WorldArgument> {
     public WorldArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public WorldArgument(String name, Consumer<Option<World, CommandContext>> options) {
         super(name, StringArgumentType.word());
 
         suggestionAction(sb -> {
@@ -29,7 +22,6 @@ public class WorldArgument extends Argument<World> {
                   .filter(x -> input.isEmpty() || StringUtil.containsIgnoreCase(x, input))
                   .forEach(sb::suggest);
         });
-        applyOptions(options);
     }
 
     @Override

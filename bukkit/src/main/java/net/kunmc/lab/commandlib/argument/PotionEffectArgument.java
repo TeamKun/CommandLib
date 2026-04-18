@@ -8,19 +8,11 @@ import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentMobEffect;
 import net.kunmc.lab.commandlib.util.nms.world.NMSCraftPotionEffectType;
 import org.bukkit.potion.PotionEffect;
 
-import java.util.function.Consumer;
-
-public class PotionEffectArgument extends Argument<PotionEffect> {
+public class PotionEffectArgument extends Argument<PotionEffect, PotionEffectArgument> {
     public PotionEffectArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public PotionEffectArgument(String name, Consumer<Option<PotionEffect, CommandContext>> options) {
         super(name,
               NMSArgumentMobEffect.create()
                                   .argument());
-        applyOptions(options);
     }
 
     @Override

@@ -10,15 +10,9 @@ import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.Objects;
-import java.util.function.Consumer;
 
-public class GameProfileArgument extends Argument<GameProfile> {
+public class GameProfileArgument extends Argument<GameProfile, GameProfileArgument> {
     public GameProfileArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public GameProfileArgument(String name, Consumer<Option<GameProfile, CommandContext>> options) {
         super(name, StringArgumentType.string());
 
         suggestionAction(sb -> {
@@ -36,7 +30,6 @@ public class GameProfileArgument extends Argument<GameProfile> {
                              .isEmpty() || StringUtil.containsIgnoreCase(x, sb.getLatestInput()))
               .forEach(sb::suggest);
         });
-        applyOptions(options);
     }
 
     @Override

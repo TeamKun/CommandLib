@@ -8,19 +8,11 @@ import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentScoreboardTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.Team;
 
-import java.util.function.Consumer;
-
-public class TeamArgument extends Argument<Team> {
+public class TeamArgument extends Argument<Team, TeamArgument> {
     public TeamArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public TeamArgument(String name, Consumer<Option<Team, CommandContext>> options) {
         super(name,
               NMSArgumentScoreboardTeam.create()
                                        .argument());
-        applyOptions(options);
     }
 
     @Override

@@ -7,17 +7,9 @@ import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.minecraft.command.arguments.ItemArgument;
 import net.minecraft.item.ItemStack;
 
-import java.util.function.Consumer;
-
-public class ItemStackArgument extends Argument<ItemStack> {
+public class ItemStackArgument extends Argument<ItemStack, ItemStackArgument> {
     public ItemStackArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public ItemStackArgument(String name, Consumer<Option<ItemStack, CommandContext>> options) {
         super(name, ItemArgument.item());
-        applyOptions(options);
     }
 
     @Override

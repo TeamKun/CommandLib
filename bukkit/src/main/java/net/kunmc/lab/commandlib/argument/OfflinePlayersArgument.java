@@ -15,16 +15,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
+public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>, OfflinePlayersArgument> {
     public OfflinePlayersArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public OfflinePlayersArgument(String name, Consumer<Option<List<OfflinePlayer>, CommandContext>> options) {
         super(name,
               NMSArgumentProfile.create()
                                 .argument());
@@ -50,7 +44,6 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>> {
                 .filter(x -> input.isEmpty() || x.startsWith(input))
                 .forEach(sb::suggest);
         });
-        applyOptions(options);
     }
 
     @Override

@@ -4,26 +4,13 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 
-import java.util.function.Consumer;
-
-public class CommonStringArgument<C extends AbstractCommandContext<?, ?>> extends CommonArgument<String, C> {
+public class CommonStringArgument<C extends AbstractCommandContext<?, ?>, SELF extends CommonStringArgument<C, SELF>> extends CommonArgument<String, C, SELF> {
     public CommonStringArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public CommonStringArgument(String name, Consumer<Option<String, C>> options) {
-        this(name, options, Type.PHRASE_QUOTED);
+        super(name, Type.PHRASE_QUOTED.type);
     }
 
     public CommonStringArgument(String name, Type type) {
-        this(name, option -> {
-        }, type);
-    }
-
-    public CommonStringArgument(String name, Consumer<Option<String, C>> options, Type type) {
         super(name, type.type);
-        applyOptions(options);
     }
 
     @Override

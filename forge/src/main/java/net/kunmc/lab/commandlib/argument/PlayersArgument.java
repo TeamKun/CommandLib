@@ -1,6 +1,5 @@
 package net.kunmc.lab.commandlib.argument;
 
-
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
@@ -10,17 +9,10 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
-public class PlayersArgument extends Argument<List<ServerPlayerEntity>> {
+public class PlayersArgument extends Argument<List<ServerPlayerEntity>, PlayersArgument> {
     public PlayersArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public PlayersArgument(String name, Consumer<Option<List<ServerPlayerEntity>, CommandContext>> options) {
         super(name, EntityArgument.players());
-        applyOptions(options);
     }
 
     @Override

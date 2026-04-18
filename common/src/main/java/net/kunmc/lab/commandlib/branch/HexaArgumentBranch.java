@@ -12,20 +12,20 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class HexaArgumentBranch<T1, T2, T3, T4, T5, T6, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, ?, T>> extends ArgumentBranch<C, T> {
-    private final CommonArgument<T1, C> argument1;
-    private final CommonArgument<T2, C> argument2;
-    private final CommonArgument<T3, C> argument3;
-    private final CommonArgument<T4, C> argument4;
-    private final CommonArgument<T5, C> argument5;
-    private final CommonArgument<T6, C> argument6;
+    private final CommonArgument<T1, C, ?> argument1;
+    private final CommonArgument<T2, C, ?> argument2;
+    private final CommonArgument<T3, C, ?> argument3;
+    private final CommonArgument<T4, C, ?> argument4;
+    private final CommonArgument<T5, C, ?> argument5;
+    private final CommonArgument<T6, C, ?> argument6;
 
     public HexaArgumentBranch(ArgumentBranchDelegate<C, T> delegate,
-                              CommonArgument<T1, C> argument1,
-                              CommonArgument<T2, C> argument2,
-                              CommonArgument<T3, C> argument3,
-                              CommonArgument<T4, C> argument4,
-                              CommonArgument<T5, C> argument5,
-                              CommonArgument<T6, C> argument6) {
+                              CommonArgument<T1, C, ?> argument1,
+                              CommonArgument<T2, C, ?> argument2,
+                              CommonArgument<T3, C, ?> argument3,
+                              CommonArgument<T4, C, ?> argument4,
+                              CommonArgument<T5, C, ?> argument5,
+                              CommonArgument<T6, C, ?> argument6) {
         super(delegate);
         this.argument1 = argument1;
         this.argument2 = argument2;
@@ -98,7 +98,7 @@ public final class HexaArgumentBranch<T1, T2, T3, T4, T5, T6, C extends Abstract
         return this;
     }
 
-    public HexaArgumentBranch<T1, T2, T3, T4, T5, T6, C, T> child(@NotNull HexaFunction<CommonArgument<T1, C>, CommonArgument<T2, C>, CommonArgument<T3, C>, CommonArgument<T4, C>, CommonArgument<T5, C>, CommonArgument<T6, C>, T> factory) {
+    public HexaArgumentBranch<T1, T2, T3, T4, T5, T6, C, T> child(@NotNull HexaFunction<CommonArgument<T1, C, ?>, CommonArgument<T2, C, ?>, CommonArgument<T3, C, ?>, CommonArgument<T4, C, ?>, CommonArgument<T5, C, ?>, CommonArgument<T6, C, ?>, T> factory) {
         child(factory.apply(argument1, argument2, argument3, argument4, argument5, argument6));
         return this;
     }

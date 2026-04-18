@@ -7,19 +7,11 @@ import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentPlayer;
 import org.bukkit.entity.Player;
 
-import java.util.function.Consumer;
-
-public class PlayerArgument extends Argument<Player> {
+public class PlayerArgument extends Argument<Player, PlayerArgument> {
     public PlayerArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public PlayerArgument(String name, Consumer<Option<Player, CommandContext>> options) {
         super(name,
               NMSArgumentPlayer.create()
                                .argument());
-        applyOptions(options);
     }
 
     @Override

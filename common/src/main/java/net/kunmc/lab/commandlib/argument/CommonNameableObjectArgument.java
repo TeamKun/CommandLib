@@ -8,34 +8,18 @@ import net.kunmc.lab.commandlib.util.StringUtil;
 
 import java.util.Collection;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class CommonNameableObjectArgument<T extends Nameable, C extends AbstractCommandContext<?, ?>> extends CommonArgument<T, C> {
+public class CommonNameableObjectArgument<T extends Nameable, C extends AbstractCommandContext<?, ?>, SELF extends CommonNameableObjectArgument<T, C, SELF>> extends CommonArgument<T, C, SELF> {
     private final Supplier<Collection<? extends T>> candidatesSupplier;
 
     public CommonNameableObjectArgument(String name, Collection<? extends T> candidates) {
-        this(name, candidates, option -> {
-        });
-    }
-
-    public CommonNameableObjectArgument(String name,
-                                        Collection<? extends T> candidates,
-                                        Consumer<Option<T, C>> options) {
-        this(name, () -> candidates, options);
+        this(name, () -> candidates);
     }
 
     public CommonNameableObjectArgument(String name, Supplier<Collection<? extends T>> candidatesSupplier) {
-        this(name, candidatesSupplier, option -> {
-        });
-    }
-
-    public CommonNameableObjectArgument(String name,
-                                        Supplier<Collection<? extends T>> candidatesSupplier,
-                                        Consumer<Option<T, C>> options) {
         super(name, StringArgumentType.string());
         this.candidatesSupplier = Objects.requireNonNull(candidatesSupplier);
-
         suggestionAction(sb -> {
             candidatesSupplier.get()
                               .stream()
@@ -45,7 +29,6 @@ public class CommonNameableObjectArgument<T extends Nameable, C extends Abstract
                                              .isEmpty() || StringUtil.containsIgnoreCase(x, sb.getLatestInput()))
                               .forEach(sb::suggest);
         });
-        applyOptions(options);
     }
 
     @Override

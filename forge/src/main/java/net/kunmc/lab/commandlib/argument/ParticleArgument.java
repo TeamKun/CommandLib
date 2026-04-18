@@ -5,17 +5,9 @@ import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.minecraft.particles.IParticleData;
 
-import java.util.function.Consumer;
-
-public class ParticleArgument extends Argument<IParticleData> {
+public class ParticleArgument extends Argument<IParticleData, ParticleArgument> {
     public ParticleArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public ParticleArgument(String name, Consumer<Option<IParticleData, CommandContext>> options) {
         super(name, net.minecraft.command.arguments.ParticleArgument.particle());
-        applyOptions(options);
     }
 
     @Override

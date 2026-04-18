@@ -6,17 +6,9 @@ import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.minecraft.command.arguments.Vec3Argument;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.function.Consumer;
-
-public class BlockPosArgument extends Argument<BlockPos> {
+public class BlockPosArgument extends Argument<BlockPos, BlockPosArgument> {
     public BlockPosArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public BlockPosArgument(String name, Consumer<Option<BlockPos, CommandContext>> options) {
         super(name, Vec3Argument.vec3());
-        applyOptions(options);
     }
 
     @Override

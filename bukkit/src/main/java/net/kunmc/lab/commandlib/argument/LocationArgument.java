@@ -9,19 +9,11 @@ import net.kunmc.lab.commandlib.util.nms.command.NMSCommandListenerWrapper;
 import net.kunmc.lab.commandlib.util.nms.world.NMSVec3D;
 import org.bukkit.Location;
 
-import java.util.function.Consumer;
-
-public class LocationArgument extends Argument<Location> {
+public class LocationArgument extends Argument<Location, LocationArgument> {
     public LocationArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public LocationArgument(String name, Consumer<Option<Location, CommandContext>> options) {
         super(name,
               NMSArgumentVec3D.create()
                               .argument());
-        applyOptions(options);
     }
 
     @Override

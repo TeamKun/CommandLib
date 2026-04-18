@@ -4,17 +4,9 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 
-import java.util.function.Consumer;
-
-public class CommonBooleanArgument<C extends AbstractCommandContext<?, ?>> extends CommonArgument<Boolean, C> {
+public class CommonBooleanArgument<C extends AbstractCommandContext<?, ?>, SELF extends CommonBooleanArgument<C, SELF>> extends CommonArgument<Boolean, C, SELF> {
     public CommonBooleanArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public CommonBooleanArgument(String name, Consumer<Option<Boolean, C>> options) {
         super(name, BoolArgumentType.bool());
-        applyOptions(options);
     }
 
     @Override

@@ -8,19 +8,11 @@ import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentTile;
 import net.kunmc.lab.commandlib.util.nms.world.NMSCraftBlockData;
 import org.bukkit.block.data.BlockData;
 
-import java.util.function.Consumer;
-
-public class BlockDataArgument extends Argument<BlockData> {
+public class BlockDataArgument extends Argument<BlockData, BlockDataArgument> {
     public BlockDataArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public BlockDataArgument(String name, Consumer<Option<BlockData, CommandContext>> options) {
         super(name,
               NMSArgumentTile.create()
                              .argument());
-        applyOptions(options);
     }
 
     @Override

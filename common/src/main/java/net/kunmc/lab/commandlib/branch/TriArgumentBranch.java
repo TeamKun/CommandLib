@@ -12,14 +12,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class TriArgumentBranch<T1, T2, T3, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, ?, T>> extends ArgumentBranch<C, T> {
-    private final CommonArgument<T1, C> argument1;
-    private final CommonArgument<T2, C> argument2;
-    private final CommonArgument<T3, C> argument3;
+    private final CommonArgument<T1, C, ?> argument1;
+    private final CommonArgument<T2, C, ?> argument2;
+    private final CommonArgument<T3, C, ?> argument3;
 
     public TriArgumentBranch(ArgumentBranchDelegate<C, T> delegate,
-                             CommonArgument<T1, C> argument1,
-                             CommonArgument<T2, C> argument2,
-                             CommonArgument<T3, C> argument3) {
+                             CommonArgument<T1, C, ?> argument1,
+                             CommonArgument<T2, C, ?> argument2,
+                             CommonArgument<T3, C, ?> argument3) {
         super(delegate);
         this.argument1 = argument1;
         this.argument2 = argument2;
@@ -86,7 +86,7 @@ public final class TriArgumentBranch<T1, T2, T3, C extends AbstractCommandContex
         return this;
     }
 
-    public TriArgumentBranch<T1, T2, T3, C, T> child(@NotNull TriFunction<CommonArgument<T1, C>, CommonArgument<T2, C>, CommonArgument<T3, C>, T> factory) {
+    public TriArgumentBranch<T1, T2, T3, C, T> child(@NotNull TriFunction<CommonArgument<T1, C, ?>, CommonArgument<T2, C, ?>, CommonArgument<T3, C, ?>, T> factory) {
         child(factory.apply(argument1, argument2, argument3));
         return this;
     }

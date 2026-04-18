@@ -407,14 +407,7 @@ the value returned by `ctx.getOption(otherOption)`, so the other option's defaul
 public final class TestPlugin extends JavaPlugin {
     public void onEnable() {
         CommandLib.register(this, new Command("test") {{
-            argument(new EnumArgument<>("block", Material.class, option -> {
-                option.filter(x -> {
-                    if (!x.isBlock()) {
-                        // Displays an error message to the sender if the argument is not a block material.
-                        throw new InvalidArgumentException(x.name() + " is not block.");
-                    }
-                });
-            })).execute((m, ctx) -> {
+            argument(new EnumArgument<>("block", Material.class).validator(Material::isBlock)).execute((m, ctx) -> {
                 // Do something
             });
         }});
@@ -434,7 +427,7 @@ public final class TestPlugin extends JavaPlugin {
             argument(new PlayerArgument("player")).execute((player, ctx) -> {
                 // Do something
             });
-            argument(new Player("player"), new StringArgument("message")).execute((player, message, ctx) -> {
+            argument(new PlayerArgument("player"), new StringArgument("message")).execute((player, message, ctx) -> {
                 // Do something
             });
         }});

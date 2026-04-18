@@ -8,32 +8,18 @@ import net.kunmc.lab.commandlib.util.StringUtil;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class CommonObjectArgument<T, C extends AbstractCommandContext<?, ?>> extends CommonArgument<T, C> {
+public class CommonObjectArgument<T, C extends AbstractCommandContext<?, ?>, SELF extends CommonObjectArgument<T, C, SELF>> extends CommonArgument<T, C, SELF> {
     private final Supplier<Map<String, ? extends T>> mapSupplier;
 
     public CommonObjectArgument(String name, Map<String, ? extends T> nameToObjectMap) {
-        this(name, nameToObjectMap, option -> {
-        });
-    }
-
-    public CommonObjectArgument(String name, Map<String, ? extends T> nameToObjectMap, Consumer<Option<T, C>> options) {
-        this(name, () -> nameToObjectMap, options);
+        this(name, () -> nameToObjectMap);
     }
 
     public CommonObjectArgument(String name, Supplier<Map<String, ? extends T>> mapSupplier) {
-        this(name, mapSupplier, option -> {
-        });
-    }
-
-    public CommonObjectArgument(String name,
-                                Supplier<Map<String, ? extends T>> mapSupplier,
-                                Consumer<Option<T, C>> options) {
         super(name, StringArgumentType.string());
         this.mapSupplier = Objects.requireNonNull(mapSupplier);
-
         suggestionAction(sb -> {
             mapSupplier.get()
                        .entrySet()
@@ -44,7 +30,6 @@ public class CommonObjectArgument<T, C extends AbstractCommandContext<?, ?>> ext
                                       .isEmpty() || StringUtil.containsIgnoreCase(x, sb.getLatestInput()))
                        .forEach(sb::suggest);
         });
-        applyOptions(options);
     }
 
     @Override

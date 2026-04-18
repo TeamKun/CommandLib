@@ -6,17 +6,9 @@ import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.minecraft.entity.Entity;
 
-import java.util.function.Consumer;
-
-public class EntityArgument extends Argument<Entity> {
+public class EntityArgument extends Argument<Entity, EntityArgument> {
     public EntityArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public EntityArgument(String name, Consumer<Option<Entity, CommandContext>> options) {
         super(name, net.minecraft.command.arguments.EntityArgument.entity());
-        applyOptions(options);
     }
 
     @Override

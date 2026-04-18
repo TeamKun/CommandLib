@@ -14,15 +14,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Consumer;
 
-public class UUIDArgument extends Argument<UUID> {
+public class UUIDArgument extends Argument<UUID, UUIDArgument> {
     public UUIDArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public UUIDArgument(String name, Consumer<Option<UUID, CommandContext>> options) {
         super(name, StringArgumentType.string());
 
         suggestionAction(sb -> {
@@ -52,7 +46,6 @@ public class UUIDArgument extends Argument<UUID> {
             });
         });
         displayDefaultSuggestions(false);
-        applyOptions(options);
     }
 
     @Override

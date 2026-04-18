@@ -8,19 +8,12 @@ import net.kunmc.lab.commandlib.util.nms.argument.NMSArgumentEntities;
 import org.bukkit.entity.Entity;
 
 import java.util.List;
-import java.util.function.Consumer;
 
-public class EntitiesArgument extends Argument<List<Entity>> {
+public class EntitiesArgument extends Argument<List<Entity>, EntitiesArgument> {
     public EntitiesArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public EntitiesArgument(String name, Consumer<Option<List<Entity>, CommandContext>> options) {
         super(name,
               NMSArgumentEntities.create()
                                  .argument());
-        applyOptions(options);
     }
 
     @Override

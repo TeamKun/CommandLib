@@ -13,16 +13,10 @@ import org.bukkit.OfflinePlayer;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class UUIDsArgument extends Argument<List<UUID>> {
+public class UUIDsArgument extends Argument<List<UUID>, UUIDsArgument> {
     public UUIDsArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public UUIDsArgument(String name, Consumer<Option<List<UUID>, CommandContext>> options) {
         super(name,
               NMSArgumentProfile.create()
                                 .argument());
@@ -59,7 +53,6 @@ public class UUIDsArgument extends Argument<List<UUID>> {
                 .forEach(sb::suggest);
         });
         displayDefaultSuggestions(false);
-        applyOptions(options);
     }
 
     @Override

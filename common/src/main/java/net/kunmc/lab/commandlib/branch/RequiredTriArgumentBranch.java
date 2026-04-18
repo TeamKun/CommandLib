@@ -13,16 +13,16 @@ import java.util.Collection;
 import java.util.function.Consumer;
 
 public final class RequiredTriArgumentBranch<S, T1, T2, T3, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, ?, T>> extends RequiredArgumentBranch<S, C, T> {
-    private final CommonArgument<T1, C> argument1;
-    private final CommonArgument<T2, C> argument2;
-    private final CommonArgument<T3, C> argument3;
+    private final CommonArgument<T1, C, ?> argument1;
+    private final CommonArgument<T2, C, ?> argument2;
+    private final CommonArgument<T3, C, ?> argument3;
 
     public RequiredTriArgumentBranch(@NotNull Extractor<C, S> extractor,
                                      @NotNull Consumer<CommandExecutor<C>> executeRegistrar,
                                      @NotNull Consumer<Collection<? extends T>> childrenAdder,
-                                     @NotNull CommonArgument<T1, C> argument1,
-                                     @NotNull CommonArgument<T2, C> argument2,
-                                     @NotNull CommonArgument<T3, C> argument3) {
+                                     @NotNull CommonArgument<T1, C, ?> argument1,
+                                     @NotNull CommonArgument<T2, C, ?> argument2,
+                                     @NotNull CommonArgument<T3, C, ?> argument3) {
         super(extractor, executeRegistrar, childrenAdder);
         this.argument1 = argument1;
         this.argument2 = argument2;
@@ -38,7 +38,7 @@ public final class RequiredTriArgumentBranch<S, T1, T2, T3, C extends AbstractCo
         return this;
     }
 
-    public RequiredTriArgumentBranch<S, T1, T2, T3, C, T> child(@NotNull TriFunction<CommonArgument<T1, C>, CommonArgument<T2, C>, CommonArgument<T3, C>, T> factory) {
+    public RequiredTriArgumentBranch<S, T1, T2, T3, C, T> child(@NotNull TriFunction<CommonArgument<T1, C, ?>, CommonArgument<T2, C, ?>, CommonArgument<T3, C, ?>, T> factory) {
         super.child(factory.apply(argument1, argument2, argument3));
         return this;
     }

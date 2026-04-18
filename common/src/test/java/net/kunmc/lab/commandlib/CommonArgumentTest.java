@@ -109,10 +109,8 @@ class CommonArgumentTest {
     @Test
     void validator_and_transformer_are_applied_after_parsing() throws Exception {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("set") {{
-            argument(new CommonIntegerArgument<TestCommandContext>("amount", option -> {
-                option.validator(value -> value >= 0)
-                      .transformer(value -> value * 2);
-            })).execute((amount, ctx) -> {
+            argument(new IntArg("amount").validator(value -> value >= 0)
+                                         .transformer(value -> value * 2)).execute((amount, ctx) -> {
                 ctx.sendMessage("amount=" + amount);
             });
         }});
@@ -128,9 +126,9 @@ class CommonArgumentTest {
     @Test
     void additional_parser_can_recover_from_library_parse_failure() throws Exception {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("set") {{
-            argument(new CommonObjectArgument<Integer, TestCommandContext>("item", Map.of("sword", 1), option -> {
-                option.additionalParser((ctx, input) -> input.equals("axe") ? 2 : null);
-            })).execute((item, ctx) -> {
+            argument(new ObjArg<>("item",
+                                  Map.of("sword",
+                                         1)).additionalParser((ctx, input) -> input.equals("axe") ? 2 : null)).execute((item, ctx) -> {
                 ctx.sendMessage("item=" + item);
             });
         }});
@@ -177,16 +175,32 @@ class CommonArgumentTest {
     @Test
     void suggestions_support_async_actions() {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("search") {{
-            argument(new CommonStringArgument<>("word", option -> {
-                option.asyncSuggestionAction(sb -> CompletableFuture.runAsync(() -> {
-                    sb.suggest("alpha");
-                    sb.suggest("beta");
-                }));
-            })).execute((word, ctx) -> {
+            argument(new StrArg("word").asyncSuggestionAction(sb -> CompletableFuture.runAsync(() -> {
+                sb.suggest("alpha");
+                sb.suggest("beta");
+            }))).execute((word, ctx) -> {
             });
         }});
 
         assertThat(runner.suggest("search ")).containsExactlyInAnyOrder("alpha", "beta");
+    }
+
+    private static final class IntArg extends CommonIntegerArgument<TestCommandContext, IntArg> {
+        IntArg(String name) {
+            super(name);
+        }
+    }
+
+    private static final class ObjArg<T> extends CommonObjectArgument<T, TestCommandContext, ObjArg<T>> {
+        ObjArg(String name, Map<String, ? extends T> map) {
+            super(name, map);
+        }
+    }
+
+    private static final class StrArg extends CommonStringArgument<TestCommandContext, StrArg> {
+        StrArg(String name) {
+            super(name);
+        }
     }
 
     enum Direction {

@@ -5,16 +5,10 @@ import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.suggestion.SuggestionAction;
 import net.minecraft.command.arguments.GameProfileArgument;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class UnparsedArgument extends Argument<String> {
+public class UnparsedArgument extends Argument<String, UnparsedArgument> {
     public UnparsedArgument(String name) {
-        this(name, option -> {
-        });
-    }
-
-    public UnparsedArgument(String name, Consumer<Option<String, CommandContext>> options) {
         super(name, GameProfileArgument.gameProfile());
         displayDefaultSuggestions(false);
         suggestionAction(((Supplier<SuggestionAction<CommandContext>>) () -> {
@@ -24,7 +18,6 @@ public class UnparsedArgument extends Argument<String> {
             }
             return suggestionAction();
         }).get());
-        applyOptions(options);
     }
 
     @Override

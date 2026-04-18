@@ -28,7 +28,7 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
         this.permissionPrefix = permissionPrefix;
     }
 
-    private RequiredArgumentBuilder<S, ?> buildArgument(CommonArgument<?, C> argument,
+    private RequiredArgumentBuilder<S, ?> buildArgument(CommonArgument<?, C, ?> argument,
                                                         CommandExecutor<C> helpAction,
                                                         CommonCommand<C, ?, ?> parent) {
         RequiredArgumentBuilder<S, ?> builder = RequiredArgumentBuilder.argument(argument.name(), argument.type());

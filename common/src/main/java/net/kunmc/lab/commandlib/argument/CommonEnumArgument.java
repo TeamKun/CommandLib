@@ -8,19 +8,12 @@ import net.kunmc.lab.commandlib.util.StringUtil;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.Consumer;
 
-public class CommonEnumArgument<T extends Enum<T>, C extends AbstractCommandContext<?, ?>> extends CommonArgument<T, C> {
+public class CommonEnumArgument<T extends Enum<T>, C extends AbstractCommandContext<?, ?>, SELF extends CommonEnumArgument<T, C, SELF>> extends CommonArgument<T, C, SELF> {
     private final Class<T> clazz;
 
     public CommonEnumArgument(String name, Class<T> clazz) {
-        this(name, clazz, option -> {
-        });
-    }
-
-    public CommonEnumArgument(String name, Class<T> clazz, Consumer<CommonArgument.Option<T, C>> options) {
         super(name, StringArgumentType.string());
-
         this.clazz = Objects.requireNonNull(clazz);
         suggestionAction(sb -> {
             Arrays.stream(clazz.getEnumConstants())
@@ -31,7 +24,6 @@ public class CommonEnumArgument<T extends Enum<T>, C extends AbstractCommandCont
                                  .isEmpty() || StringUtil.containsIgnoreCase(x, sb.getLatestInput()))
                   .forEach(sb::suggest);
         });
-        applyOptions(options);
     }
 
     @Override
