@@ -48,6 +48,14 @@ import java.util.concurrent.atomic.AtomicBoolean
  * - nmsGenerationServerJar:
  *   Server jar name used by generatePatchedJar. Default: "server.jar".
  *
+ * - pluginJarDownloads:
+ *   Format: "<url>=><file name>" entries joined by "|".
+ *   Each entry is downloaded into every configured copyTargets directory.
+ *
+ * - autoReloaderJarDownloadUrl:
+ *   Override URL for AutoReloader-1.1.0.jar. It can also be supplied with the
+ *   COMMANDLIB_AUTORELOADER_JAR_URL environment variable.
+ *
  * Minimal example:
  *   extra["bukkitApiDependency"] = "io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT"
  *   extra["javaVersion"] = "17"
@@ -101,6 +109,14 @@ val includeProtocolLib = project.optionalBooleanProperty("includeProtocolLib")
 val explicitNmsJarPaths = project.optionalListProperty("nmsJarPaths")
 val nmsGenerationServerJar = project.optionalStringProperty("nmsGenerationServerJar") ?: "server.jar"
 val javaToolchains = project.extensions.getByType<JavaToolchainService>()
+val autoReloaderJarDownloadUrl = providers.gradleProperty("autoReloaderJarDownloadUrl")
+    .orElse(providers.environmentVariable("COMMANDLIB_AUTORELOADER_JAR_URL"))
+    .orElse("https://github.com/Maru32768/AutoReloader/releases/download/1.1.0/AutoReloader-1.1.0.jar")
+val defaultPluginJarDownloads = mutableListOf(
+    "${resolvePlugManXDownloadUrl(minecraftServerVersion)}=>PlugManX.jar",
+    "${autoReloaderJarDownloadUrl.get()}=>AutoReloader-1.1.0.jar",
+)
+val pluginJarDownloads = project.optionalListProperty("pluginJarDownloads").ifEmpty { defaultPluginJarDownloads }
 
 group = "net.kunmc.lab"
 version = "1.0.0"
@@ -210,24 +226,29 @@ if (includeProtocolLib) {
 
 tasks.register("buildAndCopy") {
     group = "build"
-    dependsOn("build", "copyToServer")
+    dependsOn("build", "copyToServer", "downloadPluginJars")
 }
 
 tasks.register("downloadServerJar") {
     doLast {
         serverJarDownloads.forEach { download ->
-            val (urlString, relativePath) = download.split("=>", limit = 2).let { parts ->
-                require(parts.size == 2) { "Invalid serverJarDownloads entry: $download" }
-                parts[0].trim() to parts[1].trim()
-            }
+            val (urlString, relativePath) = parseDownloadEntry(download, "serverJarDownloads")
             val outputFile = projectDir.toPath().resolve(relativePath).toFile()
-            if (!outputFile.exists()) {
-                outputFile.parentFile.mkdirs()
-                URL(urlString).openStream().use { input ->
-                    outputFile.outputStream().use { output ->
-                        input.copyTo(output)
-                    }
-                }
+            downloadIfMissing(urlString, outputFile)
+        }
+    }
+}
+
+tasks.register("downloadPluginJars") {
+    group = "setup"
+    doLast {
+        pluginJarDownloads.forEach { download ->
+            val (urlString, fileName) = parseDownloadEntry(download, "pluginJarDownloads")
+            require(!fileName.contains("/") && !fileName.contains("\\")) {
+                "pluginJarDownloads destination must be a file name, not a path: $download"
+            }
+            copyTargets.forEach { target ->
+                downloadIfMissing(urlString, projectDir.toPath().resolve(target).resolve(fileName).toFile())
             }
         }
     }
@@ -352,6 +373,34 @@ fun isPaperLegacyPatchedJarVersion(version: String): Boolean {
     val minor = parts.getOrNull(1) ?: return false
     val patch = parts.getOrNull(2) ?: 0
     return minor < 18 && !(minor == 17 && patch > 2)
+}
+
+fun resolvePlugManXDownloadUrl(minecraftServerVersion: String): String =
+    when (minecraftServerVersion) {
+        "1.20.4", "1.20.5", "1.20.6", "1.21" ->
+            "https://cdn.modrinth.com/data/yro4niHu/versions/bYRNAPF0/PlugManX-3.0.2.jar"
+
+        else ->
+            "https://edge.forgecdn.net/files/4529/697/PlugManX.jar"
+    }
+
+fun parseDownloadEntry(download: String, propertyName: String): Pair<String, String> =
+    download.split("=>", limit = 2).let { parts ->
+        require(parts.size == 2) { "Invalid $propertyName entry: $download" }
+        parts[0].trim() to parts[1].trim()
+    }
+
+fun downloadIfMissing(urlString: String, outputFile: File) {
+    if (outputFile.exists()) {
+        return
+    }
+
+    outputFile.parentFile.mkdirs()
+    URL(urlString).openStream().use { input ->
+        outputFile.outputStream().use { output ->
+            input.copyTo(output)
+        }
+    }
 }
 
 fun java.nio.file.Path.resolveFirstMatchingJar(relativeRoot: String, fileNameRegex: String): java.nio.file.Path {

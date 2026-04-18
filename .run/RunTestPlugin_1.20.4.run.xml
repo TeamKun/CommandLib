@@ -5,9 +5,11 @@
         <option name="PROGRAM_PARAMETERS" value="nogui"/>
         <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/bukkit-integration-test/fixtures/test-plugin-1.20.4/server"/>
         <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true"/>
-        <option name="ALTERNATIVE_JRE_PATH" value="17"/>
+        <option name="ALTERNATIVE_JRE_PATH" value="21"/>
         <method v="2">
             <option name="Gradle.BeforeRunTask" enabled="false" tasks="downloadServerJar"
+                    externalProjectPath="$PROJECT_DIR$/bukkit-integration-test/fixtures/test-plugin-1.20.4" vmOptions="" scriptParameters=""/>
+            <option name="Gradle.BeforeRunTask" enabled="false" tasks="downloadPluginJars"
                     externalProjectPath="$PROJECT_DIR$/bukkit-integration-test/fixtures/test-plugin-1.20.4" vmOptions="" scriptParameters=""/>
             <option name="Gradle.BeforeRunTask" enabled="true" tasks="build"
                     externalProjectPath="$PROJECT_DIR$/bukkit-integration-test/fixtures/test-plugin-1.20.4" vmOptions="" scriptParameters=""/>

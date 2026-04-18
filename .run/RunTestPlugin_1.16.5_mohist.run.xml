@@ -13,6 +13,10 @@
                     externalProjectPath="$PROJECT_DIR$/bukkit-integration-test/fixtures/test-plugin-1.16.5-mohist"
                     vmOptions=""
                     scriptParameters=""/>
+            <option name="Gradle.BeforeRunTask" enabled="false" tasks="downloadPluginJars"
+                    externalProjectPath="$PROJECT_DIR$/bukkit-integration-test/fixtures/test-plugin-1.16.5-mohist"
+                    vmOptions=""
+                    scriptParameters=""/>
             <option name="Gradle.BeforeRunTask" enabled="true" tasks="build"
                     externalProjectPath="$PROJECT_DIR$/bukkit-integration-test/fixtures/test-plugin-1.16.5-mohist"
                     vmOptions=""

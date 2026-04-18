@@ -123,6 +123,3 @@ libs/*
 
 server/*
 server/plugins/*
-!server/plugins/
-!server/plugins/AutoReloader*.jar
-!server/plugins/PlugManX.jar

@@ -18,7 +18,7 @@ connection.
 Each `minecraftIntegrationTest*` task does the following:
 
 1. Builds the target fixture plugin.
-2. Downloads or prepares the matching server jar.
+2. Downloads or prepares the matching server jar and server-side helper plugin jars.
 3. Starts the server in Docker through Testcontainers.
 4. Connects a fake player named `Maru32768` through MCProtocolLib.
 5. Lets the plugin execute its command test suite in game.
@@ -68,6 +68,15 @@ The shared Gradle script is:
 ```text
 bukkit-integration-test/fixtures/test-plugin.shared.gradle.kts
 ```
+
+Fixture setup downloads PlugManX and AutoReloader into each configured server `plugins` directory.
+The AutoReloader URL can be overridden when needed:
+
+```powershell
+.\gradlew.bat :bukkit-integration-test:prepareTestPlugin1204 -PautoReloaderJarDownloadUrl=<download-url>
+```
+
+The same URL can be supplied with `COMMANDLIB_AUTORELOADER_JAR_URL`.
 
 ## Targets
 
