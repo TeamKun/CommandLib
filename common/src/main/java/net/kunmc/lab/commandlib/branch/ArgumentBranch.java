@@ -2,6 +2,7 @@ package net.kunmc.lab.commandlib.branch;
 
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.DefaultPermission;
 import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.command.Extractor;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +27,40 @@ public class ArgumentBranch<C extends AbstractCommandContext<?, ?>, T extends Co
 
     public ArgumentBranch<C, T> execute(@Nullable CommandExecutor<C> action) {
         delegate.execute(action);
+        return this;
+    }
+
+    public ArgumentBranch<C, T> permission(@NotNull String node) {
+        delegate.permission(Objects.requireNonNull(node));
+        return this;
+    }
+
+    public ArgumentBranch<C, T> permission(@NotNull DefaultPermission defaultPermission) {
+        delegate.permission(Objects.requireNonNull(defaultPermission));
+        return this;
+    }
+
+    public ArgumentBranch<C, T> permission(@NotNull DefaultPermission defaultPermission, @NotNull String description) {
+        delegate.permission(Objects.requireNonNull(defaultPermission), Objects.requireNonNull(description));
+        return this;
+    }
+
+    public ArgumentBranch<C, T> permission(@NotNull String node, @NotNull DefaultPermission defaultPermission) {
+        delegate.permission(Objects.requireNonNull(node), Objects.requireNonNull(defaultPermission));
+        return this;
+    }
+
+    public ArgumentBranch<C, T> permission(@NotNull String node,
+                                           @NotNull DefaultPermission defaultPermission,
+                                           @NotNull String description) {
+        delegate.permission(Objects.requireNonNull(node),
+                            Objects.requireNonNull(defaultPermission),
+                            Objects.requireNonNull(description));
+        return this;
+    }
+
+    public ArgumentBranch<C, T> permissionDescription(@NotNull String description) {
+        delegate.permissionDescription(Objects.requireNonNull(description));
         return this;
     }
 

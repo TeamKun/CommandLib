@@ -444,17 +444,25 @@ public final class TestPlugin extends JavaPlugin {
 
 </details>
 
-## Permissions (Bukkit)
+## Permissions
 
-CommandLib automatically generates and registers Bukkit permission nodes for each command.
+CommandLib automatically generates and registers permission nodes for each command, subcommand, and argument branch.
+Bukkit uses Bukkit permissions. Forge uses Forge permission nodes.
 
 ### Permission Prefix
 
-By default, permission nodes are generated as `minecraft.command.<name>`.  
-Pass a custom prefix to `CommandLib.register()` to use your own namespace:
+Permission nodes are generated from the registration prefix and command path.
+
+For Bukkit, if you use `CommandLib.register(plugin, commands...)`, the prefix defaults to
+`<plugin name in lowercase>.command`. For example, a plugin named `MyPlugin` generates
+`myplugin.command.spawn`.
+
+Pass a custom prefix to `CommandLib.register()` when you want to use a different namespace.
+
+Bukkit:
 
 ```java
-public final class TestPlugin extends JavaPlugins {
+public final class TestPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         // Generates "myplugin.command.spawn", "myplugin.command.game.start", etc.
@@ -463,7 +471,18 @@ public final class TestPlugin extends JavaPlugins {
 }
 ```
 
-The prefix is applied to all commands and their subcommands recursively.
+Forge:
+
+```java
+public final class MyMod {
+    public MyMod() {
+        // Generates "mymod.command.spawn", "mymod.command.game.start", etc.
+        CommandLib.register("mymod.command", new SpawnCommand(), new GameCommand());
+    }
+}
+```
+
+The prefix is applied to all commands, subcommands, and argument branches recursively.
 
 ### Custom Permission Node
 
@@ -473,35 +492,139 @@ To assign a specific permission node to a command instead of the auto-generated 
 public final class SpawnCommand extends Command {
     public SpawnCommand() {
         super("spawn");
-        permission("myplugin.admin");           // fixed node, ignores prefix
-        permission("myplugin.admin", PermissionDefault.FALSE); // with default
+
+        permission("myplugin.admin"); // fixed node, ignores prefix
+
+        permission("myplugin.admin", DefaultPermission.NONE); // with default
     }
 }
 ```
 
 ### Permission Default
 
-Control who has the permission by default:
+Control who has the permission by default with CommandLib's `DefaultPermission` enum. Root commands default to OP.
+Subcommands inherit their parent command's default unless you override them.
+
+```java
+import net.kunmc.lab.commandlib.DefaultPermission;
+
+public final class TestCommand extends Command {
+    public TestCommand() {
+        super("test");
+
+        permission(DefaultPermission.OP);   // default - only operators
+
+        permission(DefaultPermission.ALL);  // everyone
+
+        permission(DefaultPermission.NONE); // no one (must be granted explicitly)
+    }
+}
+```
+
+Platform-specific overloads are also available when you need them:
 
 ```java
 public final class TestCommand extends Command {
     public TestCommand() {
         super("test");
 
-        permission(PermissionDefault.OP);    // default - only operators
+        permission(PermissionDefault.FALSE);      // Bukkit
+        permission(DefaultPermissionLevel.NONE);  // Forge
+    }
+}
+```
 
-        permission(PermissionDefault.TRUE);  // everyone
+Argument branches also inherit the parent command's default permission unless you override the branch. A child command
+attached under an argument branch inherits that argument branch's default permission.
 
-        permission(PermissionDefault.FALSE); // no one (must be granted explicitly)
+### Argument Branch Permissions
+
+CommandLib also generates permission nodes for argument branches. With prefix `myplugin.command`, this command
+registers and checks both `myplugin.command.config` and `myplugin.command.config.key`:
+
+```java
+public final class ConfigCommand extends Command {
+    public ConfigCommand() {
+        super("config");
+
+        argument(new StringArgument("key")).description("Select a config key")
+                                          .execute((key, ctx) -> {
+                                              // Runs only when the sender has myplugin.command.config.key
+                                          });
+    }
+}
+```
+
+Argument branch permissions are checked for command execution, tab completion, and generated help output. This is useful
+when the base command is visible to many users, but only some users can execute or tab-complete a particular argument
+route.
+
+To assign a specific permission node instead of the auto-generated one:
+
+```java
+public final class ConfigCommand extends Command {
+    public ConfigCommand() {
+        super("config");
+
+        argument(new StringArgument("key")).permission("myplugin.command.config.key")
+                                           .description("Select a config key")
+                                           .execute((key, ctx) -> {
+                                               // Runs only when the sender has myplugin.command.config.key
+                                           });
+    }
+}
+```
+
+Use CommandLib's common `DefaultPermission` enum to control the default for an argument branch. If you omit it, the
+argument branch inherits the parent command's default:
+
+```java
+import net.kunmc.lab.commandlib.DefaultPermission;
+
+public final class ConfigCommand extends Command {
+    public ConfigCommand() {
+        super("config");
+
+        argument(new StringArgument("key")).permission(DefaultPermission.OP, "Access config keys");
+    }
+}
+```
+
+You can combine argument branch permissions with argument child commands:
+
+```java
+public final class ConfigCommand extends Command {
+    public ConfigCommand() {
+        super("config");
+
+        argument(new StringArgument("key")).permission("myplugin.command.config.key")
+                                           .child(keyArg -> new Command("get") {{
+                                               execute(ctx -> {
+                                                   String key = ctx.getArgument(keyArg);
+
+                                                   // Get config value
+                                               });
+                                           }})
+                                           .child(keyArg -> new Command("set") {{
+                                               argument(new StringArgument("value")).execute((value, ctx) -> {
+                                                   String key = ctx.getArgument(keyArg);
+
+                                                   // Set config value
+                                               });
+                                           }});
     }
 }
 ```
 
 ### LuckPerms Compatibility
 
-CommandLib uses Bukkit's standard `sender.hasPermission()` for all permission checks.  
-LuckPerms integrates with Bukkit's permission system, so **no additional configuration is needed** — LuckPerms
-permissions work out of the box.
+CommandLib delegates permission checks to the platform permission system:
+
+- Bukkit: `CommandSender#hasPermission(permissionNode)`
+- Forge: `PermissionAPI.hasPermission(player, permissionNode)`
+
+LuckPerms can provide those platform permissions. Configure the same generated or custom permission nodes in LuckPerms;
+CommandLib does not need additional LuckPerms-specific integration.
 
 ## Claude Code Skill
 

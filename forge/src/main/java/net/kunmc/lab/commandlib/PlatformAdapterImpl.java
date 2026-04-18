@@ -31,13 +31,13 @@ public final class PlatformAdapterImpl implements PlatformAdapter<CommandSource,
         return hasPermission(ctx.getSender(), command.permissionName(permissionPrefix));
     }
 
+    @Override
     public boolean hasPermission(CommandSource commandSource, String permissionNode) {
         if (commandSource.getEntity() instanceof PlayerEntity) {
             return PermissionAPI.hasPermission((PlayerEntity) commandSource.getEntity(), permissionNode);
         }
         return true;
     }
-
 
     @Override
     public ArgumentParseException convertCommandSyntaxException(CommandSyntaxException e) {

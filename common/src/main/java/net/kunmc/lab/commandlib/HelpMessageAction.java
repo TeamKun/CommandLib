@@ -39,6 +39,7 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
 
         List<String> argumentUsages = command.argumentsList()
                                              .stream()
+                                             .filter(arguments -> hasArgumentPermission(command, arguments, ctx))
                                              .map(arguments -> formatArgumentUsage(usagePrefix,
                                                                                    command,
                                                                                    arguments,
@@ -92,6 +93,7 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
                                           .collect(Collectors.toList());
         command.argumentsList()
                .stream()
+               .filter(arguments -> hasArgumentPermission(command, arguments, ctx))
                .flatMap(arguments -> arguments.children()
                                               .stream()
                                               .filter(x -> platformAdapter.hasPermission(castCommand(x),
@@ -137,6 +139,8 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
         }
 
         command.argumentsList()
+               .stream()
+               .filter(arguments -> hasArgumentPermission(command, arguments, ctx))
                .forEach(arguments -> {
                    String argumentPrefix = prefix + " " + arguments.concatTagNames();
                    if (arguments.children()
@@ -156,6 +160,10 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
                             .forEach(usages::add);
                });
         return usages;
+    }
+
+    private boolean hasArgumentPermission(CommonCommand<C, ?, ?> parent, Arguments<C> arguments, C ctx) {
+        return platformAdapter.hasPermission(ctx, arguments.permissionName(parent, permissionPrefix));
     }
 
     private String formatArgumentChildUsage(String prefix, CommonCommand<C, ?, ?> command) {

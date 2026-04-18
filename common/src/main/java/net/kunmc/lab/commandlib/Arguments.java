@@ -3,19 +3,28 @@ package net.kunmc.lab.commandlib;
 import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.ChatColorUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 final class Arguments<C extends AbstractCommandContext<?, ?>> {
+    private final CommonCommand<C, ?, ?> owner;
     private final List<? extends CommonArgument<?, C>> arguments;
     private final List<CommonCommand<C, ?, ?>> children;
     private String description = "";
+    private String permissionNodeOverride = null;
+    private DefaultPermission defaultPermissionOverride = null;
+    private String permissionDescription = "";
 
-    Arguments(List<? extends CommonArgument<?, C>> arguments, Collection<? extends CommonCommand<C, ?, ?>> children) {
+    Arguments(CommonCommand<C, ?, ?> owner,
+              List<? extends CommonArgument<?, C>> arguments,
+              Collection<? extends CommonCommand<C, ?, ?>> children) {
+        this.owner = owner;
         this.arguments = arguments;
         this.children = new ArrayList<>(children);
     }
@@ -74,5 +83,67 @@ final class Arguments<C extends AbstractCommandContext<?, ?>> {
 
     String description() {
         return description;
+    }
+
+    void permission(@NotNull String node) {
+        this.permissionNodeOverride = Objects.requireNonNull(node);
+    }
+
+    void permission(@NotNull DefaultPermission defaultPermission) {
+        this.defaultPermissionOverride = Objects.requireNonNull(defaultPermission);
+    }
+
+    void permission(@NotNull DefaultPermission defaultPermission, @NotNull String description) {
+        this.defaultPermissionOverride = Objects.requireNonNull(defaultPermission);
+        this.permissionDescription = Objects.requireNonNull(description);
+    }
+
+    void permission(@NotNull String node, @NotNull DefaultPermission defaultPermission) {
+        this.permissionNodeOverride = Objects.requireNonNull(node);
+        this.defaultPermissionOverride = Objects.requireNonNull(defaultPermission);
+    }
+
+    void permission(@NotNull String node, @NotNull DefaultPermission defaultPermission, @NotNull String description) {
+        this.permissionNodeOverride = Objects.requireNonNull(node);
+        this.defaultPermissionOverride = Objects.requireNonNull(defaultPermission);
+        this.permissionDescription = Objects.requireNonNull(description);
+    }
+
+    void permissionDescription(@NotNull String description) {
+        this.permissionDescription = Objects.requireNonNull(description);
+    }
+
+    String permissionName(@NotNull CommonCommand<C, ?, ?> parent, @NotNull String prefix) {
+        if (permissionNodeOverride != null) {
+            return permissionNodeOverride;
+        }
+        return prefix + "." + permissionNameWithoutPrefix(parent);
+    }
+
+    String permissionName(@NotNull String prefix) {
+        return permissionName(owner, prefix);
+    }
+
+    PermissionConfig permissionConfig(@NotNull CommonCommand<C, ?, ?> parent, @NotNull String prefix) {
+        return new PermissionConfig(permissionName(parent, prefix),
+                                    effectiveDefaultPermission(parent),
+                                    permissionDescription);
+    }
+
+    DefaultPermission effectiveDefaultPermission(@NotNull CommonCommand<C, ?, ?> parent) {
+        if (defaultPermissionOverride != null) {
+            return defaultPermissionOverride;
+        }
+        return parent.effectiveDefaultPermission();
+    }
+
+    private String permissionNameWithoutPrefix(@NotNull CommonCommand<C, ?, ?> parent) {
+        String argumentNames = arguments.stream()
+                                        .map(CommonArgument::name)
+                                        .collect(Collectors.joining("."));
+        if (argumentNames.isEmpty()) {
+            return parent.permissionNameWithoutPrefix();
+        }
+        return parent.permissionNameWithoutPrefix() + "." + argumentNames;
     }
 }

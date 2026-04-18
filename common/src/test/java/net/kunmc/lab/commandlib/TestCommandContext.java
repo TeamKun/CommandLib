@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-final class TestCommandContext extends AbstractCommandContext<Object, String> {
+final class TestCommandContext extends AbstractCommandContext<TestCommandSource, String> {
     private static TestCommandContext latest;
     private final List<String> messages = new ArrayList<>();
 
-    TestCommandContext(com.mojang.brigadier.context.CommandContext<Object> ctx) {
+    TestCommandContext(com.mojang.brigadier.context.CommandContext<TestCommandSource> ctx) {
         super(ctx);
         latest = this;
     }

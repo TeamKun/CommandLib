@@ -3,6 +3,7 @@ package net.kunmc.lab.commandlib.branch;
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.DefaultPermission;
 import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.command.Extractor;
 import net.kunmc.lab.commandlib.util.function.TriConsumer;
@@ -37,6 +38,46 @@ public final class BiArgumentBranch<T1, T2, C extends AbstractCommandContext<?, 
     @Override
     public BiArgumentBranch<T1, T2, C, T> description(@NotNull String description) {
         super.description(description);
+        return this;
+    }
+
+    @Override
+    public BiArgumentBranch<T1, T2, C, T> permission(@NotNull String node) {
+        super.permission(node);
+        return this;
+    }
+
+    @Override
+    public BiArgumentBranch<T1, T2, C, T> permission(@NotNull DefaultPermission defaultPermission) {
+        super.permission(defaultPermission);
+        return this;
+    }
+
+    @Override
+    public BiArgumentBranch<T1, T2, C, T> permission(@NotNull DefaultPermission defaultPermission,
+                                                     @NotNull String description) {
+        super.permission(defaultPermission, description);
+        return this;
+    }
+
+    @Override
+    public BiArgumentBranch<T1, T2, C, T> permission(@NotNull String node,
+                                                     @NotNull DefaultPermission defaultPermission) {
+        super.permission(node, defaultPermission);
+        return this;
+    }
+
+    @Override
+    public BiArgumentBranch<T1, T2, C, T> permission(@NotNull String node,
+                                                     @NotNull DefaultPermission defaultPermission,
+                                                     @NotNull String description) {
+        super.permission(node, defaultPermission, description);
+        return this;
+    }
+
+    @Override
+    public BiArgumentBranch<T1, T2, C, T> permissionDescription(@NotNull String description) {
+        super.permissionDescription(description);
         return this;
     }
 

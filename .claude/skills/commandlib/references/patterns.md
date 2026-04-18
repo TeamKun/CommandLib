@@ -100,6 +100,46 @@ class MyCommand extends Command {
 }
 ```
 
+## Permissions
+
+Use `permission(...)` on commands for command-level access control. Argument
+branches also receive generated permission nodes by default, so a route such as
+`config <key>` is registered and checked separately from the base `config`
+command.
+
+Root commands default to OP. Subcommands inherit their parent command's default
+permission. Argument branches inherit the parent command's default permission,
+and child commands under an argument branch inherit the argument branch default.
+
+```java
+class ConfigCommand extends Command {
+    ConfigCommand() {
+        super("config");
+
+        argument(new StringArgument("key")).execute((key, ctx) -> {
+            ctx.sendMessage("config " + key);
+        });
+    }
+}
+```
+
+Use `argument(...).permission(...)` to override the generated node or default
+permission metadata. For default permission metadata on argument branches, use
+CommandLib's `DefaultPermission` enum.
+
+```java
+import net.kunmc.lab.commandlib.DefaultPermission;
+
+class ConfigCommand extends Command {
+    ConfigCommand() {
+        super("config");
+
+        argument(new StringArgument("key")).permission(DefaultPermission.OP,
+                                                       "Access config keys");
+    }
+}
+```
+
 ## Command Options
 
 Use `CommandOption<T, CommandContext>` for options such as `-f`, `--force`, and

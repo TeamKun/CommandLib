@@ -30,6 +30,13 @@ public interface PlatformAdapter<S, T, C extends AbstractCommandContext<S, T>, B
 
     boolean hasPermission(U command, C ctx, String permissionPrefix);
 
+    boolean hasPermission(S commandSource, String permissionNode);
+
+    default boolean hasPermission(C ctx, String permissionNode) {
+        return hasPermission(ctx.getHandle()
+                                .getSource(), permissionNode);
+    }
+
     ArgumentParseException convertCommandSyntaxException(CommandSyntaxException e);
 
     TextComponentBuilder<T, ? extends T, ?> createTextComponentBuilder(@NotNull String text);

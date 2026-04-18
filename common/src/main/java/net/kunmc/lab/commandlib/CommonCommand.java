@@ -16,7 +16,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     private final String name;
     private String description = "";
     private String permissionNodeOverride = null;
-    private DefaultPermission defaultPermission = DefaultPermission.OP;
+    private DefaultPermission defaultPermissionOverride = null;
     private String permissionDescription = "";
     private T parent = null;
     private Arguments<C> parentArguments = null;
@@ -235,6 +235,38 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
             public void addChildren(@NotNull Collection<? extends T> children) {
                 addArgumentChildren(arguments, children);
             }
+
+            @Override
+            public void permission(@NotNull String node) {
+                arguments.permission(node);
+            }
+
+            @Override
+            public void permission(@NotNull DefaultPermission defaultPermission) {
+                arguments.permission(defaultPermission);
+            }
+
+            @Override
+            public void permission(@NotNull DefaultPermission defaultPermission, @NotNull String description) {
+                arguments.permission(defaultPermission, description);
+            }
+
+            @Override
+            public void permission(@NotNull String node, @NotNull DefaultPermission defaultPermission) {
+                arguments.permission(node, defaultPermission);
+            }
+
+            @Override
+            public void permission(@NotNull String node,
+                                   @NotNull DefaultPermission defaultPermission,
+                                   @NotNull String description) {
+                arguments.permission(node, defaultPermission, description);
+            }
+
+            @Override
+            public void permissionDescription(@NotNull String description) {
+                arguments.permissionDescription(description);
+            }
         };
     }
 
@@ -246,7 +278,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
                                       @NotNull Collection<? extends T> children) {
         validateArguments(arguments);
         validateChildren(children);
-        Arguments<C> argumentBranch = new Arguments<>(arguments, children);
+        Arguments<C> argumentBranch = new Arguments<>(this, arguments, children);
         argumentsList.add(argumentBranch);
         setParentFor(children, argumentBranch);
         return argumentBranch;
@@ -368,24 +400,24 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     }
 
     public final void permission(@NotNull DefaultPermission defaultPermission) {
-        this.defaultPermission = Objects.requireNonNull(defaultPermission);
+        this.defaultPermissionOverride = Objects.requireNonNull(defaultPermission);
     }
 
     public final void permission(@NotNull DefaultPermission defaultPermission, @NotNull String description) {
-        this.defaultPermission = Objects.requireNonNull(defaultPermission);
+        this.defaultPermissionOverride = Objects.requireNonNull(defaultPermission);
         this.permissionDescription = Objects.requireNonNull(description);
     }
 
     public final void permission(@NotNull String node, @NotNull DefaultPermission defaultPermission) {
         this.permissionNodeOverride = Objects.requireNonNull(node);
-        this.defaultPermission = Objects.requireNonNull(defaultPermission);
+        this.defaultPermissionOverride = Objects.requireNonNull(defaultPermission);
     }
 
     public final void permission(@NotNull String node,
                                  @NotNull DefaultPermission defaultPermission,
                                  @NotNull String description) {
         this.permissionNodeOverride = Objects.requireNonNull(node);
-        this.defaultPermission = Objects.requireNonNull(defaultPermission);
+        this.defaultPermissionOverride = Objects.requireNonNull(defaultPermission);
         this.permissionDescription = Objects.requireNonNull(description);
     }
 
@@ -401,12 +433,15 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     }
 
     public final PermissionConfig permissionConfig(@NotNull String prefix) {
-        return new PermissionConfig(permissionName(prefix), defaultPermission, permissionDescription);
+        return new PermissionConfig(permissionName(prefix), effectiveDefaultPermission(), permissionDescription);
     }
 
     final List<PermissionConfig> permissionConfigs(@NotNull String prefix) {
         List<PermissionConfig> configs = new ArrayList<>();
         configs.add(permissionConfig(prefix));
+        argumentsList.stream()
+                     .map(x -> x.permissionConfig(this, prefix))
+                     .forEach(configs::add);
         children().forEach(x -> configs.addAll(x.permissionConfigs(prefix)));
         argumentChildren().forEach(x -> configs.addAll(x.permissionConfigs(prefix)));
         return configs;
@@ -417,5 +452,18 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
             return name;
         }
         return parent.permissionNameWithoutPrefix() + "." + name;
+    }
+
+    DefaultPermission effectiveDefaultPermission() {
+        if (defaultPermissionOverride != null) {
+            return defaultPermissionOverride;
+        }
+        if (parentArguments != null) {
+            return parentArguments.effectiveDefaultPermission(parent);
+        }
+        if (parent != null) {
+            return parent.effectiveDefaultPermission();
+        }
+        return DefaultPermission.OP;
     }
 }

@@ -20,22 +20,30 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
     private final PlatformAdapter<S, T, C, ?, ?> platformAdapter = PlatformAdapter.get();
     private final Arguments<C> arguments;
     private final List<Arguments<C>> executorArguments;
+    private final String permissionPrefix;
 
-    ArgumentCommandNodeCreator(Arguments<C> arguments, List<Arguments<C>> executorArguments) {
+    ArgumentCommandNodeCreator(Arguments<C> arguments, List<Arguments<C>> executorArguments, String permissionPrefix) {
         this.arguments = arguments;
         this.executorArguments = List.copyOf(executorArguments);
+        this.permissionPrefix = permissionPrefix;
     }
 
     private RequiredArgumentBuilder<S, ?> buildArgument(CommonArgument<?, C> argument,
                                                         CommandExecutor<C> helpAction,
                                                         CommonCommand<C, ?, ?> parent) {
         RequiredArgumentBuilder<S, ?> builder = RequiredArgumentBuilder.argument(argument.name(), argument.type());
+        builder.requires(source -> platformAdapter.hasPermission(source,
+                                                                 arguments.permissionName(parent, permissionPrefix)));
 
         SuggestionAction<C> suggestionAction = argument.suggestionAction();
         AsyncSuggestionAction<C> asyncSuggestionAction = argument.asyncSuggestionAction();
         if (suggestionAction != null || asyncSuggestionAction != null) {
             builder.suggests((context, sb) -> {
                 try {
+                    if (!platformAdapter.hasPermission(context.getSource(),
+                                                       arguments.permissionName(parent, permissionPrefix))) {
+                        return Suggestions.empty();
+                    }
                     C ctx = platformAdapter.createCommandContext(context);
                     try {
                         arguments.parse(ctx);
@@ -70,6 +78,8 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
         }
 
         builder.executes(new CommandRunner<>(platformAdapter,
+                                             parent,
+                                             permissionPrefix,
                                              executorArguments,
                                              parent.options(),
                                              parent.prerequisite(),

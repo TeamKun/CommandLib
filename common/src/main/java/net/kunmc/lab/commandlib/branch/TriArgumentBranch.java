@@ -3,6 +3,7 @@ package net.kunmc.lab.commandlib.branch;
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.DefaultPermission;
 import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.command.Extractor;
 import net.kunmc.lab.commandlib.util.function.TetraConsumer;
@@ -42,6 +43,46 @@ public final class TriArgumentBranch<T1, T2, T3, C extends AbstractCommandContex
     @Override
     public TriArgumentBranch<T1, T2, T3, C, T> description(@NotNull String description) {
         super.description(description);
+        return this;
+    }
+
+    @Override
+    public TriArgumentBranch<T1, T2, T3, C, T> permission(@NotNull String node) {
+        super.permission(node);
+        return this;
+    }
+
+    @Override
+    public TriArgumentBranch<T1, T2, T3, C, T> permission(@NotNull DefaultPermission defaultPermission) {
+        super.permission(defaultPermission);
+        return this;
+    }
+
+    @Override
+    public TriArgumentBranch<T1, T2, T3, C, T> permission(@NotNull DefaultPermission defaultPermission,
+                                                          @NotNull String description) {
+        super.permission(defaultPermission, description);
+        return this;
+    }
+
+    @Override
+    public TriArgumentBranch<T1, T2, T3, C, T> permission(@NotNull String node,
+                                                          @NotNull DefaultPermission defaultPermission) {
+        super.permission(node, defaultPermission);
+        return this;
+    }
+
+    @Override
+    public TriArgumentBranch<T1, T2, T3, C, T> permission(@NotNull String node,
+                                                          @NotNull DefaultPermission defaultPermission,
+                                                          @NotNull String description) {
+        super.permission(node, defaultPermission, description);
+        return this;
+    }
+
+    @Override
+    public TriArgumentBranch<T1, T2, T3, C, T> permissionDescription(@NotNull String description) {
+        super.permissionDescription(description);
         return this;
     }
 

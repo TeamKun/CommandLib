@@ -2,6 +2,7 @@ package net.kunmc.lab.commandlib.branch;
 
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.DefaultPermission;
 import net.kunmc.lab.commandlib.command.CommandExecutor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,4 +15,16 @@ public interface ArgumentBranchDelegate<C extends AbstractCommandContext<?, ?>, 
     void execute(@Nullable CommandExecutor<C> action);
 
     void addChildren(@NotNull Collection<? extends T> children);
+
+    void permission(@NotNull String node);
+
+    void permission(@NotNull DefaultPermission defaultPermission);
+
+    void permission(@NotNull DefaultPermission defaultPermission, @NotNull String description);
+
+    void permission(@NotNull String node, @NotNull DefaultPermission defaultPermission);
+
+    void permission(@NotNull String node, @NotNull DefaultPermission defaultPermission, @NotNull String description);
+
+    void permissionDescription(@NotNull String description);
 }

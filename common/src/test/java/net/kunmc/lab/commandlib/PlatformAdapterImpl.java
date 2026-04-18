@@ -5,9 +5,9 @@ import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.text.TextComponentBuilder;
 import net.kunmc.lab.commandlib.util.text.TranslatableComponentBuilder;
 
-public final class PlatformAdapterImpl implements PlatformAdapter<Object, String, TestCommandContext, TestArgumentBuilder, TestCommand> {
+public final class PlatformAdapterImpl implements PlatformAdapter<TestCommandSource, String, TestCommandContext, TestArgumentBuilder, TestCommand> {
     @Override
-    public TestCommandContext createCommandContext(com.mojang.brigadier.context.CommandContext<Object> ctx) {
+    public TestCommandContext createCommandContext(com.mojang.brigadier.context.CommandContext<TestCommandSource> ctx) {
         return new TestCommandContext(ctx);
     }
 
@@ -17,12 +17,20 @@ public final class PlatformAdapterImpl implements PlatformAdapter<Object, String
     }
 
     @Override
-    public boolean hasPermission(TestCommand command, Object commandSource, String permissionPrefix) {
-        return true;
+    public boolean hasPermission(TestCommand command, TestCommandSource commandSource, String permissionPrefix) {
+        return hasPermission(commandSource, command.permissionName(permissionPrefix));
     }
 
     @Override
     public boolean hasPermission(TestCommand command, TestCommandContext ctx, String permissionPrefix) {
+        return hasPermission(ctx, command.permissionName(permissionPrefix));
+    }
+
+    @Override
+    public boolean hasPermission(TestCommandSource commandSource, String permissionNode) {
+        if (commandSource instanceof TestCommandSource) {
+            return ((TestCommandSource) commandSource).hasPermission(permissionNode);
+        }
         return true;
     }
 

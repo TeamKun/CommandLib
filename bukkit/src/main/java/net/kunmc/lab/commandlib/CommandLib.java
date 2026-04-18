@@ -11,11 +11,14 @@ import net.kunmc.lab.commandlib.util.nms.server.NMSCraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.permissions.Permissible;
+import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +32,7 @@ public final class CommandLib implements Listener {
     private final Collection<? extends Command> commands;
     private final String permissionPrefix;
     private final List<CommandNode<?>> registeredCommands = new ArrayList<>();
+    private final List<Permission> registeredPermissions = new ArrayList<>();
 
     public static CommandLib register(@NotNull Plugin plugin, @NotNull Command command, @NotNull Command... commands) {
         List<Command> list = new ArrayList<>();
@@ -78,63 +82,58 @@ public final class CommandLib implements Listener {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void enable() {
-        // Delay by 1 tick to avoid a bug with reload confirm
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                registeredCommands.addAll(new CommandNodeCreator<>(commands, permissionPrefix).build());
-                registeredCommands.forEach(x -> {
-                    try {
-                        CommandMap commandMap = ((CommandMap) NMSCraftServer.create()
-                                                                            .getValue("commandMap"));
-                        Field knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
-                        knownCommandsField.setAccessible(true);
-                        Map<String, org.bukkit.command.Command> knownCommands = ((Map<String, org.bukkit.command.Command>) knownCommandsField.get(
-                                commandMap));
+        registerPermissions();
 
-                        if (new MinecraftVersion(BukkitUtil.getMinecraftVersion()).isLessThan(new MinecraftVersion(
-                                "1.20.6"))) {
-                            NMSCommandDispatcher dispatcher = NMSCraftServer.create(plugin.getServer())
-                                                                            .getServer()
-                                                                            .getCommandDispatcher();
-                            RootCommandNode root = dispatcher.getBrigadier()
-                                                             .getRoot();
+        registeredCommands.addAll(new CommandNodeCreator<>(commands, permissionPrefix).build());
+        registeredCommands.forEach(x -> {
+            try {
+                CommandMap commandMap = ((CommandMap) NMSCraftServer.create()
+                                                                    .getValue("commandMap"));
+                Field knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
+                knownCommandsField.setAccessible(true);
+                Map<String, org.bukkit.command.Command> knownCommands = ((Map<String, org.bukkit.command.Command>) knownCommandsField.get(
+                        commandMap));
 
-                            root.addChild(x);
-                            knownCommands.put(x.getName(),
-                                              NMSVanillaCommandWrapper.create()
-                                                                      .createInstance(dispatcher, x));
+                if (new MinecraftVersion(BukkitUtil.getMinecraftVersion()).isLessThan(new MinecraftVersion("1.20.6"))) {
+                    NMSCommandDispatcher dispatcher = NMSCraftServer.create(plugin.getServer())
+                                                                    .getServer()
+                                                                    .getCommandDispatcher();
+                    RootCommandNode root = dispatcher.getBrigadier()
+                                                     .getRoot();
 
-                            root.getChild("execute")
-                                .getChild("run")
-                                .getRedirect()
-                                .addChild(x);
-                        } else {
-                            CommandNode shadowBrigNode = (CommandNode) Class.forName(
-                                                                                    "io.papermc.paper.command.brigadier.ShadowBrigNode")
-                                                                            .getConstructor(CommandNode.class)
-                                                                            .newInstance(x);
-                            CommandDispatcher dispatcher = ((CommandDispatcher) knownCommands.getClass()
-                                                                                             .getDeclaredMethod(
-                                                                                                     "getDispatcher")
-                                                                                             .invoke(knownCommands));
-                            dispatcher.getRoot()
-                                      .addChild(shadowBrigNode);
-                        }
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
+                    removeRegisteredCommand(root, knownCommands, x.getName());
+                    removeExecuteRunCommand(root, x.getName());
+
+                    root.addChild(x);
+                    BukkitCommand wrapper = NMSVanillaCommandWrapper.create()
+                                                                    .createInstance(dispatcher, x);
+                    wrapper.setPermission(null);
+                    knownCommands.put(x.getName(), wrapper);
+
+                    CommandNode executeRunRoot = executeRunRedirectRoot(root);
+                    if (executeRunRoot != null) {
+                        removeCommand(executeRunRoot, x.getName());
+                        executeRunRoot.addChild(x);
                     }
-                });
+                } else {
+                    CommandDispatcher dispatcher = ((CommandDispatcher) knownCommands.getClass()
+                                                                                     .getDeclaredMethod("getDispatcher")
+                                                                                     .invoke(knownCommands));
+                    RootCommandNode root = dispatcher.getRoot();
+                    removeRegisteredCommand(root, knownCommands, x.getName());
 
-                commands.stream()
-                        .flatMap(x -> x.permissions(permissionPrefix)
-                                       .stream())
-                        .forEach(Bukkit.getPluginManager()::addPermission);
-
-                Bukkit.getOnlinePlayers()
-                      .forEach(Player::updateCommands);
+                    CommandNode shadowBrigNode = (CommandNode) Class.forName(
+                                                                            "io.papermc.paper.command.brigadier.ShadowBrigNode")
+                                                                    .getConstructor(CommandNode.class)
+                                                                    .newInstance(x);
+                    root.addChild(shadowBrigNode);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-        }.runTask(plugin);
+        });
+
+        updatePlayerCommandsLater();
     }
 
     @EventHandler
@@ -144,16 +143,85 @@ public final class CommandLib implements Listener {
             return;
         }
 
-        unregister();
+        unregister(false);
     }
 
-    @SuppressWarnings("rawtypes")
     public void unregister() {
-        RootCommandNode root = NMSCraftServer.create(plugin.getServer())
-                                             .getServer()
-                                             .getCommandDispatcher()
-                                             .getBrigadier()
-                                             .getRoot();
+        unregister(true);
+    }
+
+    // PluginDisableEvent is fired while the server/plugin manager is already tearing down the plugin.
+    // On older Bukkit/Paper versions, sending command updates during that path can race with async
+    // command-tree serialization and cause ConcurrentModificationException. Runtime unregisters still
+    // need to refresh online players, so keep the update controlled by this flag.
+    private void unregister(boolean updatePlayerCommands) {
+        try {
+            unregisterCommands();
+        } finally {
+            HandlerList.unregisterAll(this);
+            unregisterPermissions();
+            registeredCommands.clear();
+            registeredPermissions.clear();
+
+            if (updatePlayerCommands) {
+                updatePlayerCommandsLater();
+            }
+        }
+    }
+
+    private void registerPermissions() {
+        // removePermissionCompletely guards against leftover permissions if the previous
+        // disable cycle's cleanup was incomplete. addPermission(TRUE) automatically calls
+        // dirtyPermissibles internally, so no explicit recalculatePermissions is needed here.
+        commands.stream()
+                .flatMap(x -> x.permissions(permissionPrefix)
+                               .stream())
+                .forEach(permission -> {
+                    removePermissionCompletely(permission.getName());
+                    Bukkit.getPluginManager()
+                          .addPermission(permission);
+                    registeredPermissions.add(permission);
+                });
+    }
+
+    private void unregisterPermissions() {
+        registeredPermissions.stream()
+                             .map(Permission::getName)
+                             .forEach(this::removePermissionCompletely);
+        // dirtyPermissibles is not called when removing a TRUE permission, so force
+        // recalculation here so players lose the permission immediately.
+        Bukkit.getOnlinePlayers()
+              .forEach(Permissible::recalculatePermissions);
+    }
+
+    private void removePermissionCompletely(String name) {
+        // removePermission only removes from the permissions map and leaves defaultPerms intact.
+        // Changing the default to FALSE and calling recalculatePermissionDefaults first ensures
+        // the stale TRUE entry is evicted from defaultPerms; otherwise an ALL->NONE change does
+        // not take effect after a plugin reload.
+        Permission existing = Bukkit.getPluginManager()
+                                    .getPermission(name);
+        if (existing != null) {
+            existing.setDefault(org.bukkit.permissions.PermissionDefault.FALSE);
+            Bukkit.getPluginManager()
+                  .recalculatePermissionDefaults(existing);
+        }
+        Bukkit.getPluginManager()
+              .removePermission(name);
+    }
+
+    private void updatePlayerCommandsLater() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Bukkit.getOnlinePlayers()
+                      .forEach(Player::updateCommands);
+            }
+        }.runTask(plugin);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void unregisterCommands() {
         try {
             CommandMap commandMap = ((CommandMap) NMSCraftServer.create()
                                                                 .getValue("commandMap"));
@@ -161,36 +229,50 @@ public final class CommandLib implements Listener {
             knownCommandsField.setAccessible(true);
             Map<String, org.bukkit.command.Command> knownCommands = ((Map<String, org.bukkit.command.Command>) knownCommandsField.get(
                     commandMap));
+
+            boolean usePaperCommandDispatcher = !new MinecraftVersion(BukkitUtil.getMinecraftVersion()).isLessThan(new MinecraftVersion(
+                    "1.20.6"));
+            RootCommandNode root;
+            if (usePaperCommandDispatcher) {
+                CommandDispatcher dispatcher = ((CommandDispatcher) knownCommands.getClass()
+                                                                                 .getDeclaredMethod("getDispatcher")
+                                                                                 .invoke(knownCommands));
+                root = dispatcher.getRoot();
+            } else {
+                root = NMSCraftServer.create(plugin.getServer())
+                                     .getServer()
+                                     .getCommandDispatcher()
+                                     .getBrigadier()
+                                     .getRoot();
+            }
+
             for (String s : registeredCommands.stream()
                                               .map(CommandNode::getName)
                                               .collect(Collectors.toList())) {
-                removeCommand(root, s);
-                removeCommand(root, "minecraft:" + s);
-                knownCommands.remove(s);
-                knownCommands.remove("minecraft:" + s);
+                removeRegisteredCommand(root, knownCommands, s);
 
-                removeCommand(root.getChild("execute")
-                                  .getChild("run")
-                                  .getRedirect(), s);
+                if (!usePaperCommandDispatcher) {
+                    removeExecuteRunCommand(root, s);
+                }
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
 
-        registeredCommands.clear();
-        HandlerList.unregisterAll(this);
-
-        commands.stream()
-                .flatMap(x -> x.permissions(permissionPrefix)
-                               .stream())
-                .forEach(Bukkit.getPluginManager()::removePermission);
-
-        Bukkit.getOnlinePlayers()
-              .forEach(Player::updateCommands);
+    private static void removeRegisteredCommand(RootCommandNode<?> root,
+                                                Map<String, org.bukkit.command.Command> knownCommands,
+                                                String name) throws Exception {
+        removeCommand(root, name);
+        knownCommands.remove(name);
     }
 
     @SuppressWarnings("rawtypes")
     private static void removeCommand(CommandNode<?> commandNode, String name) throws Exception {
+        if (commandNode == null) {
+            return;
+        }
+
         Class<?> clazz = CommandNode.class;
 
         Field children = clazz.getDeclaredField("children");
@@ -204,5 +286,28 @@ public final class CommandLib implements Listener {
         Field arguments = clazz.getDeclaredField("arguments");
         arguments.setAccessible(true);
         ((Map) arguments.get(commandNode)).remove(name);
+    }
+
+    private static void removeExecuteRunCommand(RootCommandNode<?> root, String name) throws Exception {
+        CommandNode<?> executeRunRoot = executeRunRedirectRoot(root);
+        if (executeRunRoot == null) {
+            return;
+        }
+
+        removeCommand(executeRunRoot, name);
+    }
+
+    private static CommandNode<?> executeRunRedirectRoot(RootCommandNode<?> root) {
+        CommandNode<?> execute = root.getChild("execute");
+        if (execute == null) {
+            return null;
+        }
+
+        CommandNode<?> run = execute.getChild("run");
+        if (run == null || run.getRedirect() == null) {
+            return null;
+        }
+
+        return run.getRedirect();
     }
 }

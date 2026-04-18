@@ -34,12 +34,12 @@ public final class PlatformAdapterImpl implements PlatformAdapter<Object, BaseCo
                   .hasPermission(command.permissionName(permissionPrefix));
     }
 
+    @Override
     public boolean hasPermission(Object commandSource, String permissionNode) {
         return NMSCommandListenerWrapper.create(commandSource)
                                         .getBukkitSender()
                                         .hasPermission(permissionNode);
     }
-
 
     @Override
     public ArgumentParseException convertCommandSyntaxException(CommandSyntaxException e) {

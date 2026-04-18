@@ -5,7 +5,11 @@ on CommandLib. It is not repository-maintenance guidance for CommandLib itself.
 
 ## Registration
 
-Always specify a permission prefix that matches the plugin namespace:
+When no permission prefix is specified, Bukkit registration uses the plugin
+name in lowercase plus `.command`. For example, plugin `MyPlugin` uses
+`myplugin.command`.
+
+Specify a permission prefix when you want an explicit namespace:
 
 ```java
 class MyPlugin extends JavaPlugin {
@@ -16,10 +20,13 @@ class MyPlugin extends JavaPlugin {
 }
 ```
 
-Avoid relying on the default registration overload for custom plugins because
-it uses a generic namespace that is usually not the plugin's permission model.
+This makes generated command and argument branch permissions use nodes such as
+`myplugin.command.spawn` and `myplugin.command.config.key`.
 
 ## Permissions
+
+Register commands with a plugin-specific prefix, then set command or argument
+branch permissions as needed.
 
 ```java
 class MyCommand extends Command {
@@ -27,8 +34,40 @@ class MyCommand extends Command {
         super("spawn");
 
         permission("myplugin.command.spawn");
-        permission("myplugin.command.spawn", PermissionDefault.FALSE);
-        permission(PermissionDefault.OP);
+        permission("myplugin.command.spawn", DefaultPermission.NONE);
+        permission(DefaultPermission.OP);
+    }
+}
+```
+
+Root commands default to OP. Subcommands inherit their parent command's default
+permission unless they override it. Argument branches inherit the parent
+command's default permission, and child commands under an argument branch inherit
+the argument branch default.
+
+Argument branches also get generated permission nodes by default. With
+registration prefix `myplugin.command`, `config <key>` generates and checks
+`myplugin.command.config.key`. Use `argument(...).permission(...)` to override
+the generated node or default metadata. Argument branch permissions affect
+execution, tab completion, generated help, and the permission nodes registered
+by CommandLib.
+
+```java
+import net.kunmc.lab.commandlib.DefaultPermission;
+
+class ConfigCommand extends Command {
+    ConfigCommand() {
+        super("config");
+
+        argument(new StringArgument("key")).execute((key, ctx) -> {
+            ctx.sendMessage("config " + key);
+        });
+
+        // Override the generated node/default for this argument branch.
+        argument(new StringArgument("secret")).permission(DefaultPermission.OP, "Access secret config keys")
+                                              .execute((secret, ctx) -> {
+                                                  ctx.sendMessage("secret " + secret);
+                                              });
     }
 }
 ```
@@ -67,7 +106,7 @@ class ConfigCommand extends Command {
     ConfigCommand() {
         super("config");
 
-        argument(new StringARgument("key")).description("Select a config key")
+        argument(new StringArgument("key")).description("Select a config key")
                                            .child(keyArg -> new Command("get") {{
                                                execute(ctx -> {
                                                    String key = ctx.getArgument(keyArg);

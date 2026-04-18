@@ -45,9 +45,11 @@ Read the files relevant to the user's request. Common public API files include:
 - `bukkit/src/main/java/net/kunmc/lab/commandlib/Command.java`
 - `bukkit/src/main/java/net/kunmc/lab/commandlib/CommandContext.java`
 - `common/src/main/java/net/kunmc/lab/commandlib/CommonCommand.java`
+- `common/src/main/java/net/kunmc/lab/commandlib/DefaultPermission.java`
 - `common/src/main/java/net/kunmc/lab/commandlib/CommandOption.java`
 - `common/src/main/java/net/kunmc/lab/commandlib/Options.java`
 - `common/src/main/java/net/kunmc/lab/commandlib/AbstractArgumentBuilder.java`
+- `common/src/main/java/net/kunmc/lab/commandlib/branch/ArgumentBranch.java`
 - `bukkit/src/main/java/net/kunmc/lab/commandlib/ArgumentBuilder.java`
 - `common/src/main/java/net/kunmc/lab/commandlib/CommonArgument.java`
 - `bukkit/src/main/java/net/kunmc/lab/commandlib/argument/`

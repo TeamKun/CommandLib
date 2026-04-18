@@ -17,6 +17,8 @@ import java.util.function.Predicate;
 
 final class CommandRunner<S, C extends AbstractCommandContext<S, ?>> implements Command<S> {
     private final PlatformAdapter<S, ?, C, ?, ?> platformAdapter;
+    private final CommonCommand<C, ?, ?> command;
+    private final String permissionPrefix;
     private final List<Arguments<C>> argumentsList;
     private final List<CommandOption<?, C>> options;
     private final Prerequisite<C> prerequisite;
@@ -26,6 +28,8 @@ final class CommandRunner<S, C extends AbstractCommandContext<S, ?>> implements 
     private final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers;
 
     CommandRunner(PlatformAdapter<S, ?, C, ?, ?> platformAdapter,
+                  CommonCommand<C, ?, ?> command,
+                  String permissionPrefix,
                   List<Arguments<C>> argumentsList,
                   List<CommandOption<?, C>> options,
                   Prerequisite<C> prerequisite,
@@ -34,6 +38,8 @@ final class CommandRunner<S, C extends AbstractCommandContext<S, ?>> implements 
                   CommandExecutor<C> executor,
                   List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers) {
         this.platformAdapter = platformAdapter;
+        this.command = command;
+        this.permissionPrefix = permissionPrefix;
         this.argumentsList = List.copyOf(argumentsList);
         this.options = options;
         this.prerequisite = prerequisite;
@@ -49,6 +55,11 @@ final class CommandRunner<S, C extends AbstractCommandContext<S, ?>> implements 
             C ctx = platformAdapter.createCommandContext(rootContext(context));
 
             try {
+                if (!platformAdapter.hasPermission(ctx, command.permissionName(permissionPrefix))) {
+                    ctx.sendFailure("You do not have permission to execute this command.");
+                    return 0;
+                }
+
                 try {
                     parseOptions(ctx);
                     validateOptions(ctx);
@@ -58,6 +69,11 @@ final class CommandRunner<S, C extends AbstractCommandContext<S, ?>> implements 
                 }
 
                 for (Arguments<C> arguments : argumentsList) {
+                    if (!platformAdapter.hasPermission(ctx, arguments.permissionName(permissionPrefix))) {
+                        ctx.sendFailure("You do not have permission to execute this command.");
+                        return 0;
+                    }
+
                     try {
                         arguments.parse(ctx);
                     } catch (ArgumentParseException e) {

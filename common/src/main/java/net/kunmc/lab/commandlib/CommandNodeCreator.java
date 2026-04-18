@@ -55,6 +55,8 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
 
         if (argumentsList.isEmpty()) {
             CommandRunner<S, C> runner = new CommandRunner<>(platformAdapter,
+                                                             command,
+                                                             permissionPrefix,
                                                              inheritedArguments,
                                                              command.options(),
                                                              command.prerequisite(),
@@ -73,6 +75,8 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                      .forEach(arguments -> {
                          List<Arguments<C>> executorArguments = appendArgument(inheritedArguments, arguments);
                          CommandRunner<S, C> executor = new CommandRunner<>(platformAdapter,
+                                                                            command,
+                                                                            permissionPrefix,
                                                                             executorArguments,
                                                                             command.options(),
                                                                             command.prerequisite(),
@@ -89,9 +93,11 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
                                                                                                         executorArguments))
                                                                                .flatMap(Collection::stream)
                                                                                .collect(Collectors.toList());
-                             return new ArgumentCommandNodeCreator<>(arguments, executorArguments).build(helpAction,
-                                                                                                         command,
-                                                                                                         childNodes);
+                             return new ArgumentCommandNodeCreator<>(arguments,
+                                                                     executorArguments,
+                                                                     permissionPrefix).build(helpAction,
+                                                                                             command,
+                                                                                             childNodes);
                          };
                          builder.then(argumentNodeSupplier.get())
                                 .executes(executor);

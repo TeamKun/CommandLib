@@ -8,21 +8,32 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 final class TestCommandRunner {
-    private final CommandDispatcher<Object> dispatcher = new CommandDispatcher<>();
+    private final CommandDispatcher<TestCommandSource> dispatcher = new CommandDispatcher<>();
+    private final TestCommandSource source;
 
     TestCommandRunner(TestCommand command) {
+        this(command, new TestCommandSource() {
+            @Override
+            boolean hasPermission(String permission) {
+                return true;
+            }
+        });
+    }
+
+    TestCommandRunner(TestCommand command, TestCommandSource source) {
+        this.source = source;
         new CommandNodeCreator<>(List.of(command), "test.command").build()
                                                                   .forEach(dispatcher.getRoot()::addChild);
     }
 
     TestCommandContext execute(String input) throws CommandSyntaxException {
         TestCommandContext.clearLatest();
-        dispatcher.execute(input, new Object());
+        dispatcher.execute(input, source);
         return TestCommandContext.latest();
     }
 
     List<String> suggest(String input) {
-        Suggestions suggestions = dispatcher.getCompletionSuggestions(dispatcher.parse(input, new Object()))
+        Suggestions suggestions = dispatcher.getCompletionSuggestions(dispatcher.parse(input, source))
                                             .join();
         return suggestions.getList()
                           .stream()

@@ -45,7 +45,8 @@ public class TestMain {
         ArgumentTest argumentTest = new ArgumentTest(mainCommand, TEST_PLAYER_NAME);
         OptionTest optionTest = new OptionTest(mainCommand);
         CommandSyntaxExceptionTest commandSyntaxExceptionTest = new CommandSyntaxExceptionTest(mainCommand);
-        List<TestBase> tests = List.of(argumentTest, optionTest, commandSyntaxExceptionTest);
+        RuntimePermissionTest runtimePermissionTest = new RuntimePermissionTest(mainCommand, plugin);
+        List<TestBase> tests = List.of(argumentTest, optionTest, commandSyntaxExceptionTest, runtimePermissionTest);
         List<String> commands = tests.stream()
                                      .flatMap(x -> x.build()
                                                     .stream())
