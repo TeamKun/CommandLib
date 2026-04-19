@@ -1,5 +1,5 @@
 extra["bukkitApiDependency"] = "io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT"
-extra["javaVersion"] = "17"
+extra["javaVersion"] = "21"
 extra["platform"] = "paper"
 extra["minecraftServerVersion"] = "1.20.4"
 extra["serverJarDownloads"] =

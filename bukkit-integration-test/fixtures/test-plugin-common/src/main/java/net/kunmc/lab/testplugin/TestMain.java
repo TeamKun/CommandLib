@@ -4,6 +4,9 @@ import net.kunmc.lab.commandlib.Command;
 import net.kunmc.lab.commandlib.CommandLib;
 import net.kunmc.lab.commandlib.util.bukkit.BukkitUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 
@@ -22,6 +25,7 @@ public class TestMain {
     private static final String TEST_PLAYER_NAME = "Maru32768";
     private final Plugin plugin;
     private final Logger logger;
+    private boolean errorOccurredOnRegister = false;
 
 
     public TestMain(Plugin plugin) {
@@ -38,56 +42,72 @@ public class TestMain {
     }
 
     public void register(Consumer<List<TestResult>> consumer) {
-        Command mainCommand = new MainCommand();
-        mainCommand.permission(PermissionDefault.TRUE);
-        AtomicBoolean running = new AtomicBoolean(false);
-
-        ArgumentTest argumentTest = new ArgumentTest(mainCommand, TEST_PLAYER_NAME);
-        OptionTest optionTest = new OptionTest(mainCommand);
-        CommandSyntaxExceptionTest commandSyntaxExceptionTest = new CommandSyntaxExceptionTest(mainCommand);
-        RuntimePermissionTest runtimePermissionTest = new RuntimePermissionTest(mainCommand, plugin);
-        List<TestBase> tests = List.of(argumentTest, optionTest, commandSyntaxExceptionTest, runtimePermissionTest);
-        List<String> commands = tests.stream()
-                                     .flatMap(x -> x.build()
-                                                    .stream())
-                                     .collect(Collectors.toList());
-
-        Runnable execute = () -> {
-            logger.info("Received CommandLib test run request.");
-            if (!running.compareAndSet(false, true)) {
-                logger.info("CommandLib test cases are already running.");
-                return;
-            }
-
-            Bukkit.getScheduler()
-                  .runTaskLater(plugin, () -> {
-                      try {
-                          logger.info("Executing CommandLib test cases.");
-                          for (String command : commands) {
-                              logger.info("Dispatching test command: " + command);
-                              Bukkit.getServer()
-                                    .dispatchCommand(Bukkit.getConsoleSender(), command);
-                          }
-
-                          consumer.accept(tests.stream()
-                                               .flatMap(x -> x.results()
-                                                              .stream())
-                                               .collect(Collectors.toList()));
-
-                          tests.forEach(TestBase::clearResults);
-                      } finally {
-                          running.set(false);
+        Bukkit.getPluginManager()
+              .registerEvents(new Listener() {
+                  @EventHandler
+                  public void onPluginDisable(PluginDisableEvent e) {
+                      if (e.getPlugin() == plugin && errorOccurredOnRegister) {
+                          System.exit(1);
                       }
-                  }, 1L);
-        };
+                  }
+              }, plugin);
 
-        mainCommand.addChildren(new Command("runTests") {{
-            permission(PermissionDefault.TRUE);
-            execute(ctx -> {
-                execute.run();
-            });
-        }});
-        CommandLib.register(plugin, mainCommand);
+        try {
+            Command mainCommand = new MainCommand();
+            mainCommand.permission(PermissionDefault.TRUE);
+            AtomicBoolean running = new AtomicBoolean(false);
+
+            ArgumentTest argumentTest = new ArgumentTest(mainCommand, TEST_PLAYER_NAME);
+            OptionTest optionTest = new OptionTest(mainCommand);
+            CommandSyntaxExceptionTest commandSyntaxExceptionTest = new CommandSyntaxExceptionTest(mainCommand);
+            RuntimePermissionTest runtimePermissionTest = new RuntimePermissionTest(mainCommand, plugin);
+            List<TestBase> tests = List.of(argumentTest, optionTest, commandSyntaxExceptionTest, runtimePermissionTest);
+            List<String> commands = tests.stream()
+                                         .flatMap(x -> x.build()
+                                                        .stream())
+                                         .collect(Collectors.toList());
+
+            Runnable execute = () -> {
+                logger.info("Received CommandLib test run request.");
+                if (!running.compareAndSet(false, true)) {
+                    logger.info("CommandLib test cases are already running.");
+                    return;
+                }
+
+                Bukkit.getScheduler()
+                      .runTaskLater(plugin, () -> {
+                          try {
+                              logger.info("Executing CommandLib test cases.");
+                              for (String command : commands) {
+                                  logger.info("Dispatching test command: " + command);
+                                  Bukkit.getServer()
+                                        .dispatchCommand(Bukkit.getConsoleSender(), command);
+                              }
+
+                              consumer.accept(tests.stream()
+                                                   .flatMap(x -> x.results()
+                                                                  .stream())
+                                                   .collect(Collectors.toList()));
+
+                              tests.forEach(TestBase::clearResults);
+                          } finally {
+                              running.set(false);
+                          }
+                      }, 1L);
+            };
+
+            mainCommand.addChildren(new Command("runTests") {{
+                permission(PermissionDefault.TRUE);
+                execute(ctx -> {
+                    execute.run();
+                });
+            }});
+            CommandLib.register(plugin, mainCommand);
+        } catch (Throwable e) {
+            errorOccurredOnRegister = true;
+            logger.log(Level.SEVERE, "COMMANDLIB_TEST_PLUGIN_ENABLE_FAILED", e);
+            throw e;
+        }
     }
 
     public void outputResultsToJUnitXml(List<TestResult> results) {

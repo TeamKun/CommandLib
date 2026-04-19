@@ -124,7 +124,7 @@ val integrationTargets = listOf(
         fixtureName = "test-plugin-1.20.4",
         minecraftVersion = "1.20.4",
         reportFileName = "TEST-commandlib-1.20.4.xml",
-        javaVersion = 17,
+        javaVersion = 21,
         protocolConfiguration = mcProtocol1204,
     ),
     IntegrationTarget(

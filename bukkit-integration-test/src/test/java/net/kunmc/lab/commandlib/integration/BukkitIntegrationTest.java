@@ -65,7 +65,13 @@ class BukkitIntegrationTest {
                                                                    serverJarName,
                                                                    reportFileName,
                                                                    javaVersion)) {
-            container.start();
+            try {
+                container.start();
+            } catch (Exception e) {
+                assertPluginEnabled(container);
+                throw e;
+            }
+            assertPluginEnabled(container);
 
             BotSession client = connectBot(container);
             try {
@@ -127,6 +133,15 @@ class BukkitIntegrationTest {
                             .isZero();
         assertThat(errors).as("JUnit XML error count in " + reportFile)
                           .isZero();
+    }
+
+    private static void assertPluginEnabled(GenericContainer<?> container) {
+        boolean failed = container.getLogs()
+                                  .lines()
+                                  .anyMatch(line -> line.contains("COMMANDLIB_TEST_PLUGIN_ENABLE_FAILED"));
+        if (failed) {
+            fail("TestPlugin failed to enable. See server logs above for the stack trace.");
+        }
     }
 
     private static void assertDockerAvailable() {
