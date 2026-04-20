@@ -12,6 +12,8 @@ instructions.
 - `common`: shared command model, arguments, options, parsing, and utilities.
 - `spigot`: Spigot-facing API, registration, Bukkit argument types, and NMS
   bridges.
+- `paper`: Paper-facing API using Paper official command/lifecycle API and
+  Adventure components. Targets Paper 1.20.6+.
 - `spigot-test`: test utilities for downstream plugins and this repository.
 - `integration-test`: Minecraft/Bukkit integration tests.
 - `forge`: Forge-facing integration.

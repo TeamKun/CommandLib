@@ -1,21 +1,20 @@
-# CommandLib - A Feature-Rich Minecraft Command API for Bukkit
+# CommandLib - A Feature-Rich Minecraft Command API for Spigot / Paper
 
 [![](https://jitpack.io/v/Maru32768/CommandLib.svg)](https://jitpack.io/#Maru32768/CommandLib)
 
-CommandLib is an advanced, type-safe Command API for Bukkit(Spigot/Paper) developers. It abstracts and enhances the
-Minecraft 1.13
-command APIs, simplifying command implementation. With features like customizable argument suggestions, seamless
-validation, improved usability, and extensibility, CommandLib empowers developers to build better commands with ease.
+CommandLib is an advanced, type-safe Command API for Spigot and Paper developers. It abstracts and enhances the
+Minecraft 1.13+ command APIs, simplifying command implementation. With features like customizable argument suggestions,
+seamless validation, improved usability, and extensibility, CommandLib empowers developers to build better commands
+with ease.
 
 #### Supported Versions
 
-| Platform                 | Tested Versions                                            | Notes                                              |
-|--------------------------|------------------------------------------------------------|----------------------------------------------------|
-| **Bukkit(Spigot/Paper)** | `1.16.5`, `1.19.4`, `1.20.1`, `1.20.4`, `1.20.6`, `1.21.0` | Expected to work on intermediate versions.         |
-| **Forge**                | `1.16.5`                                                   | Currently supports only `1.16.5` and works fully.  |
-| **Mohist**               | `1.16.5`, `1.20.1`                                         | Works on Mohist since it's compatible with Spigot. |
-
-**Requires Java 11 or later.**
+| Platform    | Artifact  | Tested Versions                                              | Notes                                                              |
+|-------------|-----------|--------------------------------------------------------------|--------------------------------------------------------------------|
+| **Spigot**  | `spigot`  | `1.16.5`, `1.19.4`, `1.20.1`, `1.20.4`, `1.20.6`, `1.21.0` | Expected to work on intermediate versions. Requires Java 11+.     |
+| **Paper**   | `paper`   | `1.20.6`, `1.21.0`                                           | Uses Paper official command/lifecycle API. Requires Java 21+.     |
+| **Forge**   | `forge`   | `1.16.5`                                                     | Currently supports only `1.16.5` and works fully.                 |
+| **Mohist**  | `spigot`  | `1.16.5`, `1.20.1`                                           | Works on Mohist since it's compatible with Spigot.                |
 
 ## Features
 
@@ -40,7 +39,7 @@ To ensure stability, we recommend replacing `latest.release` with a specific ver
 You can find the latest version on the [releases page](https://github.com/Maru32768/CommandLib/releases).
 
 <details>
-<summary>Bukkit (Groovy DSL)</summary>
+<summary>Spigot (Groovy DSL)</summary>
 
 ```groovy
 plugins {
@@ -66,7 +65,7 @@ tasks.build.dependsOn tasks.shadowJar
 </details>
 
 <details>
-<summary>Bukkit (Kotlin DSL)</summary>
+<summary>Spigot (Kotlin DSL)</summary>
 
 ```kotlin
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
@@ -92,6 +91,74 @@ tasks.named<ShadowJar>("shadowJar") {
 }
 tasks.named("build") { dependsOn(tasks.named("shadowJar")) }
 ```
+
+</details>
+
+<details>
+<summary>Paper (Groovy DSL)</summary>
+
+```groovy
+plugins {
+    id "com.gradleup.shadow" version "8.3.5"
+}
+
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation "com.github.Maru32768.CommandLib:paper:latest.release"
+}
+
+shadowJar {
+    archiveFileName = "${rootProject.name}-${project.version}.jar"
+    // Avoid package conflicts
+    relocate "net.kunmc.lab.commandlib", "${project.group}.${project.name.toLowerCase()}.commandlib"
+}
+tasks.build.dependsOn tasks.shadowJar
+```
+
+> **Note:** The Paper artifact targets Paper 1.20.6+. Register commands in your plugin's **constructor** or `onLoad()`, not in `onEnable()`.
+>
+> ```java
+> public class MyPlugin extends JavaPlugin {
+>     public MyPlugin() {
+>         CommandLib.register(this, new MyCommand());
+>     }
+> }
+> ```
+
+</details>
+
+<details>
+<summary>Paper (Kotlin DSL)</summary>
+
+```kotlin
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+plugins {
+    id("com.gradleup.shadow") version "8.3.5"
+}
+
+repositories {
+    maven { url = uri("https://jitpack.io") }
+}
+
+dependencies {
+    implementation("com.github.Maru32768.CommandLib:paper:latest.release")
+}
+
+val projectGroup = project.group.toString()
+val projectNameLower = project.name.lowercase()
+tasks.named<ShadowJar>("shadowJar") {
+    archiveFileName.set("${rootProject.name}-${project.version}.jar")
+    // Avoid package conflicts
+    relocate("net.kunmc.lab.commandlib", "$projectGroup.$projectNameLower.commandlib")
+}
+tasks.named("build") { dependsOn(tasks.named("shadowJar")) }
+```
+
+> **Note:** The Paper artifact targets Paper 1.20.6+. Register commands in your plugin's **constructor** or `onLoad()`, not in `onEnable()`.
 
 </details>
 

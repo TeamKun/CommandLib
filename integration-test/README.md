@@ -28,7 +28,7 @@ Each `minecraftIntegrationTest*` task does the following:
 The report is written under:
 
 ```text
-integration-test/fixtures/test-plugin-common/test-results/
+integration-test/fixtures/common/test-results/
 ```
 
 ## Why MCProtocolLib
@@ -54,13 +54,13 @@ infrastructure failure rather than a skipped test.
 Fixture projects live under:
 
 ```text
-integration-test/fixtures/test-plugin-*
+integration-test/fixtures/{version}-{server}/
 ```
 
 Shared fixture code lives under:
 
 ```text
-integration-test/fixtures/test-plugin-common
+integration-test/fixtures/common
 ```
 
 The shared Gradle script is:

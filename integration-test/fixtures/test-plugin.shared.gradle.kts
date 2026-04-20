@@ -6,20 +6,37 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
 /*
- * Shared Gradle script for bukkit-integration-test/fixtures/test-plugin-* projects.
+ * Shared Gradle script for Bukkit-family integration-test fixtures.
  *
- * Each test plugin's build.gradle.kts should define only version-specific differences via extra
- * properties, then call:
+ * This script is designed for Bukkit-compatible server platforms (Paper, Mohist, Spigot). It uses
+ * the Shadow plugin to inline CommandLib sources directly into the test plugin jar. Non-Bukkit
+ * platforms (Forge, Fabric, Velocity, NeoForge) require a separate shared script because their
+ * build toolchains differ substantially.
+ *
+ * Each test plugin's build.gradle.kts defines only version-specific differences via extra
+ * properties, then calls:
  *   apply(from = "../test-plugin.shared.gradle.kts")
  *
  * Required properties:
- * - bukkitApiDependency: compileOnly dependency notation for the target Bukkit-compatible API.
+ *
+ * - platformDependencies:
+ *   Pipe-separated list of compileOnly dependency notations for the target server API.
+ *   Use multiple entries when the platform requires more than one API artifact at compile time.
+ *   Examples:
+ *     "io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT"
+ *     "io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT|com.example:some-api:1.0"
+ *
  * - javaVersion: Java toolchain version as a stringified integer.
- * - platform: "paper" or "mohist".
+ *
+ * - platform: Runtime server family. Current values: "paper", "mohist".
+ *   This describes the server executable, not the CommandLib module.
+ *   - "mohist" uses a Mohist server jar but compiles against spigot module sources.
+ *   - "paper" uses a Paper server jar and compiles against spigot module sources by default.
  *
  * - minecraftServerVersion:
- *   Version string used by generated NMS jar paths. This is separate from the API dependency because
- *   some fixtures intentionally use names such as test-plugin-1.21.0 while Paper stores jars under 1.21.
+ *   Version string used by generated NMS jar paths. This is separate from the API dependency
+ *   because some fixtures intentionally use names such as test-plugin-1.21.0 while Paper stores
+ *   jars under 1.21.
  *
  * - serverJarDownloads:
  *   Format: "<url>=><relative path>" entries joined by "|".
@@ -31,6 +48,17 @@ import java.util.concurrent.atomic.AtomicBoolean
  *   - Destination path is resolved relative to the test plugin directory.
  *
  * Optional properties:
+ *
+ * - commandlibModule:
+ *   Name of the CommandLib module whose sources are included in the test plugin. This corresponds
+ *   to a directory at the repository root. Defaults are inferred from "platform":
+ *     "paper"  -> "spigot"  (Paper fixtures up to 1.20.5 use the spigot module)
+ *     "mohist" -> "spigot"  (Mohist is Spigot-compatible)
+ *   Paper fixtures for 1.20.6 and later set this to "paper" explicitly.
+ *   Must be set explicitly for platforms whose default cannot be inferred, e.g.:
+ *     extra["commandlibModule"] = "forge-1.16.5"
+ *     extra["commandlibModule"] = "fabric"
+ *   For future per-version Forge modules the value would be the exact module directory name.
  *
  * - copyTargets:
  *   Format: "<relative dir>|<relative dir>|..."
@@ -57,8 +85,10 @@ import java.util.concurrent.atomic.AtomicBoolean
  *   COMMANDLIB_AUTORELOADER_JAR_URL environment variable.
  *
  * Minimal example:
- *   extra["bukkitApiDependency"] = "io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT"
+ *   extra["platformDependencies"] = "io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT"
  *   extra["javaVersion"] = "17"
+ *   extra["platform"] = "paper"
+ *   extra["minecraftServerVersion"] = "1.20.4"
  *   extra["serverJarDownloads"] =
  *       "https://api.papermc.io/v2/projects/paper/versions/1.20.4/builds/496/downloads/paper-1.20.4-496.jar=>server/server.jar"
  *   apply(from = "../test-plugin.shared.gradle.kts")
@@ -99,10 +129,12 @@ fun Project.optionalListProperty(name: String): List<String> =
         ?.filter(String::isNotEmpty)
         .orEmpty()
 
-val bukkitApiDependency = project.requiredStringProperty("bukkitApiDependency")
+val platformDependencies: List<String> = project.requiredListProperty("platformDependencies")
 val javaVersion = project.requiredStringProperty("javaVersion").toInt()
 val platform = project.requiredStringProperty("platform")
 val minecraftServerVersion = project.requiredStringProperty("minecraftServerVersion")
+// Which CommandLib module's sources to inline. Inferred from platform when not set explicitly.
+val commandlibModule: String = project.requiredStringProperty("commandlibModule")
 val serverJarDownloads = project.requiredListProperty("serverJarDownloads")
 val copyTargets = project.optionalListProperty("copyTargets").ifEmpty { listOf("server/plugins") }
 val includeProtocolLib = project.optionalBooleanProperty("includeProtocolLib")
@@ -135,7 +167,7 @@ repositories {
 }
 
 dependencies {
-    add("compileOnly", bukkitApiDependency)
+    platformDependencies.forEach { add("compileOnly", it) }
     add("compileOnly", "com.mojang:brigadier:1.0.18")
 }
 
@@ -143,11 +175,11 @@ configure<JavaPluginExtension> {
     toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersion))
     sourceSets.named("main") {
         java.srcDirs(
-            "../../../spigot/src/main/java",
+            "../../../$commandlibModule/src/main/java",
             "../../../common/src/main/java",
-            "../test-plugin-common/src/main/java"
+            "../common-bukkit/src/main/java"
         )
-        resources.srcDirs("../../../spigot/src/main/resources")
+        resources.srcDirs("../../../$commandlibModule/src/main/resources")
     }
 }
 

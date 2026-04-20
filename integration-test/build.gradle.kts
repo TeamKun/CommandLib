@@ -62,8 +62,11 @@ dependencies {
     mcProtocol121("com.github.steveice10:mcprotocollib:1.21-1")
 }
 
+enum class Platform { PAPER, MOHIST }
+
 data class IntegrationTarget(
     val id: String,
+    val platform: Platform,
     val fixtureName: String,
     val minecraftVersion: String,
     val reportFileName: String,
@@ -77,7 +80,8 @@ data class IntegrationTarget(
 val integrationTargets = listOf(
     IntegrationTarget(
         id = "1165",
-        fixtureName = "test-plugin-1.16.5",
+        platform = Platform.PAPER,
+        fixtureName = "1.16.5-paper",
         minecraftVersion = "1.16.5",
         reportFileName = "TEST-commandlib-1.16.5.xml",
         javaVersion = 11,
@@ -85,7 +89,8 @@ val integrationTargets = listOf(
     ),
     IntegrationTarget(
         id = "1165Mohist",
-        fixtureName = "test-plugin-1.16.5-mohist",
+        platform = Platform.MOHIST,
+        fixtureName = "1.16.5-mohist",
         minecraftVersion = "1.16.5",
         reportFileName = "TEST-commandlib-1.16.5-mohist.xml",
         javaVersion = 17,
@@ -95,7 +100,8 @@ val integrationTargets = listOf(
     ),
     IntegrationTarget(
         id = "1194",
-        fixtureName = "test-plugin-1.19.4",
+        platform = Platform.PAPER,
+        fixtureName = "1.19.4-paper",
         minecraftVersion = "1.19.4",
         reportFileName = "TEST-commandlib-1.19.4.xml",
         javaVersion = 17,
@@ -103,7 +109,8 @@ val integrationTargets = listOf(
     ),
     IntegrationTarget(
         id = "1201",
-        fixtureName = "test-plugin-1.20.1",
+        platform = Platform.PAPER,
+        fixtureName = "1.20.1-paper",
         minecraftVersion = "1.20.1",
         reportFileName = "TEST-commandlib-1.20.1.xml",
         javaVersion = 17,
@@ -111,7 +118,8 @@ val integrationTargets = listOf(
     ),
     IntegrationTarget(
         id = "1201Mohist",
-        fixtureName = "test-plugin-1.20.1-mohist",
+        platform = Platform.MOHIST,
+        fixtureName = "1.20.1-mohist",
         minecraftVersion = "1.20.1",
         reportFileName = "TEST-commandlib-1.20.1-mohist.xml",
         javaVersion = 17,
@@ -121,7 +129,8 @@ val integrationTargets = listOf(
     ),
     IntegrationTarget(
         id = "1204",
-        fixtureName = "test-plugin-1.20.4",
+        platform = Platform.PAPER,
+        fixtureName = "1.20.4-paper",
         minecraftVersion = "1.20.4",
         reportFileName = "TEST-commandlib-1.20.4.xml",
         javaVersion = 21,
@@ -129,7 +138,8 @@ val integrationTargets = listOf(
     ),
     IntegrationTarget(
         id = "1205",
-        fixtureName = "test-plugin-1.20.5",
+        platform = Platform.PAPER,
+        fixtureName = "1.20.5-paper",
         minecraftVersion = "1.20.5",
         reportFileName = "TEST-commandlib-1.20.5.xml",
         javaVersion = 21,
@@ -137,7 +147,8 @@ val integrationTargets = listOf(
     ),
     IntegrationTarget(
         id = "1206",
-        fixtureName = "test-plugin-1.20.6",
+        platform = Platform.PAPER,
+        fixtureName = "1.20.6-paper",
         minecraftVersion = "1.20.6",
         reportFileName = "TEST-commandlib-1.20.6.xml",
         javaVersion = 21,
@@ -145,7 +156,8 @@ val integrationTargets = listOf(
     ),
     IntegrationTarget(
         id = "1210",
-        fixtureName = "test-plugin-1.21.0",
+        platform = Platform.PAPER,
+        fixtureName = "1.21.0-paper",
         minecraftVersion = "1.21.0",
         reportFileName = "TEST-commandlib-1.21.xml",
         javaVersion = 21,
@@ -352,6 +364,7 @@ fun registerVersionedIntegrationTest(target: IntegrationTarget): TaskProvider<Te
         systemProperty("commandlib.fixturesDir", fixturesDir.absolutePath)
         systemProperty("commandlib.runMinecraftIntegration", "true")
         systemProperty("commandlib.fixtureName", target.fixtureName)
+        systemProperty("commandlib.platform", target.platform.name.lowercase())
         systemProperty("commandlib.reportFileName", target.reportFileName)
         systemProperty("commandlib.serverDirectory", target.serverDirectory)
         systemProperty("commandlib.serverJarName", target.serverJarName)

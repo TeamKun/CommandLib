@@ -1,15 +1,26 @@
 # CommandLib User Guide
 
-This reference is for downstream Bukkit plugin or library projects that depend
+This reference is for downstream Spigot or Paper plugin projects that depend
 on CommandLib. It is not repository-maintenance guidance for CommandLib itself.
+
+## Choosing the Right Artifact
+
+| Artifact | Target platform | Java |
+|---|---|---|
+| `spigot` | Spigot, Bukkit-compatible Paper, Mohist | 11+ |
+| `paper` | Paper 1.20.6+ (official command/lifecycle API) | 21+ |
+
+Use the `paper` artifact to take advantage of Paper's official command
+registration API and Adventure component messages. Use `spigot` for Spigot,
+older Paper versions, or Mohist.
 
 ## Registration
 
-When no permission prefix is specified, Bukkit registration uses the plugin
-name in lowercase plus `.command`. For example, plugin `MyPlugin` uses
-`myplugin.command`.
+### Spigot
 
-Specify a permission prefix when you want an explicit namespace:
+When no permission prefix is specified, registration uses the plugin name in
+lowercase plus `.command`. For example, plugin `MyPlugin` uses
+`myplugin.command`.
 
 ```java
 class MyPlugin extends JavaPlugin {
@@ -19,6 +30,27 @@ class MyPlugin extends JavaPlugin {
     }
 }
 ```
+
+### Paper
+
+On Paper 1.20.6+, register commands in the plugin's **constructor** or
+`onLoad()`. The lifecycle event handler must be installed before the server
+processes commands — registering in `onEnable()` is too late.
+
+```java
+public class MyPlugin extends JavaPlugin {
+    public MyPlugin() {
+        CommandLib.register(this, "myplugin.command", new MyCommand());
+    }
+}
+```
+
+The `Command` and `CommandContext` classes in the `paper` artifact are in the
+same package (`net.kunmc.lab.commandlib`) as in `spigot`, so command class
+source is portable between the two artifacts with no import changes. The key
+differences are the registration timing and the message path:
+`CommandContext.sendSuccess(String)` uses Adventure `Component` internally on
+Paper.
 
 This makes generated command and argument branch permissions use nodes such as
 `myplugin.command.spawn` and `myplugin.command.config.key`.

@@ -1,5 +1,10 @@
 # CommandLib Usage Patterns
 
+The patterns below apply to both the `spigot` and `paper` artifacts unless noted
+otherwise. The `Command`, `Argument`, and option classes share the same public
+API across both artifacts; only registration timing and the `CommandContext`
+message path differ.
+
 ## Argument Style
 
 Prefer typed argument instances with `argument(...).execute(...)` over the

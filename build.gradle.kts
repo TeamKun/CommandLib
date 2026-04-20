@@ -3,7 +3,7 @@ allprojects {
     version = "0.17.2"
 }
 
-val publishedProjects = setOf("common", "spigot", "spigot-test", "forge")
+val publishedProjects = setOf("common", "spigot", "spigot-test", "paper", "forge")
 
 subprojects {
     apply(plugin = "java")
