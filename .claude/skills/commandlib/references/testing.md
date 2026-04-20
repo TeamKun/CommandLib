@@ -1,6 +1,6 @@
 # Testing CommandLib Usage
 
-Use `bukkit-test`'s `CommandTester` and `FakeSender` to test commands without a
+Use `spigot-test`'s `CommandTester` and `FakeSender` to test commands without a
 running Minecraft server.
 
 ```java

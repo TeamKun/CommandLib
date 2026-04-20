@@ -143,11 +143,11 @@ configure<JavaPluginExtension> {
     toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersion))
     sourceSets.named("main") {
         java.srcDirs(
-            "../../../bukkit/src/main/java",
+            "../../../spigot/src/main/java",
             "../../../common/src/main/java",
             "../test-plugin-common/src/main/java"
         )
-        resources.srcDirs("../../../bukkit/src/main/resources")
+        resources.srcDirs("../../../spigot/src/main/resources")
     }
 }
 

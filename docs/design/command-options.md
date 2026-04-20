@@ -348,7 +348,7 @@ new factory method in `Options`.
 ## Tests
 
 Unit tests for options live in `common/src/test` (platform-independent) and
-integration tests in `bukkit-integration-test`.
+integration tests in `integration-test`.
 
 Key cases:
 

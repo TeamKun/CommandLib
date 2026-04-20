@@ -52,7 +52,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.Maru32768.CommandLib:bukkit:latest.release"
+    implementation "com.github.Maru32768.CommandLib:spigot:latest.release"
 }
 
 shadowJar {
@@ -80,7 +80,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.Maru32768.CommandLib:bukkit:latest.release")
+    implementation("com.github.Maru32768.CommandLib:spigot:latest.release")
 }
 
 val projectGroup = project.group.toString()
@@ -649,5 +649,5 @@ Or in IntelliJ: **View > Tool Windows > Gradle > Download Sources**.
 
 ## Sample Projects
 
-[Bukkit](./sample/bukkit)  
+[Spigot](./sample/bukkit)  
 [Forge](./sample/forge)

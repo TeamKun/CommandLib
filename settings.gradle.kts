@@ -10,7 +10,7 @@ plugins {
 }
 
 rootProject.name = "CommandLib"
-include("forge", "bukkit")
+include("forge", "spigot")
 include("common")
-include("bukkit-test")
-include("bukkit-integration-test")
+include("spigot-test")
+include("integration-test")

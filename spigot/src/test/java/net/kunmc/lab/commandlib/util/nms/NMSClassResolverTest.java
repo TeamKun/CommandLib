@@ -55,7 +55,7 @@ class NMSClassResolverTest {
     @Test
     void loads_real_legacy_nms_and_craftbukkit_classes_from_patched_server_jar_when_available() throws Exception {
         Path jarPath = resolveJarPath("COMMANDLIB_NMS_TEST_JAR_1_16_5",
-                                      "bukkit-integration-test/fixtures/test-plugin-1.16.5/server/cache/patched_1.16.5.jar");
+                                      "integration-test/fixtures/test-plugin-1.16.5/server/cache/patched_1.16.5.jar");
         if (!Files.exists(jarPath)) {
             return;
         }

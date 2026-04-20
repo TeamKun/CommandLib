@@ -9,7 +9,7 @@ Minecraft server.
 This is intentionally not a normal unit test.
 CommandLib depends on Bukkit, Brigadier, and NMS behavior that is only reliable inside an actual server runtime.
 
-Fast tests remain in `bukkit/src/test` and `bukkit-test`.
+Fast tests remain in `spigot/src/test` and `spigot-test`.
 Use this module only for cases that need a real Bukkit-compatible server, NMS, command registration, or a real player
 connection.
 
@@ -28,7 +28,7 @@ Each `minecraftIntegrationTest*` task does the following:
 The report is written under:
 
 ```text
-bukkit-integration-test/fixtures/test-plugin-common/test-results/
+integration-test/fixtures/test-plugin-common/test-results/
 ```
 
 ## Why MCProtocolLib
@@ -54,26 +54,26 @@ infrastructure failure rather than a skipped test.
 Fixture projects live under:
 
 ```text
-bukkit-integration-test/fixtures/test-plugin-*
+integration-test/fixtures/test-plugin-*
 ```
 
 Shared fixture code lives under:
 
 ```text
-bukkit-integration-test/fixtures/test-plugin-common
+integration-test/fixtures/test-plugin-common
 ```
 
 The shared Gradle script is:
 
 ```text
-bukkit-integration-test/fixtures/test-plugin.shared.gradle.kts
+integration-test/fixtures/test-plugin.shared.gradle.kts
 ```
 
 Fixture setup downloads PlugManX and AutoReloader into each configured server `plugins` directory.
 The AutoReloader URL can be overridden when needed:
 
 ```powershell
-.\gradlew.bat :bukkit-integration-test:prepareTestPlugin1204 -PautoReloaderJarDownloadUrl=<download-url>
+.\gradlew.bat :integration-test:prepareTestPlugin1204 -PautoReloaderJarDownloadUrl=<download-url>
 ```
 
 The same URL can be supplied with `COMMANDLIB_AUTORELOADER_JAR_URL`.
@@ -84,8 +84,8 @@ Each version has a prepare task and an integration test task.
 For example:
 
 ```text
-:bukkit-integration-test:prepareTestPlugin1204
-:bukkit-integration-test:minecraftIntegrationTest1204
+:integration-test:prepareTestPlugin1204
+:integration-test:minecraftIntegrationTest1204
 ```
 
 `minecraftIntegrationTest` is the aggregate task for all configured targets.
@@ -109,11 +109,11 @@ When a Mohist fixture needs generated NMS jars, configure `nmsJarPaths` explicit
 For example, Mohist `1.20.1` splits server and CraftBukkit classes across Forge-generated jars, so the fixture checks
 both generated jar paths.
 
-The `bukkit` module's NMS resolver tests can optionally load a generated jar.
+The `spigot` module's NMS resolver tests can optionally load a generated jar.
 The default fallback path for the legacy resolver test is:
 
 ```text
-bukkit-integration-test/fixtures/test-plugin-1.16.5/server/cache/patched_1.16.5.jar
+integration-test/fixtures/test-plugin-1.16.5/server/cache/patched_1.16.5.jar
 ```
 
 `COMMANDLIB_NMS_TEST_JAR_1_16_5` can override that path.
@@ -131,8 +131,8 @@ state, sends `stop`, and then lets the Docker-based integration test continue.
 Example:
 
 ```powershell
-.\gradlew.bat :bukkit-integration-test:prepareTestPlugin1201Mohist
-.\gradlew.bat :bukkit-integration-test:bootstrapMohist1201Mohist
+.\gradlew.bat :integration-test:prepareTestPlugin1201Mohist
+.\gradlew.bat :integration-test:bootstrapMohist1201Mohist
 ```
 
 The versioned integration test task depends on this bootstrap task, so manual execution is only needed when diagnosing
@@ -143,13 +143,13 @@ Mohist startup itself.
 Run one target:
 
 ```powershell
-.\gradlew.bat :bukkit-integration-test:minecraftIntegrationTest1204
+.\gradlew.bat :integration-test:minecraftIntegrationTest1204
 ```
 
 Run all configured targets:
 
 ```powershell
-.\gradlew.bat :bukkit-integration-test:minecraftIntegrationTest
+.\gradlew.bat :integration-test:minecraftIntegrationTest
 ```
 
 The normal `test` task does not run these server tests unless explicitly enabled.

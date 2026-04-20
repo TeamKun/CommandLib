@@ -1,14 +1,14 @@
-# bukkit-test Module Notes
+# spigot-test Module Notes
 
 ## Purpose
 
-`bukkit-test` is a test utility module for plugins and libraries that use
-CommandLib's Bukkit API. It provides `CommandTester` and `FakeSender` so command
+`spigot-test` is a test utility module for plugins and libraries that use
+CommandLib's Spigot/Bukkit API. It provides `CommandTester` and `FakeSender` so command
 execution can be tested without a running Minecraft server.
 
 ## How NMS Is Bypassed
 
-CommandLib's `bukkit` module depends on NMS, the version-specific Minecraft
+CommandLib's `spigot` module depends on NMS, the version-specific Minecraft
 internals. `CommandTester` keeps two static mocks alive for the lifetime of a
 tester instance:
 

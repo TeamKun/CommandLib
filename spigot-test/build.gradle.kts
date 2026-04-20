@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    api(project(":bukkit"))
+    api(project(":spigot"))
     compileOnly("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT")
     compileOnly("com.mojang:brigadier:1.0.18")
     api("org.mockito:mockito-inline:4.8.1")

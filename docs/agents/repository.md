@@ -10,16 +10,16 @@ instructions.
 ## Project Structure
 
 - `common`: shared command model, arguments, options, parsing, and utilities.
-- `bukkit`: Bukkit-facing API, registration, Bukkit argument types, and NMS
+- `spigot`: Spigot-facing API, registration, Bukkit argument types, and NMS
   bridges.
-- `bukkit-test`: test utilities for downstream plugins and this repository.
-- `bukkit-integration-test`: Minecraft/Bukkit integration tests.
+- `spigot-test`: test utilities for downstream plugins and this repository.
+- `integration-test`: Minecraft/Bukkit integration tests.
 - `forge`: Forge-facing integration.
 - `sample`: sample usage.
 
 Prefer the existing module boundaries. Keep shared behavior in `common` when it
 does not depend on Bukkit APIs. Keep Bukkit and NMS-specific behavior in
-`bukkit`.
+`spigot`.
 
 ## Implementation Guidance
 

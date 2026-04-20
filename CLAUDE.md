@@ -6,7 +6,7 @@ For repository maintenance, bug fixes, tests, and implementation work, read:
 
 - `docs/agents/repository.md`
 - `docs/agents/testing.md`
-- `docs/agents/bukkit-test.md` when touching `bukkit-test`
+- `docs/agents/bukkit-test.md` when touching `spigot-test`
 
 Do not treat `.claude/skills/commandlib` as repository-maintenance instructions.
 That skill is for downstream library users who want to generate or understand
