@@ -30,7 +30,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     };
     private Predicate<C> preprocess = ctx -> true;
     private CommandExecutor<C> executor;
-    private final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers = new ArrayList<>();
+    private final List<UncaughtExceptionHandler<C>> uncaughtExceptionHandlers = new ArrayList<>();
     @SuppressWarnings("unchecked")
     private final PlatformAdapter<?, ?, C, B, T> platformAdapter = (PlatformAdapter<?, ?, C, B, T>) PlatformAdapter.get();
 
@@ -332,7 +332,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         this.executor = executor;
     }
 
-    public final void addUncaughtExceptionHandler(UncaughtExceptionHandler<?, C> executor) {
+    public final void addUncaughtExceptionHandler(UncaughtExceptionHandler<C> executor) {
         this.uncaughtExceptionHandlers.add(executor);
     }
 
@@ -391,7 +391,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         return executor;
     }
 
-    final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers() {
+    final List<UncaughtExceptionHandler<C>> uncaughtExceptionHandlers() {
         return List.copyOf(uncaughtExceptionHandlers);
     }
 

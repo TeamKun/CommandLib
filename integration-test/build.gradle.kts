@@ -1,4 +1,3 @@
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
 repositories {
@@ -69,21 +68,21 @@ data class IntegrationTarget(
     val platform: Platform,
     val fixtureName: String,
     val minecraftVersion: String,
-    val reportFileName: String,
     val javaVersion: Int,
     val protocolConfiguration: Configuration,
     val serverDirectory: String = "server",
     val serverJarName: String = "server.jar",
     val requiresMohistBootstrap: Boolean = false,
-)
+) {
+    val reportFileName: String get() = "TEST-commandlib-$minecraftVersion-${platform.name.lowercase()}.xml"
+}
 
 val integrationTargets = listOf(
     IntegrationTarget(
-        id = "1165",
+        id = "1165Paper",
         platform = Platform.PAPER,
         fixtureName = "1.16.5-paper",
         minecraftVersion = "1.16.5",
-        reportFileName = "TEST-commandlib-1.16.5.xml",
         javaVersion = 11,
         protocolConfiguration = mcProtocol1165,
     ),
@@ -92,27 +91,24 @@ val integrationTargets = listOf(
         platform = Platform.MOHIST,
         fixtureName = "1.16.5-mohist",
         minecraftVersion = "1.16.5",
-        reportFileName = "TEST-commandlib-1.16.5-mohist.xml",
         javaVersion = 17,
         protocolConfiguration = mcProtocol1165,
         serverJarName = "mohist.jar",
         requiresMohistBootstrap = true,
     ),
     IntegrationTarget(
-        id = "1194",
+        id = "1194Paper",
         platform = Platform.PAPER,
         fixtureName = "1.19.4-paper",
         minecraftVersion = "1.19.4",
-        reportFileName = "TEST-commandlib-1.19.4.xml",
         javaVersion = 17,
         protocolConfiguration = mcProtocol1194,
     ),
     IntegrationTarget(
-        id = "1201",
+        id = "1201Paper",
         platform = Platform.PAPER,
         fixtureName = "1.20.1-paper",
         minecraftVersion = "1.20.1",
-        reportFileName = "TEST-commandlib-1.20.1.xml",
         javaVersion = 17,
         protocolConfiguration = mcProtocol1201,
     ),
@@ -121,45 +117,40 @@ val integrationTargets = listOf(
         platform = Platform.MOHIST,
         fixtureName = "1.20.1-mohist",
         minecraftVersion = "1.20.1",
-        reportFileName = "TEST-commandlib-1.20.1-mohist.xml",
         javaVersion = 17,
         protocolConfiguration = mcProtocol1201,
         serverJarName = "mohist.jar",
         requiresMohistBootstrap = true,
     ),
     IntegrationTarget(
-        id = "1204",
+        id = "1204Paper",
         platform = Platform.PAPER,
         fixtureName = "1.20.4-paper",
         minecraftVersion = "1.20.4",
-        reportFileName = "TEST-commandlib-1.20.4.xml",
         javaVersion = 21,
         protocolConfiguration = mcProtocol1204,
     ),
     IntegrationTarget(
-        id = "1205",
+        id = "1205Paper",
         platform = Platform.PAPER,
         fixtureName = "1.20.5-paper",
         minecraftVersion = "1.20.5",
-        reportFileName = "TEST-commandlib-1.20.5.xml",
         javaVersion = 21,
         protocolConfiguration = mcProtocol1206,
     ),
     IntegrationTarget(
-        id = "1206",
+        id = "1206Paper",
         platform = Platform.PAPER,
         fixtureName = "1.20.6-paper",
         minecraftVersion = "1.20.6",
-        reportFileName = "TEST-commandlib-1.20.6.xml",
         javaVersion = 21,
         protocolConfiguration = mcProtocol1206,
     ),
     IntegrationTarget(
-        id = "1210",
+        id = "1210Paper",
         platform = Platform.PAPER,
         fixtureName = "1.21.0-paper",
         minecraftVersion = "1.21.0",
-        reportFileName = "TEST-commandlib-1.21.xml",
         javaVersion = 21,
         protocolConfiguration = mcProtocol121,
     ),
@@ -197,12 +188,12 @@ fun registerPrepareTask(target: IntegrationTarget): TaskProvider<Exec> =
 
         if (isWindows) {
             if (hasWrapperJar) {
-                commandLine("cmd", "/c", "gradlew.bat", "buildAndCopy", "downloadServerJar")
+                commandLine("cmd", "/c", ".\\gradlew.bat", "buildAndCopy", "downloadServerJar")
             } else {
                 commandLine(
                     "cmd",
                     "/c",
-                    "gradlew.bat",
+                    ".\\gradlew.bat",
                     "-p",
                     testPluginDir.absolutePath,
                     "buildAndCopy",
@@ -349,7 +340,8 @@ fun registerMohistBootstrapTask(target: IntegrationTarget, prepareTask: TaskProv
 
 fun registerVersionedIntegrationTest(target: IntegrationTarget): TaskProvider<Test> {
     val prepareTask = registerPrepareTask(target)
-    val mohistBootstrapTask = if (target.requiresMohistBootstrap) registerMohistBootstrapTask(target, prepareTask) else null
+    val mohistBootstrapTask =
+        if (target.requiresMohistBootstrap) registerMohistBootstrapTask(target, prepareTask) else null
 
     return tasks.register<Test>("minecraftIntegrationTest${target.capitalizedId()}") {
         group = "verification"

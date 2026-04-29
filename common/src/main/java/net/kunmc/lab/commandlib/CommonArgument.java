@@ -33,7 +33,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>, 
     private final ArgumentType<?> type;
     private ArgumentValidator<? super T, C> validator;
     private BiFunction<? super T, C, ? extends T> transformer;
-    private final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers = new ArrayList<>();
+    private final List<UncaughtExceptionHandler<C>> uncaughtExceptionHandlers = new ArrayList<>();
 
     protected CommonArgument(@NotNull String name, @NotNull ArgumentType<?> type) {
         this.name = Objects.requireNonNull(name);
@@ -119,7 +119,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>, 
         return executor;
     }
 
-    protected final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers() {
+    protected final List<UncaughtExceptionHandler<C>> uncaughtExceptionHandlers() {
         return List.copyOf(uncaughtExceptionHandlers);
     }
 
@@ -186,7 +186,7 @@ public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>, 
     }
 
     @SuppressWarnings("unchecked")
-    public final SELF addUncaughtExceptionHandler(@NotNull UncaughtExceptionHandler<?, C> handler) {
+    public final SELF addUncaughtExceptionHandler(@NotNull UncaughtExceptionHandler<C> handler) {
         this.uncaughtExceptionHandlers.add(handler);
         return (SELF) this;
     }

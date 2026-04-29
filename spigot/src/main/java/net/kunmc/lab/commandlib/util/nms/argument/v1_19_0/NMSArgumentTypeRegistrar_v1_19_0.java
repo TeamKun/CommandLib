@@ -61,8 +61,7 @@ public class NMSArgumentTypeRegistrar_v1_19_0 extends NMSArgumentTypeRegistrar {
             }
         }
         if (byClassMap == null) {
-            throw new IllegalStateException(
-                    "Could not find NMS argument-type Class→ArgumentTypeInfo map in " + clazz.getName());
+            throw new IllegalStateException("Could not find NMS argument-type Class→ArgumentTypeInfo map in " + clazz.getName());
         }
         if (byClassMap.containsKey(argumentTypeClass)) {
             return;
@@ -73,13 +72,14 @@ public class NMSArgumentTypeRegistrar_v1_19_0 extends NMSArgumentTypeRegistrar {
 
         // Find its inner Template/a class (non-static inner class).
         Class<?> templateClass = null;
-        for (Class<?> inner : stringSerializer.getClass().getDeclaredClasses()) {
+        for (Class<?> inner : stringSerializer.getClass()
+                                              .getDeclaredClasses()) {
             templateClass = inner;
             break;
         }
         if (templateClass == null) {
-            throw new IllegalStateException(
-                    "Could not find Template inner class in " + stringSerializer.getClass().getName());
+            throw new IllegalStateException("Could not find Template inner class in " + stringSerializer.getClass()
+                                                                                                        .getName());
         }
 
         // Inner-class constructor takes the outer instance as first parameter.
@@ -91,8 +91,7 @@ public class NMSArgumentTypeRegistrar_v1_19_0 extends NMSArgumentTypeRegistrar {
             }
         }
         if (templateCtor == null) {
-            throw new IllegalStateException(
-                    "Could not find Template(outer, StringType) constructor in " + templateClass.getName());
+            throw new IllegalStateException("Could not find Template(outer, StringType) constructor in " + templateClass.getName());
         }
         templateCtor.setAccessible(true);
         Object greedyTemplate;
@@ -104,15 +103,16 @@ public class NMSArgumentTypeRegistrar_v1_19_0 extends NMSArgumentTypeRegistrar {
 
         // Find the ArgumentTypeInfo interface from the stringSerializer instance.
         Class<?> argumentTypeInfoInterface = null;
-        for (Class<?> iface : stringSerializer.getClass().getInterfaces()) {
+        for (Class<?> iface : stringSerializer.getClass()
+                                              .getInterfaces()) {
             if ("ArgumentTypeInfo".equals(iface.getSimpleName())) {
                 argumentTypeInfoInterface = iface;
                 break;
             }
         }
         if (argumentTypeInfoInterface == null) {
-            throw new IllegalStateException(
-                    "Could not find ArgumentTypeInfo interface on " + stringSerializer.getClass().getName());
+            throw new IllegalStateException("Could not find ArgumentTypeInfo interface on " + stringSerializer.getClass()
+                                                                                                              .getName());
         }
 
         // Proxy whose unpack() returns the GREEDY_PHRASE template.
@@ -124,8 +124,7 @@ public class NMSArgumentTypeRegistrar_v1_19_0 extends NMSArgumentTypeRegistrar {
         Object proxy = Proxy.newProxyInstance(argumentTypeClass.getClassLoader(),
                                               new Class[]{argumentTypeInfoInterface},
                                               (p, method, args) -> {
-                                                  if (args != null && args.length == 1
-                                                          && args[0] instanceof ArgumentType) {
+                                                  if (args != null && args.length == 1 && args[0] instanceof ArgumentType) {
                                                       return greedyTemplate;
                                                   }
                                                   return null;

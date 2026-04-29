@@ -12,7 +12,7 @@ configure<JavaPluginExtension> {
 
 dependencies {
     api(project(":common"))
-    compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
     compileOnly("com.mojang:brigadier:1.0.18")
     compileOnly("org.jetbrains:annotations:16.0.2")
 

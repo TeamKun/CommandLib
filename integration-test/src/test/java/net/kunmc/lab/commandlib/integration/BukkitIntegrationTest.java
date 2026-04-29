@@ -19,13 +19,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -56,7 +56,7 @@ class BukkitIntegrationTest {
 
         Path fixturesDir = Path.of(System.getProperty("commandlib.fixturesDir"));
         Path testPluginDir = fixturesDir.resolve(fixtureName);
-        Path reportFile = fixturesDir.resolve("test-plugin-common/test-results/" + reportFileName);
+        Path reportFile = fixturesDir.resolve("common-bukkit/test-results/" + reportFileName);
         Files.deleteIfExists(reportFile);
 
         try (GenericContainer<?> container = createBukkitContainer(fixturesDir,
@@ -80,6 +80,12 @@ class BukkitIntegrationTest {
                           .until(client::isConnected);
 
                 waitForPlayerJoin(container);
+
+                // Send a tab-complete request before runTests so the server-side suggestion action
+                // fires and captures getLatestInput() before verifySuggestionCapture runs.
+                client.sendTabCompleteRequest(1, "/commandlibtest suggestionCapture abc");
+                Thread.sleep(300);
+
                 client.sendCommand("commandlibtest runTests");
 
                 Awaitility.await()
@@ -88,6 +94,16 @@ class BukkitIntegrationTest {
                           .until(() -> Files.exists(reportFile) && Files.size(reportFile) > 0);
 
                 assertJUnitReportSucceeded(reportFile);
+
+                // Bot-side help message prefix check: send the help command and verify the response
+                // includes the correct usage prefix (not a wrong token like the argument name).
+                client.clearReceivedPackets();
+                client.sendCommand("commandlibtest helpMessageRoot");
+                Thread.sleep(1500);
+                List<String> helpMessages = client.drainSystemMessages();
+                assertThat(helpMessages).as(
+                                                "Help message should contain 'commandlibtest helpMessageRoot' as usage prefix")
+                                        .anyMatch(m -> m.contains("commandlibtest helpMessageRoot"));
             } finally {
                 client.disconnect("Test completed");
             }
@@ -303,7 +319,60 @@ class BukkitIntegrationTest {
         Method isConnected = sessionClass.getMethod("isConnected");
         Method send = findSendMethod(sessionClass);
         Method disconnect = findDisconnectMethod(sessionClass);
-        return new BotSession(session, isConnected, send, disconnect);
+        BotSession botSession = new BotSession(session, isConnected, send, disconnect);
+        registerPacketListener(session, sessionClass, botSession);
+        return botSession;
+    }
+
+    private static void registerPacketListener(Object session,
+                                               Class<?> sessionClass,
+                                               BotSession botSession) throws ReflectiveOperationException {
+        // Find addListener(SessionListener) and determine the listener interface from its parameter type.
+        Method addListener = null;
+        Class<?> listenerInterface = null;
+        for (Method m : sessionClass.getMethods()) {
+            if (m.getName()
+                 .equals("addListener") && m.getParameterCount() == 1 && m.getParameterTypes()[0].isInterface()) {
+                addListener = m;
+                listenerInterface = m.getParameterTypes()[0];
+                break;
+            }
+        }
+        if (addListener == null) {
+            throw new IllegalStateException("No addListener(SessionListener) method found on " + sessionClass.getName());
+        }
+
+        Object proxy = Proxy.newProxyInstance(listenerInterface.getClassLoader(),
+                                              new Class<?>[]{listenerInterface},
+                                              (p, method, args) -> {
+                                                  if (method.getName()
+                                                            .equals("packetReceived") && args != null) {
+                                                      if (args.length == 2) {
+                                                          // Modern MCProtocolLib: packetReceived(Session, Packet)
+                                                          botSession.receivedPackets.add(args[1]);
+                                                      } else if (args.length == 1) {
+                                                          // Legacy MCProtocolLib (1.16.5): packetReceived(PacketReceivedEvent)
+                                                          try {
+                                                              Object packet = args[0].getClass()
+                                                                                     .getMethod("getPacket")
+                                                                                     .invoke(args[0]);
+                                                              if (packet != null) {
+                                                                  botSession.receivedPackets.add(packet);
+                                                              }
+                                                          } catch (ReflectiveOperationException e) {
+                                                              throw new IllegalStateException(
+                                                                      "packetReceived event has no getPacket(): " + args[0].getClass()
+                                                                                                                           .getName(),
+                                                                      e);
+                                                          }
+                                                      } else {
+                                                          throw new IllegalStateException(
+                                                                  "Unexpected packetReceived signature: " + args.length + " arguments");
+                                                      }
+                                                  }
+                                                  return null;
+                                              });
+        addListener.invoke(session, proxy);
     }
 
     private static Method findSendMethod(Class<?> sessionClass) {
@@ -329,12 +398,62 @@ class BukkitIntegrationTest {
         private final Method isConnectedMethod;
         private final Method sendMethod;
         private final Method disconnectMethod;
+        final CopyOnWriteArrayList<Object> receivedPackets = new CopyOnWriteArrayList<>();
 
         private BotSession(Object delegate, Method isConnectedMethod, Method sendMethod, Method disconnectMethod) {
             this.delegate = delegate;
             this.isConnectedMethod = isConnectedMethod;
             this.sendMethod = sendMethod;
             this.disconnectMethod = disconnectMethod;
+        }
+
+        void clearReceivedPackets() {
+            receivedPackets.clear();
+        }
+
+        List<String> drainSystemMessages() throws ReflectiveOperationException {
+            List<Object> snapshot = new ArrayList<>(receivedPackets);
+            receivedPackets.clear();
+            List<String> messages = new ArrayList<>();
+            for (Object packet : snapshot) {
+                String className = packet.getClass()
+                                         .getName();
+                if (!className.contains("SystemChatPacket") && !className.contains("ServerChatPacket")) {
+                    continue;
+                }
+                // Try getContent() (1.19+) then getMessage() (1.16.5)
+                Object component = null;
+                for (String methodName : List.of("getContent", "getMessage")) {
+                    try {
+                        component = packet.getClass()
+                                          .getMethod(methodName)
+                                          .invoke(packet);
+                        break;
+                    } catch (NoSuchMethodException ignored) {
+                    }
+                }
+                if (component == null) {
+                    throw new IllegalStateException("Chat packet " + className + " has neither getContent() nor getMessage().");
+                }
+                messages.add(serializeComponent(component));
+            }
+            return messages;
+        }
+
+        private static String serializeComponent(Object component) {
+            try {
+                // Reflective call to GsonComponentSerializer.gson().serialize(component)
+                // to avoid compile-time Adventure version coupling with MCProtocolLib's bundled Adventure.
+                Class<?> serializerClass = Class.forName(
+                        "net.kyori.adventure.text.serializer.gson.GsonComponentSerializer");
+                Object serializer = serializerClass.getMethod("gson")
+                                                   .invoke(null);
+                Class<?> componentClass = Class.forName("net.kyori.adventure.text.Component");
+                return (String) serializerClass.getMethod("serialize", componentClass)
+                                               .invoke(serializer, component);
+            } catch (Exception e) {
+                return component.toString();
+            }
         }
 
         boolean isConnected() {
@@ -351,6 +470,31 @@ class BukkitIntegrationTest {
             } catch (ReflectiveOperationException e) {
                 throw new IllegalStateException("Failed to send MCProtocolLib command: " + command, e);
             }
+        }
+
+        void sendTabCompleteRequest(int transactionId, String text) {
+            try {
+                sendMethod.invoke(delegate, createTabCompletePacket(transactionId, text));
+            } catch (ReflectiveOperationException e) {
+                throw new IllegalStateException("Failed to send tab complete request: " + text, e);
+            }
+        }
+
+        private static Object createTabCompletePacket(int transactionId,
+                                                      String text) throws ReflectiveOperationException {
+            // Try each known class name across MCProtocolLib versions.
+            for (String className : List.of(
+                    "org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.ServerboundCommandSuggestionPacket",
+                    "com.github.steveice10.mc.protocol.packet.ingame.serverbound.ServerboundCommandSuggestionPacket",
+                    "com.github.steveice10.mc.protocol.packet.ingame.client.ClientTabCompletePacket")) {
+                try {
+                    return Class.forName(className)
+                                .getConstructor(int.class, String.class)
+                                .newInstance(transactionId, text);
+                } catch (ClassNotFoundException | NoSuchMethodException ignored) {
+                }
+            }
+            throw new IllegalStateException("No tab complete packet class found for the MCProtocolLib version in use.");
         }
 
         private Object createCommandPacket(String command) throws ReflectiveOperationException {

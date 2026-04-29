@@ -23,7 +23,8 @@ public final class CommandContext extends AbstractCommandContext<CommandSourceSt
 
     @NotNull
     public CommandSender getSender() {
-        return handle.getSource().getSender();
+        return handle.getSource()
+                     .getSender();
     }
 
     @NotNull
@@ -53,7 +54,10 @@ public final class CommandContext extends AbstractCommandContext<CommandSourceSt
                 return locale.toLowerCase(Locale.ROOT);
             }
         }
-        return Locale.getDefault().toLanguageTag().toLowerCase(Locale.ROOT).replace('-', '_');
+        return Locale.getDefault()
+                     .toLanguageTag()
+                     .toLowerCase(Locale.ROOT)
+                     .replace('-', '_');
     }
 
     @Override
@@ -63,25 +67,32 @@ public final class CommandContext extends AbstractCommandContext<CommandSourceSt
 
     @Override
     public void sendSuccess(@Nullable String message) {
-        getSender().sendMessage(Component.text(Objects.toString(message, "")).color(NamedTextColor.GREEN));
+        getSender().sendMessage(Component.text(Objects.toString(message, ""))
+                                         .color(NamedTextColor.GREEN));
     }
 
     @Override
     public void sendWarn(@Nullable String message) {
-        getSender().sendMessage(Component.text(Objects.toString(message, "")).color(NamedTextColor.YELLOW));
+        getSender().sendMessage(Component.text(Objects.toString(message, ""))
+                                         .color(NamedTextColor.YELLOW));
     }
 
     @Override
     public void sendFailure(@Nullable String message) {
-        getSender().sendMessage(Component.text(Objects.toString(message, "")).color(NamedTextColor.RED));
+        getSender().sendMessage(Component.text(Objects.toString(message, ""))
+                                         .color(NamedTextColor.RED));
     }
 
     @Override
     public void sendMessageWithOption(@Nullable String message, @NotNull Consumer<MessageOption> options) {
-        Component component = MessageOption.createMessage(options, (rgb, hoverText) ->
-                Component.text(Objects.toString(message, ""))
-                         .color(TextColor.color(rgb))
-                         .hoverEvent(HoverEvent.showText(Component.text(hoverText))));
+        Component component = MessageOption.createMessage(options, (rgb, hoverText) -> Component.text(Objects.toString(
+                                                                                                        message,
+                                                                                                        ""))
+                                                                                                .color(TextColor.color(
+                                                                                                        rgb))
+                                                                                                .hoverEvent(HoverEvent.showText(
+                                                                                                        Component.text(
+                                                                                                                hoverText))));
         getSender().sendMessage(component);
     }
 

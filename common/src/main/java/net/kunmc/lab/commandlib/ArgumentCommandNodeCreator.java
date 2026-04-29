@@ -5,7 +5,6 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.kunmc.lab.commandlib.command.CommandExecutor;
-import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.suggestion.AsyncSuggestionAction;
 import net.kunmc.lab.commandlib.suggestion.SuggestionAction;
 import net.kunmc.lab.commandlib.suggestion.SuggestionBuilder;
@@ -47,10 +46,13 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
                     C ctx = platformAdapter.createCommandContext(context);
                     try {
                         arguments.parse(ctx);
-                    } catch (ArgumentParseException ignored) {
+                    } catch (Exception ignored) {
+                        // Best-effort: pre-populate ctx with already-parsed arguments for use in
+                        // suggestion actions. Failures (e.g. platform-specific context differences)
+                        // are non-fatal — the suggestion action still runs.
                     }
 
-                    SuggestionBuilder<C> suggestionBuilder = new SuggestionBuilder<>(ctx);
+                    SuggestionBuilder<C> suggestionBuilder = new SuggestionBuilder<>(ctx, sb.getRemaining());
                     if (suggestionAction != null) {
                         suggestionAction.accept(suggestionBuilder);
                     }

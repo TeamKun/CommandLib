@@ -1,8 +1,6 @@
 package net.kunmc.lab.commandlib.util;
 
 public class StringUtil {
-    public static final String EMPTY = "";
-
     public static boolean containsIgnoreCase(String s, String search) {
         if (s == null || search == null) {
             return false;
@@ -17,5 +15,4 @@ public class StringUtil {
         }
         return false;
     }
-
 }

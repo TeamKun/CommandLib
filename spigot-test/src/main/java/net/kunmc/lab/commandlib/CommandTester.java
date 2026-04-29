@@ -154,8 +154,16 @@ public class CommandTester implements AutoCloseable {
         nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSCraftBlockData.class))
                        .thenAnswer(inv -> MockNMSCraftBlockData.class);
 
-        new CommandNodeCreator<>(commandsSupplier.get(), permissionPrefix).build()
-                                                                          .forEach(dispatcher.getRoot()::addChild);
+        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSArgumentTypeRegistrar.class))
+                       .thenAnswer(inv -> MockNMSArgumentTypeRegistrar.class);
+
+        try {
+            new CommandNodeCreator<>(commandsSupplier.get(), permissionPrefix).build()
+                                                                              .forEach(dispatcher.getRoot()::addChild);
+        } catch (Exception e) {
+            close();
+            throw new RuntimeException("Unexpected exception", e);
+        }
     }
 
     /**

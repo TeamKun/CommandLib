@@ -1,26 +1,34 @@
 package net.kunmc.lab.commandlib;
 
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import com.mojang.brigadier.tree.RootCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
+import java.util.*;
 
 /**
- * Entry point for registering CommandLib commands on Paper 1.20.6+.
+ * Entry point for registering CommandLib commands on Paper 1.21.0+.
  *
- * <p>Call {@link #register} in your plugin's constructor or {@code onLoad()} so the
- * lifecycle event handler is installed before the server processes commands.
+ * <p>Call {@link #register} during plugin initialization, such as from your plugin's
+ * constructor, {@code onLoad()}, or {@code onEnable()}, so the lifecycle event handler
+ * is installed before the server processes commands.
  *
  * <pre>{@code
  * public class MyPlugin extends JavaPlugin {
@@ -31,34 +39,66 @@ import java.util.Objects;
  * }</pre>
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class CommandLib {
-    private CommandLib() {
+public final class CommandLib implements Listener {
+    private static final VarHandle CHILDREN;
+    private static final VarHandle LITERALS;
+    private static final VarHandle ARGUMENTS;
+
+    static {
+        try {
+            MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(CommandNode.class, MethodHandles.lookup());
+            CHILDREN = lookup.findVarHandle(CommandNode.class, "children", Map.class);
+            LITERALS = lookup.findVarHandle(CommandNode.class, "literals", Map.class);
+            ARGUMENTS = lookup.findVarHandle(CommandNode.class, "arguments", Map.class);
+        } catch (ReflectiveOperationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
     }
 
-    public static void register(@NotNull Plugin plugin, @NotNull Command command, @NotNull Command... commands) {
+    // Cached from the first COMMANDS lifecycle event so that runtime calls to register() can fall back
+    // to direct dispatcher manipulation instead of failing with IllegalStateException.
+    private static volatile CommandDispatcher<CommandSourceStack> serverDispatcher;
+    private static final Map<Plugin, PluginRegistrationState> REGISTRATION_STATES = Collections.synchronizedMap(new WeakHashMap<>());
+
+    private final Plugin plugin;
+    private final PluginRegistrationState registrationState;
+    private CommandDispatcher<CommandSourceStack> dispatcher;
+    private final List<String> registeredCommandNames = new ArrayList<>();
+    private final List<Permission> registeredPermissions = new ArrayList<>();
+    private boolean unregistered;
+
+    private CommandLib(Plugin plugin, PluginRegistrationState registrationState) {
+        this.plugin = plugin;
+        this.registrationState = registrationState;
+    }
+
+    public static CommandLib register(@NotNull Plugin plugin, @NotNull Command command, @NotNull Command... commands) {
         List<Command> list = new ArrayList<>();
         list.add(command);
         Collections.addAll(list, commands);
-        register(plugin, list);
+        return register(plugin, list);
     }
 
-    public static void register(@NotNull Plugin plugin, @NotNull Collection<? extends Command> commands) {
-        register(plugin, plugin.getName().toLowerCase() + ".command", commands);
+    public static CommandLib register(@NotNull Plugin plugin, @NotNull Collection<? extends Command> commands) {
+        return register(plugin,
+                        plugin.getName()
+                              .toLowerCase() + ".command",
+                        commands);
     }
 
-    public static void register(@NotNull Plugin plugin,
-                                @NotNull String permissionPrefix,
-                                @NotNull Command command,
-                                @NotNull Command... commands) {
+    public static CommandLib register(@NotNull Plugin plugin,
+                                      @NotNull String permissionPrefix,
+                                      @NotNull Command command,
+                                      @NotNull Command... commands) {
         List<Command> list = new ArrayList<>();
         list.add(command);
         Collections.addAll(list, commands);
-        register(plugin, permissionPrefix, list);
+        return register(plugin, permissionPrefix, list);
     }
 
-    public static void register(@NotNull Plugin plugin,
-                                @NotNull String permissionPrefix,
-                                @NotNull Collection<? extends Command> commands) {
+    public static CommandLib register(@NotNull Plugin plugin,
+                                      @NotNull String permissionPrefix,
+                                      @NotNull Collection<? extends Command> commands) {
         Objects.requireNonNull(plugin);
         Objects.requireNonNull(permissionPrefix);
         Objects.requireNonNull(commands);
@@ -67,34 +107,208 @@ public final class CommandLib {
         }
         commands.forEach(Objects::requireNonNull);
 
-        registerPermissions(plugin, permissionPrefix, commands);
+        CommandLib instance = new CommandLib(plugin,
+                                             REGISTRATION_STATES.computeIfAbsent(plugin,
+                                                                                 ignored -> new PluginRegistrationState()));
+        Bukkit.getPluginManager()
+              .registerEvents(instance, plugin);
+        instance.doRegisterPermissions(plugin, permissionPrefix, commands);
 
-        LifecycleEventManager<Plugin> lifecycleManager = plugin.getLifecycleManager();
-        lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {
-            Commands registrar = event.registrar();
-            List<LiteralCommandNode<CommandSourceStack>> nodes =
-                    new CommandNodeCreator<>(commands, permissionPrefix).build();
-            nodes.forEach(node -> registrar.register(node, ""));
-        });
+        PendingRegistration registration = new PendingRegistration(instance, commands, permissionPrefix);
+        synchronized (instance.registrationState) {
+            if (instance.registrationState.dispatcher != null) {
+                instance.registerDirectly(instance.registrationState.dispatcher, registration);
+                return instance;
+            }
+
+            if (!instance.registrationState.lifecycleHandlerRegistered && tryRegisterLifecycleHandler(plugin,
+                                                                                                      instance.registrationState)) {
+                instance.registrationState.lifecycleHandlerRegistered = true;
+            }
+
+            if (instance.registrationState.lifecycleHandlerRegistered) {
+                instance.registrationState.pendingRegistrations.add(registration);
+                return instance;
+            }
+
+            // The initialization window has already passed for this plugin, so the lifecycle
+            // handler can no longer be installed. Fall back to direct dispatcher manipulation.
+            CommandDispatcher<CommandSourceStack> dispatcher = serverDispatcher;
+            if (dispatcher == null) {
+                throw new IllegalStateException(
+                        "CommandLib.register() was called after Paper's command registration phase, " + "but no dispatcher is cached yet. Ensure at least one CommandLib.register() call " + "is made during plugin initialization.",
+                        instance.registrationState.registrationFailure);
+            }
+            instance.registrationState.dispatcher = dispatcher;
+            instance.registerDirectly(dispatcher, registration);
+        }
+
+        return instance;
     }
 
-    private static void registerPermissions(Plugin plugin,
-                                            String permissionPrefix,
-                                            Collection<? extends Command> commands) {
+    /**
+     * Removes all commands and permissions registered by this instance.
+     * Must be called on the main server thread.
+     */
+    public void unregister() {
+        unregister(true);
+    }
+
+    @EventHandler
+    private void onPluginDisable(PluginDisableEvent event) {
+        if (!event.getPlugin()
+                  .equals(plugin)) {
+            return;
+        }
+
+        unregister(false);
+    }
+
+    private void unregister(boolean updatePlayerCommands) {
+        if (unregistered) {
+            return;
+        }
+        unregistered = true;
+
+        synchronized (registrationState) {
+            registrationState.pendingRegistrations.removeIf(x -> x.instance == this);
+        }
+
+        try {
+            if (dispatcher != null) {
+                RootCommandNode<CommandSourceStack> root = dispatcher.getRoot();
+                for (String name : registeredCommandNames) {
+                    removeFromNode(root, name);
+                    removeFromNode(root, namespacedName(name));
+                }
+                dispatcher = null;
+                registeredCommandNames.clear();
+
+                if (updatePlayerCommands) {
+                    Bukkit.getOnlinePlayers()
+                          .forEach(Player::updateCommands);
+                }
+            }
+
+            for (Permission permission : new ArrayList<>(registeredPermissions)) {
+                permission.setDefault(PermissionDefault.FALSE);
+                Bukkit.getPluginManager()
+                      .recalculatePermissionDefaults(permission);
+                Bukkit.getPluginManager()
+                      .removePermission(permission);
+            }
+            registeredPermissions.clear();
+        } finally {
+            HandlerList.unregisterAll(this);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void removeFromNode(RootCommandNode<CommandSourceStack> root, String name) {
+        ((Map<String, ?>) CHILDREN.get(root)).remove(name);
+        ((Map<String, ?>) LITERALS.get(root)).remove(name);
+        ((Map<String, ?>) ARGUMENTS.get(root)).remove(name);
+    }
+
+    private void doRegisterPermissions(Plugin plugin, String permissionPrefix, Collection<? extends Command> commands) {
         commands.stream()
-                .flatMap(c -> c.permissions(permissionPrefix).stream())
+                .flatMap(c -> c.permissions(permissionPrefix)
+                               .stream())
                 .forEach(permission -> {
                     removePermissionIfPresent(plugin, permission.getName());
-                    plugin.getServer().getPluginManager().addPermission(permission);
+                    plugin.getServer()
+                          .getPluginManager()
+                          .addPermission(permission);
+                    registeredPermissions.add(permission);
                 });
     }
 
     private static void removePermissionIfPresent(Plugin plugin, String name) {
-        Permission existing = plugin.getServer().getPluginManager().getPermission(name);
+        Permission existing = plugin.getServer()
+                                    .getPluginManager()
+                                    .getPermission(name);
         if (existing != null) {
             existing.setDefault(PermissionDefault.FALSE);
-            plugin.getServer().getPluginManager().recalculatePermissionDefaults(existing);
-            plugin.getServer().getPluginManager().removePermission(name);
+            plugin.getServer()
+                  .getPluginManager()
+                  .recalculatePermissionDefaults(existing);
+            plugin.getServer()
+                  .getPluginManager()
+                  .removePermission(name);
+        }
+    }
+
+    private static boolean tryRegisterLifecycleHandler(Plugin plugin, PluginRegistrationState state) {
+        LifecycleEventManager<Plugin> lifecycleManager = plugin.getLifecycleManager();
+        try {
+            lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {
+                synchronized (state) {
+                    Commands registrar = event.registrar();
+                    CommandDispatcher<CommandSourceStack> dispatcher = registrar.getDispatcher();
+                    serverDispatcher = dispatcher;
+                    state.dispatcher = dispatcher;
+
+                    for (PendingRegistration pending : state.pendingRegistrations) {
+                        pending.instance.registerWithRegistrar(registrar, dispatcher, pending);
+                    }
+                    state.pendingRegistrations.clear();
+                }
+            });
+            return true;
+        } catch (IllegalStateException e) {
+            state.registrationFailure = e;
+            return false;
+        }
+    }
+
+    private void registerWithRegistrar(Commands registrar,
+                                       CommandDispatcher<CommandSourceStack> dispatcher,
+                                       PendingRegistration registration) {
+        this.dispatcher = dispatcher;
+        for (LiteralCommandNode<CommandSourceStack> node : registration.buildNodes()) {
+            registrar.register(node, "");
+            registeredCommandNames.add(node.getLiteral());
+        }
+    }
+
+    private void registerDirectly(CommandDispatcher<CommandSourceStack> dispatcher, PendingRegistration registration) {
+        this.dispatcher = dispatcher;
+        for (LiteralCommandNode<CommandSourceStack> node : registration.buildNodes()) {
+            dispatcher.getRoot()
+                      .addChild(node);
+            registeredCommandNames.add(node.getLiteral());
+        }
+        Bukkit.getOnlinePlayers()
+              .forEach(Player::updateCommands);
+    }
+
+    private String namespacedName(String name) {
+        return plugin.getName()
+                     .toLowerCase(Locale.ROOT) + ":" + name;
+    }
+
+    private static final class PluginRegistrationState {
+        private boolean lifecycleHandlerRegistered;
+        private IllegalStateException registrationFailure;
+        private CommandDispatcher<CommandSourceStack> dispatcher;
+        private final List<PendingRegistration> pendingRegistrations = new ArrayList<>();
+    }
+
+    private static final class PendingRegistration {
+        private final CommandLib instance;
+        private final Collection<? extends Command> commands;
+        private final String permissionPrefix;
+
+        private PendingRegistration(CommandLib instance,
+                                    Collection<? extends Command> commands,
+                                    String permissionPrefix) {
+            this.instance = instance;
+            this.commands = List.copyOf(commands);
+            this.permissionPrefix = permissionPrefix;
+        }
+
+        private List<LiteralCommandNode<CommandSourceStack>> buildNodes() {
+            return new CommandNodeCreator<>(commands, permissionPrefix).build();
         }
     }
 }

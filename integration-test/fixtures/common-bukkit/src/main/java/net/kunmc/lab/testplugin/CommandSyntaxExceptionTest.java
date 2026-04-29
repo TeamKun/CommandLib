@@ -43,7 +43,7 @@ public class CommandSyntaxExceptionTest extends TestBase {
     }
 
     private static final class ThrowingBoolArg extends Argument<Object, ThrowingBoolArg> {
-        ThrowingBoolArg(String name, UncaughtExceptionHandler<?, CommandContext> handler) {
+        ThrowingBoolArg(String name, UncaughtExceptionHandler<CommandContext> handler) {
             super(name, BoolArgumentType.bool());
             addUncaughtExceptionHandler(handler);
         }

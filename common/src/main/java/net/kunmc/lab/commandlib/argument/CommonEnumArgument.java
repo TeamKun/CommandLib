@@ -13,7 +13,7 @@ public class CommonEnumArgument<T extends Enum<T>, C extends AbstractCommandCont
     private final Class<T> clazz;
 
     public CommonEnumArgument(String name, Class<T> clazz) {
-        super(name, StringArgumentType.string());
+        super(name, StringArgumentType.word());
         this.clazz = Objects.requireNonNull(clazz);
         suggestionAction(sb -> {
             Arrays.stream(clazz.getEnumConstants())

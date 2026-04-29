@@ -52,8 +52,7 @@ public abstract class NMSArgumentTypeRegistrar extends MinecraftClass {
     public <T extends ArgumentType<?>> void registerAsGreedyString(Class<T> argumentTypeClass, Supplier<T> factory) {
         Map classToEntryMap = findClassToEntryMap();
         if (classToEntryMap == null) {
-            throw new IllegalStateException(
-                    "Could not find NMS argument-type Class→Entry map in " + clazz.getName());
+            throw new IllegalStateException("Could not find NMS argument-type Class→Entry map in " + clazz.getName());
         }
         if (classToEntryMap.containsKey(argumentTypeClass)) {
             return;

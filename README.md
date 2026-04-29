@@ -12,7 +12,7 @@ with ease.
 | Platform    | Artifact  | Tested Versions                                              | Notes                                                              |
 |-------------|-----------|--------------------------------------------------------------|--------------------------------------------------------------------|
 | **Spigot**  | `spigot`  | `1.16.5`, `1.19.4`, `1.20.1`, `1.20.4`, `1.20.6`, `1.21.0` | Expected to work on intermediate versions. Requires Java 11+.     |
-| **Paper**   | `paper`   | `1.20.6`, `1.21.0`                                           | Uses Paper official command/lifecycle API. Requires Java 21+.     |
+| **Paper**   | `paper`   | `1.21.0`                                                     | Uses Paper official command/lifecycle API. Requires Java 21+.     |
 | **Forge**   | `forge`   | `1.16.5`                                                     | Currently supports only `1.16.5` and works fully.                 |
 | **Mohist**  | `spigot`  | `1.16.5`, `1.20.1`                                           | Works on Mohist since it's compatible with Spigot.                |
 
@@ -118,15 +118,7 @@ shadowJar {
 tasks.build.dependsOn tasks.shadowJar
 ```
 
-> **Note:** The Paper artifact targets Paper 1.20.6+. Register commands in your plugin's **constructor** or `onLoad()`, not in `onEnable()`.
->
-> ```java
-> public class MyPlugin extends JavaPlugin {
->     public MyPlugin() {
->         CommandLib.register(this, new MyCommand());
->     }
-> }
-> ```
+> **Note:** The Paper artifact targets Paper 1.21.0+.
 
 </details>
 
@@ -158,7 +150,7 @@ tasks.named<ShadowJar>("shadowJar") {
 tasks.named("build") { dependsOn(tasks.named("shadowJar")) }
 ```
 
-> **Note:** The Paper artifact targets Paper 1.20.6+. Register commands in your plugin's **constructor** or `onLoad()`, not in `onEnable()`.
+> **Note:** The Paper artifact targets Paper 1.21.0+.
 
 </details>
 

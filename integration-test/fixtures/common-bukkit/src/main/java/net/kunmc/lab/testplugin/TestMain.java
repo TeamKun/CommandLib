@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,6 +35,7 @@ public class TestMain {
     }
 
     public void register() {
+        registerPluginDisableListener();
         register(results -> {
             outputResultsToJUnitXml(results);
             errorFailedResults(results);
@@ -41,7 +43,7 @@ public class TestMain {
         });
     }
 
-    public void register(Consumer<List<TestResult>> consumer) {
+    public void registerPluginDisableListener() {
         Bukkit.getPluginManager()
               .registerEvents(new Listener() {
                   @EventHandler
@@ -51,7 +53,9 @@ public class TestMain {
                       }
                   }
               }, plugin);
+    }
 
+    public void register(Consumer<List<TestResult>> consumer) {
         try {
             Command mainCommand = new MainCommand();
             mainCommand.permission(PermissionDefault.TRUE);
@@ -61,7 +65,13 @@ public class TestMain {
             OptionTest optionTest = new OptionTest(mainCommand);
             CommandSyntaxExceptionTest commandSyntaxExceptionTest = new CommandSyntaxExceptionTest(mainCommand);
             RuntimePermissionTest runtimePermissionTest = new RuntimePermissionTest(mainCommand, plugin);
-            List<TestBase> tests = List.of(argumentTest, optionTest, commandSyntaxExceptionTest, runtimePermissionTest);
+            SuggestionTest suggestionTest = new SuggestionTest(mainCommand);
+            new HelpMessageTest(mainCommand); // registers helpMessageRoot for bot-side help message verification
+            List<TestBase> tests = List.of(argumentTest,
+                                           optionTest,
+                                           commandSyntaxExceptionTest,
+                                           runtimePermissionTest,
+                                           suggestionTest);
             List<String> commands = tests.stream()
                                          .flatMap(x -> x.build()
                                                         .stream())
@@ -77,6 +87,12 @@ public class TestMain {
                 Bukkit.getScheduler()
                       .runTaskLater(plugin, () -> {
                           try {
+                              Scoreboard scoreboard = Bukkit.getScoreboardManager()
+                                                            .getMainScoreboard();
+                              if (scoreboard.getTeam("test") == null) {
+                                  scoreboard.registerNewTeam("test");
+                              }
+
                               logger.info("Executing CommandLib test cases.");
                               for (String command : commands) {
                                   logger.info("Dispatching test command: " + command);
@@ -113,7 +129,7 @@ public class TestMain {
     public void outputResultsToJUnitXml(List<TestResult> results) {
         String reportName = System.getProperty("commandlib.testReportName",
                                                "TEST-commandlib-" + BukkitUtil.getMinecraftVersion() + ".xml");
-        Path path = Paths.get("../../test-plugin-common/test-results/" + reportName);
+        Path path = Paths.get("../../common-bukkit/test-results/" + reportName);
         try {
             Files.createDirectories(path.getParent());
             Files.writeString(path, buildJUnitXml(results));

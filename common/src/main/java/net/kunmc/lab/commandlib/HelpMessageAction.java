@@ -209,7 +209,15 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
         }
 
         // The parsed input may use an alias for the root command; help should echo what the sender actually typed.
-        parts.addFirst(ctx.getInput(0));
+        // Use the raw handle input rather than ctx.getInput(0): some platforms (Paper 1.21+) omit the root
+        // literal from CommandContext.getNodes(), so the map-based lookup would return the wrong token.
+        String rawInput = ctx.getHandle()
+                             .getInput();
+        if (rawInput.startsWith("/")) {
+            rawInput = rawInput.substring(1);
+        }
+        int space = rawInput.indexOf(' ');
+        parts.addFirst(space == -1 ? rawInput : rawInput.substring(0, space));
         return parts.stream()
                     .filter(Predicate.not(String::isEmpty))
                     .collect(Collectors.joining(" "));

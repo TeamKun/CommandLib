@@ -1,7 +1,5 @@
 package net.kunmc.lab.commandlib.suggestion;
 
-import com.mojang.brigadier.context.ParsedCommandNode;
-import com.mojang.brigadier.context.StringRange;
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,9 +11,11 @@ import java.util.Objects;
 public final class SuggestionBuilder<C extends AbstractCommandContext<?, ?>> {
     private final List<Suggestion> suggestions = new ArrayList<>();
     private final C ctx;
+    private final String latestInput;
 
-    public SuggestionBuilder(@NotNull C ctx) {
+    public SuggestionBuilder(@NotNull C ctx, @NotNull String latestInput) {
         this.ctx = Objects.requireNonNull(ctx);
+        this.latestInput = latestInput;
     }
 
     @NotNull
@@ -30,21 +30,7 @@ public final class SuggestionBuilder<C extends AbstractCommandContext<?, ?>> {
 
     @NotNull
     public String getLatestInput() {
-        String input = getInput();
-
-        List<? extends ParsedCommandNode<?>> nodes = ctx.getHandle()
-                                                        .getNodes();
-        if (nodes.size() == 0) {
-            return "";
-        }
-
-        StringRange range = nodes.get(nodes.size() - 1)
-                                 .getRange();
-        if (input.length() == range.getEnd()) {
-            return range.get(input);
-
-        }
-        return input.substring(range.getEnd() + 1);
+        return latestInput;
     }
 
     public List<String> getInputs() {

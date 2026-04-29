@@ -8,11 +8,11 @@ on CommandLib. It is not repository-maintenance guidance for CommandLib itself.
 | Artifact | Target platform | Java |
 |---|---|---|
 | `spigot` | Spigot, Bukkit-compatible Paper, Mohist | 11+ |
-| `paper` | Paper 1.20.6+ (official command/lifecycle API) | 21+ |
+| `paper` | Paper 1.21.0+ (official command/lifecycle API) | 21+ |
 
 Use the `paper` artifact to take advantage of Paper's official command
 registration API and Adventure component messages. Use `spigot` for Spigot,
-older Paper versions, or Mohist.
+older Paper versions (up to 1.20.6), or Mohist.
 
 ## Registration
 
@@ -33,13 +33,12 @@ class MyPlugin extends JavaPlugin {
 
 ### Paper
 
-On Paper 1.20.6+, register commands in the plugin's **constructor** or
-`onLoad()`. The lifecycle event handler must be installed before the server
-processes commands — registering in `onEnable()` is too late.
+On Paper 1.21.0+, register commands the same way as Spigot — in `onEnable()`.
 
 ```java
 public class MyPlugin extends JavaPlugin {
-    public MyPlugin() {
+    @Override
+    public void onEnable() {
         CommandLib.register(this, "myplugin.command", new MyCommand());
     }
 }

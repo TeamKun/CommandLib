@@ -1,9 +1,7 @@
 package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.tree.RootCommandNode;
 import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.command.Prerequisite;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
@@ -25,7 +23,7 @@ final class CommandRunner<S, C extends AbstractCommandContext<S, ?>> implements 
     private final CommandExecutor<C> helpAction;
     private final Predicate<C> preprocess;
     private final CommandExecutor<C> executor;
-    private final List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers;
+    private final List<UncaughtExceptionHandler<C>> uncaughtExceptionHandlers;
 
     CommandRunner(PlatformAdapter<S, ?, C, ?, ?> platformAdapter,
                   CommonCommand<C, ?, ?> command,
@@ -36,7 +34,7 @@ final class CommandRunner<S, C extends AbstractCommandContext<S, ?>> implements 
                   CommandExecutor<C> helpAction,
                   Predicate<C> preprocess,
                   CommandExecutor<C> executor,
-                  List<UncaughtExceptionHandler<?, C>> uncaughtExceptionHandlers) {
+                  List<UncaughtExceptionHandler<C>> uncaughtExceptionHandlers) {
         this.platformAdapter = platformAdapter;
         this.command = command;
         this.permissionPrefix = permissionPrefix;
@@ -52,7 +50,7 @@ final class CommandRunner<S, C extends AbstractCommandContext<S, ?>> implements 
     @Override
     public int run(CommandContext<S> context) {
         try {
-            C ctx = platformAdapter.createCommandContext(rootContext(context));
+            C ctx = platformAdapter.createCommandContext(context);
 
             try {
                 if (!platformAdapter.hasPermission(ctx, command.permissionName(permissionPrefix))) {
@@ -106,17 +104,6 @@ final class CommandRunner<S, C extends AbstractCommandContext<S, ?>> implements 
             e.printStackTrace();
             throw e;
         }
-    }
-
-    private CommandContext<S> rootContext(CommandContext<S> context) {
-        if (!(context.getRootNode() instanceof RootCommandNode)) {
-            return context;
-        }
-
-        RootCommandNode<S> root = (RootCommandNode<S>) context.getRootNode();
-        return new CommandDispatcher<>(root).parse(context.getInput(), context.getSource())
-                                            .getContext()
-                                            .build(context.getInput());
     }
 
     private int executeWithStackTrace(C ctx, CommandExecutor<C> executor) {

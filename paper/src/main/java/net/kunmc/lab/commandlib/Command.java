@@ -31,10 +31,45 @@ public abstract class Command extends CommonCommand<CommandContext, ArgumentBuil
         });
     }
 
+    public final void permission(@NotNull PermissionDefault defaultPermission) {
+        permission(toDefaultPermission(defaultPermission));
+    }
+
+    public final void permission(@NotNull PermissionDefault defaultPermission, @NotNull String description) {
+        permission(toDefaultPermission(defaultPermission));
+        permissionDescription(description);
+    }
+
+    public final void permission(@NotNull String node, @NotNull PermissionDefault defaultPermission) {
+        permission(node, toDefaultPermission(defaultPermission));
+    }
+
+    public final void permission(@NotNull String node,
+                                 @NotNull PermissionDefault defaultPermission,
+                                 @NotNull String description) {
+        permission(node, toDefaultPermission(defaultPermission));
+        permissionDescription(description);
+    }
+
     final List<Permission> permissions(@NotNull String prefix) {
         return permissionConfigs(prefix).stream()
-                .map(c -> new Permission(c.node(), c.description(), toBukkitDefault(c.defaultPermission())))
-                .collect(Collectors.toList());
+                                        .map(c -> new Permission(c.node(),
+                                                                 c.description(),
+                                                                 toBukkitDefault(c.defaultPermission())))
+                                        .collect(Collectors.toList());
+    }
+
+    private static DefaultPermission toDefaultPermission(@NotNull PermissionDefault bukkit) {
+        switch (bukkit) {
+            case TRUE:
+                return DefaultPermission.ALL;
+            case FALSE:
+                return DefaultPermission.NONE;
+            case OP:
+                return DefaultPermission.OP;
+            default:
+                throw new IllegalArgumentException("Unsupported PermissionDefault: " + bukkit);
+        }
     }
 
     private static PermissionDefault toBukkitDefault(@NotNull DefaultPermission common) {

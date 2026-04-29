@@ -2,11 +2,8 @@ package net.kunmc.lab.testplugin;
 
 import net.kunmc.lab.commandlib.Command;
 import net.kunmc.lab.commandlib.argument.*;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 
 import java.util.*;
 
@@ -401,25 +398,17 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        Scoreboard scoreboard = Bukkit.getScoreboardManager()
-                                      .getMainScoreboard();
-        if (scoreboard.getTeams()
-                      .isEmpty()) {
-            scoreboard.registerNewTeam("test");
-        }
-        Team team = scoreboard.getTeams()
-                              .toArray(new Team[]{})[0];
-
+        String teamName = "test";
         putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
         command.addChildren(new Command(name) {{
             argument(new TeamArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
             })).execute((a, ctx) -> {
-                putResult(key, a.getName(), team.getName());
+                putResult(key, a.getName(), teamName);
             });
         }});
 
-        return List.of(buildCommand(command, name + " " + team.getName()));
+        return List.of(buildCommand(command, name + " " + teamName));
     }
 
     public List<String> unparsedArgument() {

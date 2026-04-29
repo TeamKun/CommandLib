@@ -22,23 +22,27 @@ public final class PlatformAdapterImpl implements PlatformAdapter<CommandSourceS
 
     @Override
     public boolean hasPermission(Command command, CommandSourceStack commandSource, String permissionPrefix) {
-        return commandSource.getSender().hasPermission(command.permissionName(permissionPrefix));
+        return commandSource.getSender()
+                            .hasPermission(command.permissionName(permissionPrefix));
     }
 
     @Override
     public boolean hasPermission(Command command, CommandContext ctx, String permissionPrefix) {
-        return ctx.getSender().hasPermission(command.permissionName(permissionPrefix));
+        return ctx.getSender()
+                  .hasPermission(command.permissionName(permissionPrefix));
     }
 
     @Override
     public boolean hasPermission(CommandSourceStack commandSource, String permissionNode) {
-        return commandSource.getSender().hasPermission(permissionNode);
+        return commandSource.getSender()
+                            .hasPermission(permissionNode);
     }
 
     @Override
     public ArgumentParseException convertCommandSyntaxException(CommandSyntaxException e) {
         String message = e.getMessage();
-        return new ArgumentParseException(ctx -> ctx.sendFailure(message != null ? message : e.getClass().getSimpleName()));
+        return new ArgumentParseException(ctx -> ctx.sendFailure(message != null ? message : e.getClass()
+                                                                                              .getSimpleName()));
     }
 
     @Override
