@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-public final class RequiredBiArgumentBranch<S, T1, T2, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, ?, T>> extends RequiredArgumentBranch<S, C, T> {
+public final class RequiredBiArgumentBranch<S, T1, T2, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, T>> extends RequiredArgumentBranch<S, C, T> {
     private final CommonArgument<T1, C, ?> argument1;
     private final CommonArgument<T2, C, ?> argument2;
 

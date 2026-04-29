@@ -14,17 +14,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 final class Arguments<C extends AbstractCommandContext<?, ?>> {
-    private final CommonCommand<C, ?, ?> owner;
+    private final CommonCommand<C, ?> owner;
     private final List<? extends CommonArgument<?, C, ?>> arguments;
-    private final List<CommonCommand<C, ?, ?>> children;
+    private final List<CommonCommand<C, ?>> children;
     private Function<C, String> description = ctx -> "";
     private String permissionNodeOverride = null;
     private DefaultPermission defaultPermissionOverride = null;
     private String permissionDescription = "";
 
-    Arguments(CommonCommand<C, ?, ?> owner,
+    Arguments(CommonCommand<C, ?> owner,
               List<? extends CommonArgument<?, C, ?>> arguments,
-              Collection<? extends CommonCommand<C, ?, ?>> children) {
+              Collection<? extends CommonCommand<C, ?>> children) {
         this.owner = owner;
         this.arguments = arguments;
         this.children = new ArrayList<>(children);
@@ -61,11 +61,11 @@ final class Arguments<C extends AbstractCommandContext<?, ?>> {
         return arguments.stream();
     }
 
-    List<? extends CommonCommand<C, ?, ?>> children() {
+    List<? extends CommonCommand<C, ?>> children() {
         return List.copyOf(children);
     }
 
-    void addChildren(Collection<? extends CommonCommand<C, ?, ?>> children) {
+    void addChildren(Collection<? extends CommonCommand<C, ?>> children) {
         this.children.addAll(children);
     }
 
@@ -118,7 +118,7 @@ final class Arguments<C extends AbstractCommandContext<?, ?>> {
         this.permissionDescription = Objects.requireNonNull(description);
     }
 
-    String permissionName(@NotNull CommonCommand<C, ?, ?> parent, @NotNull String prefix) {
+    String permissionName(@NotNull CommonCommand<C, ?> parent, @NotNull String prefix) {
         if (permissionNodeOverride != null) {
             return permissionNodeOverride;
         }
@@ -129,20 +129,20 @@ final class Arguments<C extends AbstractCommandContext<?, ?>> {
         return permissionName(owner, prefix);
     }
 
-    PermissionConfig permissionConfig(@NotNull CommonCommand<C, ?, ?> parent, @NotNull String prefix) {
+    PermissionConfig permissionConfig(@NotNull CommonCommand<C, ?> parent, @NotNull String prefix) {
         return new PermissionConfig(permissionName(parent, prefix),
                                     effectiveDefaultPermission(parent),
                                     permissionDescription);
     }
 
-    DefaultPermission effectiveDefaultPermission(@NotNull CommonCommand<C, ?, ?> parent) {
+    DefaultPermission effectiveDefaultPermission(@NotNull CommonCommand<C, ?> parent) {
         if (defaultPermissionOverride != null) {
             return defaultPermissionOverride;
         }
         return parent.effectiveDefaultPermission();
     }
 
-    private String permissionNameWithoutPrefix(@NotNull CommonCommand<C, ?, ?> parent) {
+    private String permissionNameWithoutPrefix(@NotNull CommonCommand<C, ?> parent) {
         String argumentNames = arguments.stream()
                                         .map(CommonArgument::name)
                                         .collect(Collectors.joining("."));

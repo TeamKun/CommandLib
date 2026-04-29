@@ -12,15 +12,10 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.jetbrains.annotations.NotNull;
 
-public final class PlatformAdapterImpl implements PlatformAdapter<Object, BaseComponent, CommandContext, ArgumentBuilder, Command> {
+public final class PlatformAdapterImpl implements PlatformAdapter<Object, BaseComponent, CommandContext, Command> {
     @Override
     public CommandContext createCommandContext(com.mojang.brigadier.context.CommandContext<Object> ctx) {
         return new CommandContext(ctx);
-    }
-
-    @Override
-    public ArgumentBuilder createArgumentBuilder() {
-        return new ArgumentBuilder();
     }
 
     @Override

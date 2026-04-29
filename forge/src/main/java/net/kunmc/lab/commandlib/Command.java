@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public abstract class Command extends CommonCommand<CommandContext, ArgumentBuilder, Command> {
+public abstract class Command extends CommonCommand<CommandContext, Command> {
     public Command(@NotNull String name) {
         super(name);
     }

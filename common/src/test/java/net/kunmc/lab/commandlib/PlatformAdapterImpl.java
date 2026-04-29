@@ -5,15 +5,10 @@ import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.text.TextComponentBuilder;
 import net.kunmc.lab.commandlib.util.text.TranslatableComponentBuilder;
 
-public final class PlatformAdapterImpl implements PlatformAdapter<TestCommandSource, String, TestCommandContext, TestArgumentBuilder, TestCommand> {
+public final class PlatformAdapterImpl implements PlatformAdapter<TestCommandSource, String, TestCommandContext, TestCommand> {
     @Override
     public TestCommandContext createCommandContext(com.mojang.brigadier.context.CommandContext<TestCommandSource> ctx) {
         return new TestCommandContext(ctx);
-    }
-
-    @Override
-    public TestArgumentBuilder createArgumentBuilder() {
-        return new TestArgumentBuilder();
     }
 
     @Override

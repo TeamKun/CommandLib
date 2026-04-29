@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B extends AbstractArgumentBuilder<C, B>, U extends CommonCommand<C, B, U>> implements CommandExecutor<C> {
-    private final PlatformAdapter<S, T, C, B, U> platformAdapter;
+final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, U extends CommonCommand<C, U>> implements CommandExecutor<C> {
+    private final PlatformAdapter<S, T, C, U> platformAdapter;
     private final U command;
     private final String permissionPrefix;
 
-    HelpMessageAction(PlatformAdapter<S, T, C, B, U> platformAdapter, U command, String permissionPrefix) {
+    HelpMessageAction(PlatformAdapter<S, T, C, U> platformAdapter, U command, String permissionPrefix) {
         this.platformAdapter = platformAdapter;
         this.command = command;
         this.permissionPrefix = permissionPrefix;
@@ -119,7 +119,7 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
     }
 
     private List<String> createArgumentChildUsages(Arguments<C> arguments,
-                                                   CommonCommand<C, ?, ?> child,
+                                                   CommonCommand<C, ?> child,
                                                    C ctx,
                                                    String commandPrefix) {
         // Example: "/config <key> get"
@@ -128,7 +128,7 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
                                          ctx);
     }
 
-    private List<String> createArgumentChildUsages(String prefix, CommonCommand<C, ?, ?> command, C ctx) {
+    private List<String> createArgumentChildUsages(String prefix, CommonCommand<C, ?> command, C ctx) {
         // Examples:
         //   "/config <key> get"
         //   "/config <key> set <value>"
@@ -163,11 +163,11 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
         return usages;
     }
 
-    private boolean hasArgumentPermission(CommonCommand<C, ?, ?> parent, Arguments<C> arguments, C ctx) {
+    private boolean hasArgumentPermission(CommonCommand<C, ?> parent, Arguments<C> arguments, C ctx) {
         return platformAdapter.hasPermission(ctx, arguments.permissionName(parent, permissionPrefix));
     }
 
-    private String formatArgumentChildUsage(String prefix, CommonCommand<C, ?, ?> command, C ctx) {
+    private String formatArgumentChildUsage(String prefix, CommonCommand<C, ?> command, C ctx) {
         // Example: "/config <key> get: Get config value"
         if (command.description(ctx)
                    .isEmpty()) {
@@ -265,7 +265,7 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
     }
 
     @SuppressWarnings("unchecked")
-    private U castCommand(CommonCommand<C, ?, ?> command) {
+    private U castCommand(CommonCommand<C, ?> command) {
         return (U) command;
     }
 }

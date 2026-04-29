@@ -8,11 +8,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 
-public interface PlatformAdapter<S, T, C extends AbstractCommandContext<S, T>, B extends AbstractArgumentBuilder<C, B>, U extends CommonCommand<C, B, U>> {
+public interface PlatformAdapter<S, T, C extends AbstractCommandContext<S, T>, U extends CommonCommand<C, U>> {
     @SuppressWarnings("unchecked")
-    static <S, T, C extends AbstractCommandContext<S, T>, B extends AbstractArgumentBuilder<C, B>, U extends CommonCommand<C, B, U>> PlatformAdapter<S, T, C, B, U> get() {
+    static <S, T, C extends AbstractCommandContext<S, T>, U extends CommonCommand<C, U>> PlatformAdapter<S, T, C, U> get() {
         try {
-            Class<PlatformAdapter<S, T, C, B, U>> platformAdapterImplClass = (Class<PlatformAdapter<S, T, C, B, U>>) Class.forName(
+            Class<PlatformAdapter<S, T, C, U>> platformAdapterImplClass = (Class<PlatformAdapter<S, T, C, U>>) Class.forName(
                     "net.kunmc.lab.commandlib.PlatformAdapterImpl");
             return platformAdapterImplClass.getConstructor()
                                            .newInstance();
@@ -23,8 +23,6 @@ public interface PlatformAdapter<S, T, C extends AbstractCommandContext<S, T>, B
     }
 
     C createCommandContext(com.mojang.brigadier.context.CommandContext<S> ctx);
-
-    B createArgumentBuilder();
 
     boolean hasPermission(U command, S commandSource, String permissionPrefix);
 

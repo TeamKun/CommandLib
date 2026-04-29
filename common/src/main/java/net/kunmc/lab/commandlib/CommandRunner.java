@@ -14,8 +14,8 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 final class CommandRunner<S, C extends AbstractCommandContext<S, ?>> implements Command<S> {
-    private final PlatformAdapter<S, ?, C, ?, ?> platformAdapter;
-    private final CommonCommand<C, ?, ?> command;
+    private final PlatformAdapter<S, ?, C, ?> platformAdapter;
+    private final CommonCommand<C, ?> command;
     private final String permissionPrefix;
     private final List<Arguments<C>> argumentsList;
     private final List<CommandOption<?, C>> options;
@@ -25,8 +25,8 @@ final class CommandRunner<S, C extends AbstractCommandContext<S, ?>> implements 
     private final CommandExecutor<C> executor;
     private final List<UncaughtExceptionHandler<C>> uncaughtExceptionHandlers;
 
-    CommandRunner(PlatformAdapter<S, ?, C, ?, ?> platformAdapter,
-                  CommonCommand<C, ?, ?> command,
+    CommandRunner(PlatformAdapter<S, ?, C, ?> platformAdapter,
+                  CommonCommand<C, ?> command,
                   String permissionPrefix,
                   List<Arguments<C>> argumentsList,
                   List<CommandOption<?, C>> options,

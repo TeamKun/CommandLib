@@ -10,15 +10,10 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.server.permission.PermissionAPI;
 import org.jetbrains.annotations.NotNull;
 
-public final class PlatformAdapterImpl implements PlatformAdapter<CommandSource, ITextComponent, CommandContext, ArgumentBuilder, Command> {
+public final class PlatformAdapterImpl implements PlatformAdapter<CommandSource, ITextComponent, CommandContext, Command> {
     @Override
     public CommandContext createCommandContext(com.mojang.brigadier.context.CommandContext<CommandSource> ctx) {
         return new CommandContext(ctx);
-    }
-
-    @Override
-    public ArgumentBuilder createArgumentBuilder() {
-        return new ArgumentBuilder();
     }
 
     @Override

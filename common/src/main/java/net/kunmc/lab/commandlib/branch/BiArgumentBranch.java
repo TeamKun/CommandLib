@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public final class BiArgumentBranch<T1, T2, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, ?, T>> extends ArgumentBranch<C, T> {
+public final class BiArgumentBranch<T1, T2, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, T>> extends ArgumentBranch<C, T> {
     private final CommonArgument<T1, C, ?> argument1;
     private final CommonArgument<T2, C, ?> argument2;
 

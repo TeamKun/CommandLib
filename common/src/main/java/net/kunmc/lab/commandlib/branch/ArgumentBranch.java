@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class ArgumentBranch<C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, ?, T>> {
+public class ArgumentBranch<C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, T>> {
     protected final ArgumentBranchDelegate<C, T> delegate;
 
     public ArgumentBranch(@NotNull ArgumentBranchDelegate<C, T> delegate) {

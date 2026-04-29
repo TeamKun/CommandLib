@@ -10,8 +10,8 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B extends AbstractArgumentBuilder<C, B>, U extends CommonCommand<C, B, U>> {
-    private final PlatformAdapter<S, T, C, B, U> platformAdapter = PlatformAdapter.get();
+final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, U extends CommonCommand<C, U>> {
+    private final PlatformAdapter<S, T, C, U> platformAdapter = PlatformAdapter.get();
     private final Collection<? extends U> commands;
     private final String permissionPrefix;
 
@@ -49,9 +49,7 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
         builder.requires(x -> platformAdapter.hasPermission(command, x, permissionPrefix));
 
         List<Arguments<C>> argumentsList = command.argumentsList();
-        HelpMessageAction<S, T, C, B, U> helpAction = new HelpMessageAction<>(platformAdapter,
-                                                                              command,
-                                                                              permissionPrefix);
+        HelpMessageAction<S, T, C, U> helpAction = new HelpMessageAction<>(platformAdapter, command, permissionPrefix);
 
         if (argumentsList.isEmpty()) {
             CommandRunner<S, C> runner = new CommandRunner<>(platformAdapter,
@@ -114,7 +112,7 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, B e
     }
 
     @SuppressWarnings("unchecked")
-    private U castCommand(CommonCommand<C, ?, ?> command) {
+    private U castCommand(CommonCommand<C, ?> command) {
         return (U) command;
     }
 

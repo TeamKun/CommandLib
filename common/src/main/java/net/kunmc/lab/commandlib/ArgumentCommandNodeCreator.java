@@ -16,7 +16,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
 final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>> {
-    private final PlatformAdapter<S, T, C, ?, ?> platformAdapter = PlatformAdapter.get();
+    private final PlatformAdapter<S, T, C, ?> platformAdapter = PlatformAdapter.get();
     private final Arguments<C> arguments;
     private final List<Arguments<C>> executorArguments;
     private final String permissionPrefix;
@@ -29,7 +29,7 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
 
     private RequiredArgumentBuilder<S, ?> buildArgument(CommonArgument<?, C, ?> argument,
                                                         CommandExecutor<C> helpAction,
-                                                        CommonCommand<C, ?, ?> parent) {
+                                                        CommonCommand<C, ?> parent) {
         RequiredArgumentBuilder<S, ?> builder = RequiredArgumentBuilder.argument(argument.name(), argument.type());
         builder.requires(source -> platformAdapter.hasPermission(source,
                                                                  arguments.permissionName(parent, permissionPrefix)));
@@ -93,8 +93,7 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
         return builder;
     }
 
-    private List<ArgumentCommandNode<S, ?>> toCommandNodes(CommandExecutor<C> helpAction,
-                                                           CommonCommand<C, ?, ?> parent) {
+    private List<ArgumentCommandNode<S, ?>> toCommandNodes(CommandExecutor<C> helpAction, CommonCommand<C, ?> parent) {
         return arguments.stream()
                         .map(x -> buildArgument(x, helpAction, parent))
                         .map(RequiredArgumentBuilder::build)
@@ -102,7 +101,7 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
     }
 
     ArgumentCommandNode<S, ?> build(CommandExecutor<C> helpAction,
-                                    CommonCommand<C, ?, ?> parent,
+                                    CommonCommand<C, ?> parent,
                                     Collection<LiteralCommandNode<S>> terminalChildren) {
         List<ArgumentCommandNode<S, ?>> nodes = toCommandNodes(helpAction, parent);
         if (nodes.isEmpty()) {

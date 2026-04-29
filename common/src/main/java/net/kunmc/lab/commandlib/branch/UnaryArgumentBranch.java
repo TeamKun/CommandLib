@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public final class UnaryArgumentBranch<T1, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, ?, T>> extends ArgumentBranch<C, T> {
+public final class UnaryArgumentBranch<T1, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, T>> extends ArgumentBranch<C, T> {
     private final CommonArgument<T1, C, ?> argument1;
 
     public UnaryArgumentBranch(ArgumentBranchDelegate<C, T> delegate, CommonArgument<T1, C, ?> argument1) {

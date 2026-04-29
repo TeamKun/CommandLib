@@ -9,15 +9,10 @@ import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("UnstableApiUsage")
-public final class PlatformAdapterImpl implements PlatformAdapter<CommandSourceStack, Component, CommandContext, ArgumentBuilder, Command> {
+public final class PlatformAdapterImpl implements PlatformAdapter<CommandSourceStack, Component, CommandContext, Command> {
     @Override
     public CommandContext createCommandContext(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx) {
         return new CommandContext(ctx);
-    }
-
-    @Override
-    public ArgumentBuilder createArgumentBuilder() {
-        return new ArgumentBuilder();
     }
 
     @Override

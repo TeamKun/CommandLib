@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-public final class RequiredHexaArgumentBranch<S, T1, T2, T3, T4, T5, T6, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, ?, T>> extends RequiredArgumentBranch<S, C, T> {
+public final class RequiredHexaArgumentBranch<S, T1, T2, T3, T4, T5, T6, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, T>> extends RequiredArgumentBranch<S, C, T> {
     private final CommonArgument<T1, C, ?> argument1;
     private final CommonArgument<T2, C, ?> argument2;
     private final CommonArgument<T3, C, ?> argument3;

@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B extends AbstractArgumentBuilder<C, B>, T extends CommonCommand<C, B, T>> {
+public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, T>> {
     private final String name;
     private Function<C, String> description = ctx -> "";
     private String permissionNodeOverride = null;
@@ -32,8 +32,6 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
     private Predicate<C> preprocess = ctx -> true;
     private CommandExecutor<C> executor;
     private final List<UncaughtExceptionHandler<C>> uncaughtExceptionHandlers = new ArrayList<>();
-    @SuppressWarnings("unchecked")
-    private final PlatformAdapter<?, ?, C, B, T> platformAdapter = (PlatformAdapter<?, ?, C, B, T>) PlatformAdapter.get();
 
     protected CommonCommand(@NotNull String name) {
         Objects.requireNonNull(name);
@@ -82,7 +80,7 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
 
     @SuppressWarnings("unchecked")
     private void setParentFor(@NotNull Collection<? extends T> children, Arguments<C> parentArguments) {
-        for (CommonCommand<C, B, T> child : children) {
+        for (CommonCommand<C, T> child : children) {
             child.parent = ((T) this);
             child.parentArguments = parentArguments;
         }
@@ -137,8 +135,8 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         this.inheritParentPreprocess = false;
     }
 
-    public final ArgumentBranch<C, T> argument(@NotNull Consumer<B> buildArguments) {
-        B builder = platformAdapter.createArgumentBuilder();
+    public final ArgumentBranch<C, T> argument(@NotNull Consumer<ArgumentBuilder<C>> buildArguments) {
+        ArgumentBuilder<C> builder = new ArgumentBuilder<>();
         buildArguments.accept(builder);
         Arguments<C> arguments = addArguments(builder.build(), List.of());
         return new ArgumentBranch<>(delegateFor(arguments));

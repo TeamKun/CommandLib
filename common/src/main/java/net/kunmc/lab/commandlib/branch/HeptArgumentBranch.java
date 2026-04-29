@@ -8,11 +8,13 @@ import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.command.Extractor;
 import net.kunmc.lab.commandlib.util.function.HeptFunction;
 import net.kunmc.lab.commandlib.util.function.OctoConsumer;
+
 import java.util.function.Function;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class HeptArgumentBranch<T1, T2, T3, T4, T5, T6, T7, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, ?, T>> extends ArgumentBranch<C, T> {
+public final class HeptArgumentBranch<T1, T2, T3, T4, T5, T6, T7, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, T>> extends ArgumentBranch<C, T> {
     private final CommonArgument<T1, C, ?> argument1;
     private final CommonArgument<T2, C, ?> argument2;
     private final CommonArgument<T3, C, ?> argument3;
