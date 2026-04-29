@@ -175,7 +175,7 @@ class CommonCommandPermissionTest {
         }}, new TestCommandSource("test.command.config"));
 
         assertThatThrownBy(() -> runner.execute("config difficulty")).isInstanceOf(CommandSyntaxException.class);
-        assertThat(runner.suggest("config ")).isEmpty();
+        assertThat(runner.suggest("config ")).containsExactly("help");
     }
 
     @Test
@@ -188,7 +188,7 @@ class CommonCommandPermissionTest {
         TestCommandContext ctx = execute(runner, "config difficulty");
 
         assertThat(ctx.messages()).containsExactly("difficulty");
-        assertThat(runner.suggest("config ")).containsExactly("difficulty");
+        assertThat(runner.suggest("config ")).containsExactlyInAnyOrder("difficulty", "help");
     }
 
     @Test

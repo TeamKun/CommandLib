@@ -28,8 +28,9 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, U e
     }
 
     private List<LiteralCommandNode<S>> toCommandNodes(U command, List<Arguments<C>> inheritedArguments) {
+        HelpMessageAction<S, T, C, U> helpAction = new HelpMessageAction<>(platformAdapter, command, permissionPrefix);
         List<LiteralCommandNode<S>> nodes = new ArrayList<>();
-        LiteralCommandNode<S> node = toCommandNode(command, inheritedArguments);
+        LiteralCommandNode<S> node = toCommandNode(command, inheritedArguments, helpAction);
         nodes.add(node);
 
         command.children()
@@ -39,17 +40,51 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, U e
                    toCommandNodes(x, inheritedArguments).forEach(node::addChild);
                });
 
+        if (shouldAddHelpChild(command)) {
+            node.addChild(createHelpNode(command, helpAction));
+        }
+
         nodes.addAll(createAliasCommands(command, node));
 
         return nodes;
     }
 
-    private LiteralCommandNode<S> toCommandNode(U command, List<Arguments<C>> inheritedArguments) {
+    private boolean shouldAddHelpChild(U command) {
+        if (command.children()
+                   .isEmpty() && command.argumentsList()
+                                        .isEmpty() && command.options()
+                                                             .isEmpty()) {
+            return false;
+        }
+        return command.children()
+                      .stream()
+                      .noneMatch(x -> x.name()
+                                       .equals("help"));
+    }
+
+    private LiteralCommandNode<S> createHelpNode(U command, HelpMessageAction<S, T, C, U> helpAction) {
+        return LiteralArgumentBuilder.<S>literal("help")
+                                     .requires(x -> platformAdapter.hasPermission(command, x, permissionPrefix))
+                                     .executes(context -> {
+                                         try {
+                                             C ctx = platformAdapter.createCommandContext(context);
+                                             helpAction.accept(ctx);
+                                             return 1;
+                                         } catch (Exception e) {
+                                             e.printStackTrace();
+                                             return 0;
+                                         }
+                                     })
+                                     .build();
+    }
+
+    private LiteralCommandNode<S> toCommandNode(U command,
+                                                List<Arguments<C>> inheritedArguments,
+                                                HelpMessageAction<S, T, C, U> helpAction) {
         LiteralArgumentBuilder<S> builder = LiteralArgumentBuilder.literal(command.name());
         builder.requires(x -> platformAdapter.hasPermission(command, x, permissionPrefix));
 
         List<Arguments<C>> argumentsList = command.argumentsList();
-        HelpMessageAction<S, T, C, U> helpAction = new HelpMessageAction<>(platformAdapter, command, permissionPrefix);
 
         if (argumentsList.isEmpty()) {
             CommandRunner<S, C> runner = new CommandRunner<>(platformAdapter,

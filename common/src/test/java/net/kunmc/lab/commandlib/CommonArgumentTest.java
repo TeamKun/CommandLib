@@ -182,7 +182,7 @@ class CommonArgumentTest {
             });
         }});
 
-        assertThat(runner.suggest("search ")).containsExactlyInAnyOrder("alpha", "beta");
+        assertThat(runner.suggest("search ")).containsExactlyInAnyOrder("alpha", "beta", "help");
     }
 
     private static final class IntArg extends CommonIntegerArgument<TestCommandContext, IntArg> {
