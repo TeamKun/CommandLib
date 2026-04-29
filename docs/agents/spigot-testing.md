@@ -1,8 +1,8 @@
-# spigot-test Module Notes
+# spigot-testing Module Notes
 
 ## Purpose
 
-`spigot-test` is a test utility module for plugins and libraries that use
+`spigot-testing` is a test utility module for plugins and libraries that use
 CommandLib's Spigot/Bukkit API. It provides `CommandTester` and `FakeSender` so command
 execution can be tested without a running Minecraft server.
 

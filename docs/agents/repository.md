@@ -14,7 +14,7 @@ instructions.
   bridges.
 - `paper`: Paper-facing API using Paper official command/lifecycle API and
   Adventure components. Targets Paper 1.20.6+.
-- `spigot-test`: test utilities for downstream plugins and this repository.
+- `spigot-testing`: test utilities for downstream plugins and this repository.
 - `integration-test`: Minecraft/Bukkit integration tests.
 - `forge`: Forge-facing integration.
 - `sample`: sample usage.

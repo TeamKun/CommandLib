@@ -1,4 +1,4 @@
-# CommandLib spigot-test
+# CommandLib spigot-testing
 
 A testing utility for plugins and libraries that use [CommandLib](../README.md).  
 It lets you execute commands and assert on sent messages without a running Minecraft server.
@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation "com.github.Maru32768.CommandLib:spigot-test:latest.release"
+    testImplementation "com.github.Maru32768.CommandLib:spigot-testing:latest.release"
 }
 ```
 

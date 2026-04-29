@@ -7,7 +7,7 @@ Common checks:
 ```bash
 ./gradlew :common:test
 ./gradlew :spigot:test
-./gradlew :spigot-test:test
+./gradlew :spigot-testing:test
 ```
 
 Compile checks:
@@ -15,7 +15,7 @@ Compile checks:
 ```bash
 ./gradlew :common:compileJava
 ./gradlew :spigot:compileJava
-./gradlew :spigot-test:compileJava
+./gradlew :spigot-testing:compileJava
 ```
 
 Integration tests may require Docker or a local Minecraft/Bukkit test
@@ -27,5 +27,5 @@ asks for it:
 ```
 
 When adding or fixing command behavior, prefer narrow tests around parsing,
-execution, options, permissions, and suggestions. Use `spigot-test` utilities
+execution, options, permissions, and suggestions. Use `spigot-testing` utilities
 for command-level Bukkit tests when a full server is not needed.

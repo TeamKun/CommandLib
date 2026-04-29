@@ -9,7 +9,7 @@ Minecraft server.
 This is intentionally not a normal unit test.
 CommandLib depends on Bukkit, Brigadier, and NMS behavior that is only reliable inside an actual server runtime.
 
-Fast tests remain in `spigot/src/test` and `spigot-test`.
+Fast tests remain in `spigot/src/test` and `spigot-testing`.
 Use this module only for cases that need a real Bukkit-compatible server, NMS, command registration, or a real player
 connection.
 

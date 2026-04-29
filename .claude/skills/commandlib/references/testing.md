@@ -1,14 +1,14 @@
 # Testing CommandLib Usage
 
-Use `spigot-test`'s `CommandTester` and `FakeSender` to test commands without a
-running Minecraft server. `spigot-test` works for commands written against both
+Use `spigot-testing`'s `CommandTester` and `FakeSender` to test commands without a
+running Minecraft server. `spigot-testing` works for commands written against both
 the `spigot` and `paper` artifacts — no separate `paper-test` artifact exists yet.
 
 Add the dependency in test scope:
 
 ```kotlin
 dependencies {
-    testImplementation("com.github.Maru32768.CommandLib:spigot-test:latest.release")
+    testImplementation("com.github.Maru32768.CommandLib:spigot-testing:latest.release")
 }
 ```
 
