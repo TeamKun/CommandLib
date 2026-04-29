@@ -10,11 +10,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B extends AbstractArgumentBuilder<C, B>, T extends CommonCommand<C, B, T>> {
     private final String name;
-    private String description = "";
+    private Function<C, String> description = ctx -> "";
     private String permissionNodeOverride = null;
     private DefaultPermission defaultPermissionOverride = null;
     private String permissionDescription = "";
@@ -46,11 +47,15 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         return name;
     }
 
-    public final String description() {
-        return description;
+    public final String description(C ctx) {
+        return description.apply(ctx);
     }
 
     public final void description(@NotNull String description) {
+        this.description = ctx -> Objects.requireNonNull(description);
+    }
+
+    public final void description(@NotNull Function<C, String> description) {
         this.description = Objects.requireNonNull(description);
     }
 
@@ -223,6 +228,11 @@ public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, B ex
         return new ArgumentBranchDelegate<>() {
             @Override
             public void description(@NotNull String description) {
+                arguments.description(description);
+            }
+
+            @Override
+            public void description(@NotNull Function<C, String> description) {
                 arguments.description(description);
             }
 

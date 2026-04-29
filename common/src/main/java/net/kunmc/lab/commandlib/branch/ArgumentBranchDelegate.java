@@ -8,9 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.function.Function;
 
 public interface ArgumentBranchDelegate<C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, ?, T>> {
     void description(@NotNull String description);
+
+    void description(@NotNull Function<C, String> description);
 
     void execute(@Nullable CommandExecutor<C> action);
 

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,7 +17,7 @@ final class Arguments<C extends AbstractCommandContext<?, ?>> {
     private final CommonCommand<C, ?, ?> owner;
     private final List<? extends CommonArgument<?, C, ?>> arguments;
     private final List<CommonCommand<C, ?, ?>> children;
-    private String description = "";
+    private Function<C, String> description = ctx -> "";
     private String permissionNodeOverride = null;
     private DefaultPermission defaultPermissionOverride = null;
     private String permissionDescription = "";
@@ -78,11 +79,15 @@ final class Arguments<C extends AbstractCommandContext<?, ?>> {
     }
 
     void description(String description) {
-        this.description = description;
+        this.description = ctx -> description;
     }
 
-    String description() {
-        return description;
+    void description(Function<C, String> description) {
+        this.description = Objects.requireNonNull(description);
+    }
+
+    String description(C ctx) {
+        return description.apply(ctx);
     }
 
     void permission(@NotNull String node) {

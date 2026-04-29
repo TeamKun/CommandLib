@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public final class BiArgumentBranch<T1, T2, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, ?, T>> extends ArgumentBranch<C, T> {
     private final CommonArgument<T1, C, ?> argument1;
@@ -37,6 +38,12 @@ public final class BiArgumentBranch<T1, T2, C extends AbstractCommandContext<?, 
 
     @Override
     public BiArgumentBranch<T1, T2, C, T> description(@NotNull String description) {
+        super.description(description);
+        return this;
+    }
+
+    @Override
+    public BiArgumentBranch<T1, T2, C, T> description(@NotNull Function<C, String> description) {
         super.description(description);
         return this;
     }

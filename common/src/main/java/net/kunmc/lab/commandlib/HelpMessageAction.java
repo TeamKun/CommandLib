@@ -28,9 +28,9 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
 
         ctx.sendMessage(border);
 
-        if (!command.description()
+        if (!command.description(ctx)
                     .isEmpty()) {
-            ctx.sendMessage(command.description());
+            ctx.sendMessage(command.description(ctx));
         }
         ctx.sendMessage(ChatColorUtil.RED + "Usage:");
 
@@ -43,7 +43,8 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
                                              .map(arguments -> formatArgumentUsage(usagePrefix,
                                                                                    command,
                                                                                    arguments,
-                                                                                   padding))
+                                                                                   padding,
+                                                                                   ctx))
                                              .filter(Predicate.not(String::isEmpty))
                                              .collect(Collectors.toList());
         argumentUsages.forEach(ctx::sendMessage);
@@ -66,7 +67,7 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
         ctx.sendMessage(border);
     }
 
-    private String formatArgumentUsage(String usagePrefix, U command, Arguments<C> arguments, String padding) {
+    private String formatArgumentUsage(String usagePrefix, U command, Arguments<C> arguments, String padding, C ctx) {
         String tagNames = arguments.concatTagNames();
         if (tagNames.isEmpty()) {
             return "";
@@ -74,11 +75,11 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
 
         // Example: "  /scan [options] <target>: Scan target"
         String s = padding + ChatColorUtil.AQUA + "/" + usagePrefix + concatOptionUsage(command) + " " + tagNames;
-        if (arguments.description()
+        if (arguments.description(ctx)
                      .isEmpty()) {
             return s;
         }
-        return s + ChatColorUtil.GRAY + ": " + arguments.description();
+        return s + ChatColorUtil.GRAY + ": " + arguments.description(ctx);
     }
 
     private List<String> createChildUsages(U command, C ctx, String padding, String usagePrefix) {
@@ -89,7 +90,7 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
         List<String> childUsages = command.children()
                                           .stream()
                                           .filter(x -> platformAdapter.hasPermission(x, ctx, permissionPrefix))
-                                          .map(x -> formatCommandChildUsage(commandPrefix, x))
+                                          .map(x -> formatCommandChildUsage(commandPrefix, x, ctx))
                                           .collect(Collectors.toList());
         command.argumentsList()
                .stream()
@@ -107,14 +108,14 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
         return childUsages;
     }
 
-    private String formatCommandChildUsage(String commandPrefix, U child) {
+    private String formatCommandChildUsage(String commandPrefix, U child, C ctx) {
         // Example: "/game start: Start game"
         String s = commandPrefix + " " + ChatColorUtil.YELLOW + child.name();
-        if (child.description()
+        if (child.description(ctx)
                  .isEmpty()) {
             return s;
         }
-        return s + ChatColorUtil.GRAY + ": " + child.description();
+        return s + ChatColorUtil.GRAY + ": " + child.description(ctx);
     }
 
     private List<String> createArgumentChildUsages(Arguments<C> arguments,
@@ -135,7 +136,7 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
         List<String> usages = new ArrayList<>();
         if (command.executor() != null) {
             // A literal after arguments is only a valid usage by itself when it can execute at that point.
-            usages.add(formatArgumentChildUsage(prefix, command));
+            usages.add(formatArgumentChildUsage(prefix, command, ctx));
         }
 
         command.argumentsList()
@@ -147,7 +148,7 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
                                 .isEmpty()) {
                        // Terminal argument branches have no command node of their own, so this is the only place
                        // where their description can appear in parent-command help.
-                       usages.add(formatArgumentChildArgumentUsage(argumentPrefix, arguments));
+                       usages.add(formatArgumentChildArgumentUsage(argumentPrefix, arguments, ctx));
                        return;
                    }
 
@@ -166,22 +167,22 @@ final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, B ex
         return platformAdapter.hasPermission(ctx, arguments.permissionName(parent, permissionPrefix));
     }
 
-    private String formatArgumentChildUsage(String prefix, CommonCommand<C, ?, ?> command) {
+    private String formatArgumentChildUsage(String prefix, CommonCommand<C, ?, ?> command, C ctx) {
         // Example: "/config <key> get: Get config value"
-        if (command.description()
+        if (command.description(ctx)
                    .isEmpty()) {
             return prefix;
         }
-        return prefix + ChatColorUtil.GRAY + ": " + command.description();
+        return prefix + ChatColorUtil.GRAY + ": " + command.description(ctx);
     }
 
-    private String formatArgumentChildArgumentUsage(String prefix, Arguments<C> arguments) {
+    private String formatArgumentChildArgumentUsage(String prefix, Arguments<C> arguments, C ctx) {
         // Example: "/config <key> set <value>: Set config value"
-        if (arguments.description()
+        if (arguments.description(ctx)
                      .isEmpty()) {
             return prefix;
         }
-        return prefix + ChatColorUtil.GRAY + ": " + arguments.description();
+        return prefix + ChatColorUtil.GRAY + ": " + arguments.description(ctx);
     }
 
     private String createUsagePrefix(U command, C ctx) {

@@ -8,6 +8,7 @@ import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.command.Extractor;
 import net.kunmc.lab.commandlib.util.function.QuintConsumer;
 import net.kunmc.lab.commandlib.util.function.TetraFunction;
+import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,6 +47,12 @@ public final class TetraArgumentBranch<T1, T2, T3, T4, C extends AbstractCommand
 
     @Override
     public TetraArgumentBranch<T1, T2, T3, T4, C, T> description(@NotNull String description) {
+        super.description(description);
+        return this;
+    }
+
+    @Override
+    public TetraArgumentBranch<T1, T2, T3, T4, C, T> description(@NotNull Function<C, String> description) {
         super.description(description);
         return this;
     }

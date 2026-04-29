@@ -38,6 +38,12 @@ public final class UnaryArgumentBranch<T1, C extends AbstractCommandContext<?, ?
     }
 
     @Override
+    public UnaryArgumentBranch<T1, C, T> description(@NotNull Function<C, String> description) {
+        super.description(description);
+        return this;
+    }
+
+    @Override
     public UnaryArgumentBranch<T1, C, T> permission(@NotNull String node) {
         super.permission(node);
         return this;
