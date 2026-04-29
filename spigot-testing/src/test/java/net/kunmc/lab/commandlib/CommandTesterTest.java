@@ -1,6 +1,8 @@
 package net.kunmc.lab.commandlib;
 
 import net.kunmc.lab.commandlib.argument.StringArgument;
+import net.kunmc.lab.commandlib.util.nms.NMSClass;
+import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.command.ConsoleCommandSender;
@@ -11,6 +13,15 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CommandTesterTest {
+    public static class TestNMSClass extends NMSClass {
+        public TestNMSClass() {
+            super(null, Object.class);
+        }
+    }
+
+    public static class MockTestNMSClass extends TestNMSClass {
+    }
+
     @Nested
     class FakeSenderTest {
         @Test
@@ -178,6 +189,42 @@ class CommandTesterTest {
                 FakeSender sender = FakeSender.player("Steve");
                 tester.execute("game start", sender);
                 assertThat(sender.getSentMessageTexts()).containsExactly("started");
+            }
+        }
+    }
+
+    @Nested
+    class BuilderTest {
+        @Test
+        void command_can_be_registered_with_builder() {
+            try (CommandTester tester = CommandTester.builder()
+                                                     .command(new Command("hello") {{
+                                                         execute(ctx -> ctx.sendMessage("Hello!"));
+                                                     }})
+                                                     .permissionPrefix("test.command")
+                                                     .build()) {
+                FakeSender sender = FakeSender.player("Steve");
+                tester.execute("hello", sender);
+                assertThat(sender.getSentMessageTexts()).containsExactly("Hello!");
+            }
+        }
+
+        @Test
+        void external_nms_mock_is_available_while_command_supplier_is_called() {
+            try (CommandTester tester = CommandTester.builder()
+                                                     .mockNmsClass(TestNMSClass.class, MockTestNMSClass.class)
+                                                     .command(() -> {
+                                                         assertThat(NMSClassRegistry.findClass(TestNMSClass.class)).isEqualTo(
+                                                                 MockTestNMSClass.class);
+                                                         return new Command("hello") {{
+                                                             execute(ctx -> ctx.sendMessage("Hello!"));
+                                                         }};
+                                                     })
+                                                     .permissionPrefix("test.command")
+                                                     .build()) {
+                FakeSender sender = FakeSender.player("Steve");
+                tester.execute("hello", sender);
+                assertThat(sender.getSentMessageTexts()).containsExactly("Hello!");
             }
         }
     }

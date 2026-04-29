@@ -46,8 +46,9 @@ follow the same sub-package as production.
 3. Make `argument()` return a Brigadier-native type.
 4. Implement `parseImpl()` using `CommandTester` static accessors when runtime
    state is needed.
-5. Register the mock in the `CommandTester` constructor with
-   `NMSClassRegistry.findClass(NMSArgumentXxx.class)`.
+5. Register shared mocks in `CommandTester`'s default mock map. For a test-only
+   mock, register it with
+   `CommandTester.builder().mockNmsClass(NMSArgumentXxx.class, MockNMSArgumentXxx.class)`.
 
 The default stub for unknown `findClass()` calls should throw an
 `UnsupportedOperationException` with a clear message.

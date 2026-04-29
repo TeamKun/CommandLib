@@ -9,6 +9,7 @@ import net.kunmc.lab.commandlib.nms.world.MockNMSCraftBlockData;
 import net.kunmc.lab.commandlib.nms.world.MockNMSCraftEnchantment;
 import net.kunmc.lab.commandlib.nms.world.MockNMSCraftItemStack;
 import net.kunmc.lab.commandlib.nms.world.MockNMSCraftPotionEffectType;
+import net.kunmc.lab.commandlib.util.nms.NMSClass;
 import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
 import net.kunmc.lab.commandlib.util.nms.NMSReflection;
 import net.kunmc.lab.commandlib.util.nms.argument.*;
@@ -24,10 +25,12 @@ import org.bukkit.entity.Player;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -64,8 +67,13 @@ public class CommandTester implements AutoCloseable {
     private final MockedStatic<NMSReflection> nmsReflectionMock;
     private final MockedStatic<NMSClassRegistry> nmsRegistryMock;
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public CommandTester(Command command, String permissionPrefix) {
-        this(List.of(command), permissionPrefix);
+        this(builder().command(command)
+                      .permissionPrefix(permissionPrefix));
     }
 
     /**
@@ -80,14 +88,21 @@ public class CommandTester implements AutoCloseable {
      * }</pre>
      */
     public CommandTester(Supplier<? extends Command> commandSupplier, String permissionPrefix) {
-        this(permissionPrefix, () -> List.of(commandSupplier.get()));
+        this(builder().command(commandSupplier)
+                      .permissionPrefix(permissionPrefix));
     }
 
     public CommandTester(Collection<? extends Command> commands, String permissionPrefix) {
-        this(permissionPrefix, () -> commands);
+        this(builder().commands(commands)
+                      .permissionPrefix(permissionPrefix));
     }
 
-    private CommandTester(String permissionPrefix, Supplier<Collection<? extends Command>> commandsSupplier) {
+    private CommandTester(Builder builder) {
+        Objects.requireNonNull(builder.permissionPrefix, "permissionPrefix");
+        if (builder.commandSuppliers.isEmpty()) {
+            throw new IllegalStateException("At least one command must be registered.");
+        }
+
         current = this;
 
         nmsReflectionMock = Mockito.mockStatic(NMSReflection.class);
@@ -100,66 +115,13 @@ public class CommandTester implements AutoCloseable {
         nmsRegistryMock.when(() -> NMSClassRegistry.findClass(Mockito.any()))
                        .thenThrow(new UnsupportedOperationException("This NMS class is not supported in CommandTester."));
 
-        // command
-        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSCommandListenerWrapper.class))
-                       .thenAnswer(inv -> MockNMSCommandListenerWrapper.class);
-
-        // entity/player arguments
-        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSArgumentPlayer.class))
-                       .thenAnswer(inv -> MockNMSArgumentPlayer.class);
-        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSArgumentPlayers.class))
-                       .thenAnswer(inv -> MockNMSArgumentPlayers.class);
-        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSArgumentEntity.class))
-                       .thenAnswer(inv -> MockNMSArgumentEntity.class);
-        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSArgumentEntities.class))
-                       .thenAnswer(inv -> MockNMSArgumentEntities.class);
-        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSArgumentProfile.class))
-                       .thenAnswer(inv -> MockNMSArgumentProfile.class);
-
-        // scoreboard
-        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSArgumentScoreboardTeam.class))
-                       .thenAnswer(inv -> MockNMSArgumentScoreboardTeam.class);
-
-        // coordinates
-        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSArgumentVec3D.class))
-                       .thenAnswer(inv -> MockNMSArgumentVec3D.class);
-
-        // enchantment
-        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSArgumentEnchantment.class))
-                       .thenAnswer(inv -> MockNMSArgumentEnchantment.class);
-        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSCraftEnchantment.class))
-                       .thenAnswer(inv -> MockNMSCraftEnchantment.class);
-
-        // potion effect
-        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSArgumentMobEffect.class))
-                       .thenAnswer(inv -> MockNMSArgumentMobEffect.class);
-        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSCraftPotionEffectType.class))
-                       .thenAnswer(inv -> MockNMSCraftPotionEffectType.class);
-
-        // particle
-        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSArgumentParticle.class))
-                       .thenAnswer(inv -> MockNMSArgumentParticle.class);
-        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSCraftParticle.class))
-                       .thenAnswer(inv -> MockNMSCraftParticle.class);
-
-        // item stack
-        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSArgumentItemStack.class))
-                       .thenAnswer(inv -> MockNMSArgumentItemStack.class);
-        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSCraftItemStack.class))
-                       .thenAnswer(inv -> MockNMSCraftItemStack.class);
-
-        // block data
-        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSArgumentTile.class))
-                       .thenAnswer(inv -> MockNMSArgumentTile.class);
-        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSCraftBlockData.class))
-                       .thenAnswer(inv -> MockNMSCraftBlockData.class);
-
-        nmsRegistryMock.when(() -> NMSClassRegistry.findClass(NMSArgumentTypeRegistrar.class))
-                       .thenAnswer(inv -> MockNMSArgumentTypeRegistrar.class);
+        builder.nmsMocks.forEach((lookUpClass, mockClass) -> registerNmsMock(nmsRegistryMock,
+                                                                             lookUpClass,
+                                                                             mockClass));
 
         try {
-            new CommandNodeCreator<>(commandsSupplier.get(), permissionPrefix).build()
-                                                                              .forEach(dispatcher.getRoot()::addChild);
+            new CommandNodeCreator<>(builder.createCommands(), builder.permissionPrefix).build()
+                                                                                       .forEach(dispatcher.getRoot()::addChild);
         } catch (Exception e) {
             close();
             throw new RuntimeException("Unexpected exception", e);
@@ -211,5 +173,82 @@ public class CommandTester implements AutoCloseable {
         nmsRegistryMock.close();
         nmsReflectionMock.close();
         current = null;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static void registerNmsMock(MockedStatic<NMSClassRegistry> registryMock,
+                                        Class<? extends NMSClass> lookUpClass,
+                                        Class<? extends NMSClass> mockClass) {
+        registryMock.when(() -> NMSClassRegistry.findClass((Class) lookUpClass))
+                    .thenAnswer(inv -> mockClass);
+    }
+
+    public static class Builder {
+        private final List<Supplier<? extends Command>> commandSuppliers = new ArrayList<>();
+        private final Map<Class<? extends NMSClass>, Class<? extends NMSClass>> nmsMocks = defaultNmsMocks();
+        private String permissionPrefix;
+
+        public Builder command(Command command) {
+            Objects.requireNonNull(command, "command");
+            return command(() -> command);
+        }
+
+        public Builder command(Supplier<? extends Command> commandSupplier) {
+            commandSuppliers.add(Objects.requireNonNull(commandSupplier, "commandSupplier"));
+            return this;
+        }
+
+        public Builder commands(Collection<? extends Command> commands) {
+            Objects.requireNonNull(commands, "commands");
+            commands.forEach(this::command);
+            return this;
+        }
+
+        public Builder permissionPrefix(String permissionPrefix) {
+            this.permissionPrefix = Objects.requireNonNull(permissionPrefix, "permissionPrefix");
+            return this;
+        }
+
+        public <T extends NMSClass> Builder mockNmsClass(Class<T> lookUpClass, Class<? extends T> mockClass) {
+            nmsMocks.put(Objects.requireNonNull(lookUpClass, "lookUpClass"),
+                         Objects.requireNonNull(mockClass, "mockClass"));
+            return this;
+        }
+
+        public CommandTester build() {
+            return new CommandTester(this);
+        }
+
+        private Collection<? extends Command> createCommands() {
+            List<Command> commands = new ArrayList<>();
+            for (Supplier<? extends Command> commandSupplier : commandSuppliers) {
+                commands.add(commandSupplier.get());
+            }
+            return commands;
+        }
+    }
+
+    private static Map<Class<? extends NMSClass>, Class<? extends NMSClass>> defaultNmsMocks() {
+        Map<Class<? extends NMSClass>, Class<? extends NMSClass>> mocks = new LinkedHashMap<>();
+        mocks.put(NMSCommandListenerWrapper.class, MockNMSCommandListenerWrapper.class);
+        mocks.put(NMSArgumentPlayer.class, MockNMSArgumentPlayer.class);
+        mocks.put(NMSArgumentPlayers.class, MockNMSArgumentPlayers.class);
+        mocks.put(NMSArgumentEntity.class, MockNMSArgumentEntity.class);
+        mocks.put(NMSArgumentEntities.class, MockNMSArgumentEntities.class);
+        mocks.put(NMSArgumentProfile.class, MockNMSArgumentProfile.class);
+        mocks.put(NMSArgumentScoreboardTeam.class, MockNMSArgumentScoreboardTeam.class);
+        mocks.put(NMSArgumentVec3D.class, MockNMSArgumentVec3D.class);
+        mocks.put(NMSArgumentEnchantment.class, MockNMSArgumentEnchantment.class);
+        mocks.put(NMSCraftEnchantment.class, MockNMSCraftEnchantment.class);
+        mocks.put(NMSArgumentMobEffect.class, MockNMSArgumentMobEffect.class);
+        mocks.put(NMSCraftPotionEffectType.class, MockNMSCraftPotionEffectType.class);
+        mocks.put(NMSArgumentParticle.class, MockNMSArgumentParticle.class);
+        mocks.put(NMSCraftParticle.class, MockNMSCraftParticle.class);
+        mocks.put(NMSArgumentItemStack.class, MockNMSArgumentItemStack.class);
+        mocks.put(NMSCraftItemStack.class, MockNMSCraftItemStack.class);
+        mocks.put(NMSArgumentTile.class, MockNMSArgumentTile.class);
+        mocks.put(NMSCraftBlockData.class, MockNMSCraftBlockData.class);
+        mocks.put(NMSArgumentTypeRegistrar.class, MockNMSArgumentTypeRegistrar.class);
+        return mocks;
     }
 }

@@ -118,6 +118,30 @@ class HealCommandTest {
 | `CommandTester(Supplier<? extends Command> commandSupplier, String permissionPrefix)` | Register a single command using a supplier — **required when the command contains NMS-backed arguments** (e.g. `PlayerArgument`, `EnchantmentArgument`) whose constructors call into `NMSClassRegistry` before the tester is ready |
 | `CommandTester(Collection<? extends Command> commands, String permissionPrefix)`      | Register multiple commands                                                                                                                                                                                                         |
 
+Builder API:
+
+```java
+try (CommandTester tester = CommandTester.builder()
+        .command(() -> new HealCommand())
+        .permissionPrefix("myplugin.command")
+        .build()) {
+    // ...
+}
+```
+
+Use `mockNmsClass()` when a test needs an NMS mock that is not built into
+`spigot-testing` yet:
+
+```java
+try (CommandTester tester = CommandTester.builder()
+        .mockNmsClass(NMSArgumentXxx.class, MockNMSArgumentXxx.class)
+        .command(() -> new XxxCommand())
+        .permissionPrefix("myplugin.command")
+        .build()) {
+    // ...
+}
+```
+
 | Method                                                     | Description                                                                                                          |
 |------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
 | `void execute(String input, FakeSender sender)`            | Execute a command as the given sender. Throws `RuntimeException` if the input does not match any registered command. |
