@@ -9,12 +9,12 @@ with ease.
 
 #### Supported Versions
 
-| Platform    | Artifact  | Tested Versions                                              | Notes                                                              |
-|-------------|-----------|--------------------------------------------------------------|--------------------------------------------------------------------|
-| **Spigot**  | `spigot`  | `1.16.5`, `1.19.4`, `1.20.1`, `1.20.4`, `1.20.6`, `1.21.0` | Expected to work on intermediate versions. Requires Java 11+.     |
-| **Paper**   | `paper`   | `1.21.0`                                                     | Uses Paper official command/lifecycle API. Requires Java 21+.     |
-| **Forge**   | `forge`   | `1.16.5`                                                     | Currently supports only `1.16.5` and works fully.                 |
-| **Mohist**  | `spigot`  | `1.16.5`, `1.20.1`                                           | Works on Mohist since it's compatible with Spigot.                |
+| Platform   | Artifact | Tested Versions                                            | Notes                                                         |
+|------------|----------|------------------------------------------------------------|---------------------------------------------------------------|
+| **Spigot** | `spigot` | `1.16.5`, `1.19.4`, `1.20.1`, `1.20.4`, `1.20.6`, `1.21.0` | Expected to work on intermediate versions. Requires Java 11+. |
+| **Paper**  | `paper`  | `1.21.0`                                                   | Uses Paper official command/lifecycle API. Requires Java 21+. |
+| **Forge**  | `forge`  | `1.16.5`                                                   | Currently supports only `1.16.5` and works fully.             |
+| **Mohist** | `spigot` | `1.16.5`, `1.20.1`                                         | Works on Mohist since it's compatible with Spigot.            |
 
 ## Features
 
@@ -223,6 +223,38 @@ tasks.named<ShadowJar>("shadowJar") {
 ```
 
 </details>
+
+## Testing Commands
+
+CommandLib provides command-level test utilities for downstream plugins.
+
+```kotlin
+dependencies {
+    testImplementation("com.github.Maru32768.CommandLib:spigot-testing:latest.release")
+    testImplementation("com.github.Maru32768.CommandLib:paper-testing:latest.release")
+}
+```
+
+Use `spigot-testing` for commands built against the `spigot` artifact, and
+`paper-testing` for commands built against the `paper` artifact. Both provide
+`CommandTester` and `FakeSender` so commands can be executed without a running
+Minecraft server.
+
+```java
+class Test {
+    void test() {
+        FakeSender sender = FakeSender.player("Steve");
+        try (CommandTester tester = new CommandTester(new MyCommand(), "myplugin.command")) {
+            tester.execute("mycmd arg", sender);
+        }
+        assertThat(sender.getSentMessageTexts()).containsExactly("expected message");
+    }
+}
+```
+
+`paper-testing` stubs Paper `ArgumentTypes`, selector resolvers, and several
+registry-backed argument paths for command-level tests. Paper lifecycle
+registration and real server registry behavior are covered by integration tests.
 
 ## Code Examples
 
@@ -600,9 +632,9 @@ public final class ConfigCommand extends Command {
         super("config");
 
         argument(new StringArgument("key")).description("Select a config key")
-                                          .execute((key, ctx) -> {
-                                              // Runs only when the sender has myplugin.command.config.key
-                                          });
+                                           .execute((key, ctx) -> {
+                                               // Runs only when the sender has myplugin.command.config.key
+                                           });
     }
 }
 ```

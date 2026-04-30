@@ -1,14 +1,17 @@
 # Testing CommandLib Usage
 
-Use `spigot-testing`'s `CommandTester` and `FakeSender` to test commands without a
-running Minecraft server. `spigot-testing` works for commands written against both
-the `spigot` and `paper` artifacts — no separate `paper-test` artifact exists yet.
+Use CommandLib's testing artifacts to test commands without a running Minecraft
+server:
+
+- Use `spigot-testing` for commands written against the `spigot` artifact.
+- Use `paper-testing` for commands written against the `paper` artifact.
 
 Add the dependency in test scope:
 
 ```kotlin
 dependencies {
     testImplementation("com.github.Maru32768.CommandLib:spigot-testing:latest.release")
+    testImplementation("com.github.Maru32768.CommandLib:paper-testing:latest.release")
 }
 ```
 
@@ -28,6 +31,8 @@ class MyCommandTest {
 ```
 
 ## NMS-backed Arguments
+
+This section applies to `spigot-testing`.
 
 NMS-backed arguments such as `PlayerArgument`, `EnchantmentArgument`, and
 `ItemStackArgument` call `NMSClassRegistry` in their constructors. Use the
@@ -84,3 +89,39 @@ class TpCommandTest {
 
 Arguments backed by non-Bukkit static registries, such as `EnchantmentArgument`
 or `PotionEffectArgument`, need `MockedStatic` for their respective classes.
+
+## Paper ArgumentTypes
+
+This section applies to `paper-testing`.
+
+Paper-backed arguments use Paper `ArgumentTypes` and resolver APIs. Use the
+`Supplier<Command>` constructor form so `paper-testing` can install its
+`ArgumentTypes` fakes while the command is built.
+
+```java
+class PaperCommandTest {
+    @Test
+    void playerArgumentTest() {
+        FakeSender sender = FakeSender.player("Steve");
+
+        try (CommandTester tester = new CommandTester(() -> new Command("heal") {{
+            argument(new PlayerArgument("target")).execute((target, ctx) -> ctx.sendMessage("healed " + target.getName()));
+        }}, "myplugin.command")) {
+            tester.withFakePlayer((Player) sender.asSender());
+            tester.execute("heal Steve", sender);
+        }
+
+        assertThat(sender.getSentMessageTexts()).containsExactly("healed Steve");
+    }
+}
+```
+
+`paper-testing` fakes selector, position, item, block data, and some registry
+argument paths for command-level tests. It does not emulate Paper lifecycle
+registration; registration is covered by integration tests on real Paper
+servers.
+
+`EnchantmentArgument` and `PotionEffectArgument` can be wired into commands in
+`paper-testing`, but command-level execution with concrete registry values needs
+Paper's server-side `RegistryAccess` bootstrap. Verify their real registry values
+with integration tests.
