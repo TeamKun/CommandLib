@@ -37,6 +37,7 @@ class ArgumentCoverageTest {
     private static final String ARGUMENT_PACKAGE = "net.kunmc.lab.commandlib.argument";
 
     private static final Map<Class<?>, Supplier<? extends CommonArgument<?, ?, ?>>> ARGUMENT_FACTORIES = Map.ofEntries(
+            Map.entry(BiomeArgument.class, () -> new BiomeArgument("value")),
             Map.entry(BlockDataArgument.class, () -> new BlockDataArgument("value")),
             Map.entry(BooleanArgument.class, () -> new BooleanArgument("value")),
             Map.entry(DoubleArgument.class, () -> new DoubleArgument("value")),

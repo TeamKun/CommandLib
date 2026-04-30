@@ -1,6 +1,7 @@
 package net.kunmc.lab.commandlib.suggestion;
 
 import com.mojang.brigadier.LiteralMessage;
+import com.mojang.brigadier.Message;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,16 +10,21 @@ import java.util.Objects;
 
 public final class Suggestion {
     private final String text;
-    private final String tooltip;
+    private final @Nullable Message tooltipMessage;
 
     public Suggestion(@NotNull String text, @Nullable String tooltip) {
         this.text = Objects.requireNonNull(text);
-        this.tooltip = tooltip;
+        this.tooltipMessage = tooltip != null ? new LiteralMessage(tooltip) : null;
+    }
+
+    public Suggestion(@NotNull String text, @NotNull Message tooltipMessage) {
+        this.text = Objects.requireNonNull(text);
+        this.tooltipMessage = Objects.requireNonNull(tooltipMessage);
     }
 
     public void suggest(SuggestionsBuilder sb) {
-        if (tooltip != null) {
-            sb.suggest(text, new LiteralMessage(tooltip));
+        if (tooltipMessage != null) {
+            sb.suggest(text, tooltipMessage);
         } else {
             sb.suggest(text);
         }

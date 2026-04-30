@@ -15,6 +15,7 @@ import io.papermc.paper.math.Position;
 import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.block.Biome;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
@@ -55,6 +56,7 @@ public final class CommandTester implements AutoCloseable {
     private Enchantment fakeEnchantment;
     private Particle fakeParticle = Particle.POOF;
     private PotionEffectType fakePotionEffectType;
+    private Biome fakeBiome;
     private final String permissionPrefix;
 
     public static Builder builder() {
@@ -171,6 +173,11 @@ public final class CommandTester implements AutoCloseable {
         return this;
     }
 
+    public CommandTester withFakeBiome(@NotNull Biome biome) {
+        this.fakeBiome = biome;
+        return this;
+    }
+
     @Override
     public void close() {
         if (current == this) {
@@ -247,6 +254,9 @@ public final class CommandTester implements AutoCloseable {
         }
         if (RegistryKey.MOB_EFFECT.equals(key)) {
             return tester.fakePotionEffectType;
+        }
+        if (RegistryKey.BIOME.equals(key)) {
+            return tester.fakeBiome;
         }
         throw new UnsupportedOperationException("Unsupported Paper registry argument in CommandTester: " + key);
     }

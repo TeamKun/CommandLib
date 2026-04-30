@@ -1,5 +1,6 @@
 package net.kunmc.lab.commandlib.suggestion;
 
+import com.mojang.brigadier.Message;
 import net.kunmc.lab.commandlib.AbstractCommandContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -82,11 +83,16 @@ public final class SuggestionBuilder<C extends AbstractCommandContext<?, ?>> {
     }
 
     public SuggestionBuilder<C> suggest(@NotNull String suggest) {
-        return suggest(suggest, null);
+        return suggest(suggest, (String) null);
     }
 
     public SuggestionBuilder<C> suggest(@NotNull String suggest, @Nullable String tooltip) {
         suggestions.add(new Suggestion(suggest, tooltip));
+        return this;
+    }
+
+    public SuggestionBuilder<C> suggest(@NotNull String suggest, @NotNull Message tooltipMessage) {
+        suggestions.add(new Suggestion(suggest, tooltipMessage));
         return this;
     }
 
