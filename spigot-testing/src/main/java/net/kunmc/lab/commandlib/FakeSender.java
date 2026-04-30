@@ -3,12 +3,16 @@ package net.kunmc.lab.commandlib;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class FakeSender {
@@ -24,14 +28,15 @@ public class FakeSender {
         Player.Spigot spigot = Mockito.mock(Player.Spigot.class);
         Mockito.when(player.getName())
                .thenReturn(name);
+        Mockito.when(player.getUniqueId())
+               .thenReturn(UUID.randomUUID());
         Mockito.when(player.getLocale())
                .thenReturn(locale);
         Mockito.when(player.spigot())
                .thenReturn(spigot);
-        Mockito.when(player.hasPermission(Mockito.anyString()))
-               .thenReturn(true);
 
         FakeSender fakeSender = new FakeSender(player);
+        fakeSender.op(false);
         Mockito.doAnswer(invocation -> {
                    fakeSender.sentMessages.add(invocation.getArgument(0));
                    return null;
@@ -45,12 +50,13 @@ public class FakeSender {
     public static FakeSender console() {
         ConsoleCommandSender console = Mockito.mock(ConsoleCommandSender.class);
         CommandSender.Spigot spigot = Mockito.mock(CommandSender.Spigot.class);
+        Mockito.when(console.getName())
+               .thenReturn("Console");
         Mockito.when(console.spigot())
                .thenReturn(spigot);
-        Mockito.when(console.hasPermission(Mockito.anyString()))
-               .thenReturn(true);
 
         FakeSender fakeSender = new FakeSender(console);
+        fakeSender.op(true);
         Mockito.doAnswer(invocation -> {
                    fakeSender.sentMessages.add(invocation.getArgument(0));
                    return null;
@@ -63,6 +69,8 @@ public class FakeSender {
 
     private FakeSender(CommandSender commandSender) {
         this.commandSender = commandSender;
+        Mockito.when(commandSender.hasPermission(Mockito.anyString()))
+               .thenReturn(true);
     }
 
     /**
@@ -70,6 +78,38 @@ public class FakeSender {
      */
     public CommandSender asSender() {
         return commandSender;
+    }
+
+    public FakeSender name(String name) {
+        Mockito.when(commandSender.getName())
+               .thenReturn(name);
+        return this;
+    }
+
+    public FakeSender uniqueId(UUID uniqueId) {
+        if (!(commandSender instanceof Entity)) {
+            throw new IllegalStateException("sender is not an entity");
+        }
+        Mockito.when(((Entity) commandSender).getUniqueId())
+               .thenReturn(uniqueId);
+        return this;
+    }
+
+    public FakeSender op(boolean op) {
+        Mockito.when(commandSender.isOp())
+               .thenReturn(op);
+        return this;
+    }
+
+    public FakeSender permissions(String... permissions) {
+        return permissions(Set.of(permissions));
+    }
+
+    public FakeSender permissions(Set<String> permissions) {
+        Set<String> permissionSet = new HashSet<>(permissions);
+        Mockito.when(commandSender.hasPermission(Mockito.anyString()))
+               .thenAnswer(invocation -> permissionSet.contains(invocation.getArgument(0)));
+        return this;
     }
 
     CommandSender getCommandSender() {

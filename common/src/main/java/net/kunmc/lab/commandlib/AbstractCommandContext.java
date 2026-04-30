@@ -155,6 +155,9 @@ public abstract class AbstractCommandContext<S, C> {
 
     public abstract void sendComponent(C component);
 
+    @NotNull
+    public abstract CommandActor getActor();
+
     /**
      * Returns the sender's Minecraft language code.
      * <p>

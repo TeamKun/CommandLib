@@ -14,7 +14,7 @@ final class TestCommandRunner {
     TestCommandRunner(TestCommand command) {
         this(command, new TestCommandSource() {
             @Override
-            boolean hasPermission(String permission) {
+            public boolean hasPermission(String permission) {
                 return true;
             }
         });

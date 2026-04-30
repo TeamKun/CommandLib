@@ -45,6 +45,12 @@ public final class CommandContext extends AbstractCommandContext<Object, BaseCom
                                         .getBukkitSender();
     }
 
+    @Override
+    @NotNull
+    public CommandActor getActor() {
+        return new BukkitCommandActor(getSender());
+    }
+
     @NotNull
     public Player getPlayer() {
         CommandSender sender = getSender();

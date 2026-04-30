@@ -51,6 +51,11 @@ final class TestCommandContext extends AbstractCommandContext<TestCommandSource,
         messages.add(component);
     }
 
+    @Override
+    public CommandActor getActor() {
+        return handle.getSource();
+    }
+
     List<String> messages() {
         return List.copyOf(messages);
     }

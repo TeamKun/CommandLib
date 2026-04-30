@@ -42,6 +42,12 @@ public final class CommandContext extends AbstractCommandContext<CommandSource, 
 
     @Override
     @NotNull
+    public CommandActor getActor() {
+        return new ForgeCommandActor(getSender());
+    }
+
+    @Override
+    @NotNull
     public String getLanguage() {
         String language = findLanguage(getSender());
         if (language == null) {
