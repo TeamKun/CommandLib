@@ -1,6 +1,5 @@
 package net.kunmc.lab.commandlib.argument;
 
-import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.Command;
 import net.kunmc.lab.commandlib.CommandTester;
 import net.kunmc.lab.commandlib.CommonArgument;
@@ -39,6 +38,7 @@ class ArgumentCoverageTest {
     private static final Map<Class<?>, Supplier<? extends CommonArgument<?, ?, ?>>> ARGUMENT_FACTORIES = Map.ofEntries(
             Map.entry(BiomeArgument.class, () -> new BiomeArgument("value")),
             Map.entry(BlockDataArgument.class, () -> new BlockDataArgument("value")),
+            Map.entry(GameModeArgument.class, () -> new GameModeArgument("value")),
             Map.entry(BooleanArgument.class, () -> new BooleanArgument("value")),
             Map.entry(DoubleArgument.class, () -> new DoubleArgument("value")),
             Map.entry(EnchantmentArgument.class, () -> new EnchantmentArgument("value")),

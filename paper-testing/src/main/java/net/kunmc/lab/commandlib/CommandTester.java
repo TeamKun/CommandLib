@@ -13,6 +13,7 @@ import io.papermc.paper.command.brigadier.argument.resolvers.selector.EntitySele
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
 import io.papermc.paper.math.Position;
 import io.papermc.paper.registry.RegistryKey;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.block.Biome;
@@ -196,6 +197,8 @@ public final class CommandTester implements AutoCloseable {
 
     private MockedStatic<ArgumentTypes> mockArgumentTypes() {
         MockedStatic<ArgumentTypes> argumentTypes = Mockito.mockStatic(ArgumentTypes.class);
+        argumentTypes.when(ArgumentTypes::gameMode)
+                     .thenReturn(word(token -> GameMode.valueOf(token.toUpperCase())));
         argumentTypes.when(ArgumentTypes::entity)
                      .thenReturn(word(token -> entityResolver(token, false)));
         argumentTypes.when(ArgumentTypes::entities)

@@ -5,12 +5,12 @@ import net.kunmc.lab.commandlib.CommandTester;
 import net.kunmc.lab.commandlib.FakeSender;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Particle;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
@@ -127,6 +127,18 @@ class LightweightArgumentExecutionTest {
         tester.execute("args minecraft:stone minecraft:stone minecraft:poof", sender);
 
         assertThat(sender.getSentMessageTexts()).containsExactly("true:true:POOF");
+    }
+
+    @Test
+    void gameModeArgumentExecutes() {
+        CommandTester tester = new CommandTester(() -> new Command("args") {{
+            argument(new GameModeArgument("mode")).execute((mode, ctx) -> ctx.sendMessage(mode.name()));
+        }}, "test.command");
+        FakeSender sender = FakeSender.player("Steve");
+
+        tester.execute("args creative", sender);
+
+        assertThat(sender.getSentMessageTexts()).containsExactly("CREATIVE");
     }
 
     @Test
