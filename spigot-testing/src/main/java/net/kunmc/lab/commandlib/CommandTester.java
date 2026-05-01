@@ -1,7 +1,9 @@
 package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestions;
 import net.kunmc.lab.commandlib.nms.argument.*;
 import net.kunmc.lab.commandlib.nms.command.MockNMSCommandListenerWrapper;
 import net.kunmc.lab.commandlib.nms.resources.MockNMSCraftParticle;
@@ -31,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 /**
@@ -166,6 +169,22 @@ public class CommandTester implements AutoCloseable {
      */
     public void execute(String input, FakeSender sender) {
         execute(input, sender.getCommandSender());
+    }
+
+    /**
+     * Returns Brigadier suggestions for the given partial input.
+     */
+    public CompletableFuture<Suggestions> suggestions(String input, FakeSender sender) {
+        return suggestions(input, sender.getCommandSender());
+    }
+
+    /**
+     * Returns Brigadier suggestions for the given partial input.
+     */
+    public CompletableFuture<Suggestions> suggestions(String input, CommandSender sender) {
+        currentCommandSender = sender;
+        ParseResults<Object> parseResults = dispatcher.parse(input, new Object());
+        return dispatcher.getCompletionSuggestions(parseResults);
     }
 
     @Override
