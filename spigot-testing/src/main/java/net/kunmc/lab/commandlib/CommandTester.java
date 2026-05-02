@@ -21,6 +21,7 @@ import net.kunmc.lab.commandlib.util.nms.world.NMSCraftBlockData;
 import net.kunmc.lab.commandlib.util.nms.world.NMSCraftEnchantment;
 import net.kunmc.lab.commandlib.util.nms.world.NMSCraftItemStack;
 import net.kunmc.lab.commandlib.util.nms.world.NMSCraftPotionEffectType;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -45,6 +46,7 @@ public class CommandTester implements AutoCloseable {
 
     private final CommandDispatcher<Object> dispatcher = new CommandDispatcher<>();
     private final Map<String, Entity> fakeEntities = new LinkedHashMap<>();
+    private final Map<String, World> fakeWorlds = new LinkedHashMap<>();
     private CommandSender currentCommandSender;
 
     /**
@@ -55,6 +57,16 @@ public class CommandTester implements AutoCloseable {
             throw new IllegalStateException("No active CommandTester");
         }
         return current.fakeEntities.get(name);
+    }
+
+    /**
+     * For use by mock NMS classes only.
+     */
+    public static World getFakeWorld(String key) {
+        if (current == null) {
+            throw new IllegalStateException("No active CommandTester");
+        }
+        return current.fakeWorlds.get(key);
     }
 
     /**
@@ -144,6 +156,14 @@ public class CommandTester implements AutoCloseable {
      */
     public CommandTester withFakeEntity(String name, Entity entity) {
         fakeEntities.put(name, entity);
+        return this;
+    }
+
+    /**
+     * Registers a fake world by dimension key, e.g. {@code minecraft:overworld}.
+     */
+    public CommandTester withFakeWorld(String key, World world) {
+        fakeWorlds.put(key, world);
         return this;
     }
 
@@ -256,8 +276,10 @@ public class CommandTester implements AutoCloseable {
         mocks.put(NMSArgumentEntities.class, MockNMSArgumentEntities.class);
         mocks.put(NMSArgumentProfile.class, MockNMSArgumentProfile.class);
         mocks.put(NMSArgumentScoreboardTeam.class, MockNMSArgumentScoreboardTeam.class);
+        mocks.put(NMSArgumentDimension.class, MockNMSArgumentDimension.class);
         mocks.put(NMSArgumentVec3D.class, MockNMSArgumentVec3D.class);
         mocks.put(NMSArgumentEnchantment.class, MockNMSArgumentEnchantment.class);
+        mocks.put(NMSArgumentNamespacedKey.class, MockNMSArgumentNamespacedKey.class);
         mocks.put(NMSCraftEnchantment.class, MockNMSCraftEnchantment.class);
         mocks.put(NMSArgumentMobEffect.class, MockNMSArgumentMobEffect.class);
         mocks.put(NMSCraftPotionEffectType.class, MockNMSCraftPotionEffectType.class);

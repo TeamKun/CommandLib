@@ -32,6 +32,8 @@ does not depend on Bukkit APIs. Keep Bukkit and NMS-specific behavior in
   API break.
 - Prefer typed APIs over stringly-typed lookups when adding new public examples
   or tests.
+- When adding or changing public argument classes, follow
+  `docs/agents/argument-addition.md`.
 - For Bukkit/NMS behavior, check both the public wrapper and the mock/test
   support paths before changing constructor or registry behavior.
 

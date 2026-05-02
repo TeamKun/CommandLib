@@ -15,7 +15,9 @@ import io.papermc.paper.math.Position;
 import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
@@ -49,6 +51,7 @@ public final class CommandTester implements AutoCloseable {
     private final CommandDispatcher<CommandSourceStack> dispatcher = new CommandDispatcher<>();
     private final Map<String, Entity> fakeEntities = new LinkedHashMap<>();
     private final Map<String, Player> fakePlayers = new LinkedHashMap<>();
+    private final Map<String, World> fakeWorlds = new LinkedHashMap<>();
     private BlockData fakeBlockData = Mockito.mock(BlockData.class);
     private ItemStack fakeItemStack = Mockito.mock(ItemStack.class);
     // These registry value classes trigger Paper/Bukkit RegistryAccess initialization when
@@ -179,6 +182,11 @@ public final class CommandTester implements AutoCloseable {
         return this;
     }
 
+    public CommandTester withFakeWorld(@NotNull World world) {
+        fakeWorlds.put(world.getName(), world);
+        return this;
+    }
+
     @Override
     public void close() {
         if (current == this) {
@@ -199,6 +207,10 @@ public final class CommandTester implements AutoCloseable {
         MockedStatic<ArgumentTypes> argumentTypes = Mockito.mockStatic(ArgumentTypes.class);
         argumentTypes.when(ArgumentTypes::gameMode)
                      .thenReturn(word(token -> GameMode.valueOf(token.toUpperCase())));
+        argumentTypes.when(ArgumentTypes::namespacedKey)
+                     .thenReturn(word(NamespacedKey::fromString));
+        argumentTypes.when(ArgumentTypes::world)
+                     .thenReturn(word(token -> requireCurrent().fakeWorlds.get(token)));
         argumentTypes.when(ArgumentTypes::entity)
                      .thenReturn(word(token -> entityResolver(token, false)));
         argumentTypes.when(ArgumentTypes::entities)

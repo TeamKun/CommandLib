@@ -51,6 +51,7 @@ class ArgumentCoverageTest {
             Map.entry(LiteralArgument.class, () -> new LiteralArgument("value", List.of("literal"))),
             Map.entry(LocationArgument.class, () -> new LocationArgument("value")),
             Map.entry(LongArgument.class, () -> new LongArgument("value")),
+            Map.entry(NamespacedKeyArgument.class, () -> new NamespacedKeyArgument("value")),
             Map.entry(NameableObjectArgument.class,
                       () -> new NameableObjectArgument<>("value", List.of(new SampleNameable("alpha")))),
             Map.entry(ObjectArgument.class, () -> new ObjectArgument<>("value", Map.of("alpha", "mapped"))),
@@ -63,6 +64,7 @@ class ArgumentCoverageTest {
             Map.entry(StringArgument.class, () -> new StringArgument("value")),
             Map.entry(TeamArgument.class, () -> new TeamArgument("value")),
             Map.entry(UnparsedArgument.class, () -> new UnparsedArgument("value")),
+            Map.entry(WorldArgument.class, () -> new WorldArgument("value")),
             Map.entry(UUIDArgument.class, () -> new UUIDArgument("value")),
             Map.entry(UUIDsArgument.class, () -> new UUIDsArgument("value")));
 

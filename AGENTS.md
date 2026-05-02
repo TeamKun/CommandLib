@@ -6,6 +6,7 @@ For repository maintenance, bug fixes, tests, and implementation work, read:
 
 - `docs/agents/repository.md`
 - `docs/agents/testing.md`
+- `docs/agents/argument-addition.md` when adding or changing public argument classes
 - `docs/agents/spigot-testing.md` when touching `spigot-testing`
 
 Do not treat `.claude/skills/commandlib` as repository-maintenance instructions.

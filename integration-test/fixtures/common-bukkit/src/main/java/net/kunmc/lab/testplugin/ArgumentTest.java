@@ -2,6 +2,7 @@ package net.kunmc.lab.testplugin;
 
 import net.kunmc.lab.commandlib.Command;
 import net.kunmc.lab.commandlib.argument.*;
+import net.kunmc.lab.commandlib.util.bukkit.BukkitUtil;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 
@@ -20,6 +21,7 @@ public final class ArgumentTest extends TestBase {
         List<String> commands = new ArrayList<>();
 
         commands.addAll(blockDataArgument());
+        commands.addAll(biomeArgument());
         commands.addAll(booleanArgument());
         commands.addAll(doubleArgument());
         commands.addAll(enchantmentArgument());
@@ -27,10 +29,15 @@ public final class ArgumentTest extends TestBase {
         commands.addAll(entityArgument());
         commands.addAll(enumArgument());
         commands.addAll(floatArgument());
+        commands.addAll(gameModeArgument());
         commands.addAll(integerArgument());
         commands.addAll(itemStackArgument());
         commands.addAll(literalArgument());
         commands.addAll(locationArgument());
+        if (supportsLongArgumentCommandTree()) {
+            commands.addAll(longArgument());
+        }
+        commands.addAll(namespacedKeyArgument());
         commands.addAll(nameableObjectArgument());
         commands.addAll(objectArgument());
         commands.addAll(offlinePlayerArgument());
@@ -44,6 +51,7 @@ public final class ArgumentTest extends TestBase {
         commands.addAll(unparsedArgument());
         commands.addAll(uuidArgument());
         commands.addAll(uuidsArgument());
+        commands.addAll(worldArgument());
 
         return commands;
     }
@@ -62,6 +70,22 @@ public final class ArgumentTest extends TestBase {
         }});
 
         return List.of(buildCommand(command, name + " minecraft:stone"));
+    }
+
+    public List<String> biomeArgument() {
+        String name = getMethodName();
+        String key = getKey();
+
+        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        command.addChildren(new Command(name) {{
+            argument(new BiomeArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
+                putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
+            })).execute((a, ctx) -> {
+                putResult(key, a.toString(), "PLAINS");
+            });
+        }});
+
+        return List.of(buildCommand(command, name + " plains"));
     }
 
     public List<String> booleanArgument() {
@@ -176,6 +200,22 @@ public final class ArgumentTest extends TestBase {
         return List.of(buildCommand(command, name + " 1.0"));
     }
 
+    public List<String> gameModeArgument() {
+        String name = getMethodName();
+        String key = getKey();
+
+        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        command.addChildren(new Command(name) {{
+            argument(new GameModeArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
+                putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
+            })).execute((a, ctx) -> {
+                putResult(key, a.toString(), "CREATIVE");
+            });
+        }});
+
+        return List.of(buildCommand(command, name + " creative"));
+    }
+
     public List<String> integerArgument() {
         String name = getMethodName();
         String key = getKey();
@@ -240,6 +280,28 @@ public final class ArgumentTest extends TestBase {
         return List.of(buildCommand(command, name + " 0 0 0"));
     }
 
+    public List<String> longArgument() {
+        String name = getMethodName();
+        String key = getKey();
+
+        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        command.addChildren(new Command(name) {{
+            argument(new LongArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
+                putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
+            })).execute((a, ctx) -> {
+                putResult(key, a.toString(), "1");
+            });
+        }});
+
+        return List.of(buildCommand(command, name + " 1"));
+    }
+
+    private boolean supportsLongArgumentCommandTree() {
+        // MCProtocolLib 1.16.5 cannot decode brigadier:long in ServerDeclareCommandsPacket.
+        // Registering this case disconnects the integration bot before tests can run.
+        return !"1.16.5".equals(BukkitUtil.getMinecraftVersion());
+    }
+
     public List<String> nameableObjectArgument() {
         String name = getMethodName();
         String key = getKey();
@@ -254,6 +316,22 @@ public final class ArgumentTest extends TestBase {
         }});
 
         return List.of(buildCommand(command, name + " a"));
+    }
+
+    public List<String> namespacedKeyArgument() {
+        String name = getMethodName();
+        String key = getKey();
+
+        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        command.addChildren(new Command(name) {{
+            argument(new NamespacedKeyArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
+                putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
+            })).execute((a, ctx) -> {
+                putResult(key, a.toString(), "commandlib:example/path");
+            });
+        }});
+
+        return List.of(buildCommand(command, name + " commandlib:example/path"));
     }
 
     public List<String> objectArgument() {
@@ -442,6 +520,22 @@ public final class ArgumentTest extends TestBase {
         }});
 
         return List.of(buildCommand(command, name + " " + uuid));
+    }
+
+    public List<String> worldArgument() {
+        String name = getMethodName();
+        String key = getKey();
+
+        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        command.addChildren(new Command(name) {{
+            argument(new WorldArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
+                putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
+            })).execute((a, ctx) -> {
+                putResult(key, a.getName(), "world");
+            });
+        }});
+
+        return List.of(buildCommand(command, name + " minecraft:overworld"));
     }
 
 

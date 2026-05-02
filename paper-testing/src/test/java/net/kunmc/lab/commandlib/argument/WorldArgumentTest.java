@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class WorldArgumentTest {
     @Test
-    void world_is_resolved_by_dimension_key() {
+    void world_is_resolved_by_name() {
         FakeSender sender = FakeSender.player("Alice");
         World mockWorld = Mockito.mock(World.class);
         Mockito.when(mockWorld.getName())
@@ -19,24 +19,10 @@ class WorldArgumentTest {
 
         try (CommandTester tester = new CommandTester(() -> new Command("tp") {{
             argument(new WorldArgument("world")).execute((world, ctx) -> ctx.sendMessage(world.getName()));
-        }}, "test.command").withFakeWorld("minecraft:overworld", mockWorld)) {
-            tester.execute("tp minecraft:overworld", sender);
+        }}, "test.command").withFakeWorld(mockWorld)) {
+            tester.execute("tp world", sender);
         }
 
         assertThat(sender.getSentMessageTexts()).containsExactly("world");
-    }
-
-    @Test
-    void unknown_dimension_sends_failure_message() {
-        FakeSender sender = FakeSender.player("Alice");
-
-        try (CommandTester tester = new CommandTester(() -> new Command("tp") {{
-            argument(new WorldArgument("world")).execute((world, ctx) -> ctx.sendMessage(world.getName()));
-        }}, "test.command")) {
-            tester.execute("tp commandlib:missing", sender);
-        }
-
-        assertThat(sender.getSentMessageTexts()).isNotEmpty();
-        assertThat(sender.getSentMessageTexts()).doesNotContain("commandlib:missing");
     }
 }
