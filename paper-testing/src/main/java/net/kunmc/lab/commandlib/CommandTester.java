@@ -46,7 +46,7 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings("UnstableApiUsage")
 public final class CommandTester implements AutoCloseable {
-    private static CommandTester current;
+    private static final ThreadLocal<CommandTester> current = new ThreadLocal<>();
 
     private final CommandDispatcher<CommandSourceStack> dispatcher = new CommandDispatcher<>();
     private final Map<String, Entity> fakeEntities = new LinkedHashMap<>();
@@ -109,13 +109,14 @@ public final class CommandTester implements AutoCloseable {
      * @throws RuntimeException if the input does not match any registered command
      */
     public void execute(@NotNull String input, @NotNull CommandSender sender) {
-        current = this;
+        CommandTester previous = current.get();
+        current.set(this);
         try {
             dispatcher.execute(input, commandSource(sender));
         } catch (CommandSyntaxException e) {
             throw new RuntimeException("Command syntax error: " + e.getMessage(), e);
         } finally {
-            current = null;
+            restoreCurrent(previous);
         }
     }
 
@@ -130,11 +131,14 @@ public final class CommandTester implements AutoCloseable {
      * Returns Brigadier suggestions for the given partial input.
      */
     public CompletableFuture<Suggestions> suggestions(@NotNull String input, @NotNull CommandSender sender) {
-        current = this;
-        ParseResults<CommandSourceStack> parseResults = dispatcher.parse(input, commandSource(sender));
-        CompletableFuture<Suggestions> suggestions = dispatcher.getCompletionSuggestions(parseResults);
-        current = null;
-        return suggestions;
+        CommandTester previous = current.get();
+        current.set(this);
+        try {
+            ParseResults<CommandSourceStack> parseResults = dispatcher.parse(input, commandSource(sender));
+            return dispatcher.getCompletionSuggestions(parseResults);
+        } finally {
+            restoreCurrent(previous);
+        }
     }
 
     public String permissionPrefix() {
@@ -189,8 +193,8 @@ public final class CommandTester implements AutoCloseable {
 
     @Override
     public void close() {
-        if (current == this) {
-            current = null;
+        if (current.get() == this) {
+            current.remove();
         }
     }
 
@@ -277,10 +281,19 @@ public final class CommandTester implements AutoCloseable {
     }
 
     private static CommandTester requireCurrent() {
-        if (current == null) {
+        CommandTester tester = current.get();
+        if (tester == null) {
             throw new IllegalStateException("No active CommandTester");
         }
-        return current;
+        return tester;
+    }
+
+    private static void restoreCurrent(CommandTester previous) {
+        if (previous == null) {
+            current.remove();
+        } else {
+            current.set(previous);
+        }
     }
 
     private static <T> ArgumentType<T> word(Function<String, T> parser) {

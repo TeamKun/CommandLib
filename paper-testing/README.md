@@ -25,6 +25,9 @@ class Test {
 ## Scope
 
 - Executes Paper commands through Brigadier using CommandLib's Paper platform adapter.
+- Supports independent `CommandTester` instances running concurrently on different test threads. Each tester's active
+  state is thread-local, so fake players, entities, worlds, and registry values are not shared across parallel test
+  threads.
 - Captures Adventure `Component` messages.
 - Exposes Brigadier suggestions so tooltip behavior can be asserted.
 - Does not emulate Paper lifecycle registration or a real server command map.

@@ -42,41 +42,36 @@ import java.util.function.Supplier;
  * Must be closed after use (use try-with-resources).
  */
 public class CommandTester implements AutoCloseable {
-    private static CommandTester current;
+    private static final ThreadLocal<CommandTester> current = new ThreadLocal<>();
 
     private final CommandDispatcher<Object> dispatcher = new CommandDispatcher<>();
     private final Map<String, Entity> fakeEntities = new LinkedHashMap<>();
     private final Map<String, World> fakeWorlds = new LinkedHashMap<>();
-    private CommandSender currentCommandSender;
+    private final ThreadLocal<CommandSender> currentCommandSender = new ThreadLocal<>();
 
     /**
      * For use by mock NMS classes only.
      */
     public static Entity getFakeEntity(String name) {
-        if (current == null) {
-            throw new IllegalStateException("No active CommandTester");
-        }
-        return current.fakeEntities.get(name);
+        return requireCurrent().fakeEntities.get(name);
     }
 
     /**
      * For use by mock NMS classes only.
      */
     public static World getFakeWorld(String key) {
-        if (current == null) {
-            throw new IllegalStateException("No active CommandTester");
-        }
-        return current.fakeWorlds.get(key);
+        return requireCurrent().fakeWorlds.get(key);
     }
 
     /**
      * For use by mock NMS classes only.
      */
     public static CommandSender getCurrentCommandSender() {
-        if (current == null) {
-            throw new IllegalStateException("No active CommandTester");
+        CommandSender sender = requireCurrent().currentCommandSender.get();
+        if (sender == null) {
+            throw new IllegalStateException("No active CommandSender");
         }
-        return current.currentCommandSender;
+        return sender;
     }
 
     private final MockedStatic<NMSReflection> nmsReflectionMock;
@@ -118,7 +113,7 @@ public class CommandTester implements AutoCloseable {
             throw new IllegalStateException("At least one command must be registered.");
         }
 
-        current = this;
+        current.set(this);
 
         nmsReflectionMock = Mockito.mockStatic(NMSReflection.class);
         nmsReflectionMock.when(() -> NMSReflection.findMinecraftClass(Mockito.anyString(), Mockito.any()))
@@ -173,11 +168,16 @@ public class CommandTester implements AutoCloseable {
      * @throws RuntimeException if the input does not match any registered command
      */
     public void execute(String input, CommandSender sender) {
-        currentCommandSender = sender;
+        CommandTester previous = current.get();
+        current.set(this);
+        currentCommandSender.set(sender);
         try {
             dispatcher.execute(input, new Object());
         } catch (CommandSyntaxException e) {
             throw new RuntimeException("Command syntax error: " + e.getMessage(), e);
+        } finally {
+            currentCommandSender.remove();
+            restoreCurrent(previous);
         }
     }
 
@@ -202,16 +202,41 @@ public class CommandTester implements AutoCloseable {
      * Returns Brigadier suggestions for the given partial input.
      */
     public CompletableFuture<Suggestions> suggestions(String input, CommandSender sender) {
-        currentCommandSender = sender;
-        ParseResults<Object> parseResults = dispatcher.parse(input, new Object());
-        return dispatcher.getCompletionSuggestions(parseResults);
+        CommandTester previous = current.get();
+        current.set(this);
+        currentCommandSender.set(sender);
+        try {
+            ParseResults<Object> parseResults = dispatcher.parse(input, new Object());
+            return dispatcher.getCompletionSuggestions(parseResults);
+        } finally {
+            currentCommandSender.remove();
+            restoreCurrent(previous);
+        }
     }
 
     @Override
     public void close() {
         nmsRegistryMock.close();
         nmsReflectionMock.close();
-        current = null;
+        if (current.get() == this) {
+            current.remove();
+        }
+    }
+
+    private static CommandTester requireCurrent() {
+        CommandTester tester = current.get();
+        if (tester == null) {
+            throw new IllegalStateException("No active CommandTester");
+        }
+        return tester;
+    }
+
+    private static void restoreCurrent(CommandTester previous) {
+        if (previous == null) {
+            current.remove();
+        } else {
+            current.set(previous);
+        }
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

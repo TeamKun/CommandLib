@@ -1,6 +1,7 @@
 package net.kunmc.lab.commandlib;
 
 import com.mojang.brigadier.LiteralMessage;
+import net.kunmc.lab.commandlib.argument.PlayerArgument;
 import net.kunmc.lab.commandlib.argument.StringArgument;
 import net.kunmc.lab.commandlib.util.nms.NMSClass;
 import net.kunmc.lab.commandlib.util.nms.NMSClassRegistry;
@@ -10,6 +11,9 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.concurrent.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -192,6 +196,56 @@ class CommandTesterTest {
                 assertThat(sender.getSentMessageTexts()).containsExactly("started");
             }
         }
+
+        @Test
+        void independent_testers_can_execute_on_parallel_threads() throws Exception {
+            ExecutorService executor = Executors.newFixedThreadPool(2);
+            CountDownLatch ready = new CountDownLatch(2);
+            CountDownLatch start = new CountDownLatch(1);
+
+            try {
+                Future<List<String>> first = executor.submit(parallelPlayerArgumentTask("Steve",
+                                                                                        "Admin",
+                                                                                        ready,
+                                                                                        start));
+                Future<List<String>> second = executor.submit(parallelPlayerArgumentTask("Alex",
+                                                                                         "Moderator",
+                                                                                         ready,
+                                                                                         start));
+
+                assertThat(ready.await(5, TimeUnit.SECONDS)).isTrue();
+                start.countDown();
+
+                assertThat(first.get(5, TimeUnit.SECONDS)).containsExactly("Admin -> Steve");
+                assertThat(second.get(5, TimeUnit.SECONDS)).containsExactly("Moderator -> Alex");
+            } finally {
+                executor.shutdownNow();
+            }
+        }
+    }
+
+    private Callable<List<String>> parallelPlayerArgumentTask(String targetName,
+                                                              String senderName,
+                                                              CountDownLatch ready,
+                                                              CountDownLatch start) {
+        return () -> {
+            FakeSender target = FakeSender.player(targetName);
+            FakeSender sender = FakeSender.player(senderName);
+
+            try (CommandTester tester = new CommandTester(() -> new Command("who") {{
+                argument(new PlayerArgument("target")).execute((targetPlayer, ctx) -> {
+                    ctx.sendMessage(senderName + " -> " + targetPlayer.getName());
+                });
+            }}, "test.command")) {
+                tester.withFakePlayer((Player) target.asSender());
+
+                ready.countDown();
+                assertThat(start.await(5, TimeUnit.SECONDS)).isTrue();
+
+                tester.execute("who " + targetName, sender);
+                return sender.getSentMessageTexts();
+            }
+        };
     }
 
     @Nested

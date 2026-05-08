@@ -121,11 +121,15 @@ class HealCommandTest {
 Builder API:
 
 ```java
-try (CommandTester tester = CommandTester.builder()
-        .command(() -> new HealCommand())
-        .permissionPrefix("myplugin.command")
-        .build()) {
-    // ...
+class Test {
+    void test() {
+        try (CommandTester tester = CommandTester.builder()
+                                                 .command(() -> new HealCommand())
+                                                 .permissionPrefix("myplugin.command")
+                                                 .build()) {
+            // ...
+        }
+    }
 }
 ```
 
@@ -133,12 +137,16 @@ Use `mockNmsClass()` when a test needs an NMS mock that is not built into
 `spigot-testing` yet:
 
 ```java
-try (CommandTester tester = CommandTester.builder()
-        .mockNmsClass(NMSArgumentXxx.class, MockNMSArgumentXxx.class)
-        .command(() -> new XxxCommand())
-        .permissionPrefix("myplugin.command")
-        .build()) {
-    // ...
+class Test {
+    void test() {
+        try (CommandTester tester = CommandTester.builder()
+                .mockNmsClass(NMSArgumentXxx.class, MockNMSArgumentXxx.class)
+                .command(() -> new XxxCommand())
+                .permissionPrefix("myplugin.command")
+                .build()) {
+            // ...
+        }
+    }
 }
 ```
 
@@ -181,6 +189,8 @@ try (CommandTester tester = CommandTester.builder()
   ```
 - For simple text-only assertions, use `getSentMessageTexts()` which strips color codes.
 - For snapshot-style assertions where color matters, use `getSentMessageLegacyTexts()`.
+- Independent `CommandTester` instances can run concurrently on different test threads. Each tester's active state is
+  thread-local, so fake entities, worlds, and the current sender are not shared across parallel test threads.
 - All permissions are granted by default. To test permission-denied behaviour, stub `asSender().hasPermission(...)`:
   ```java
   class MyCommandTest {

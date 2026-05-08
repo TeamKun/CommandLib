@@ -18,7 +18,9 @@ tester instance:
 | `mockStatic(NMSClassRegistry.class)` | `findClass(X.class)` returns the corresponding `MockNMS...` class instead of the real version-specific implementation.   |
 
 `CommandTester` implements `AutoCloseable` and tears down both mocks in
-`close()`. Tests should use try-with-resources.
+`close()`. Tests should use try-with-resources. Mockito static mocks are scoped
+to the thread that created them, so independent `CommandTester` instances may
+run concurrently on different test threads.
 
 ## Package Structure
 
@@ -56,14 +58,15 @@ The default stub for unknown `findClass()` calls should throw an
 ## Shared State
 
 Mock NMS classes are instantiated through reflection, so they cannot receive
-state through constructors. They access the active tester through public static
-accessors such as:
+state through constructors. They access the active tester through thread-local
+public static accessors such as:
 
 - `CommandTester.getFakeEntity(String name)`
 - `CommandTester.getCurrentCommandSender()`
 
-These methods are intended for mock NMS classes only. `CommandTester.current`
-is set in the constructor and cleared in `close()`.
+These methods are intended for mock NMS classes only. The active tester and
+current sender are thread-local so separate test threads do not overwrite each
+other.
 
 ## Bukkit Static APIs
 
