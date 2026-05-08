@@ -13,5 +13,5 @@ minecraft {
 dependencies {
     api(project(":common"))
     add("minecraft", "net.minecraftforge:forge:1.16.5-36.2.20")
-    implementation("org.jetbrains:annotations:16.0.2")
+    compileOnlyApi("org.jetbrains:annotations:16.0.2")
 }

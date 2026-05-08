@@ -16,7 +16,7 @@ repositories {
 dependencies {
     api(project(":common"))
     compileOnly("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT")
-    compileOnly("org.jetbrains:annotations:16.0.2")
+    compileOnlyApi("org.jetbrains:annotations:16.0.2")
 //    compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT")
     compileOnly("com.mojang:brigadier:1.0.18")
 //    compileOnly(fileTree(mapOf("dir" to "../integration-test/fixtures/test-plugin-1.16.5/", "include" to listOf("server/cache/patched*.jar"))))

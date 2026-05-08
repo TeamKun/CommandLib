@@ -27,7 +27,6 @@ repositories {
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT")
-    compileOnly("com.mojang:brigadier:1.0.18")
     implementation("com.github.Maru32768.CommandLib:spigot:latest.release")
 }
 
