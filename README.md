@@ -230,15 +230,18 @@ CommandLib provides command-level test utilities for downstream plugins.
 
 ```kotlin
 dependencies {
+    testImplementation("com.github.Maru32768.CommandLib:common-testing:latest.release")
     testImplementation("com.github.Maru32768.CommandLib:spigot-testing:latest.release")
     testImplementation("com.github.Maru32768.CommandLib:paper-testing:latest.release")
 }
 ```
 
-Use `spigot-testing` for commands built against the `spigot` artifact, and
-`paper-testing` for commands built against the `paper` artifact. Both provide
+Use `common-testing` for commands built against the platform-neutral `common`
+API, `spigot-testing` for commands built against the `spigot` artifact, and
+`paper-testing` for commands built against the `paper` artifact. They provide
 `CommandTester` and `FakeSender` so commands can be executed without a running
-Minecraft server.
+Minecraft server. Use one testing artifact per test module; these artifacts
+share package-level helper names.
 
 ```java
 class Test {

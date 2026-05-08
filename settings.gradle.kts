@@ -12,5 +12,5 @@ plugins {
 rootProject.name = "CommandLib"
 include("forge", "spigot", "paper")
 include("common")
-include("spigot-testing", "paper-testing")
+include("common-testing", "spigot-testing", "paper-testing")
 include("integration-test")
