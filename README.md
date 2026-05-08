@@ -743,8 +743,10 @@ Or in IntelliJ: **View > Tool Windows > Gradle > Download Sources**.
 
 ## Sample Projects
 
-[Spigot](./sample/bukkit)  
-[Forge](./sample/forge)
+[Overview](samples)  
+[Spigot](samples/spigot)  
+[Paper](samples/paper)  
+[Forge](samples/forge)
 
 ## License
 
