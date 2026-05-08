@@ -18,8 +18,7 @@ import java.util.List;
 
 class CommandPermissionTest {
     private static Command command(String name) {
-        return new Command(name) {
-        };
+        return new Command(name);
     }
 
     @Nested

@@ -8,9 +8,8 @@ It is intended for command-level tests that do not need a running Paper server.
 ```java
 class Test {
     void test() {
-        Command command = new Command("hello") {{
-            execute(ctx -> ctx.sendSuccess("Hello"));
-        }};
+        Command command = new Command("hello");
+        command.execute(ctx -> ctx.sendSuccess("Hello"));
 
         CommandTester tester = new CommandTester(command, "example.command");
         FakeSender sender = FakeSender.player("Steve");

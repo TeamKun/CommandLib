@@ -14,17 +14,16 @@ public class ConfigCommand extends Command {
     public ConfigCommand() {
         super("config");
 
-        addChildren(new Command("intValue") {
-            {
-                execute(ctx -> {
-                    ctx.sendSuccess("Current value is " + intValue);
-                });
-
-                argument(new IntegerArgument("number"), (number, ctx) -> {
-                    intValue = number;
-                    ctx.sendSuccess("Change intValue to " + intValue);
-                });
-            }
+        Command intValueCommand = new Command("intValue");
+        intValueCommand.execute(ctx -> {
+            ctx.sendSuccess("Current value is " + intValue);
         });
+
+        intValueCommand.argument(new IntegerArgument("number"), (number, ctx) -> {
+            intValue = number;
+            ctx.sendSuccess("Change intValue to " + intValue);
+        });
+
+        addChildren(intValueCommand);
     }
 }

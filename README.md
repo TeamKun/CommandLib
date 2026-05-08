@@ -264,12 +264,12 @@ registration and real server registry behavior are covered by integration tests.
 ```java
 public final class TestPlugin extends JavaPlugin {
     public void onEnable() {
-        CommandLib.register(this, new Command("message") {{
-            argument(new PlayerArgument("target"), new StringArgument("message")).execute((target, message, ctx) -> {
-                // 'target' is inferred as 'org.bukkit.entity.Player'. No need to cast.
-                target.sendMessage(message);
-            });
-        }});
+        Command message = new Command("message");
+        message.argument(new PlayerArgument("target"), new StringArgument("message")).execute((target, messageText, ctx) -> {
+            // 'target' is inferred as 'org.bukkit.entity.Player'. No need to cast.
+            target.sendMessage(messageText);
+        });
+        CommandLib.register(this, message);
     }
 }
 ```
@@ -300,17 +300,17 @@ public final class TestPlugin extends JavaPlugin {
 ```java
 public final class TestPlugin extends JavaPlugin {
     public void onEnable() {
-        CommandLib.register(this, new Command("game") {{
-            addChildren(new Command("start") {{
-                execute(ctx -> {
-                    // Starts game
-                });
-            }}, new Command("stop") {{
-                execute(ctx -> {
-                    // Stops game
-                });
-            }});
-        }});
+        Command game = new Command("game");
+        Command start = new Command("start");
+        start.execute(ctx -> {
+            // Starts game
+        });
+        Command stop = new Command("stop");
+        stop.execute(ctx -> {
+            // Stops game
+        });
+        game.addChildren(start, stop);
+        CommandLib.register(this, game);
     }
 }
 ```
