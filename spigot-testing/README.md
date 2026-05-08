@@ -1,7 +1,9 @@
 # CommandLib spigot-testing
 
-A testing utility for plugins and libraries that use [CommandLib](../README.md).  
-It lets you execute commands and assert on sent messages without a running Minecraft server.
+`spigot-testing` provides lightweight test utilities for CommandLib's Spigot API.
+Use it for tests built on `Command`, `CommandContext`, Bukkit-backed arguments, and Spigot/Bungee components.
+
+It does not depend on a running Minecraft server.
 
 ## Installation
 
@@ -19,224 +21,85 @@ dependencies {
 
 ## Usage
 
-### 1. Create a `CommandTester`
-
-Pass the command(s) you want to test and the permission prefix used when registering them.
-`CommandTester` implements `AutoCloseable` — always use try-with-resources.
+Create a `Command`, execute it with a `FakeSender`, and assert on the messages captured by the sender.
 
 ```java
-class GreetCommandTest {
+class HelloCommandTest {
     @Test
-    void greet_test() {
-        try (CommandTester tester = new CommandTester(new GreetCommand(), "myplugin.command")) {
-            // ...
-        }
-    }
-}
-```
+    void hello_sends_message() {
+        Command command = new Command("hello") {{
+            argument(new StringArgument("name")).execute((name, ctx) -> {
+                ctx.sendSuccess("Hello, " + name + "!");
+            });
+        }};
 
-### 2. Create a `FakeSender`
+        FakeSender sender = FakeSender.player("Steve");
 
-```java
-class GreetCommandTest {
-    @Test
-    void greet_test() {
-        FakeSender player = FakeSender.player("Steve");   // fake player
-        FakeSender console = FakeSender.console();        // fake console
-    }
-}
-```
-
-### 3. Execute a command and assert
-
-```java
-class GreetCommandTest {
-    @Test
-    void greet_sends_message() {
-        try (CommandTester tester = new CommandTester(new GreetCommand(), "myplugin.command")) {
-            tester.execute("greet Steve", player);
+        try (CommandTester tester = new CommandTester(command, "myplugin.command")) {
+            tester.execute("hello Steve", sender);
         }
 
-        assertThat(player.getSentMessageTexts()).contains("Hello, Steve!");
+        assertThat(sender.getSentMessageTexts()).containsExactly("Hello, Steve!");
+        assertThat(sender.getSentMessages())
+            .extracting(BaseComponent::getColor)
+            .containsExactly(ChatColor.GREEN);
     }
 }
 ```
 
-## Full Example
+When the command contains NMS-backed arguments such as `PlayerArgument`, create the command through a supplier so the
+tester can install its NMS mocks before the argument constructors run.
 
 ```java
-// The command under test
-public class HealCommand extends Command {
-    public HealCommand() {
-        super("heal");
-        requirePlayer();
-        argument(new PlayerArgument("target")).execute((target, ctx) -> {
-            ctx.sendSuccess("Healed " + target.getName() + "!");
-        });
-    }
-}
-```
-
-```java
-// JUnit 5 test
 class HealCommandTest {
     @Test
-    void heal_sends_success_message() {
+    void heal_sends_message() {
         FakeSender steve = FakeSender.player("Steve");
         FakeSender admin = FakeSender.player("Admin");
 
-        try (CommandTester tester = new CommandTester(new HealCommand(), "myplugin.command")) {
+        try (CommandTester tester = new CommandTester(() -> new Command("heal") {{
+            argument(new PlayerArgument("target")).execute((target, ctx) -> {
+                ctx.sendSuccess("Healed " + target.getName() + "!");
+            });
+        }}, "myplugin.command")) {
             tester.withFakePlayer((Player) steve.asSender());
             tester.execute("heal Steve", admin);
         }
 
         assertThat(admin.getSentMessageTexts()).containsExactly("Healed Steve!");
-        assertThat(admin.getSentMessages()).extracting(BaseComponent::getColor)
-                                           .containsExactly(ChatColor.GREEN);
-    }
-
-    @Test
-    void heal_is_blocked_for_console() {
-        FakeSender console = FakeSender.console();
-
-        try (CommandTester tester = new CommandTester(new HealCommand(), "myplugin.command")) {
-            tester.execute("heal Steve", console);
-        }
-
-        assertThat(console.getSentMessageTexts()).doesNotContain("Healed Steve!");
     }
 }
 ```
-
-## API Reference
-
-### `CommandTester`
-
-| Constructor                                                                           | Description                                                                                                                                                                                                                        |
-|---------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `CommandTester(Command command, String permissionPrefix)`                             | Register a single command                                                                                                                                                                                                          |
-| `CommandTester(Supplier<? extends Command> commandSupplier, String permissionPrefix)` | Register a single command using a supplier — **required when the command contains NMS-backed arguments** (e.g. `PlayerArgument`, `EnchantmentArgument`) whose constructors call into `NMSClassRegistry` before the tester is ready |
-| `CommandTester(Collection<? extends Command> commands, String permissionPrefix)`      | Register multiple commands                                                                                                                                                                                                         |
-
-Builder API:
-
-```java
-class Test {
-    void test() {
-        try (CommandTester tester = CommandTester.builder()
-                                                 .command(() -> new HealCommand())
-                                                 .permissionPrefix("myplugin.command")
-                                                 .build()) {
-            // ...
-        }
-    }
-}
-```
-
-Use `mockNmsClass()` when a test needs an NMS mock that is not built into
-`spigot-testing` yet:
-
-```java
-class Test {
-    void test() {
-        try (CommandTester tester = CommandTester.builder()
-                .mockNmsClass(NMSArgumentXxx.class, MockNMSArgumentXxx.class)
-                .command(() -> new XxxCommand())
-                .permissionPrefix("myplugin.command")
-                .build()) {
-            // ...
-        }
-    }
-}
-```
-
-| Method                                                     | Description                                                                                                          |
-|------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
-| `void execute(String input, FakeSender sender)`            | Execute a command as the given sender. Throws `RuntimeException` if the input does not match any registered command. |
-| `CommandTester withFakePlayer(Player player)`              | Register a fake player by name for use with `PlayerArgument`, `PlayersArgument`, and `EntityArgument`.               |
-| `CommandTester withFakeEntity(String name, Entity entity)` | Register a fake entity by name for use with `EntityArgument`.                                                        |
-| `void close()`                                             | Tear down all internal mocks. Called automatically by try-with-resources.                                            |
-
-### `FakeSender`
-
-| Factory method                   | Description                                                        |
-|----------------------------------|--------------------------------------------------------------------|
-| `FakeSender.player(String name)` | A fake player with the given name. Has all permissions by default. |
-| `FakeSender.console()`           | A fake console sender. Has all permissions by default.             |
-
-| Method                                     | Description                                                                                                           |
-|--------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
-| `List<BaseComponent> getSentMessages()`    | Returns messages sent to this sender. Preserves color and formatting for assertions on `sendSuccess` / `sendFailure`. |
-| `List<String> getSentMessageTexts()`       | Convenience method. Returns sent messages as plain text with color codes stripped.                                    |
-| `List<String> getSentMessageLegacyTexts()` | Convenience method. Returns sent messages as legacy text with color codes preserved.                                  |
-| `CommandSender asSender()`                 | Returns the underlying Mockito mock for additional setup (e.g., stubbing `getLocation()`).                            |
 
 ## Notes
 
-- `getSentMessages()` returns `BaseComponent` objects so you can assert on color as well as text:
+- Use `spigot-testing` when testing Spigot-specific command behavior, Bukkit arguments, senders, or Bungee components.
+- Use `common-testing` when testing platform-neutral command behavior.
+- Use other testing modules when testing behavior for another platform.
+- Do not put multiple testing modules on the same test runtime classpath unless you intentionally manage classpath
+  ordering. They expose the same package-level testing API names, such as `CommandTester` and `FakeSender`.
+- `FakeSender.player()` and `FakeSender.console()` grant all permissions by default. Use `permissions(...)` or Mockito
+  stubbing on `asSender()` when testing permission-denied behavior.
+- `getSentMessages()` returns Bungee `BaseComponent` values. Use `getSentMessageTexts()` for plain-text assertions and
+  `getSentMessageLegacyTexts()` when color codes matter.
+- `requirePlayer()` and `requireConsole()` work with `FakeSender`; `FakeSender.player()` passes `instanceof Player`
+  checks.
+- Use `CommandTester.builder().mockNmsClass(...)` when a test needs an NMS mock that is not built into
+  `spigot-testing` yet:
   ```java
-  class MyCommandTest {
+  class XxxCommandTest {
       @Test
-      void check_color_and_text() {
-          // check text
-          assertThat(sender.getSentMessageTexts()).containsExactly("done");
-          // check color (green = sendSuccess, red = sendFailure, yellow = sendWarn)
-          assertThat(sender.getSentMessages())
-              .extracting(BaseComponent::getColor)
-              .containsExactly(ChatColor.GREEN);
-      }
-  }
-  ```
-- For simple text-only assertions, use `getSentMessageTexts()` which strips color codes.
-- For snapshot-style assertions where color matters, use `getSentMessageLegacyTexts()`.
-- Independent `CommandTester` instances can run concurrently on different test threads. Each tester's active state is
-  thread-local, so fake entities, worlds, and the current sender are not shared across parallel test threads.
-- All permissions are granted by default. To test permission-denied behaviour, stub `asSender().hasPermission(...)`:
-  ```java
-  class MyCommandTest {
-      @Test
-      void deny_all_permissions() {
-          FakeSender player = FakeSender.player("Steve");
-          Mockito.when(player.asSender().hasPermission(Mockito.anyString())).thenReturn(false);
-      }
-  }
-  ```
-- `requirePlayer()` and `requireConsole()` work correctly — `FakeSender.player()` passes `instanceof Player` checks.
-- **NMS-backed arguments** (`PlayerArgument`, `EnchantmentArgument`, `ItemStackArgument`, etc.) call into
-  `NMSClassRegistry` at construction time. Always use the `Supplier<Command>` constructor form for these:
-  ```java
-  class EnchantCommandTest {
-      @Test
-      void enchant_test() {
-          // Correct — NMS mocks are active when the supplier is called inside the constructor
-          try (CommandTester tester = new CommandTester(
-                  () -> new Command("enchant") {{
-                      argument(new EnchantmentArgument("type")).execute((ench, ctx) -> { /* ... */ });
-                  }},
-                  "test.command")) {
+      void xxx_test() {
+          try (CommandTester tester = CommandTester.builder()
+                                                   .mockNmsClass(NMSArgumentXxx.class, MockNMSArgumentXxx.class)
+                                                   .command(() -> new XxxCommand())
+                                                   .permissionPrefix("myplugin.command")
+                                                   .build()) {
               // ...
           }
       }
   }
   ```
-- **Arguments that call Bukkit static methods** (`WorldArgument`, `OfflinePlayerArgument`, `TeamArgument`, etc.) require
-  `MockedStatic<Bukkit>` from `mockito-inline`. Open it in the same try-with-resources block as `CommandTester`:
-  ```java
-  class TpCommandTest {
-      @Test
-      void tp_to_world() {
-          FakeSender sender = FakeSender.player("Steve");
-          World mockWorld = Mockito.mock(World.class);
-
-          try (MockedStatic<Bukkit> bukkit = Mockito.mockStatic(Bukkit.class);
-               CommandTester tester = new CommandTester(
-                       new Command("tp") {{
-                           argument(new WorldArgument("world")).execute((world, ctx) -> { /* ... */ });
-                       }},
-                       "test.command")) {
-              bukkit.when(() -> Bukkit.getWorld("nether")).thenReturn(mockWorld);
-              tester.execute("tp nether", sender);
-          }
-      }
-  }
-  ```
+- Arguments that call Bukkit static APIs at parse time, such as `WorldArgument`, `OfflinePlayerArgument`, and
+  `TeamArgument`, require `MockedStatic<Bukkit>` from Mockito in the same try-with-resources block as `CommandTester`.
+  Declare the Bukkit static mock before `CommandTester` so `CommandTester` closes first.

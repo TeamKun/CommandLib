@@ -47,8 +47,6 @@ class HelloCommandTest {
 ## Notes
 
 - Use `common-testing` when testing platform-neutral command behavior.
-- Use `spigot-testing` or `paper-testing` when testing platform-specific arguments, senders, components, or registry
-  behavior.
-- Do not put `common-testing` and `spigot-testing` or `paper-testing` on the same test runtime classpath unless you
-  intentionally manage classpath ordering. They expose the same package-level testing API names, such as `CommandTester`
-  and `FakeSender`.
+- Use other testing modules when testing platform-specific arguments, senders, components, or registry behavior.
+- Do not put multiple testing modules on the same test runtime classpath unless you intentionally manage classpath
+  ordering. They expose the same package-level testing API names, such as `CommandTester` and `FakeSender`.

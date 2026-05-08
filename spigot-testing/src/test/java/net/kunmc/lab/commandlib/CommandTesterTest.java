@@ -49,7 +49,8 @@ class CommandTesterTest {
 
         @Test
         void player_locale_is_set() {
-            FakeSender sender = FakeSender.player("Steve", "ja_jp");
+            FakeSender sender = FakeSender.player("Steve")
+                                          .locale("ja_jp");
             assertThat(((Player) sender.asSender()).getLocale()).isEqualTo("ja_jp");
         }
 
@@ -130,7 +131,8 @@ class CommandTesterTest {
             try (CommandTester tester = new CommandTester(new Command("locale") {{
                 execute(ctx -> ctx.sendMessage(ctx.getLanguage()));
             }}, "test.command")) {
-                FakeSender sender = FakeSender.player("Steve", "ja_jp");
+                FakeSender sender = FakeSender.player("Steve")
+                                              .locale("ja_jp");
                 tester.execute("locale", sender);
                 assertThat(sender.getSentMessageTexts()).containsExactly("ja_jp");
             }
@@ -142,7 +144,8 @@ class CommandTesterTest {
                 execute(ctx -> ctx.sendMessage(ctx.getLocale()
                                                   .toLanguageTag()));
             }}, "test.command")) {
-                FakeSender sender = FakeSender.player("Steve", "ja_jp");
+                FakeSender sender = FakeSender.player("Steve")
+                                              .locale("ja_jp");
                 tester.execute("locale", sender);
                 assertThat(sender.getSentMessageTexts()).containsExactly("ja-JP");
             }

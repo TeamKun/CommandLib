@@ -11,8 +11,8 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -21,17 +21,11 @@ public final class FakeSender {
     private final List<Component> sentMessages = new ArrayList<>();
 
     public static FakeSender player(@NotNull String name) {
-        return player(name, "en_us");
-    }
-
-    public static FakeSender player(@NotNull String name, @NotNull String locale) {
         Player player = Mockito.mock(Player.class);
         Mockito.when(player.getName())
                .thenReturn(name);
         Mockito.when(player.getUniqueId())
                .thenReturn(UUID.randomUUID());
-        Mockito.when(player.getLocale())
-               .thenReturn(locale);
 
         FakeSender fakeSender = new FakeSender(player);
         fakeSender.op(false);
@@ -43,6 +37,10 @@ public final class FakeSender {
                .sendMessage(Mockito.any(Component.class));
 
         return fakeSender;
+    }
+
+    public static FakeSender player(@NotNull String name, @NotNull UUID uniqueId) {
+        return player(name).uniqueId(uniqueId);
     }
 
     public static FakeSender console() {
@@ -81,6 +79,10 @@ public final class FakeSender {
         return this;
     }
 
+    public String getName() {
+        return commandSender.getName();
+    }
+
     public FakeSender uniqueId(@NotNull UUID uniqueId) {
         if (!(commandSender instanceof Entity)) {
             throw new IllegalStateException("sender is not an entity");
@@ -90,6 +92,29 @@ public final class FakeSender {
         return this;
     }
 
+    public Optional<UUID> getUniqueId() {
+        if (!(commandSender instanceof Entity)) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(((Entity) commandSender).getUniqueId());
+    }
+
+    public FakeSender locale(@NotNull String locale) {
+        if (!(commandSender instanceof Player)) {
+            throw new IllegalStateException("sender is not a player");
+        }
+        Mockito.when(((Player) commandSender).getLocale())
+               .thenReturn(locale);
+        return this;
+    }
+
+    public String getLocale() {
+        if (!(commandSender instanceof Player)) {
+            return null;
+        }
+        return ((Player) commandSender).getLocale();
+    }
+
     public FakeSender op(boolean op) {
         Mockito.when(commandSender.isOp())
                .thenReturn(op);
@@ -97,13 +122,16 @@ public final class FakeSender {
     }
 
     public FakeSender permissions(@NotNull String... permissions) {
-        return permissions(Set.of(permissions));
-    }
-
-    public FakeSender permissions(@NotNull Set<String> permissions) {
-        Set<String> permissionSet = new HashSet<>(permissions);
+        Set<String> permissionSet = Set.of(permissions);
         Mockito.when(commandSender.hasPermission(Mockito.anyString()))
                .thenAnswer(invocation -> permissionSet.contains(invocation.getArgument(0)));
+        return this;
+    }
+
+    public FakeSender denyPermissions(@NotNull String... permissions) {
+        Set<String> deniedPermissions = Set.of(permissions);
+        Mockito.when(commandSender.hasPermission(Mockito.anyString()))
+               .thenAnswer(invocation -> !deniedPermissions.contains(invocation.getArgument(0)));
         return this;
     }
 
