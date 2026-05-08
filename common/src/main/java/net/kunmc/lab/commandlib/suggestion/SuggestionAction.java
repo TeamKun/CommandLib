@@ -1,8 +1,8 @@
 package net.kunmc.lab.commandlib.suggestion;
 
-import net.kunmc.lab.commandlib.AbstractCommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 
 import java.util.function.Consumer;
 
-public interface SuggestionAction<C extends AbstractCommandContext<?, ?>> extends Consumer<SuggestionBuilder<C>> {
+public interface SuggestionAction<C extends CommonCommandContext<?, ?>> extends Consumer<SuggestionBuilder<C>> {
 }

@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
-public final class CommandOption<T, C extends AbstractCommandContext<?, ?>> {
+public final class CommandOption<T, C extends CommonCommandContext<?, ?>> {
     static final String INTERNAL_NAME_PREFIX = "__commandlib_option_";
 
     private final String name;
@@ -136,7 +136,7 @@ public final class CommandOption<T, C extends AbstractCommandContext<?, ?>> {
         return (T) value;
     }
 
-    private interface OptionValidator<C extends AbstractCommandContext<?, ?>> {
+    private interface OptionValidator<C extends CommonCommandContext<?, ?>> {
         void validate(C ctx) throws ArgumentParseException;
     }
 }

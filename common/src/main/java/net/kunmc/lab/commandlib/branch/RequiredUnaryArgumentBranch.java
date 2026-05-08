@@ -1,6 +1,6 @@
 package net.kunmc.lab.commandlib.branch;
 
-import net.kunmc.lab.commandlib.AbstractCommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 import net.kunmc.lab.commandlib.CommonCommand;
 import net.kunmc.lab.commandlib.command.CommandExecutor;
@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public final class RequiredUnaryArgumentBranch<S, T1, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, T>> extends RequiredArgumentBranch<S, C, T> {
+public final class RequiredUnaryArgumentBranch<S, T1, C extends CommonCommandContext<?, ?>, T extends CommonCommand<C, T>> extends RequiredArgumentBranch<S, C, T> {
     private final CommonArgument<T1, C, ?> argument1;
 
     public RequiredUnaryArgumentBranch(@NotNull Extractor<C, S> extractor,

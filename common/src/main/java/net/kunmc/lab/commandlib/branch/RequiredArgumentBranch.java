@@ -1,6 +1,6 @@
 package net.kunmc.lab.commandlib.branch;
 
-import net.kunmc.lab.commandlib.AbstractCommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.commandlib.CommonCommand;
 import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.command.Extractor;
@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class RequiredArgumentBranch<S, C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, T>> {
+public class RequiredArgumentBranch<S, C extends CommonCommandContext<?, ?>, T extends CommonCommand<C, T>> {
     private final Extractor<C, S> extractor;
     // Holding a CommonCommand directly would cause stamp coupling and would not work uniformly:
     // command.require() registers children on CommonCommand, while argument().require() registers them

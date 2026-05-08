@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public final class ArgumentBuilder<C extends AbstractCommandContext<?, ?>> {
+public final class ArgumentBuilder<C extends CommonCommandContext<?, ?>> {
     private final List<CommonArgument<?, C, ?>> arguments = new ArrayList<>();
     private CommandExecutor<C> executor = null;
 

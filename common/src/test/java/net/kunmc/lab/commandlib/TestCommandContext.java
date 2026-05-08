@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-final class TestCommandContext extends AbstractCommandContext<TestCommandSource, String> {
+final class TestCommandContext extends CommonCommandContext<TestCommandSource, String> {
     private static TestCommandContext latest;
     private final List<String> messages = new ArrayList<>();
 

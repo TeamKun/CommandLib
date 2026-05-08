@@ -1,7 +1,7 @@
 package net.kunmc.lab.commandlib.suggestion;
 
 import com.mojang.brigadier.Message;
-import net.kunmc.lab.commandlib.AbstractCommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public final class SuggestionBuilder<C extends AbstractCommandContext<?, ?>> {
+public final class SuggestionBuilder<C extends CommonCommandContext<?, ?>> {
     private final List<Suggestion> suggestions = new ArrayList<>();
     private final C ctx;
     private final String latestInput;

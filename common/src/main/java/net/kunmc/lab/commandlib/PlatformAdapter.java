@@ -8,9 +8,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 
-public interface PlatformAdapter<S, T, C extends AbstractCommandContext<S, T>, U extends CommonCommand<C, U>> {
+public interface PlatformAdapter<S, T, C extends CommonCommandContext<S, T>, U extends CommonCommand<C, U>> {
     @SuppressWarnings("unchecked")
-    static <S, T, C extends AbstractCommandContext<S, T>, U extends CommonCommand<C, U>> PlatformAdapter<S, T, C, U> get() {
+    static <S, T, C extends CommonCommandContext<S, T>, U extends CommonCommand<C, U>> PlatformAdapter<S, T, C, U> get() {
         try {
             Class<PlatformAdapter<S, T, C, U>> platformAdapterImplClass = (Class<PlatformAdapter<S, T, C, U>>) Class.forName(
                     "net.kunmc.lab.commandlib.PlatformAdapterImpl");

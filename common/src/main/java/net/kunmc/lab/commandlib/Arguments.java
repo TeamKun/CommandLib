@@ -13,7 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-final class Arguments<C extends AbstractCommandContext<?, ?>> {
+final class Arguments<C extends CommonCommandContext<?, ?>> {
     private final CommonCommand<C, ?> owner;
     private final List<? extends CommonArgument<?, C, ?>> arguments;
     private final List<CommonCommand<C, ?>> children;

@@ -1,10 +1,10 @@
 package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
-import net.kunmc.lab.commandlib.AbstractCommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 
-public class CommonStringArgument<C extends AbstractCommandContext<?, ?>, SELF extends CommonStringArgument<C, SELF>> extends CommonArgument<String, C, SELF> {
+public class CommonStringArgument<C extends CommonCommandContext<?, ?>, SELF extends CommonStringArgument<C, SELF>> extends CommonArgument<String, C, SELF> {
     public CommonStringArgument(String name) {
         super(name, Type.PHRASE_QUOTED.type);
     }

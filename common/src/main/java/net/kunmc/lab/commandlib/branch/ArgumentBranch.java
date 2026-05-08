@@ -1,6 +1,6 @@
 package net.kunmc.lab.commandlib.branch;
 
-import net.kunmc.lab.commandlib.AbstractCommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.commandlib.CommonCommand;
 import net.kunmc.lab.commandlib.DefaultPermission;
 import net.kunmc.lab.commandlib.command.CommandExecutor;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class ArgumentBranch<C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, T>> {
+public class ArgumentBranch<C extends CommonCommandContext<?, ?>, T extends CommonCommand<C, T>> {
     protected final ArgumentBranchDelegate<C, T> delegate;
 
     public ArgumentBranch(@NotNull ArgumentBranchDelegate<C, T> delegate) {

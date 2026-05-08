@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-final class CommandRunner<S, C extends AbstractCommandContext<S, ?>> implements Command<S> {
+final class CommandRunner<S, C extends CommonCommandContext<S, ?>> implements Command<S> {
     private final PlatformAdapter<S, ?, C, ?> platformAdapter;
     private final CommonCommand<C, ?> command;
     private final String permissionPrefix;

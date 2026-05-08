@@ -1,11 +1,11 @@
 package net.kunmc.lab.commandlib.exception;
 
-import net.kunmc.lab.commandlib.AbstractCommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 
 import java.util.function.Consumer;
 
 public final class CommandPrerequisiteException extends Exception {
-    private final Consumer<AbstractCommandContext<?, ?>> sendMessage;
+    private final Consumer<CommonCommandContext<?, ?>> sendMessage;
 
     public CommandPrerequisiteException() {
         this("You don't have permission to execute this command.");
@@ -20,11 +20,11 @@ public final class CommandPrerequisiteException extends Exception {
         };
     }
 
-    public CommandPrerequisiteException(Consumer<AbstractCommandContext<?, ?>> sendMessage) {
+    public CommandPrerequisiteException(Consumer<CommonCommandContext<?, ?>> sendMessage) {
         this.sendMessage = sendMessage;
     }
 
-    public void sendMessage(AbstractCommandContext<?, ?> ctx) {
+    public void sendMessage(CommonCommandContext<?, ?> ctx) {
         sendMessage.accept(ctx);
     }
 }

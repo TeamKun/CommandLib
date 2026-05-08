@@ -186,7 +186,7 @@ Validates uniqueness of `name` and `shortName` within the command, then adds the
 option to an internal `List<CommandOption<?, C>>`. Duplicate names or short names
 throw `IllegalArgumentException`.
 
-### `AbstractCommandContext` — option storage
+### `CommonCommandContext` — option storage
 
 ```java
 Map<CommandOption<?, ?>, Object> optionValues   // explicit values
@@ -236,7 +236,7 @@ a custom parser.
 
 The internal name prefix `__commandlib_option_` prevents the argument node name
 from appearing in `argumentNameToInputArgMap`, which is filtered in
-`AbstractCommandContext.collectInputs`.
+`CommonCommandContext.collectInputs`.
 
 #### Recursive combinations
 

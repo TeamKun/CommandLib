@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 @SuppressWarnings("UnstableApiUsage")
-public final class CommandContext extends AbstractCommandContext<CommandSourceStack, Component> {
+public final class CommandContext extends CommonCommandContext<CommandSourceStack, Component> {
     public CommandContext(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx) {
         super(ctx);
     }

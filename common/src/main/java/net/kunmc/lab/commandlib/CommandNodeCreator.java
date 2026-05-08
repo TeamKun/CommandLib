@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, U extends CommonCommand<C, U>> {
+final class CommandNodeCreator<S, T, C extends CommonCommandContext<S, T>, U extends CommonCommand<C, U>> {
     private final PlatformAdapter<S, T, C, U> platformAdapter = PlatformAdapter.get();
     private final Collection<? extends U> commands;
     private final String permissionPrefix;
@@ -271,7 +271,7 @@ final class CommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>, U e
         }
     }
 
-    private static class OptionToken<C extends AbstractCommandContext<?, ?>> {
+    private static class OptionToken<C extends CommonCommandContext<?, ?>> {
         private final String token;
         private final List<CommandOption<?, C>> options;
 

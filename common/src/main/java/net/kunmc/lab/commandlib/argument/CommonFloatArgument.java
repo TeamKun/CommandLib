@@ -1,10 +1,10 @@
 package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.brigadier.arguments.FloatArgumentType;
-import net.kunmc.lab.commandlib.AbstractCommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 
-public class CommonFloatArgument<C extends AbstractCommandContext<?, ?>, SELF extends CommonFloatArgument<C, SELF>> extends CommonArgument<Float, C, SELF> {
+public class CommonFloatArgument<C extends CommonCommandContext<?, ?>, SELF extends CommonFloatArgument<C, SELF>> extends CommonArgument<Float, C, SELF> {
     public CommonFloatArgument(String name) {
         super(name, FloatArgumentType.floatArg(-Float.MAX_VALUE, Float.MAX_VALUE));
     }

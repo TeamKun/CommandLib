@@ -1,7 +1,7 @@
 package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
-import net.kunmc.lab.commandlib.AbstractCommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.StringUtil;
@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class CommonLiteralArgument<C extends AbstractCommandContext<?, ?>, SELF extends CommonLiteralArgument<C, SELF>> extends CommonArgument<String, C, SELF> {
+public class CommonLiteralArgument<C extends CommonCommandContext<?, ?>, SELF extends CommonLiteralArgument<C, SELF>> extends CommonArgument<String, C, SELF> {
     private final Supplier<Collection<String>> literalsSupplier;
 
     public CommonLiteralArgument(String name, Collection<String> literals) {

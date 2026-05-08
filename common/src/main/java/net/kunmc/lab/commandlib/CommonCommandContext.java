@@ -7,14 +7,14 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-public abstract class AbstractCommandContext<S, C> {
+public abstract class CommonCommandContext<S, C> {
     protected final com.mojang.brigadier.context.CommandContext<S> handle;
     private final Map<String, String> argumentNameToInputArgMap = new LinkedHashMap<>();
     private final LinkedHashMap<String, Object> parsedArgMap = new LinkedHashMap<>();
     private final Map<CommandOption<?, ?>, Object> optionValues = new LinkedHashMap<>();
     private final Set<CommandOption<?, ?>> presentOptions = new LinkedHashSet<>();
 
-    protected AbstractCommandContext(@NotNull com.mojang.brigadier.context.CommandContext<S> ctx) {
+    protected CommonCommandContext(@NotNull com.mojang.brigadier.context.CommandContext<S> ctx) {
         this.handle = Objects.requireNonNull(ctx);
 
         collectInputs(ctx);

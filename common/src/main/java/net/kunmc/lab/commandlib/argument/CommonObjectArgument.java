@@ -1,7 +1,7 @@
 package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
-import net.kunmc.lab.commandlib.AbstractCommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.StringUtil;
@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class CommonObjectArgument<T, C extends AbstractCommandContext<?, ?>, SELF extends CommonObjectArgument<T, C, SELF>> extends CommonArgument<T, C, SELF> {
+public class CommonObjectArgument<T, C extends CommonCommandContext<?, ?>, SELF extends CommonObjectArgument<T, C, SELF>> extends CommonArgument<T, C, SELF> {
     private final Supplier<Map<String, ? extends T>> mapSupplier;
 
     public CommonObjectArgument(String name, Map<String, ? extends T> nameToObjectMap) {

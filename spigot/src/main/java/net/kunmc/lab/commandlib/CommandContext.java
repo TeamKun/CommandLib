@@ -20,7 +20,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public final class CommandContext extends AbstractCommandContext<Object, BaseComponent> {
+public final class CommandContext extends CommonCommandContext<Object, BaseComponent> {
     public CommandContext(com.mojang.brigadier.context.CommandContext<Object> ctx) {
         super(ctx);
     }

@@ -1,10 +1,10 @@
 package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.brigadier.arguments.LongArgumentType;
-import net.kunmc.lab.commandlib.AbstractCommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 
-public class CommonLongArgument<C extends AbstractCommandContext<?, ?>, SELF extends CommonLongArgument<C, SELF>> extends CommonArgument<Long, C, SELF> {
+public class CommonLongArgument<C extends CommonCommandContext<?, ?>, SELF extends CommonLongArgument<C, SELF>> extends CommonArgument<Long, C, SELF> {
     public CommonLongArgument(String name) {
         super(name, LongArgumentType.longArg(Long.MIN_VALUE, Long.MAX_VALUE));
     }

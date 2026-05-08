@@ -1,7 +1,7 @@
 package net.kunmc.lab.commandlib.exception;
 
 import com.mojang.brigadier.context.StringRange;
-import net.kunmc.lab.commandlib.AbstractCommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.commandlib.PlatformAdapter;
 import net.kunmc.lab.commandlib.util.ChatColorUtil;
 
@@ -9,10 +9,10 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class ArgumentParseException extends Exception {
-    private final Consumer<AbstractCommandContext<?, ?>> sendMessages;
+    private final Consumer<CommonCommandContext<?, ?>> sendMessages;
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    protected static <C extends AbstractCommandContext<?, ?>> Consumer<AbstractCommandContext<?, ?>> buildIncorrectInputMessage(
+    protected static <C extends CommonCommandContext<?, ?>> Consumer<CommonCommandContext<?, ?>> buildIncorrectInputMessage(
             String argumentName,
             C ctx,
             String incorrectInput) {
@@ -36,7 +36,7 @@ public class ArgumentParseException extends Exception {
 
         String finalStr = str;
         return context -> {
-            AbstractCommandContext c = context;
+            CommonCommandContext c = context;
             c.sendComponent(platformAdapter.createTranslatableComponentBuilder("command.unknown.argument")
                                            .color(Objects.requireNonNull(ChatColorUtil.RED.getRGB()))
                                            .build());
@@ -50,7 +50,7 @@ public class ArgumentParseException extends Exception {
         };
     }
 
-    public static <C extends AbstractCommandContext<?, ?>> ArgumentParseException ofIncorrectInput(String argumentName,
+    public static <C extends CommonCommandContext<?, ?>> ArgumentParseException ofIncorrectInput(String argumentName,
                                                                                                    C ctx,
                                                                                                    String incorrectInput) {
         return new ArgumentParseException(buildIncorrectInputMessage(argumentName, ctx, incorrectInput));
@@ -65,11 +65,11 @@ public class ArgumentParseException extends Exception {
         });
     }
 
-    public ArgumentParseException(Consumer<AbstractCommandContext<?, ?>> sendMessages) {
+    public ArgumentParseException(Consumer<CommonCommandContext<?, ?>> sendMessages) {
         this.sendMessages = sendMessages;
     }
 
-    public void sendMessage(AbstractCommandContext<?, ?> ctx) {
+    public void sendMessage(CommonCommandContext<?, ?> ctx) {
         sendMessages.accept(ctx);
     }
 }

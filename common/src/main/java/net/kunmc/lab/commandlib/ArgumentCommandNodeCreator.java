@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
-final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S, T>> {
+final class ArgumentCommandNodeCreator<S, T, C extends CommonCommandContext<S, T>> {
     private final PlatformAdapter<S, T, C, ?> platformAdapter = PlatformAdapter.get();
     private final Arguments<C> arguments;
     private final List<Arguments<C>> executorArguments;
@@ -49,7 +49,7 @@ final class ArgumentCommandNodeCreator<S, T, C extends AbstractCommandContext<S,
                     } catch (Exception ignored) {
                         // Best-effort: pre-populate ctx with already-parsed arguments for use in
                         // suggestion actions. Failures (e.g. platform-specific context differences)
-                        // are non-fatal — the suggestion action still runs.
+                        // are non-fatal - the suggestion action still runs.
                     }
 
                     SuggestionBuilder<C> suggestionBuilder = new SuggestionBuilder<>(ctx, sb.getRemaining());

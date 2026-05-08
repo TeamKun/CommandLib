@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-final class HelpMessageAction<S, T, C extends AbstractCommandContext<S, T>, U extends CommonCommand<C, U>> implements CommandExecutor<C> {
+final class HelpMessageAction<S, T, C extends CommonCommandContext<S, T>, U extends CommonCommand<C, U>> implements CommandExecutor<C> {
     private final PlatformAdapter<S, T, C, U> platformAdapter;
     private final U command;
     private final String permissionPrefix;

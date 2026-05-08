@@ -1,11 +1,11 @@
 package net.kunmc.lab.commandlib.exception;
 
-import net.kunmc.lab.commandlib.AbstractCommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 
 import java.util.function.Consumer;
 
 public class ArgumentValidationException extends ArgumentParseException {
-    public static <C extends AbstractCommandContext<?, ?>> ArgumentValidationException ofIncorrectInput(String argumentName,
+    public static <C extends CommonCommandContext<?, ?>> ArgumentValidationException ofIncorrectInput(String argumentName,
                                                                                                         C ctx,
                                                                                                         String incorrectInput) {
         return new ArgumentValidationException(buildIncorrectInputMessage(argumentName, ctx, incorrectInput));
@@ -19,7 +19,7 @@ public class ArgumentValidationException extends ArgumentParseException {
         super(message, messages);
     }
 
-    public ArgumentValidationException(Consumer<AbstractCommandContext<?, ?>> sendMessages) {
+    public ArgumentValidationException(Consumer<CommonCommandContext<?, ?>> sendMessages) {
         super(sendMessages);
     }
 }

@@ -21,7 +21,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class CommonArgument<T, C extends AbstractCommandContext<?, ?>, SELF extends CommonArgument<T, C, SELF>> {
+public abstract class CommonArgument<T, C extends CommonCommandContext<?, ?>, SELF extends CommonArgument<T, C, SELF>> {
     private final String name;
     private boolean displayDefaultSuggestions = true;
     private SuggestionAction<C> suggestionAction;

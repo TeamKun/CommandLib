@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class CommonCommand<C extends AbstractCommandContext<?, ?>, T extends CommonCommand<C, T>> {
+public abstract class CommonCommand<C extends CommonCommandContext<?, ?>, T extends CommonCommand<C, T>> {
     private final String name;
     private Function<C, String> description = ctx -> "";
     private String permissionNodeOverride = null;

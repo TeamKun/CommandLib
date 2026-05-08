@@ -1,10 +1,10 @@
 package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.brigadier.arguments.DoubleArgumentType;
-import net.kunmc.lab.commandlib.AbstractCommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 
-public class CommonDoubleArgument<C extends AbstractCommandContext<?, ?>, SELF extends CommonDoubleArgument<C, SELF>> extends CommonArgument<Double, C, SELF> {
+public class CommonDoubleArgument<C extends CommonCommandContext<?, ?>, SELF extends CommonDoubleArgument<C, SELF>> extends CommonArgument<Double, C, SELF> {
     public CommonDoubleArgument(String name) {
         super(name, DoubleArgumentType.doubleArg(-Double.MAX_VALUE, Double.MAX_VALUE));
     }

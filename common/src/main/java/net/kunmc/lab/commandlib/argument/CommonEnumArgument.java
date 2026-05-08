@@ -1,7 +1,7 @@
 package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
-import net.kunmc.lab.commandlib.AbstractCommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.util.StringUtil;
@@ -9,7 +9,7 @@ import net.kunmc.lab.commandlib.util.StringUtil;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class CommonEnumArgument<T extends Enum<T>, C extends AbstractCommandContext<?, ?>, SELF extends CommonEnumArgument<T, C, SELF>> extends CommonArgument<T, C, SELF> {
+public class CommonEnumArgument<T extends Enum<T>, C extends CommonCommandContext<?, ?>, SELF extends CommonEnumArgument<T, C, SELF>> extends CommonArgument<T, C, SELF> {
     private final Class<T> clazz;
 
     public CommonEnumArgument(String name, Class<T> clazz) {

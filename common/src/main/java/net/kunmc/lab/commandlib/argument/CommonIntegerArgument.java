@@ -1,10 +1,10 @@
 package net.kunmc.lab.commandlib.argument;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import net.kunmc.lab.commandlib.AbstractCommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
 
-public class CommonIntegerArgument<C extends AbstractCommandContext<?, ?>, SELF extends CommonIntegerArgument<C, SELF>> extends CommonArgument<Integer, C, SELF> {
+public class CommonIntegerArgument<C extends CommonCommandContext<?, ?>, SELF extends CommonIntegerArgument<C, SELF>> extends CommonArgument<Integer, C, SELF> {
     public CommonIntegerArgument(String name) {
         super(name, IntegerArgumentType.integer(Integer.MIN_VALUE, Integer.MAX_VALUE));
     }

@@ -15,7 +15,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public final class CommandContext extends AbstractCommandContext<CommandSource, ITextComponent> {
+public final class CommandContext extends CommonCommandContext<CommandSource, ITextComponent> {
     public CommandContext(com.mojang.brigadier.context.CommandContext<CommandSource> ctx) {
         super(ctx);
     }
