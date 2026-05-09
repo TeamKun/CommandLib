@@ -49,7 +49,7 @@ Use this checklist whenever adding a public `*Argument` class.
 
 ## 4. Add Integration Coverage
 
-- Add an execution case to `integration-test/fixtures/common-bukkit/.../ArgumentTest.java` when the argument exists in
+- Add an execution case to `integration-test/shared/bukkit-test-plugin/.../ArgumentTest.java` when the argument exists in
   both Spigot and Paper modules.
 - For platform-specific arguments, add a reflected optional case in the same fixture so it runs only when that module
   contains the argument.
@@ -87,8 +87,8 @@ Run focused checks for touched modules. Typical commands:
 For integration fixture source changes, compile representative fixtures:
 
 ```bash
-cd integration-test/fixtures/1.16.5-paper && ./gradlew compileJava
-cd integration-test/fixtures/1.21.0-paper && ./gradlew compileJava
+cd integration-test/targets/paper-1.16.5/test-plugin && ./gradlew compileJava
+cd integration-test/targets/paper-1.21.0/test-plugin && ./gradlew compileJava
 ```
 
 Run real Minecraft integration tests when the change depends on server runtime behavior or when requested.

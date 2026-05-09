@@ -14,3 +14,14 @@ include("forge", "spigot", "paper")
 include("common")
 include("common-testing", "spigot-testing", "paper-testing")
 include("integration-test")
+include(
+    "integration-test:targets:paper-1.16.5",
+    "integration-test:targets:mohist-1.16.5",
+    "integration-test:targets:paper-1.19.4",
+    "integration-test:targets:paper-1.20.1",
+    "integration-test:targets:mohist-1.20.1",
+    "integration-test:targets:paper-1.20.4",
+    "integration-test:targets:paper-1.20.5",
+    "integration-test:targets:paper-1.20.6",
+    "integration-test:targets:paper-1.21.0",
+)

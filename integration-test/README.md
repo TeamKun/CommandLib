@@ -28,7 +28,7 @@ Each `minecraftIntegrationTest*` task does the following:
 The report is written under:
 
 ```text
-integration-test/fixtures/common/test-results/
+integration-test/shared/test-results/
 ```
 
 ## Why MCProtocolLib
@@ -49,31 +49,31 @@ The integration test intentionally fails when Docker is unavailable.
 These tasks are opt-in and are expected to validate a real server, so a missing Docker daemon should be treated as an
 infrastructure failure rather than a skipped test.
 
-## Fixtures
+## Layout
 
-Fixture projects live under:
+Each target owns its test plugin project:
 
 ```text
-integration-test/fixtures/{version}-{server}/
+integration-test/targets/{platform}-{version}/test-plugin/
 ```
 
-Shared fixture code lives under:
+Shared test plugin code lives under:
 
 ```text
-integration-test/fixtures/common
+integration-test/shared/bukkit-test-plugin
 ```
 
 The shared Gradle script is:
 
 ```text
-integration-test/fixtures/test-plugin.shared.gradle.kts
+integration-test/shared/bukkit-test-plugin.gradle.kts
 ```
 
-Fixture setup downloads PlugManX and AutoReloader into each configured server `plugins` directory.
+Target plugin setup downloads PlugManX and AutoReloader into each configured server `plugins` directory.
 The AutoReloader URL can be overridden when needed:
 
 ```powershell
-.\gradlew.bat :integration-test:prepareTestPlugin1204 -PautoReloaderJarDownloadUrl=<download-url>
+.\gradlew.bat :integration-test:targets:paper-1.20.4:prepareTestPlugin -PautoReloaderJarDownloadUrl=<download-url>
 ```
 
 The same URL can be supplied with `COMMANDLIB_AUTORELOADER_JAR_URL`.
@@ -84,18 +84,19 @@ Each version has a prepare task and an integration test task.
 For example:
 
 ```text
-:integration-test:prepareTestPlugin1204
-:integration-test:minecraftIntegrationTest1204
+:integration-test:targets:paper-1.20.4:prepareTestPlugin
+:integration-test:targets:paper-1.20.4:minecraftIntegrationTest
 ```
 
 `minecraftIntegrationTest` is the aggregate task for all configured targets.
+The aggregate task depends on per-target subprojects, so Gradle can run independent targets in parallel by default.
 
 ## Generated NMS Jars
 
 Some tests need a real server jar that contains NMS and CraftBukkit classes.
 The downloadable server launcher jar is not always that jar.
 
-Fixture projects expose `generatePatchedJar` for this purpose.
+Target plugin projects expose `generatePatchedJar` for this purpose.
 The task starts the downloaded server once when the expected generated jar is missing, then validates that the
 distribution-specific jar path exists.
 
@@ -105,7 +106,7 @@ Paper has two known layouts:
 - Paper `1.18` and newer: `server/versions/<version>/paper-<version>.jar`
 
 Mohist does not follow Paper's single-path convention consistently.
-When a Mohist fixture needs generated NMS jars, configure `nmsJarPaths` explicitly in that fixture's `build.gradle.kts`.
+When a Mohist target needs generated NMS jars, configure `nmsJarPaths` explicitly in that target plugin's `build.gradle.kts`.
 For example, Mohist `1.20.1` splits server and CraftBukkit classes across Forge-generated jars, so the fixture checks
 both generated jar paths.
 
@@ -113,7 +114,7 @@ The `spigot` module's NMS resolver tests can optionally load a generated jar.
 The default fallback path for the legacy resolver test is:
 
 ```text
-integration-test/fixtures/test-plugin-1.16.5/server/cache/patched_1.16.5.jar
+integration-test/targets/paper-1.16.5/test-plugin/server/cache/patched_1.16.5.jar
 ```
 
 `COMMANDLIB_NMS_TEST_JAR_1_16_5` can override that path.
@@ -121,9 +122,9 @@ integration-test/fixtures/test-plugin-1.16.5/server/cache/patched_1.16.5.jar
 ## Mohist Constraint
 
 Mohist targets require a first startup before the integration test server is launched in Docker.
-That startup generates Mohist libraries, mappings, and server-side files in the fixture `server` directory.
+That startup generates Mohist libraries, mappings, and server-side files in the target plugin's `server` directory.
 
-Gradle handles this with `bootstrapMohist*` tasks.
+Gradle handles this with per-target `bootstrapMohist` tasks.
 The task checks for generated marker paths such as `libraries` and `world`.
 If they are missing, it starts Mohist once with the target Java toolchain, waits until the server reaches the ready
 state, sends `stop`, and then lets the Docker-based integration test continue.
@@ -131,8 +132,8 @@ state, sends `stop`, and then lets the Docker-based integration test continue.
 Example:
 
 ```powershell
-.\gradlew.bat :integration-test:prepareTestPlugin1201Mohist
-.\gradlew.bat :integration-test:bootstrapMohist1201Mohist
+.\gradlew.bat :integration-test:targets:mohist-1.20.1:prepareTestPlugin
+.\gradlew.bat :integration-test:targets:mohist-1.20.1:bootstrapMohist
 ```
 
 The versioned integration test task depends on this bootstrap task, so manual execution is only needed when diagnosing
@@ -143,7 +144,7 @@ Mohist startup itself.
 Run one target:
 
 ```powershell
-.\gradlew.bat :integration-test:minecraftIntegrationTest1204
+.\gradlew.bat :integration-test:targets:paper-1.20.4:minecraftIntegrationTest
 ```
 
 Run all configured targets:
@@ -152,7 +153,26 @@ Run all configured targets:
 .\gradlew.bat :integration-test:minecraftIntegrationTest
 ```
 
-The normal `test` task does not run these server tests unless explicitly enabled.
+Gradle project parallelism is enabled by default, but Minecraft server tests are throttled to avoid starting every
+Docker server at once. The default server-test concurrency is 4.
+
+For smaller Docker Desktop environments, reduce it:
+
+```powershell
+.\gradlew.bat :integration-test:minecraftIntegrationTest -Pcommandlib.minecraftIntegrationMaxParallel=1
+```
+
+Mohist bootstrap is throttled separately and defaults to 2. Each Mohist target writes a target-specific bootstrap
+`server-port`, so bootstrap tasks can run in parallel when the local machine has enough CPU and memory.
+
+To reduce Mohist bootstrap concurrency:
+
+```powershell
+.\gradlew.bat :integration-test:minecraftIntegrationTest -Pcommandlib.mohistBootstrapMaxParallel=1
+```
+
+The normal `test` task runs lightweight integration coverage checks only. Real server tests run from the target
+subprojects' `minecraftIntegrationTest` tasks.
 
 ## Caveats
 
@@ -160,5 +180,5 @@ The normal `test` task does not run these server tests unless explicitly enabled
 - Docker-based runs can be environment-sensitive even when normal `test` passes.
 - MCProtocolLib compatibility should be validated on the real target environment when adding or upgrading server
   versions.
-- Mohist startup is intentionally split into `bootstrapMohist*` because Mohist generates libraries, mappings, and
+- Mohist startup is intentionally split into `bootstrapMohist` because Mohist generates libraries, mappings, and
   server-side files during startup.

@@ -47,19 +47,22 @@ class BukkitIntegrationTest {
                                "Minecraft integration test is disabled. Enable an integration test task.");
         assertDockerAvailable();
 
-        String fixtureName = System.getProperty("commandlib.fixtureName");
+        String targetName = System.getProperty("commandlib.targetName");
         String reportFileName = System.getProperty("commandlib.reportFileName",
-                                                   "TEST-commandlib-" + fixtureName + ".xml");
+                                                   "TEST-commandlib-" + targetName + ".xml");
         String serverDirectory = System.getProperty("commandlib.serverDirectory", "server");
         String serverJarName = System.getProperty("commandlib.serverJarName", "server.jar");
         int javaVersion = Integer.getInteger("commandlib.minecraftJavaVersion", 17);
 
-        Path fixturesDir = Path.of(System.getProperty("commandlib.fixturesDir"));
-        Path testPluginDir = fixturesDir.resolve(fixtureName);
-        Path reportFile = fixturesDir.resolve("common-bukkit/test-results/" + reportFileName);
+        Path integrationTestDir = Path.of(System.getProperty("commandlib.integrationTestDir"));
+        Path testPluginDir = Path.of(System.getProperty("commandlib.testPluginDir"));
+        Path sharedDir = Path.of(System.getProperty("commandlib.sharedDir"));
+        Path reportDir = sharedDir.resolve("test-results");
+        Path reportFile = reportDir.resolve(reportFileName);
         Files.deleteIfExists(reportFile);
 
-        try (GenericContainer<?> container = createBukkitContainer(fixturesDir,
+        try (GenericContainer<?> container = createBukkitContainer(integrationTestDir,
+                                                                   targetName,
                                                                    testPluginDir,
                                                                    serverDirectory,
                                                                    serverJarName,
@@ -171,35 +174,36 @@ class BukkitIntegrationTest {
         }
     }
 
-    private static GenericContainer<?> createBukkitContainer(Path fixturesDir,
+    private static GenericContainer<?> createBukkitContainer(Path integrationTestDir,
+                                                             String targetName,
                                                              Path testPluginDir,
                                                              String serverDirectory,
                                                              String serverJarName,
                                                              String reportFileName,
                                                              int javaVersion) {
-        String containerWorkDir = "/workspace/fixtures/" + testPluginDir.getFileName() + "/" + serverDirectory;
+        String containerWorkDir = "/workspace/integration-test/targets/" + targetName + "/test-plugin/" + serverDirectory;
         UUID offlineUuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + TEST_PLAYER_NAME).getBytes(StandardCharsets.UTF_8));
         String opsJson = "[{\"uuid\":\"" + offlineUuid + "\",\"name\":\"" + TEST_PLAYER_NAME + "\",\"level\":4,\"bypassesPlayerLimit\":false}]";
 
         return new GenericContainer<>("eclipse-temurin:" + javaVersion + "-jre").withExposedPorts(25565)
-                                                                                // Bind the whole fixtures tree because the plugin writes its JUnit XML report
-                                                                                // outside the versioned server directory.
-                                                                                .withFileSystemBind(fixturesDir.toAbsolutePath()
+                                                                                // Bind the whole integration-test tree because the plugin writes its
+                                                                                // JUnit XML report outside the target-local server directory.
+                                                                                .withFileSystemBind(integrationTestDir.toAbsolutePath()
                                                                                                                .toString(),
-                                                                                                    "/workspace/fixtures",
+                                                                                                    "/workspace/integration-test",
                                                                                                     BindMode.READ_WRITE)
                                                                                 .withWorkingDirectory(containerWorkDir)
                                                                                 .withLogConsumer(new Slf4jLogConsumer(
-                                                                                        LOGGER))
+                                                                                        LOGGER).withPrefix(targetName))
                                                                                 .withCommand("sh",
                                                                                              "-lc",
                                                                                              "printf 'eula=true\n' > eula.txt && "
-                                                                                                     // Force offline mode so MCProtocolLib can join as a local fake player
-                                                                                                     // without requiring Mojang authentication in CI.
-                                                                                                     + "printf 'online-mode=false\nserver-port=25565\nenforce-secure-profile=false\nmotd=CommandLib IT\ngamemode=creative\nforce-gamemode=true\nlevel-type=FLAT' > server.properties && "
                                                                                                      // Write ops.json before the server starts so the player has operator permission on join.
                                                                                                      // Offline UUID is deterministic: UUID.nameUUIDFromBytes("OfflinePlayer:<name>").
-                                                                                                     + "printf '" + opsJson + "' > ops.json && " + "java -Dplugin.env=CI -Dcommandlib.testReportName=" + reportFileName + " -jar " + serverJarName + " nogui")
+                                                                                                     + "printf '" + opsJson + "' > ops.json && "
+                                                                                                     + "java -Dplugin.env=CI -Dcommandlib.testReportName=" + reportFileName + " "
+                                                                                                     + "-Dcommandlib.testReportDir=/workspace/integration-test/shared/test-results "
+                                                                                                     + "-jar " + serverJarName + " nogui")
                                                                                 .waitingFor(Wait.forLogMessage(
                                                                                         ".*Done \\(.*\\)! For help, type \"help\".*",
                                                                                         1))

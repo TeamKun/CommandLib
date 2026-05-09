@@ -30,13 +30,13 @@ class ArgumentIntegrationCoverageTest {
         commonBukkitArguments.removeAll(EXCLUDED_ARGUMENTS);
 
         String argumentTestSource = Files.readString(rootDir.resolve(
-                "integration-test/fixtures/common-bukkit/src/main/java/net/kunmc/lab/testplugin/ArgumentTest.java"));
+                "integration-test/shared/bukkit-test-plugin/src/main/java/net/kunmc/lab/testplugin/ArgumentTest.java"));
         Set<String> missing = commonBukkitArguments.stream()
                                                    .filter(argument -> !instantiatesArgument(argumentTestSource,
                                                                                              argument))
                                                    .collect(Collectors.toCollection(java.util.TreeSet::new));
 
-        assertThat(missing).as("Add integration coverage in common-bukkit ArgumentTest or document an exclusion")
+        assertThat(missing).as("Add integration coverage in shared Bukkit ArgumentTest or document an exclusion")
                            .isEmpty();
     }
 
