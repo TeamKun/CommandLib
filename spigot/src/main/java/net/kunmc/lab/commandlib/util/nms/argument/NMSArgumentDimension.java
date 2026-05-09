@@ -18,17 +18,8 @@ public abstract class NMSArgumentDimension extends NMSArgument<World> {
     }
 
     static {
-        NMSClassRegistry.register(NMSArgumentDimension.class,
-                                  NMSArgumentDimension_v1_16_0.class,
-                                  "1.16.0",
-                                  "1.16.5");
-        NMSClassRegistry.register(NMSArgumentDimension.class,
-                                  NMSArgumentDimension_v1_17_0.class,
-                                  "1.17.0",
-                                  "1.20.4");
-        NMSClassRegistry.register(NMSArgumentDimension.class,
-                                  NMSArgumentDimension_v1_20_5.class,
-                                  "1.20.5",
-                                  "9.9.9");
+        NMSClassRegistry.register(NMSArgumentDimension.class, NMSArgumentDimension_v1_16_0.class, "1.16.0", "1.16.5");
+        NMSClassRegistry.register(NMSArgumentDimension.class, NMSArgumentDimension_v1_17_0.class, "1.17.0", "1.20.4");
+        NMSClassRegistry.register(NMSArgumentDimension.class, NMSArgumentDimension_v1_20_5.class, "1.20.5", "9.9.9");
     }
 }

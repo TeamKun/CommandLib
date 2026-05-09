@@ -58,9 +58,9 @@ class LightweightArgumentExecutionTest {
         }}, "test.command");
         FakeSender sender = FakeSender.player("Steve");
 
-        tester.execute("args alpha beta ALPHA literal raw @p value", sender);
+        tester.execute("args alpha beta ALPHA literal raw@p", sender);
 
-        assertThat(sender.getSentMessageTexts()).containsExactly("mapped:beta:ALPHA:literal:raw @p value");
+        assertThat(sender.getSentMessageTexts()).containsExactly("mapped:beta:ALPHA:literal:raw@p");
     }
 
     @Test

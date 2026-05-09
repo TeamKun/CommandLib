@@ -1,6 +1,5 @@
 package net.kunmc.lab.commandlib.argument;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
 import net.kunmc.lab.commandlib.Argument;
 import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
@@ -10,15 +9,17 @@ import net.kunmc.lab.commandlib.exception.ArgumentParseException;
  * without any entity-selector or other special-character validation.
  *
  * <p>This is useful when the value may contain characters that Brigadier's built-in
- * {@code StringArgumentType.word()} rejects, such as {@code @} (e.g. {@code @p}).
- *
- * <p><b>Note:</b> In Paper's native command system this argument is advertised to
- * clients as {@code brigadier:string GREEDY_PHRASE}, so it should be placed last
- * in any command that uses it.
+ * {@code StringArgumentType.word()} rejects, such as {@code @} (e.g. {@code @p},
+ * {@code @e[type=zombie]}) or path separators (e.g. {@code @../config/value}).
  */
 public class UnparsedArgument extends Argument<String, UnparsedArgument> {
     public UnparsedArgument(String name) {
-        super(name, StringArgumentType.greedyString());
+        super(name, RawWordArgumentType.rawWord());
+        suggestionAction(sb -> {
+            sb.suggest("test")
+              .suggest("sb@aaaa")
+              .suggest("@a");
+        });
     }
 
     @Override

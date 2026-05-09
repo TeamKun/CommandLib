@@ -31,36 +31,45 @@ import static org.assertj.core.api.Assertions.assertThatCode;
  * targets on real Paper servers. This test keeps paper-testing honest by ensuring every
  * public argument can at least be wired into a command tree here.
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes"})
 class ArgumentCoverageTest {
     private static final String ARGUMENT_PACKAGE = "net.kunmc.lab.commandlib.argument";
 
     private static final Map<Class<?>, Supplier<? extends CommonArgument<?, ?, ?>>> ARGUMENT_FACTORIES = Map.ofEntries(
+            Map.entry(AdvancementArgument.class, () -> new AdvancementArgument("value")),
+            Map.entry(AttributeArgument.class, () -> new AttributeArgument("value")),
             Map.entry(BiomeArgument.class, () -> new BiomeArgument("value")),
             Map.entry(BlockDataArgument.class, () -> new BlockDataArgument("value")),
+            Map.entry(ChatColorArgument.class, () -> new ChatColorArgument("value")),
             Map.entry(GameModeArgument.class, () -> new GameModeArgument("value")),
             Map.entry(BooleanArgument.class, () -> new BooleanArgument("value")),
             Map.entry(DoubleArgument.class, () -> new DoubleArgument("value")),
             Map.entry(EnchantmentArgument.class, () -> new EnchantmentArgument("value")),
             Map.entry(EntitiesArgument.class, () -> new EntitiesArgument("value")),
             Map.entry(EntityArgument.class, () -> new EntityArgument("value")),
+            Map.entry(EntityTypeArgument.class, () -> new EntityTypeArgument("value")),
             Map.entry(EnumArgument.class, () -> new EnumArgument<>("value", SampleMode.class)),
             Map.entry(FloatArgument.class, () -> new FloatArgument("value")),
             Map.entry(IntegerArgument.class, () -> new IntegerArgument("value")),
             Map.entry(ItemStackArgument.class, () -> new ItemStackArgument("value")),
             Map.entry(LiteralArgument.class, () -> new LiteralArgument("value", List.of("literal"))),
             Map.entry(LocationArgument.class, () -> new LocationArgument("value")),
+            Map.entry(LootTableArgument.class, () -> new LootTableArgument("value")),
             Map.entry(LongArgument.class, () -> new LongArgument("value")),
             Map.entry(NamespacedKeyArgument.class, () -> new NamespacedKeyArgument("value")),
             Map.entry(NameableObjectArgument.class,
                       () -> new NameableObjectArgument<>("value", List.of(new SampleNameable("alpha")))),
             Map.entry(ObjectArgument.class, () -> new ObjectArgument<>("value", Map.of("alpha", "mapped"))),
+            Map.entry(ObjectiveArgument.class, () -> new ObjectiveArgument("value")),
             Map.entry(OfflinePlayerArgument.class, () -> new OfflinePlayerArgument("value")),
             Map.entry(OfflinePlayersArgument.class, () -> new OfflinePlayersArgument("value")),
             Map.entry(ParticleArgument.class, () -> new ParticleArgument("value")),
             Map.entry(PlayerArgument.class, () -> new PlayerArgument("value")),
             Map.entry(PlayersArgument.class, () -> new PlayersArgument("value")),
             Map.entry(PotionEffectArgument.class, () -> new PotionEffectArgument("value")),
+            Map.entry(RecipeArgument.class, () -> new RecipeArgument("value")),
+            Map.entry(ScoreboardDisplaySlotArgument.class, () -> new ScoreboardDisplaySlotArgument("value")),
+            Map.entry(SoundArgument.class, () -> new SoundArgument("value")),
             Map.entry(StringArgument.class, () -> new StringArgument("value")),
             Map.entry(TeamArgument.class, () -> new TeamArgument("value")),
             Map.entry(UnparsedArgument.class, () -> new UnparsedArgument("value")),

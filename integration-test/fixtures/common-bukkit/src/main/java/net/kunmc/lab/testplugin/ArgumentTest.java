@@ -3,8 +3,12 @@ package net.kunmc.lab.testplugin;
 import net.kunmc.lab.commandlib.Command;
 import net.kunmc.lab.commandlib.argument.*;
 import net.kunmc.lab.commandlib.util.bukkit.BukkitUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.Keyed;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.*;
 
@@ -20,13 +24,17 @@ public final class ArgumentTest extends TestBase {
     public List<String> build() {
         List<String> commands = new ArrayList<>();
 
+        commands.addAll(advancementArgument());
+        commands.addAll(attributeArgument());
         commands.addAll(blockDataArgument());
         commands.addAll(biomeArgument());
         commands.addAll(booleanArgument());
+        commands.addAll(chatColorArgument());
         commands.addAll(doubleArgument());
         commands.addAll(enchantmentArgument());
         commands.addAll(entitiesArgument());
         commands.addAll(entityArgument());
+        commands.addAll(entityTypeArgument());
         commands.addAll(enumArgument());
         commands.addAll(floatArgument());
         commands.addAll(gameModeArgument());
@@ -34,6 +42,7 @@ public final class ArgumentTest extends TestBase {
         commands.addAll(itemStackArgument());
         commands.addAll(literalArgument());
         commands.addAll(locationArgument());
+        commands.addAll(lootTableArgument());
         if (supportsLongArgumentCommandTree()) {
             commands.addAll(longArgument());
         }
@@ -42,10 +51,14 @@ public final class ArgumentTest extends TestBase {
         commands.addAll(objectArgument());
         commands.addAll(offlinePlayerArgument());
         commands.addAll(offlinePlayersArgument());
+        commands.addAll(objectiveArgument());
         commands.addAll(particleArgument());
         commands.addAll(playerArgument());
         commands.addAll(playersArgument());
         commands.addAll(potionEffectArgument());
+        commands.addAll(recipeArgument());
+        commands.addAll(scoreboardDisplaySlotArgument());
+        commands.addAll(soundArgument());
         commands.addAll(stringArgument());
         commands.addAll(teamArgument());
         commands.addAll(unparsedArgument());
@@ -54,6 +67,41 @@ public final class ArgumentTest extends TestBase {
         commands.addAll(worldArgument());
 
         return commands;
+    }
+
+    public List<String> advancementArgument() {
+        String name = getMethodName();
+        String key = getKey();
+
+        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        command.addChildren(new Command(name) {{
+            argument(new AdvancementArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
+                putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
+            })).execute((a, ctx) -> {
+                putResult(key,
+                          a.getKey()
+                           .toString(),
+                          "minecraft:story/mine_stone");
+            });
+        }});
+
+        return List.of(buildCommand(command, name + " minecraft:story/mine_stone"));
+    }
+
+    public List<String> attributeArgument() {
+        String name = getMethodName();
+        String key = getKey();
+
+        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        command.addChildren(new Command(name) {{
+            argument(new AttributeArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
+                putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
+            })).execute((a, ctx) -> {
+                putResult(key, a.toString(), "GENERIC_MAX_HEALTH");
+            });
+        }});
+
+        return List.of(buildCommand(command, name + " generic_max_health"));
     }
 
     public List<String> blockDataArgument() {
@@ -102,6 +150,22 @@ public final class ArgumentTest extends TestBase {
         }});
 
         return List.of(buildCommand(command, name + " true"));
+    }
+
+    public List<String> chatColorArgument() {
+        String name = getMethodName();
+        String key = getKey();
+
+        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        command.addChildren(new Command(name) {{
+            argument(new ChatColorArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
+                putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
+            })).execute((a, ctx) -> {
+                putResult(key, a.name(), "DARK_RED");
+            });
+        }});
+
+        return List.of(buildCommand(command, name + " dark_red"));
     }
 
     public List<String> doubleArgument() {
@@ -166,6 +230,22 @@ public final class ArgumentTest extends TestBase {
         }});
 
         return List.of(buildCommand(command, name + " @r"));
+    }
+
+    public List<String> entityTypeArgument() {
+        String name = getMethodName();
+        String key = getKey();
+
+        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        command.addChildren(new Command(name) {{
+            argument(new EntityTypeArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
+                putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
+            })).execute((a, ctx) -> {
+                putResult(key, a.toString(), "ZOMBIE");
+            });
+        }});
+
+        return List.of(buildCommand(command, name + " zombie"));
     }
 
     public List<String> enumArgument() {
@@ -280,6 +360,25 @@ public final class ArgumentTest extends TestBase {
         return List.of(buildCommand(command, name + " 0 0 0"));
     }
 
+    public List<String> lootTableArgument() {
+        String name = getMethodName();
+        String key = getKey();
+
+        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        command.addChildren(new Command(name) {{
+            argument(new LootTableArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
+                putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
+            })).execute((a, ctx) -> {
+                putResult(key,
+                          a.getKey()
+                           .toString(),
+                          "minecraft:chests/simple_dungeon");
+            });
+        }});
+
+        return List.of(buildCommand(command, name + " minecraft:chests/simple_dungeon"));
+    }
+
     public List<String> longArgument() {
         String name = getMethodName();
         String key = getKey();
@@ -388,6 +487,29 @@ public final class ArgumentTest extends TestBase {
         return List.of(buildCommand(command, name + " " + playerName));
     }
 
+    public List<String> objectiveArgument() {
+        String name = getMethodName();
+        String key = getKey();
+        String objectiveName = "commandlib_it";
+        Scoreboard scoreboard = Bukkit.getScoreboardManager()
+                                      .getMainScoreboard();
+        Objective objective = scoreboard.getObjective(objectiveName);
+        if (objective == null) {
+            scoreboard.registerNewObjective(objectiveName, "dummy");
+        }
+
+        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        command.addChildren(new Command(name) {{
+            argument(new ObjectiveArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
+                putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
+            })).execute((a, ctx) -> {
+                putResult(key, a.getName(), objectiveName);
+            });
+        }});
+
+        return List.of(buildCommand(command, name + " " + objectiveName));
+    }
+
     public List<String> particleArgument() {
         String name = getMethodName();
         String key = getKey();
@@ -454,6 +576,57 @@ public final class ArgumentTest extends TestBase {
         }});
 
         return List.of(buildCommand(command, name + " minecraft:speed"));
+    }
+
+    public List<String> recipeArgument() {
+        String name = getMethodName();
+        String key = getKey();
+
+        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        command.addChildren(new Command(name) {{
+            argument(new RecipeArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
+                putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
+            })).execute((a, ctx) -> {
+                putResult(key,
+                          ((Keyed) a).getKey()
+                                     .toString(),
+                          "minecraft:stick");
+            });
+        }});
+
+        return List.of(buildCommand(command, name + " minecraft:stick"));
+    }
+
+    public List<String> scoreboardDisplaySlotArgument() {
+        String name = getMethodName();
+        String key = getKey();
+
+        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        command.addChildren(new Command(name) {{
+            argument(new ScoreboardDisplaySlotArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
+                putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
+            })).execute((a, ctx) -> {
+                putResult(key, a.name(), "SIDEBAR");
+            });
+        }});
+
+        return List.of(buildCommand(command, name + " sidebar"));
+    }
+
+    public List<String> soundArgument() {
+        String name = getMethodName();
+        String key = getKey();
+
+        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        command.addChildren(new Command(name) {{
+            argument(new SoundArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
+                putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
+            })).execute((a, ctx) -> {
+                putResult(key, a.toString(), "BLOCK_ANVIL_LAND");
+            });
+        }});
+
+        return List.of(buildCommand(command, name + " block_anvil_land"));
     }
 
     public List<String> stringArgument() {

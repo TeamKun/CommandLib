@@ -46,7 +46,7 @@ public final class CommandTester implements AutoCloseable {
         }
 
         new CommandNodeCreator<>(builder.createCommands(), builder.permissionPrefix).build()
-                                                                                   .forEach(dispatcher.getRoot()::addChild);
+                                                                                    .forEach(dispatcher.getRoot()::addChild);
     }
 
     public void execute(@NotNull String input, @NotNull FakeSender sender) {

@@ -17,13 +17,16 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Biome;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
@@ -61,6 +64,9 @@ public final class CommandTester implements AutoCloseable {
     private Particle fakeParticle = Particle.POOF;
     private PotionEffectType fakePotionEffectType;
     private Biome fakeBiome;
+    private Attribute fakeAttribute;
+    private EntityType fakeEntityType = EntityType.ZOMBIE;
+    private Sound fakeSound;
     private final String permissionPrefix;
 
     public static Builder builder() {
@@ -186,6 +192,21 @@ public final class CommandTester implements AutoCloseable {
         return this;
     }
 
+    public CommandTester withFakeAttribute(@NotNull Attribute attribute) {
+        this.fakeAttribute = attribute;
+        return this;
+    }
+
+    public CommandTester withFakeEntityType(@NotNull EntityType entityType) {
+        this.fakeEntityType = entityType;
+        return this;
+    }
+
+    public CommandTester withFakeSound(@NotNull Sound sound) {
+        this.fakeSound = sound;
+        return this;
+    }
+
     public CommandTester withFakeWorld(@NotNull World world) {
         fakeWorlds.put(world.getName(), world);
         return this;
@@ -276,6 +297,15 @@ public final class CommandTester implements AutoCloseable {
         }
         if (RegistryKey.BIOME.equals(key)) {
             return tester.fakeBiome;
+        }
+        if (RegistryKey.ATTRIBUTE.equals(key)) {
+            return tester.fakeAttribute;
+        }
+        if (RegistryKey.ENTITY_TYPE.equals(key)) {
+            return tester.fakeEntityType;
+        }
+        if (RegistryKey.SOUND_EVENT.equals(key)) {
+            return tester.fakeSound;
         }
         throw new UnsupportedOperationException("Unsupported Paper registry argument in CommandTester: " + key);
     }

@@ -51,8 +51,8 @@ public class ArgumentParseException extends Exception {
     }
 
     public static <C extends CommonCommandContext<?, ?>> ArgumentParseException ofIncorrectInput(String argumentName,
-                                                                                                   C ctx,
-                                                                                                   String incorrectInput) {
+                                                                                                 C ctx,
+                                                                                                 String incorrectInput) {
         return new ArgumentParseException(buildIncorrectInputMessage(argumentName, ctx, incorrectInput));
     }
 

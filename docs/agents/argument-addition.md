@@ -20,6 +20,22 @@ Use this checklist whenever adding a public `*Argument` class.
 - Convert native Minecraft/NMS values into the public Bukkit/Paper/Forge return type at the module boundary.
 - Keep command parsing behavior consistent with Brigadier where possible, including namespace defaults such as
   `minecraft`.
+- Avoid `StringArgumentType.greedyString()` unless the argument is intentionally terminal. Greedy arguments consume the
+  remaining input and make later arguments impossible or misleading for command trees and completions. For a single
+  token that must allow characters rejected by `StringArgumentType.word()` (for example `/` or `@`), use or add a raw
+  single-token argument type instead.
+- Paper's official command API rejects unknown plain Brigadier `ArgumentType` implementations during lifecycle
+  registration. Paper custom argument types must implement Paper's `CustomArgumentType` and expose a known native type
+  through `getNativeType()`.
+- Registry-backed Bukkit/Paper values should be designed around Paper-native registry key semantics when possible.
+  Prefer `ArgumentTypes.resource(RegistryKey...)` for Paper value-returning arguments, and make Spigot match the same
+  public input/completion behavior where feasible. Use `resourceKey(...)` only when the public return type is intended
+  to be a key (`TypedKey`) rather than the registry value.
+- Arguments backed by server collections or registries should provide default completions. Examples include
+  advancements, recipes, loot tables, scoreboard objectives, and other registry-backed values.
+- If an argument naturally depends on a mutable server object such as a `Scoreboard`, prefer a fluent method such as
+  `scoreboard(Supplier<Scoreboard>)` over constructor overloads so existing construction style remains simple and
+  extensible.
 
 ## 3. Add Lightweight Tests
 
@@ -37,6 +53,9 @@ Use this checklist whenever adding a public `*Argument` class.
   both Spigot and Paper modules.
 - For platform-specific arguments, add a reflected optional case in the same fixture so it runs only when that module
   contains the argument.
+- `:integration-test:test` includes a lightweight coverage check that fails when a public argument class shared by
+  Spigot and Paper is missing from the common Bukkit integration fixture. Add an explicit exclusion there only when a
+  real-server case is intentionally not applicable.
 - The integration case should:
     - register the argument,
     - execute a real command with representative input,

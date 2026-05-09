@@ -6,8 +6,8 @@ import java.util.function.Consumer;
 
 public class ArgumentValidationException extends ArgumentParseException {
     public static <C extends CommonCommandContext<?, ?>> ArgumentValidationException ofIncorrectInput(String argumentName,
-                                                                                                        C ctx,
-                                                                                                        String incorrectInput) {
+                                                                                                      C ctx,
+                                                                                                      String incorrectInput) {
         return new ArgumentValidationException(buildIncorrectInputMessage(argumentName, ctx, incorrectInput));
     }
 

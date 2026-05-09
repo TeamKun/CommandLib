@@ -12,12 +12,12 @@ public final class Options {
     }
 
     public static <C extends CommonCommandContext<?, ?>> CommandOption<Boolean, C> flag(@NotNull String name,
-                                                                                          char shortName) {
+                                                                                        char shortName) {
         return new CommandOption<>(name, shortName, false);
     }
 
     public static <C extends CommonCommandContext<?, ?>> CommandOption<Boolean, C> bool(@NotNull String name,
-                                                                                          boolean defaultValue) {
+                                                                                        boolean defaultValue) {
         return new CommandOption<>(name,
                                    null,
                                    defaultValue,
@@ -26,8 +26,8 @@ public final class Options {
     }
 
     public static <C extends CommonCommandContext<?, ?>> CommandOption<Boolean, C> bool(@NotNull String name,
-                                                                                          char shortName,
-                                                                                          boolean defaultValue) {
+                                                                                        char shortName,
+                                                                                        boolean defaultValue) {
         return new CommandOption<>(name,
                                    shortName,
                                    defaultValue,
@@ -36,20 +36,20 @@ public final class Options {
     }
 
     public static <C extends CommonCommandContext<?, ?>> CommandOption<Integer, C> integer(@NotNull String name,
-                                                                                             int defaultValue) {
+                                                                                           int defaultValue) {
         return integer(name, defaultValue, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
     public static <C extends CommonCommandContext<?, ?>> CommandOption<Integer, C> integer(@NotNull String name,
-                                                                                             char shortName,
-                                                                                             int defaultValue) {
+                                                                                           char shortName,
+                                                                                           int defaultValue) {
         return integer(name, shortName, defaultValue, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
     public static <C extends CommonCommandContext<?, ?>> CommandOption<Integer, C> integer(@NotNull String name,
-                                                                                             int defaultValue,
-                                                                                             int min,
-                                                                                             int max) {
+                                                                                           int defaultValue,
+                                                                                           int min,
+                                                                                           int max) {
         return new CommandOption<>(name,
                                    null,
                                    defaultValue,
@@ -58,10 +58,10 @@ public final class Options {
     }
 
     public static <C extends CommonCommandContext<?, ?>> CommandOption<Integer, C> integer(@NotNull String name,
-                                                                                             char shortName,
-                                                                                             int defaultValue,
-                                                                                             int min,
-                                                                                             int max) {
+                                                                                           char shortName,
+                                                                                           int defaultValue,
+                                                                                           int min,
+                                                                                           int max) {
         return new CommandOption<>(name,
                                    shortName,
                                    defaultValue,
@@ -70,7 +70,7 @@ public final class Options {
     }
 
     public static <C extends CommonCommandContext<?, ?>> CommandOption<Long, C> longValue(@NotNull String name,
-                                                                                            long defaultValue) {
+                                                                                          long defaultValue) {
         return new CommandOption<>(name,
                                    null,
                                    defaultValue,
@@ -79,8 +79,8 @@ public final class Options {
     }
 
     public static <C extends CommonCommandContext<?, ?>> CommandOption<Long, C> longValue(@NotNull String name,
-                                                                                            char shortName,
-                                                                                            long defaultValue) {
+                                                                                          char shortName,
+                                                                                          long defaultValue) {
         return new CommandOption<>(name,
                                    shortName,
                                    defaultValue,
@@ -89,7 +89,7 @@ public final class Options {
     }
 
     public static <C extends CommonCommandContext<?, ?>> CommandOption<Float, C> floatValue(@NotNull String name,
-                                                                                              float defaultValue) {
+                                                                                            float defaultValue) {
         return new CommandOption<>(name,
                                    null,
                                    defaultValue,
@@ -98,8 +98,8 @@ public final class Options {
     }
 
     public static <C extends CommonCommandContext<?, ?>> CommandOption<Float, C> floatValue(@NotNull String name,
-                                                                                              char shortName,
-                                                                                              float defaultValue) {
+                                                                                            char shortName,
+                                                                                            float defaultValue) {
         return new CommandOption<>(name,
                                    shortName,
                                    defaultValue,
@@ -108,7 +108,7 @@ public final class Options {
     }
 
     public static <C extends CommonCommandContext<?, ?>> CommandOption<Double, C> doubleValue(@NotNull String name,
-                                                                                                double defaultValue) {
+                                                                                              double defaultValue) {
         return new CommandOption<>(name,
                                    null,
                                    defaultValue,
@@ -117,8 +117,8 @@ public final class Options {
     }
 
     public static <C extends CommonCommandContext<?, ?>> CommandOption<Double, C> doubleValue(@NotNull String name,
-                                                                                                char shortName,
-                                                                                                double defaultValue) {
+                                                                                              char shortName,
+                                                                                              double defaultValue) {
         return new CommandOption<>(name,
                                    shortName,
                                    defaultValue,
@@ -127,7 +127,7 @@ public final class Options {
     }
 
     public static <C extends CommonCommandContext<?, ?>> CommandOption<String, C> string(@NotNull String name,
-                                                                                           @NotNull String defaultValue) {
+                                                                                         @NotNull String defaultValue) {
         return new CommandOption<>(name,
                                    null,
                                    defaultValue,
@@ -136,8 +136,8 @@ public final class Options {
     }
 
     public static <C extends CommonCommandContext<?, ?>> CommandOption<String, C> string(@NotNull String name,
-                                                                                           char shortName,
-                                                                                           @NotNull String defaultValue) {
+                                                                                         char shortName,
+                                                                                         @NotNull String defaultValue) {
         return new CommandOption<>(name,
                                    shortName,
                                    defaultValue,

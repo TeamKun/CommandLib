@@ -374,7 +374,7 @@ tasks.test {
     useJUnitPlatform()
     // Real-server tests are intentionally opt-in. They need Docker and Minecraft server jars, so running them
     // from the normal unit-test task would make local development and CI checks unexpectedly slow/flaky.
-    onlyIf { runMinecraftIntegration.get() }
+    // BukkitIntegrationTest gates itself with an assumption so lightweight coverage tests can still run here.
     systemProperty("commandlib.rootDir", rootProject.projectDir.absolutePath)
     systemProperty("commandlib.fixturesDir", fixturesDir.absolutePath)
     systemProperty("commandlib.runMinecraftIntegration", runMinecraftIntegration.get().toString())
