@@ -19,7 +19,7 @@ public class UUIDArgument extends Argument<UUID, UUIDArgument> {
     public UUIDArgument(String name) {
         super(name, StringArgumentType.string());
 
-        suggestionAction(sb -> {
+        setSuggestionAction(sb -> {
             Map<UUID, String> uuidToNameMap = new HashMap<>();
             sb.getContext()
               .getHandle()
@@ -51,7 +51,6 @@ public class UUIDArgument extends Argument<UUID, UUIDArgument> {
                 }
             });
         });
-        displayDefaultSuggestions(false);
     }
 
     @Override

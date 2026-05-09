@@ -5,14 +5,12 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.kunmc.lab.commandlib.command.CommandExecutor;
-import net.kunmc.lab.commandlib.suggestion.AsyncSuggestionAction;
-import net.kunmc.lab.commandlib.suggestion.SuggestionAction;
 import net.kunmc.lab.commandlib.suggestion.SuggestionBuilder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
 final class ArgumentCommandNodeCreator<S, T, C extends CommonCommandContext<S, T>> {
@@ -34,50 +32,48 @@ final class ArgumentCommandNodeCreator<S, T, C extends CommonCommandContext<S, T
         builder.requires(source -> platformAdapter.hasPermission(source,
                                                                  arguments.permissionName(parent, permissionPrefix)));
 
-        SuggestionAction<C> suggestionAction = argument.suggestionAction();
-        AsyncSuggestionAction<C> asyncSuggestionAction = argument.asyncSuggestionAction();
-        if (suggestionAction != null || asyncSuggestionAction != null) {
-            builder.suggests((context, sb) -> {
-                try {
-                    if (!platformAdapter.hasPermission(context.getSource(),
-                                                       arguments.permissionName(parent, permissionPrefix))) {
-                        return Suggestions.empty();
-                    }
-                    C ctx = platformAdapter.createCommandContext(context);
-                    try {
-                        arguments.parse(ctx);
-                    } catch (Exception ignored) {
-                        // Best-effort: pre-populate ctx with already-parsed arguments for use in
-                        // suggestion actions. Failures (e.g. platform-specific context differences)
-                        // are non-fatal - the suggestion action still runs.
-                    }
-
-                    SuggestionBuilder<C> suggestionBuilder = new SuggestionBuilder<>(ctx, sb.getRemaining());
-                    if (suggestionAction != null) {
-                        suggestionAction.accept(suggestionBuilder);
-                    }
-
-                    CompletionStage<Void> customStage = asyncSuggestionAction == null ? CompletableFuture.completedFuture(
-                            null) : asyncSuggestionAction.accept(suggestionBuilder);
-                    CompletableFuture<Void> customFuture = customStage.toCompletableFuture()
-                                                                      .thenRun(() -> {
-                                                                          suggestionBuilder.build()
-                                                                                           .forEach(s -> s.suggest(sb));
-                                                                      });
-
-                    CompletableFuture<Suggestions> defaultFuture = argument.isDisplayDefaultSuggestions() ? argument.type()
-                                                                                                                    .listSuggestions(
-                                                                                                                            context,
-                                                                                                                            sb)
-                                                                                                                    .toCompletableFuture() : Suggestions.empty();
-
-                    return customFuture.thenCombine(defaultFuture, (ignored, suggestions) -> sb.build());
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                    throw e;
+        builder.suggests((context, sb) -> {
+            try {
+                if (!platformAdapter.hasPermission(context.getSource(),
+                                                   arguments.permissionName(parent, permissionPrefix))) {
+                    return Suggestions.empty();
                 }
-            });
-        }
+                C ctx = platformAdapter.createCommandContext(context);
+                try {
+                    arguments.parse(ctx);
+                } catch (Exception ignored) {
+                    // Best-effort: pre-populate ctx with already-parsed arguments for use in
+                    // suggestion actions. Failures (e.g. platform-specific context differences)
+                    // are non-fatal - the suggestion action still runs.
+                }
+
+                SuggestionBuilder<C> suggestionBuilder = new SuggestionBuilder<>(ctx, sb.getRemaining());
+                List<CompletableFuture<Suggestions>> defaultFutures = new ArrayList<>();
+                for (ArgumentSuggestionAction<C> suggestionAction : argument.suggestionActions()) {
+                    if (suggestionAction.isDefaultSuggestions()) {
+                        defaultFutures.add(argument.type()
+                                                   .listSuggestions(context, sb)
+                                                   .toCompletableFuture());
+                    } else {
+                        suggestionAction.action()
+                                        .accept(suggestionBuilder);
+                    }
+                }
+
+                CompletableFuture<Void> customFuture = suggestionBuilder.awaitAll()
+                                                                        .toCompletableFuture()
+                                                                        .thenRun(() -> {
+                                                                            suggestionBuilder.build()
+                                                                                             .forEach(s -> s.suggest(sb));
+                                                                        });
+                CompletableFuture<Void> defaultFuture = CompletableFuture.allOf(defaultFutures.toArray(CompletableFuture[]::new));
+
+                return customFuture.thenCombine(defaultFuture, (ignored, suggestions) -> sb.build());
+            } catch (Throwable e) {
+                e.printStackTrace();
+                throw e;
+            }
+        });
 
         builder.executes(new CommandRunner<>(platformAdapter,
                                              parent,

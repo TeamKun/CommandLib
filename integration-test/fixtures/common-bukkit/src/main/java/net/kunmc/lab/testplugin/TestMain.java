@@ -102,8 +102,8 @@ public class TestMain {
                               logger.info("Executing CommandLib test cases.");
                               for (String command : commands) {
                                   logger.info("Dispatching test command: " + command);
-                                  CommandDispatchResult dispatchResult =
-                                          dispatchProbe.dispatch(Bukkit.getConsoleSender(), command);
+                                  CommandDispatchResult dispatchResult = dispatchProbe.dispatch(Bukkit.getConsoleSender(),
+                                                                                                command);
                                   tests.forEach(test -> test.hookCommandDispatchError(command, dispatchResult));
                                   dispatchErrorHook.onCommandDispatchError(command, dispatchResult);
                               }

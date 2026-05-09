@@ -12,7 +12,7 @@ public class TeamArgument extends Argument<Team, TeamArgument> {
     public TeamArgument(String name) {
         super(name, StringArgumentType.word());
 
-        suggestionAction(sb -> {
+        addSuggestionAction(sb -> {
             String input = sb.getLatestInput();
             Bukkit.getScoreboardManager()
                   .getMainScoreboard()

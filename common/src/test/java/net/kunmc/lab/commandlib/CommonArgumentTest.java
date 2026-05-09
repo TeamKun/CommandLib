@@ -1,5 +1,10 @@
 package net.kunmc.lab.commandlib;
 
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.kunmc.lab.commandlib.argument.*;
 import org.junit.jupiter.api.Test;
 
@@ -175,14 +180,35 @@ class CommonArgumentTest {
     @Test
     void suggestions_support_async_actions() {
         TestCommandRunner runner = new TestCommandRunner(new TestCommand("search") {{
-            argument(new StrArg("word").asyncSuggestionAction(sb -> CompletableFuture.runAsync(() -> {
+            argument(new StrArg("word").addSuggestionAction(sb -> sb.await(CompletableFuture.runAsync(() -> {
                 sb.suggest("alpha");
                 sb.suggest("beta");
-            }))).execute((word, ctx) -> {
+            })))).execute((word, ctx) -> {
             });
         }});
 
         assertThat(runner.suggest("search ")).containsExactlyInAnyOrder("alpha", "beta", "help");
+    }
+
+    @Test
+    void default_suggestions_can_be_cleared_and_restored() {
+        TestCommandRunner addedRunner = new TestCommandRunner(new TestCommand("pick") {{
+            argument(new DefaultSuggestingArg("value").addSuggestionAction(sb -> sb.suggest("custom"))).execute((value, ctx) -> {
+            });
+        }});
+        TestCommandRunner clearedRunner = new TestCommandRunner(new TestCommand("pick") {{
+            argument(new DefaultSuggestingArg("value").clearSuggestionActions()).execute((value, ctx) -> {
+            });
+        }});
+        TestCommandRunner restoredRunner = new TestCommandRunner(new TestCommand("pick") {{
+            argument(new DefaultSuggestingArg("value").clearSuggestionActions()
+                                                      .useDefaultSuggestions()).execute((value, ctx) -> {
+            });
+        }});
+
+        assertThat(addedRunner.suggest("pick ")).containsExactlyInAnyOrder("default", "custom", "help");
+        assertThat(clearedRunner.suggest("pick d")).doesNotContain("default");
+        assertThat(restoredRunner.suggest("pick d")).containsExactly("default");
     }
 
     private static final class IntArg extends CommonIntegerArgument<TestCommandContext, IntArg> {
@@ -200,6 +226,36 @@ class CommonArgumentTest {
     private static final class StrArg extends CommonStringArgument<TestCommandContext, StrArg> {
         StrArg(String name) {
             super(name);
+        }
+    }
+
+    private static final class DefaultSuggestingArg extends CommonArgument<String, TestCommandContext, DefaultSuggestingArg> {
+        DefaultSuggestingArg(String name) {
+            super(name, new DefaultSuggestingType());
+        }
+
+        @Override
+        public String cast(Object parsedArgument) {
+            return (String) parsedArgument;
+        }
+
+        @Override
+        protected String parseImpl(TestCommandContext ctx) {
+            return ctx.getInput(name());
+        }
+    }
+
+    private static final class DefaultSuggestingType implements ArgumentType<String> {
+        @Override
+        public String parse(StringReader reader) {
+            return reader.readUnquotedString();
+        }
+
+        @Override
+        public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context,
+                                                                  SuggestionsBuilder builder) {
+            builder.suggest("default");
+            return builder.buildFuture();
         }
     }
 

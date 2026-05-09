@@ -6,11 +6,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
 public final class SuggestionBuilder<C extends CommonCommandContext<?, ?>> {
-    private final List<Suggestion> suggestions = new ArrayList<>();
+    private final List<Suggestion> suggestions = Collections.synchronizedList(new ArrayList<>());
+    private final List<CompletionStage<?>> awaitedStages = Collections.synchronizedList(new ArrayList<>());
     private final C ctx;
     private final String latestInput;
 
@@ -96,7 +101,24 @@ public final class SuggestionBuilder<C extends CommonCommandContext<?, ?>> {
         return this;
     }
 
+    public SuggestionBuilder<C> await(@NotNull CompletionStage<?> stage) {
+        awaitedStages.add(Objects.requireNonNull(stage));
+        return this;
+    }
+
+    public CompletionStage<Void> awaitAll() {
+        List<CompletableFuture<?>> futures;
+        synchronized (awaitedStages) {
+            futures = awaitedStages.stream()
+                                   .map(CompletionStage::toCompletableFuture)
+                                   .collect(Collectors.toList());
+        }
+        return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
+    }
+
     public List<Suggestion> build() {
-        return suggestions;
+        synchronized (suggestions) {
+            return List.copyOf(suggestions);
+        }
     }
 }

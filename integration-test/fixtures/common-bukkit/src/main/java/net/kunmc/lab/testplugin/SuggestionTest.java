@@ -26,7 +26,7 @@ public final class SuggestionTest extends TestBase {
         // Receives tab-complete requests; records getLatestInput() for later verification.
         command.addChildren(new Command("suggestionCapture") {{
             permission(PermissionDefault.TRUE);
-            argument(new StringArgument("a").suggestionAction(builder -> {
+            argument(new StringArgument("a").addSuggestionAction(builder -> {
                 capturedLatestInput.set(builder.getLatestInput());
                 builder.suggest("result");
             })).execute((a, ctx) -> {

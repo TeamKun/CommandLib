@@ -14,7 +14,7 @@ import org.bukkit.loot.LootTable;
 public class LootTableArgument extends Argument<LootTable, LootTableArgument> {
     public LootTableArgument(String name) {
         super(name, ArgumentTypes.namespacedKey());
-        suggestionAction(sb -> NamespacedKeyArgumentSupport.suggestKeys(sb, Registry.LOOT_TABLES));
+        addSuggestionAction(sb -> NamespacedKeyArgumentSupport.suggestKeys(sb, Registry.LOOT_TABLES));
     }
 
     @Override

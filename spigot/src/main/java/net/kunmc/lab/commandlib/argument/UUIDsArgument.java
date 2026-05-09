@@ -21,7 +21,7 @@ public class UUIDsArgument extends Argument<List<UUID>, UUIDsArgument> {
               NMSArgumentProfile.create()
                                 .argument());
 
-        suggestionAction(sb -> {
+        setSuggestionAction(sb -> {
             String input = sb.getLatestInput();
 
             Map<UUID, String> uuidToNameMap = new HashMap<>();
@@ -52,7 +52,6 @@ public class UUIDsArgument extends Argument<List<UUID>, UUIDsArgument> {
                 .filter(x -> input.isEmpty() || x.startsWith(input))
                 .forEach(sb::suggest);
         });
-        displayDefaultSuggestions(false);
     }
 
     @Override

@@ -23,7 +23,7 @@ public class OfflinePlayersArgument extends Argument<List<OfflinePlayer>, Offlin
               NMSArgumentProfile.create()
                                 .argument());
 
-        suggestionAction(sb -> {
+        addSuggestionAction(sb -> {
             String input = sb.getLatestInput();
 
             Arrays.stream(Bukkit.getOfflinePlayers())

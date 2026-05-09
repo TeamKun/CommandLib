@@ -17,7 +17,7 @@ public class UUIDArgument extends Argument<UUID, UUIDArgument> {
     public UUIDArgument(String name) {
         super(name, StringArgumentType.word());
 
-        suggestionAction(sb -> {
+        setSuggestionAction(sb -> {
             Map<UUID, String> uuidToNameMap = new HashMap<>();
             System.out.println(Arrays.toString(Bukkit.getOfflinePlayers()));
             Arrays.stream(Bukkit.getOfflinePlayers())
@@ -45,7 +45,6 @@ public class UUIDArgument extends Argument<UUID, UUIDArgument> {
                 }
             });
         });
-        displayDefaultSuggestions(false);
     }
 
     @Override

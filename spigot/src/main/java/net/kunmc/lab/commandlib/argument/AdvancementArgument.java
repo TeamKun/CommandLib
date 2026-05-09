@@ -14,7 +14,7 @@ public class AdvancementArgument extends Argument<Advancement, AdvancementArgume
         super(name,
               NMSArgumentNamespacedKey.create()
                                       .argument());
-        suggestionAction(sb -> NamespacedKeyArgumentSupport.suggestKeys(sb, Bukkit.advancementIterator()));
+        addSuggestionAction(sb -> NamespacedKeyArgumentSupport.suggestKeys(sb, Bukkit.advancementIterator()));
     }
 
     @Override

@@ -11,10 +11,10 @@ class CommandBehaviorTest {
     @Test
     void argumentBranchPermissionFiltersSuggestions() throws Exception {
         CommandTester tester = new CommandTester(new Command("config") {{
-            argument(new StringArgument("key").suggestionAction(sb -> sb.suggest("difficulty"))).permission(
-                                                                                                        "custom.config.key")
-                                                                                                .execute((key, ctx) -> ctx.sendMessage(
-                                                                                                        key));
+            argument(new StringArgument("key").addSuggestionAction(sb -> sb.suggest("difficulty"))).permission(
+                                                                                                           "custom.config.key")
+                                                                                                   .execute((key, ctx) -> ctx.sendMessage(
+                                                                                                           key));
         }}, "test.command");
         FakeSender sender = FakeSender.player("Steve");
         Mockito.when(sender.asSender()
@@ -47,9 +47,9 @@ class CommandBehaviorTest {
     @Test
     void suggestionWithMessageTooltipExposesTooltipText() throws Exception {
         CommandTester tester = new CommandTester(new Command("cmd") {{
-            argument(new StringArgument("value").suggestionAction(sb -> sb.suggest("alpha",
-                                                                                   new LiteralMessage("alpha tooltip"))
-                                                                          .suggest("beta"))).execute((v, ctx) -> {
+            argument(new StringArgument("value").addSuggestionAction(sb -> sb.suggest("alpha",
+                                                                                      new LiteralMessage("alpha tooltip"))
+                                                                             .suggest("beta"))).execute((v, ctx) -> {
             });
         }}, "test.command");
         FakeSender sender = FakeSender.player("Steve");

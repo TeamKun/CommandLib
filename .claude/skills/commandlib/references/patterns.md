@@ -34,7 +34,7 @@ class MyCommand extends Command {
         super("cmd");
 
         argument(new PlayerArgument("target").validator(Player::isOp)
-                                             .suggestionAction(sb -> sb.suggest("Steve"))).execute((player, ctx) -> {
+                                             .addSuggestionAction(sb -> sb.suggest("Steve"))).execute((player, ctx) -> {
             ctx.sendMessage("ok");
         });
     }

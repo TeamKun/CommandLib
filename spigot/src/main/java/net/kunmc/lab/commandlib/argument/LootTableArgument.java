@@ -15,7 +15,7 @@ public class LootTableArgument extends Argument<LootTable, LootTableArgument> {
         super(name,
               NMSArgumentNamespacedKey.create()
                                       .argument());
-        suggestionAction(sb -> NamespacedKeyArgumentSupport.suggestKeys(sb, Registry.LOOT_TABLES));
+        addSuggestionAction(sb -> NamespacedKeyArgumentSupport.suggestKeys(sb, Registry.LOOT_TABLES));
     }
 
     @Override

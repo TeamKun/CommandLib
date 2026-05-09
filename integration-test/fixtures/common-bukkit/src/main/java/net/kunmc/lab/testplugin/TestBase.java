@@ -26,15 +26,20 @@ public abstract class TestBase {
 
     protected final void putCommandNotExecutedResult(String key) {
         putResult(new TestResult(key, TestStatus.FAILED, COMMAND_NOT_EXECUTED_MESSAGE));
-        addCommandDispatchErrorHook(key, (commandLine, dispatchResult) -> resultMap.computeIfPresent(key, (ignored, result) -> {
-            if (result.status() != TestStatus.FAILED || !COMMAND_NOT_EXECUTED_MESSAGE.equals(result.message())) {
-                return result;
-            }
+        addCommandDispatchErrorHook(key,
+                                    (commandLine, dispatchResult) -> resultMap.computeIfPresent(key,
+                                                                                                (ignored, result) -> {
+                                                                                                    if (result.status() != TestStatus.FAILED || !COMMAND_NOT_EXECUTED_MESSAGE.equals(
+                                                                                                            result.message())) {
+                                                                                                        return result;
+                                                                                                    }
 
-            return new TestResult(key,
-                                  TestStatus.FAILED,
-                                  COMMAND_NOT_EXECUTED_MESSAGE + "\n" + dispatchResult.describe(commandLine));
-        }));
+                                                                                                    return new TestResult(
+                                                                                                            key,
+                                                                                                            TestStatus.FAILED,
+                                                                                                            COMMAND_NOT_EXECUTED_MESSAGE + "\n" + dispatchResult.describe(
+                                                                                                                    commandLine));
+                                                                                                }));
     }
 
     protected final void addCommandDispatchErrorHook(String key, CommandDispatchErrorHook hook) {

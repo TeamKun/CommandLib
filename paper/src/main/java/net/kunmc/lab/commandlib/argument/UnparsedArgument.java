@@ -15,7 +15,7 @@ import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 public class UnparsedArgument extends Argument<String, UnparsedArgument> {
     public UnparsedArgument(String name) {
         super(name, RawWordArgumentType.rawWord());
-        suggestionAction(sb -> {
+        addSuggestionAction(sb -> {
             sb.suggest("test")
               .suggest("sb@aaaa")
               .suggest("@a");

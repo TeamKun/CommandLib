@@ -6,7 +6,6 @@ import net.kunmc.lab.commandlib.argument.ArgumentValidator;
 import net.kunmc.lab.commandlib.command.CommandExecutor;
 import net.kunmc.lab.commandlib.exception.ArgumentParseException;
 import net.kunmc.lab.commandlib.exception.ArgumentValidationException;
-import net.kunmc.lab.commandlib.suggestion.AsyncSuggestionAction;
 import net.kunmc.lab.commandlib.suggestion.SuggestionAction;
 import net.kunmc.lab.commandlib.util.UncaughtExceptionHandler;
 import org.jetbrains.annotations.NotNull;
@@ -15,19 +14,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public abstract class CommonArgument<T, C extends CommonCommandContext<?, ?>, SELF extends CommonArgument<T, C, SELF>> {
     private final String name;
-    private boolean displayDefaultSuggestions = true;
-    private SuggestionAction<C> suggestionAction;
-    private SuggestionAction<C> additionalSuggestionAction;
-    private AsyncSuggestionAction<C> asyncSuggestionAction;
-    private AsyncSuggestionAction<C> additionalAsyncSuggestionAction;
+    private final List<ArgumentSuggestionAction<C>> suggestionActions = new ArrayList<>();
     private BiFunction<C, String, T> additionalParser;
     private CommandExecutor<C> executor;
     private final ArgumentType<?> type;
@@ -38,73 +31,45 @@ public abstract class CommonArgument<T, C extends CommonCommandContext<?, ?>, SE
     protected CommonArgument(@NotNull String name, @NotNull ArgumentType<?> type) {
         this.name = Objects.requireNonNull(name);
         this.type = Objects.requireNonNull(type);
+        this.suggestionActions.add(ArgumentSuggestionAction.defaults());
     }
 
     public final String name() {
         return name;
     }
 
-    protected final boolean isDisplayDefaultSuggestions() {
-        return displayDefaultSuggestions;
+    final List<ArgumentSuggestionAction<C>> suggestionActions() {
+        return List.copyOf(suggestionActions);
     }
 
     @SuppressWarnings("unchecked")
-    public final SELF displayDefaultSuggestions(boolean display) {
-        this.displayDefaultSuggestions = display;
+    public final SELF addSuggestionAction(@NotNull SuggestionAction<C> suggestionAction) {
+        this.suggestionActions.add(ArgumentSuggestionAction.custom(suggestionAction));
         return (SELF) this;
     }
 
-    protected final SuggestionAction<C> suggestionAction() {
-        if (suggestionAction == null && additionalSuggestionAction == null) {
-            return null;
+    @SuppressWarnings("unchecked")
+    public final SELF setSuggestionAction(@Nullable SuggestionAction<C> suggestionAction) {
+        this.suggestionActions.clear();
+        if (suggestionAction != null) {
+            this.suggestionActions.add(ArgumentSuggestionAction.custom(suggestionAction));
         }
-        return sb -> {
-            if (suggestionAction != null) {
-                suggestionAction.accept(sb);
-            }
-            if (additionalSuggestionAction != null) {
-                additionalSuggestionAction.accept(sb);
-            }
-        };
+        return (SELF) this;
     }
 
-    protected final AsyncSuggestionAction<C> asyncSuggestionAction() {
-        if (asyncSuggestionAction == null && additionalAsyncSuggestionAction == null) {
-            return null;
+    @SuppressWarnings("unchecked")
+    public final SELF clearSuggestionActions() {
+        this.suggestionActions.clear();
+        return (SELF) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public final SELF useDefaultSuggestions() {
+        boolean alreadyUsesDefaults = this.suggestionActions.stream()
+                                                            .anyMatch(ArgumentSuggestionAction::isDefaultSuggestions);
+        if (!alreadyUsesDefaults) {
+            this.suggestionActions.add(ArgumentSuggestionAction.defaults());
         }
-        return sb -> {
-            CompletionStage<Void> stage = CompletableFuture.completedFuture(null);
-            if (asyncSuggestionAction != null) {
-                stage = stage.thenCompose(ignored -> asyncSuggestionAction.accept(sb));
-            }
-            if (additionalAsyncSuggestionAction != null) {
-                stage = stage.thenCompose(ignored -> additionalAsyncSuggestionAction.accept(sb));
-            }
-            return stage;
-        };
-    }
-
-    @SuppressWarnings("unchecked")
-    public final SELF suggestionAction(@Nullable SuggestionAction<C> suggestionAction) {
-        this.suggestionAction = suggestionAction;
-        return (SELF) this;
-    }
-
-    @SuppressWarnings("unchecked")
-    public final SELF additionalSuggestionAction(@Nullable SuggestionAction<C> additionalSuggestionAction) {
-        this.additionalSuggestionAction = additionalSuggestionAction;
-        return (SELF) this;
-    }
-
-    @SuppressWarnings("unchecked")
-    public final SELF asyncSuggestionAction(@Nullable AsyncSuggestionAction<C> asyncSuggestionAction) {
-        this.asyncSuggestionAction = asyncSuggestionAction;
-        return (SELF) this;
-    }
-
-    @SuppressWarnings("unchecked")
-    public final SELF additionalAsyncSuggestionAction(@Nullable AsyncSuggestionAction<C> additionalAsyncSuggestionAction) {
-        this.additionalAsyncSuggestionAction = additionalAsyncSuggestionAction;
         return (SELF) this;
     }
 

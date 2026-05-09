@@ -15,7 +15,7 @@ public class GameProfileArgument extends Argument<GameProfile, GameProfileArgume
     public GameProfileArgument(String name) {
         super(name, StringArgumentType.string());
 
-        suggestionAction(sb -> {
+        addSuggestionAction(sb -> {
             sb.getContext()
               .getHandle()
               .getSource()

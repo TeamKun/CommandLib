@@ -19,7 +19,7 @@ public class UUIDArgument extends Argument<UUID, UUIDArgument> {
     public UUIDArgument(String name) {
         super(name, StringArgumentType.string());
 
-        suggestionAction(sb -> {
+        setSuggestionAction(sb -> {
             Map<UUID, String> uuidToNameMap = new HashMap<>();
             Arrays.stream(Bukkit.getOfflinePlayers())
                   .filter(x -> filter(sb.getContext()).test(x.getUniqueId()))
@@ -45,7 +45,6 @@ public class UUIDArgument extends Argument<UUID, UUIDArgument> {
                 }
             });
         });
-        displayDefaultSuggestions(false);
     }
 
     @Override
