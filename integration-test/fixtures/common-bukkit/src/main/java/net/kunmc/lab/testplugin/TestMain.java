@@ -56,10 +56,16 @@ public class TestMain {
     }
 
     public void register(Consumer<List<TestResult>> consumer) {
+        register(consumer, (commandLine, dispatchResult) -> {
+        });
+    }
+
+    public void register(Consumer<List<TestResult>> consumer, CommandDispatchErrorHook dispatchErrorHook) {
         try {
             Command mainCommand = new MainCommand();
             mainCommand.permission(PermissionDefault.TRUE);
             AtomicBoolean running = new AtomicBoolean(false);
+            CommandDispatchProbe dispatchProbe = new CommandDispatchProbe(plugin);
 
             ArgumentTest argumentTest = new ArgumentTest(mainCommand, TEST_PLAYER_NAME);
             OptionTest optionTest = new OptionTest(mainCommand);
@@ -96,8 +102,10 @@ public class TestMain {
                               logger.info("Executing CommandLib test cases.");
                               for (String command : commands) {
                                   logger.info("Dispatching test command: " + command);
-                                  Bukkit.getServer()
-                                        .dispatchCommand(Bukkit.getConsoleSender(), command);
+                                  CommandDispatchResult dispatchResult =
+                                          dispatchProbe.dispatch(Bukkit.getConsoleSender(), command);
+                                  tests.forEach(test -> test.hookCommandDispatchError(command, dispatchResult));
+                                  dispatchErrorHook.onCommandDispatchError(command, dispatchResult);
                               }
 
                               consumer.accept(tests.stream()

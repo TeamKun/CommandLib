@@ -73,7 +73,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new AdvancementArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -92,7 +92,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new AttributeArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -101,14 +101,14 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return List.of(buildCommand(command, name + " generic_max_health"));
+        return List.of(buildCommand(command, name + " " + registryInput("generic_max_health", "generic.max_health")));
     }
 
     public List<String> blockDataArgument() {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new BlockDataArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -124,7 +124,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new BiomeArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -140,7 +140,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new BooleanArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -156,7 +156,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new ChatColorArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -172,7 +172,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new DoubleArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -188,7 +188,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new EnchantmentArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -204,7 +204,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new EntitiesArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -220,7 +220,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new EntityArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -236,7 +236,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new EntityTypeArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -252,7 +252,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new EnumArgument<>("a", Material.class).addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -268,7 +268,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new FloatArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -284,7 +284,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new GameModeArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -300,7 +300,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new IntegerArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -316,7 +316,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new ItemStackArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -332,7 +332,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new LiteralArgument("a", List.of("a")).addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -348,7 +348,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new LocationArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -364,7 +364,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new LootTableArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -383,7 +383,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new LongArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -401,11 +401,35 @@ public final class ArgumentTest extends TestBase {
         return !"1.16.5".equals(BukkitUtil.getMinecraftVersion());
     }
 
+    private String registryInput(String legacyName, String registryName) {
+        return isLessThan(BukkitUtil.getMinecraftVersion(), "1.21.0") ? legacyName : registryName;
+    }
+
+    private boolean isLessThan(String version, String other) {
+        String[] versionUnits = normalizeVersion(version).split("\\.");
+        String[] otherUnits = normalizeVersion(other).split("\\.");
+        for (int i = 0; i < versionUnits.length; i++) {
+            int versionUnit = Integer.parseInt(versionUnits[i]);
+            int otherUnit = Integer.parseInt(otherUnits[i]);
+            if (versionUnit < otherUnit) {
+                return true;
+            }
+            if (versionUnit > otherUnit) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private String normalizeVersion(String version) {
+        return version.split("\\.").length == 2 ? version + ".0" : version;
+    }
+
     public List<String> nameableObjectArgument() {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new NameableObjectArgument<>("a", List.of(() -> "a")).addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -421,7 +445,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new NamespacedKeyArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -439,7 +463,7 @@ public final class ArgumentTest extends TestBase {
 
         Map<String, Integer> map = new HashMap<>();
         map.put("a", 1);
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new ObjectArgument<>("a", map).addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -455,7 +479,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new OfflinePlayerArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -471,7 +495,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new OfflinePlayersArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -498,7 +522,7 @@ public final class ArgumentTest extends TestBase {
             scoreboard.registerNewObjective(objectiveName, "dummy");
         }
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new ObjectiveArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -514,7 +538,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new ParticleArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -530,7 +554,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new PlayerArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -546,7 +570,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new PlayersArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -566,7 +590,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new PotionEffectArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -582,7 +606,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new RecipeArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -601,7 +625,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new ScoreboardDisplaySlotArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -617,7 +641,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new SoundArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -626,14 +650,14 @@ public final class ArgumentTest extends TestBase {
             });
         }});
 
-        return List.of(buildCommand(command, name + " block_anvil_land"));
+        return List.of(buildCommand(command, name + " " + registryInput("block_anvil_land", "block.anvil.land")));
     }
 
     public List<String> stringArgument() {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new StringArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -650,7 +674,7 @@ public final class ArgumentTest extends TestBase {
         String key = getKey();
 
         String teamName = "test";
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new TeamArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -666,7 +690,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new UnparsedArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -683,7 +707,7 @@ public final class ArgumentTest extends TestBase {
         String key = getKey();
         UUID uuid = UUID.fromString("00000000-0000-0000-0000-000000000001");
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new UUIDArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -699,7 +723,7 @@ public final class ArgumentTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new WorldArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));
@@ -717,7 +741,7 @@ public final class ArgumentTest extends TestBase {
         String key = getKey();
         UUID uuid = UUID.fromString("00000000-0000-0000-0000-000000000002");
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             argument(new UUIDsArgument("a").addUncaughtExceptionHandler((e, ctx) -> {
                 putResult(new TestResult(key, TestStatus.FAILED, ExceptionUtil.stackTraceToString(e)));

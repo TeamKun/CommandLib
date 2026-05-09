@@ -34,7 +34,7 @@ public final class OptionTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f')
                                                                          .description("Force execution"));
@@ -57,7 +57,7 @@ public final class OptionTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f'));
             CommandOption<Integer, CommandContext> limit = option(Options.integer("limit", 'n', 10, 1, 100));
@@ -77,7 +77,7 @@ public final class OptionTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f'));
             CommandOption<Boolean, CommandContext> verbose = option(Options.flag("verbose", 'v'));
@@ -94,7 +94,7 @@ public final class OptionTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             CommandOption<Boolean, CommandContext> force = option(Options.flag("force", 'f'));
             CommandOption<String, CommandContext> reason = option(Options.string("reason", 'r', "")
@@ -112,7 +112,7 @@ public final class OptionTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             CommandOption<String, CommandContext> mode = option(Options.string("mode", 'm', "normal"));
             CommandOption<Integer, CommandContext> limit = option(Options.integer("limit", 'n', 10)

@@ -29,7 +29,7 @@ public final class RuntimePermissionTest extends TestBase {
         String name = getMethodName();
         String key = getKey();
 
-        putResult(new TestResult(key, TestStatus.FAILED, "Command was not executed."));
+        putCommandNotExecutedResult(key);
         command.addChildren(new Command(name) {{
             execute(ctx -> {
                 CommandLib allRegistration = null;
