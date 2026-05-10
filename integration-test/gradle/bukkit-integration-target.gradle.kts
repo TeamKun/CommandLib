@@ -64,6 +64,9 @@ val minecraftIntegrationMaxParallel = providers.gradleProperty("commandlib.minec
 val mohistBootstrapMaxParallel = providers.gradleProperty("commandlib.mohistBootstrapMaxParallel")
     .map(String::toInt)
     .orElse(4)
+val containerCpuLimit = providers.gradleProperty("commandlib.containerCpuLimit")
+    .map(String::toDouble)
+    .orElse(2.0)
 val minecraftIntegrationSlot = gradle.sharedServices.registerIfAbsent(
     "commandlibMinecraftIntegrationSlot",
     CommandLibIntegrationSlot::class,
@@ -104,6 +107,9 @@ val nestedGradleUserHome = rootProject.file(".gradle-user-home-bukkit-it")
 val integrationTestDir = rootProject.file("integration-test")
 val sharedDir = integrationTestDir.resolve("shared")
 val testPluginDir = project.file("test-plugin")
+val stagedDockerServerDir = layout.buildDirectory.dir("docker-server")
+val dockerImageMarker = layout.buildDirectory.file("docker-server-image/tag.txt")
+val dockerImageName = "commandlib-it-${targetName.lowercase()}:latest"
 val isWindows = System.getProperty("os.name").startsWith("Windows", ignoreCase = true)
 val javaToolchains = extensions.getByType<JavaToolchainService>()
 
@@ -254,6 +260,67 @@ val writeDockerServerProperties = tasks.register("writeDockerServerProperties") 
     }
 }
 
+val stageDockerServerDirectory = tasks.register<Sync>("stageDockerServerDirectory") {
+    group = "setup"
+    description = "Stages a slim server directory before copying it into the Docker container."
+    dependsOn(writeDockerServerProperties)
+
+    val serverDir = testPluginDir.resolve(serverDirectory)
+
+    from(serverDir)
+    into(stagedDockerServerDir)
+    exclude(
+        "logs/**",
+        "crash-reports/**",
+        "world/session.lock",
+        "world/DIM1/**",
+        "world/DIM-1/**",
+        "world_*/**",
+        "flat/**",
+        "flat_*/**",
+        "plugins/TestPlugin*.jar",
+        "usercache.json",
+        "usernamecache.json",
+        "banned-ips.json",
+        "banned-players.json",
+        "whitelist.json",
+        "ops.json",
+    )
+    doLast {
+        stagedDockerServerDir.get().asFile.resolve("Dockerfile").writeText(
+            """
+            FROM eclipse-temurin:$minecraftJavaVersion-jre
+            WORKDIR /workspace/server
+            COPY . /workspace/server
+            """.trimIndent() + "\n"
+        )
+    }
+}
+
+val buildMinecraftServerImage = tasks.register<Exec>("buildMinecraftServerImage") {
+    group = "verification"
+    description = "Builds the reusable Docker image for the $targetName integration server."
+    dependsOn(stageDockerServerDirectory)
+    inputs.dir(stagedDockerServerDir)
+    outputs.file(dockerImageMarker)
+
+    commandLine(
+        "docker",
+        "build",
+        "--pull=false",
+        "-t",
+        dockerImageName,
+        stagedDockerServerDir.get().asFile.absolutePath,
+    )
+
+    doLast {
+        dockerImageMarker.get().asFile.apply {
+            parentFile.mkdirs()
+            writeText(dockerImageName + "\n")
+        }
+    }
+}
+
 val writeBootstrapServerProperties = tasks.register("writeBootstrapServerProperties") {
     group = "setup"
     description = "Writes server.properties for the host-side bootstrap server."
@@ -365,6 +432,9 @@ val mohistBootstrapTask = tasks.register("bootstrapMohist") {
 }
 
 if (requiresMohistBootstrap) {
+    buildMinecraftServerImage.configure {
+        dependsOn(mohistBootstrapTask)
+    }
     writeDockerServerProperties.configure {
         mustRunAfter(mohistBootstrapTask)
     }
@@ -374,6 +444,7 @@ tasks.register<Test>("minecraftIntegrationTest") {
     group = "verification"
     description = "Runs the Docker-based Minecraft integration test for $minecraftVersion."
     usesService(minecraftIntegrationSlot)
+    outputs.upToDateWhen { false }
     testClassesDirs = sourceSets["test"].output.classesDirs
     classpath = files(sourceSets["test"].runtimeClasspath, mcProtocol)
     useJUnitPlatform()
@@ -385,13 +456,14 @@ tasks.register<Test>("minecraftIntegrationTest") {
         showStandardStreams = true
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
     }
-    dependsOn(writeDockerServerProperties)
+    dependsOn(buildMinecraftServerImage)
     if (requiresMohistBootstrap) {
         dependsOn(mohistBootstrapTask)
     }
     systemProperty("commandlib.rootDir", rootProject.projectDir.absolutePath)
     systemProperty("commandlib.integrationTestDir", integrationTestDir.absolutePath)
     systemProperty("commandlib.testPluginDir", testPluginDir.absolutePath)
+    systemProperty("commandlib.dockerImageName", dockerImageName)
     systemProperty("commandlib.sharedDir", sharedDir.absolutePath)
     systemProperty("commandlib.runMinecraftIntegration", "true")
     systemProperty("commandlib.targetName", targetName)
@@ -400,4 +472,5 @@ tasks.register<Test>("minecraftIntegrationTest") {
     systemProperty("commandlib.serverDirectory", serverDirectory)
     systemProperty("commandlib.serverJarName", serverJarName)
     systemProperty("commandlib.minecraftJavaVersion", minecraftJavaVersion.toString())
+    systemProperty("commandlib.containerCpuLimit", containerCpuLimit.get().toString())
 }

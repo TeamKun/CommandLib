@@ -1,6 +1,7 @@
 package net.kunmc.lab.commandlib.integration;
 
 import org.awaitility.Awaitility;
+import com.github.dockerjava.api.model.HostConfig;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -10,6 +11,8 @@ import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.utility.MountableFile;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -51,24 +54,25 @@ class BukkitIntegrationTest {
         String targetName = System.getProperty("commandlib.targetName");
         String reportFileName = System.getProperty("commandlib.reportFileName",
                                                    "TEST-commandlib-" + targetName + ".xml");
-        String serverDirectory = System.getProperty("commandlib.serverDirectory", "server");
         String serverJarName = System.getProperty("commandlib.serverJarName", "server.jar");
-        int javaVersion = Integer.getInteger("commandlib.minecraftJavaVersion", 17);
+        String dockerImageName = System.getProperty("commandlib.dockerImageName");
 
-        Path integrationTestDir = Path.of(System.getProperty("commandlib.integrationTestDir"));
         Path testPluginDir = Path.of(System.getProperty("commandlib.testPluginDir"));
+        Path testPluginJar = findTestPluginJar(testPluginDir.resolve("server/plugins"));
         Path sharedDir = Path.of(System.getProperty("commandlib.sharedDir"));
         Path reportDir = sharedDir.resolve("test-results");
         Path reportFile = reportDir.resolve(reportFileName);
+        double containerCpuLimit = Double.parseDouble(System.getProperty("commandlib.containerCpuLimit", "2.0"));
+        Files.createDirectories(reportDir);
         Files.deleteIfExists(reportFile);
 
-        try (GenericContainer<?> container = createBukkitContainer(integrationTestDir,
-                                                                   targetName,
-                                                                   testPluginDir,
-                                                                   serverDirectory,
+        try (GenericContainer<?> container = createBukkitContainer(targetName,
+                                                                   dockerImageName,
+                                                                   testPluginJar,
+                                                                   reportDir,
                                                                    serverJarName,
                                                                    reportFileName,
-                                                                   javaVersion)) {
+                                                                   containerCpuLimit)) {
             try {
                 container.start();
             } catch (Exception e) {
@@ -161,7 +165,8 @@ class BukkitIntegrationTest {
             } catch (InterruptedException e) {
                 Thread.currentThread()
                       .interrupt();
-                throw new IllegalStateException("Interrupted while waiting for the MCProtocolLib session to stabilize.", e);
+                throw new IllegalStateException("Interrupted while waiting for the MCProtocolLib session to stabilize.",
+                                                e);
             }
         }
         client.assertNotDisconnected();
@@ -203,40 +208,61 @@ class BukkitIntegrationTest {
         }
     }
 
-    private static GenericContainer<?> createBukkitContainer(Path integrationTestDir,
-                                                             String targetName,
-                                                             Path testPluginDir,
-                                                             String serverDirectory,
+    private static Path findTestPluginJar(Path pluginsDir) throws IOException {
+        try (var files = Files.list(pluginsDir)) {
+            return files.filter(Files::isRegularFile)
+                        .filter(path -> path.getFileName()
+                                            .toString()
+                                            .matches("TestPlugin.*\\.jar"))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalStateException("Test plugin jar was not found in " + pluginsDir));
+        }
+    }
+
+    private static GenericContainer<?> createBukkitContainer(String targetName,
+                                                             String dockerImageName,
+                                                             Path testPluginJar,
+                                                             Path reportDir,
                                                              String serverJarName,
                                                              String reportFileName,
-                                                             int javaVersion) {
-        String containerWorkDir = "/workspace/integration-test/targets/" + targetName + "/test-plugin/" + serverDirectory;
+                                                             double containerCpuLimit) {
+        String containerWorkDir = "/workspace/server";
         UUID offlineUuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + TEST_PLAYER_NAME).getBytes(StandardCharsets.UTF_8));
         String opsJson = "[{\"uuid\":\"" + offlineUuid + "\",\"name\":\"" + TEST_PLAYER_NAME + "\",\"level\":4,\"bypassesPlayerLimit\":false}]";
 
-        return new GenericContainer<>("eclipse-temurin:" + javaVersion + "-jre").withExposedPorts(25565)
-                                                                                // Bind the whole integration-test tree because the plugin writes its
-                                                                                // JUnit XML report outside the target-local server directory.
-                                                                                .withFileSystemBind(integrationTestDir.toAbsolutePath()
-                                                                                                               .toString(),
-                                                                                                    "/workspace/integration-test",
-                                                                                                    BindMode.READ_WRITE)
-                                                                                .withWorkingDirectory(containerWorkDir)
-                                                                                .withLogConsumer(new Slf4jLogConsumer(
-                                                                                        LOGGER).withPrefix(targetName))
-                                                                                .withCommand("sh",
-                                                                                             "-lc",
-                                                                                             "printf 'eula=true\n' > eula.txt && "
-                                                                                                     // Write ops.json before the server starts so the player has operator permission on join.
-                                                                                                     // Offline UUID is deterministic: UUID.nameUUIDFromBytes("OfflinePlayer:<name>").
-                                                                                                     + "printf '" + opsJson + "' > ops.json && "
-                                                                                                     + "java -Dplugin.env=CI -Dcommandlib.testReportName=" + reportFileName + " "
-                                                                                                     + "-Dcommandlib.testReportDir=/workspace/integration-test/shared/test-results "
-                                                                                                     + "-jar " + serverJarName + " nogui")
-                                                                                .waitingFor(Wait.forLogMessage(
-                                                                                        ".*Done \\(.*\\)! For help, type \"help\".*",
-                                                                                        1))
-                                                                                .withStartupTimeout(Duration.ofMinutes(8));
+        return new GenericContainer<>(DockerImageName.parse(dockerImageName)).withExposedPorts(25565)
+                                                                             .withCopyFileToContainer(MountableFile.forHostPath(
+                                                                                                              testPluginJar),
+                                                                                                      containerWorkDir + "/plugins/" + testPluginJar.getFileName())
+                                                                             .withFileSystemBind(reportDir.toAbsolutePath()
+                                                                                                          .toString(),
+                                                                                                 "/workspace/test-results",
+                                                                                                 BindMode.READ_WRITE)
+                                                                             .withCreateContainerCmdModifier(cmd -> {
+                                                                                 if (containerCpuLimit <= 0) {
+                                                                                     return;
+                                                                                 }
+                                                                                 HostConfig hostConfig = cmd.getHostConfig();
+                                                                                 if (hostConfig == null) {
+                                                                                     hostConfig = HostConfig.newHostConfig();
+                                                                                 }
+                                                                                 hostConfig.withNanoCPUs(Math.round(
+                                                                                         containerCpuLimit * 1_000_000_000L));
+                                                                                 cmd.withHostConfig(hostConfig);
+                                                                             })
+                                                                             .withWorkingDirectory(containerWorkDir)
+                                                                             .withLogConsumer(new Slf4jLogConsumer(
+                                                                                     LOGGER).withPrefix(targetName))
+                                                                             .withCommand("sh",
+                                                                                          "-lc",
+                                                                                          "printf 'eula=true\n' > eula.txt && "
+                                                                                                  // Write ops.json before the server starts so the player has operator permission on join.
+                                                                                                  // Offline UUID is deterministic: UUID.nameUUIDFromBytes("OfflinePlayer:<name>").
+                                                                                                  + "printf '" + opsJson + "' > ops.json && " + "java -Dplugin.env=CI -Dcommandlib.testReportName=" + reportFileName + " " + "-Dcommandlib.testReportDir=/workspace/test-results " + "-jar " + serverJarName + " nogui")
+                                                                             .waitingFor(Wait.forLogMessage(
+                                                                                     ".*Done \\(.*\\)! For help, type \"help\".*",
+                                                                                     1))
+                                                                             .withStartupTimeout(Duration.ofMinutes(8));
     }
 
     private static BotSession connectBot(GenericContainer<?> container) {
@@ -405,7 +431,8 @@ class BukkitIntegrationTest {
                                                   }
                                                   if (isDisconnectCallback(method.getName())) {
                                                       botSession.disconnectionReason.compareAndSet(null,
-                                                                                                   describeDisconnectEvent(args));
+                                                                                                   describeDisconnectEvent(
+                                                                                                           args));
                                                   }
                                                   return null;
                                               });

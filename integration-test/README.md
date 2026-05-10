@@ -157,6 +157,11 @@ Run all configured targets:
 .\gradlew.bat :integration-test:minecraftIntegrationTest
 ```
 
+Each target builds a reusable Docker image for its server base before running the Minecraft integration test. The image
+contains the server jar, generated libraries, helper plugins, base configuration, and pre-generated overworld data. The
+current test plugin jar is copied into the container at test startup, so normal code changes do not require recopying the
+whole server directory. Gradle marks the image task up-to-date while the staged server base is unchanged.
+
 Gradle project parallelism is enabled by default, but Minecraft server tests are throttled to avoid starting every
 Docker server at once. The default server-test concurrency is 4.
 
@@ -173,6 +178,16 @@ To reduce Mohist bootstrap concurrency:
 
 ```powershell
 .\gradlew.bat :integration-test:minecraftIntegrationTest -Pcommandlib.mohistBootstrapMaxParallel=1
+```
+
+Each Dockerized Minecraft server is also CPU-limited by default so one server startup cannot consume the whole Docker
+Desktop CPU budget. The default is 2 CPUs per container.
+
+To tune or disable the limit:
+
+```powershell
+.\gradlew.bat :integration-test:minecraftIntegrationTest -Pcommandlib.containerCpuLimit=1.5
+.\gradlew.bat :integration-test:minecraftIntegrationTest -Pcommandlib.containerCpuLimit=0
 ```
 
 The normal `test` task runs lightweight integration coverage checks only. Real server tests run from the target
