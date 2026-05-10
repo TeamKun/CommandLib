@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -80,21 +81,29 @@ class BukkitIntegrationTest {
             try {
                 Awaitility.await()
                           .atMost(Duration.ofSeconds(30))
-                          .until(client::isConnected);
+                          .until(() -> {
+                              client.assertNotDisconnected();
+                              return client.isConnected();
+                          });
 
-                waitForPlayerJoin(container);
+                waitForPlayerJoin(container, client);
 
                 // Send a tab-complete request before runTests so the server-side suggestion action
                 // fires and captures getLatestInput() before verifySuggestionCapture runs.
                 client.sendTabCompleteRequest(1, "/commandlibtest suggestionCapture abc");
                 Thread.sleep(300);
+                client.assertNotDisconnected();
 
                 client.sendCommand("commandlibtest runTests");
 
                 Awaitility.await()
                           .atMost(Duration.ofMinutes(2))
                           .pollInterval(Duration.ofSeconds(1))
-                          .until(() -> Files.exists(reportFile) && Files.size(reportFile) > 0);
+                          .until(() -> {
+                              client.assertNotDisconnected();
+                              return Files.exists(reportFile) && Files.size(reportFile) > 0;
+                          });
+                client.assertNotDisconnected();
 
                 assertJUnitReportSucceeded(reportFile);
 
@@ -103,6 +112,7 @@ class BukkitIntegrationTest {
                 client.clearReceivedPackets();
                 client.sendCommand("commandlibtest helpMessageRoot");
                 Thread.sleep(1500);
+                client.assertNotDisconnected();
                 List<String> helpMessages = client.drainSystemMessages();
                 assertThat(helpMessages).as(
                                                 "Help message should contain 'commandlibtest helpMessageRoot' as usage prefix")
@@ -121,13 +131,16 @@ class BukkitIntegrationTest {
         assertThat(isPlayerJoinLog("[12:47:42 INFO]: OtherPlayer joined the game")).isFalse();
     }
 
-    private static void waitForPlayerJoin(GenericContainer<?> container) {
+    private static void waitForPlayerJoin(GenericContainer<?> container, BotSession client) {
         Awaitility.await()
                   .atMost(Duration.ofSeconds(30))
                   .pollInterval(Duration.ofMillis(500))
-                  .until(() -> container.getLogs()
-                                        .lines()
-                                        .anyMatch(BukkitIntegrationTest::isPlayerJoinLog));
+                  .until(() -> {
+                      client.assertNotDisconnected();
+                      return container.getLogs()
+                                      .lines()
+                                      .anyMatch(BukkitIntegrationTest::isPlayerJoinLog);
+                  });
     }
 
     private static boolean isPlayerJoinLog(String line) {
@@ -374,9 +387,41 @@ class BukkitIntegrationTest {
                                                                   "Unexpected packetReceived signature: " + args.length + " arguments");
                                                       }
                                                   }
+                                                  if (isDisconnectCallback(method.getName())) {
+                                                      botSession.disconnectionReason.compareAndSet(null,
+                                                                                                   describeDisconnectEvent(args));
+                                                  }
                                                   return null;
                                               });
         addListener.invoke(session, proxy);
+    }
+
+    private static boolean isDisconnectCallback(String methodName) {
+        return methodName.equals("disconnected") || methodName.equals("disconnecting");
+    }
+
+    private static String describeDisconnectEvent(Object[] args) {
+        if (args == null || args.length == 0) {
+            return "MCProtocolLib session disconnected.";
+        }
+
+        for (Object arg : args) {
+            if (arg == null) {
+                continue;
+            }
+            for (String methodName : List.of("getReason", "getCause", "getMessage")) {
+                try {
+                    Object value = arg.getClass()
+                                      .getMethod(methodName)
+                                      .invoke(arg);
+                    if (value != null) {
+                        return "MCProtocolLib session disconnected: " + value;
+                    }
+                } catch (ReflectiveOperationException ignored) {
+                }
+            }
+        }
+        return "MCProtocolLib session disconnected: " + Arrays.toString(args);
     }
 
     private static Method findSendMethod(Class<?> sessionClass) {
@@ -403,6 +448,8 @@ class BukkitIntegrationTest {
         private final Method sendMethod;
         private final Method disconnectMethod;
         final CopyOnWriteArrayList<Object> receivedPackets = new CopyOnWriteArrayList<>();
+        final AtomicReference<String> disconnectionReason = new AtomicReference<>();
+        private volatile boolean connectedOnce = false;
 
         private BotSession(Object delegate, Method isConnectedMethod, Method sendMethod, Method disconnectMethod) {
             this.delegate = delegate;
@@ -462,9 +509,23 @@ class BukkitIntegrationTest {
 
         boolean isConnected() {
             try {
-                return (boolean) isConnectedMethod.invoke(delegate);
+                boolean connected = (boolean) isConnectedMethod.invoke(delegate);
+                if (connected) {
+                    connectedOnce = true;
+                }
+                return connected;
             } catch (ReflectiveOperationException e) {
                 throw new IllegalStateException("Failed to query MCProtocolLib session state.", e);
+            }
+        }
+
+        void assertNotDisconnected() {
+            String reason = disconnectionReason.get();
+            if (reason != null) {
+                fail(reason);
+            }
+            if (connectedOnce && !isConnected()) {
+                fail(reason != null ? reason : "MCProtocolLib session disconnected before the integration test completed.");
             }
         }
 
