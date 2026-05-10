@@ -87,6 +87,7 @@ class BukkitIntegrationTest {
                           });
 
                 waitForPlayerJoin(container, client);
+                waitForStableConnection(client, Duration.ofSeconds(3));
 
                 // Send a tab-complete request before runTests so the server-side suggestion action
                 // fires and captures getLatestInput() before verifySuggestionCapture runs.
@@ -149,6 +150,21 @@ class BukkitIntegrationTest {
         }
 
         return line.contains("joined the game") || line.contains("logged in with entity id");
+    }
+
+    private static void waitForStableConnection(BotSession client, Duration duration) {
+        long deadline = System.nanoTime() + duration.toNanos();
+        while (System.nanoTime() < deadline) {
+            client.assertNotDisconnected();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread()
+                      .interrupt();
+                throw new IllegalStateException("Interrupted while waiting for the MCProtocolLib session to stabilize.", e);
+            }
+        }
+        client.assertNotDisconnected();
     }
 
     private static void assertJUnitReportSucceeded(Path reportFile) throws ParserConfigurationException, IOException, SAXException {
