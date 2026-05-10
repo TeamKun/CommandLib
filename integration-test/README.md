@@ -73,7 +73,7 @@ Target plugin setup downloads PlugManX and AutoReloader into each configured ser
 The AutoReloader URL can be overridden when needed:
 
 ```powershell
-.\gradlew.bat :integration-test:targets:paper-1.20.4:prepareTestPlugin -PautoReloaderJarDownloadUrl=<download-url>
+.\gradlew.bat -p integration-test/targets/paper-1.20.4/test-plugin downloadPluginJars -PautoReloaderJarDownloadUrl=<download-url>
 ```
 
 The same URL can be supplied with `COMMANDLIB_AUTORELOADER_JAR_URL`.
@@ -106,7 +106,8 @@ Paper has two known layouts:
 - Paper `1.18` and newer: `server/versions/<version>/paper-<version>.jar`
 
 Mohist does not follow Paper's single-path convention consistently.
-When a Mohist target needs generated NMS jars, configure `nmsJarPaths` explicitly in that target plugin's `build.gradle.kts`.
+When a Mohist target needs generated NMS jars, configure `nmsJarPaths` explicitly in that target plugin's
+`build.gradle.kts`.
 For example, Mohist `1.20.1` splits server and CraftBukkit classes across Forge-generated jars, so the fixture checks
 both generated jar paths.
 
@@ -128,6 +129,9 @@ Gradle handles this with per-target `bootstrapMohist` tasks.
 The task checks for generated marker paths such as `libraries` and `world`.
 If they are missing, it starts Mohist once with the target Java toolchain, waits until the server reaches the ready
 state, sends `stop`, and then lets the Docker-based integration test continue.
+The bootstrap startup leaves Mohist library checks enabled; the Docker test startup disables those checks after
+bootstrap
+so repeated test runs avoid unnecessary Mohist library validation.
 
 Example:
 

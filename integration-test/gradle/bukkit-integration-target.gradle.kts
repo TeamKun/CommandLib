@@ -154,13 +154,85 @@ fun writeServerProperties(serverDir: File, port: Int) {
         gamemode=creative
         force-gamemode=true
         difficulty=peaceful
+        max-players=1
+        spawn-animals=false
+        spawn-monsters=false
+        spawn-npcs=false
         spawn-protection=0
         view-distance=2
         simulation-distance=2
         max-world-size=16
         generate-structures=false
         allow-nether=false
+        allow-flight=true
+        enable-command-block=false
+        enable-jmx-monitoring=false
+        enable-query=false
+        enable-rcon=false
+        enable-status=false
+        network-compression-threshold=-1
+        pvp=false
+        rate-limit=0
+        sync-chunk-writes=false
         level-type=flat
+        """.trimIndent() + "\n"
+    )
+}
+
+fun writeBukkitConfig(serverDir: File) {
+    serverDir.resolve("bukkit.yml").writeText(
+        """
+        settings:
+          allow-end: false
+          warn-on-overload: false
+          permissions-file: permissions.yml
+          update-folder: update
+          plugin-profiling: false
+          connection-throttle: 4000
+          query-plugins: false
+          deprecated-verbose: false
+          shutdown-message: Server closed
+          minimum-api: none
+          use-map-color-cache: false
+        spawn-limits:
+          monsters: 0
+          animals: 0
+          water-animals: 0
+          water-ambient: 0
+          water-underground-creature: 0
+          ambient: 0
+        chunk-gc:
+          period-in-ticks: 100
+        ticks-per:
+          animal-spawns: 400
+          monster-spawns: 400
+          water-spawns: 400
+          water-ambient-spawns: 400
+          water-underground-creature-spawns: 400
+          ambient-spawns: 400
+          autosave: 0
+        aliases: now-in-commands.yml
+        """.trimIndent() + "\n"
+    )
+}
+
+fun deleteDisabledDimensionDirectories(serverDir: File) {
+    delete(
+        serverDir.resolve("world/DIM1"),
+        serverDir.resolve("world/DIM-1"),
+    )
+}
+
+fun writeMohistConfig(serverDir: File, checkLibraries: Boolean) {
+    serverDir.resolve("mohist-config").mkdirs()
+    serverDir.resolve("mohist-config/mohist.yml").writeText(
+        """
+        mohist:
+          lang: en_US
+          check_update: false
+          check_update_auto_download: false
+          libraries:
+            check: $checkLibraries
         """.trimIndent() + "\n"
     )
 }
@@ -174,6 +246,11 @@ val writeDockerServerProperties = tasks.register("writeDockerServerProperties") 
 
     doLast {
         writeServerProperties(serverDir, 25565)
+        writeBukkitConfig(serverDir)
+        deleteDisabledDimensionDirectories(serverDir)
+        if (targetPlatform == "mohist") {
+            writeMohistConfig(serverDir, false)
+        }
     }
 }
 
@@ -190,6 +267,9 @@ val writeBootstrapServerProperties = tasks.register("writeBootstrapServerPropert
 
     doLast {
         writeServerProperties(serverDir, bootstrapServerPort)
+        writeBukkitConfig(serverDir)
+        deleteDisabledDimensionDirectories(serverDir)
+        writeMohistConfig(serverDir, true)
     }
 }
 
@@ -220,17 +300,6 @@ val mohistBootstrapTask = tasks.register("bootstrapMohist") {
 
         serverDir.mkdirs()
         serverDir.resolve("eula.txt").writeText("eula=true\n")
-        serverDir.resolve("mohist-config").mkdirs()
-        serverDir.resolve("mohist-config/mohist.yml").writeText(
-            """
-            mohist:
-              lang: en_US
-              check_update: false
-              check_update_auto_download: false
-                libraries:
-                  check: true
-            """.trimIndent() + "\n"
-        )
 
         val process = ProcessBuilder(
             javaExecutable.get().absolutePath,
